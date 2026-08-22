@@ -36,6 +36,24 @@ namespace PlanetSurvival.Tests
             Object.DestroyImmediate(player);
         }
 
+        [Test]
+        public void Tick_SplitAndCombinedTimeSteps_ProduceSameVitals()
+        {
+            GameObject combinedPlayer = CreatePlayer(out PlayerSurvival combined, out SurvivalDecay combinedDecay);
+            GameObject splitPlayer = CreatePlayer(out PlayerSurvival split, out SurvivalDecay splitDecay);
+            combinedDecay.Configure(2f, 3f, 5f);
+            splitDecay.Configure(2f, 3f, 5f);
+
+            combinedDecay.Tick(8f);
+            for (int i = 0; i < 16; i++) splitDecay.Tick(.5f);
+
+            Assert.That(split.Stats.Hunger.Current, Is.EqualTo(combined.Stats.Hunger.Current).Within(.0001f));
+            Assert.That(split.Stats.Thirst.Current, Is.EqualTo(combined.Stats.Thirst.Current).Within(.0001f));
+            Assert.That(split.Stats.Health.Current, Is.EqualTo(combined.Stats.Health.Current).Within(.0001f));
+            Object.DestroyImmediate(combinedPlayer);
+            Object.DestroyImmediate(splitPlayer);
+        }
+
         private static GameObject CreatePlayer(out PlayerSurvival survival, out SurvivalDecay decay)
         {
             var player = new GameObject("Survival Test Player");

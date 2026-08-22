@@ -9,60 +9,82 @@ namespace PlanetSurvival.Core.Time
     {
         [SerializeField, Min(1f)] private float _realSecondsPerGameDay = 600f;
         [SerializeField, Min(1)] private int _rescueDay = 30;
-
+        [SerializeField, Min(0f)] private float _timeScale = 1f;
+        private GameTimeModel _time;
         private SurvivalDecay _survivalDecay;
-        private int _lastReportedMinute = -1;
 
-        public float ElapsedDays { get; private set; }
-        public int CurrentDay => Mathf.FloorToInt(ElapsedDays) + 1;
-        public int Hour => Mathf.FloorToInt((ElapsedDays % 1f) * 24f);
-        public int Minute => Mathf.FloorToInt((ElapsedDays * 24f * 60f) % 60f);
-        public int RescueDay => _rescueDay;
-        public int DaysUntilRescue => Mathf.Max(0, _rescueDay - CurrentDay);
-        public bool RescueAvailable => CurrentDay >= _rescueDay;
+        public double ElapsedDays => Time.ElapsedDays;
+        public int CurrentDay => Time.CurrentDay;
+        public int Hour => Time.Hour;
+        public int Minute => Time.Minute;
+        public int RescueDay => Time.RescueDay;
+        public int DaysUntilRescue => Time.DaysUntilRescue;
+        public bool RescueAvailable => Time.RescueAvailable;
+        public bool IsPaused => Time.IsPaused;
+        public float TimeScale => (float)Time.TimeScale;
+        public float NormalizedTimeOfDay => Time.NormalizedTimeOfDay;
         public event Action<int> DayChanged;
         public event Action TimeChanged;
+        public event Action<double> Advanced;
 
-        public void Bind(SurvivalDecay survivalDecay)
+        private GameTimeModel Time
         {
-            _survivalDecay = survivalDecay;
+            get { EnsureInitialized(); return _time; }
         }
 
-        public void Configure(float realSecondsPerGameDay, int rescueDay)
+        public void Bind(SurvivalDecay survivalDecay) => _survivalDecay = survivalDecay;
+
+        public void Configure(float realSecondsPerGameDay, int rescueDay, float timeScale = 1f)
         {
             _realSecondsPerGameDay = Mathf.Max(1f, realSecondsPerGameDay);
             _rescueDay = Mathf.Max(1, rescueDay);
+            _timeScale = Mathf.Max(0f, timeScale);
+            ReplaceModel();
         }
 
-        private void Update()
+        public void SetPaused(bool isPaused) => Time.SetPaused(isPaused);
+
+        public void SetTimeScale(float timeScale)
         {
-            Advance(UnityEngine.Time.deltaTime);
+            _timeScale = Mathf.Max(0f, timeScale);
+            Time.SetTimeScale(_timeScale);
         }
+
+        private void Awake() => EnsureInitialized();
+        private void Update() => Advance(UnityEngine.Time.deltaTime);
 
         public void Advance(float elapsedRealSeconds)
         {
-            if (elapsedRealSeconds <= 0f)
+            double elapsedGameHours = Time.Advance(elapsedRealSeconds);
+            if (elapsedGameHours > 0d)
             {
-                return;
-            }
-
-            int previousDay = CurrentDay;
-            float elapsedDays = elapsedRealSeconds / _realSecondsPerGameDay;
-            ElapsedDays += elapsedDays;
-            _survivalDecay?.Tick(elapsedDays * 24f);
-
-            if (CurrentDay != previousDay)
-            {
-                DayChanged?.Invoke(CurrentDay);
-            }
-
-
-            int currentMinute = Mathf.FloorToInt(ElapsedDays * 24f * 60f);
-            if (currentMinute != _lastReportedMinute)
-            {
-                _lastReportedMinute = currentMinute;
-                TimeChanged?.Invoke();
+                _survivalDecay?.Tick((float)elapsedGameHours);
             }
         }
+
+        private void EnsureInitialized()
+        {
+            if (_time == null) ReplaceModel();
+        }
+
+        private void ReplaceModel()
+        {
+            if (_time != null) Unsubscribe(_time);
+            _time = new GameTimeModel(_realSecondsPerGameDay, _rescueDay, _timeScale);
+            _time.DayChanged += ForwardDayChanged;
+            _time.TimeChanged += ForwardTimeChanged;
+            _time.Advanced += ForwardAdvanced;
+        }
+
+        private void Unsubscribe(GameTimeModel time)
+        {
+            time.DayChanged -= ForwardDayChanged;
+            time.TimeChanged -= ForwardTimeChanged;
+            time.Advanced -= ForwardAdvanced;
+        }
+
+        private void ForwardDayChanged(int day) => DayChanged?.Invoke(day);
+        private void ForwardTimeChanged() => TimeChanged?.Invoke();
+        private void ForwardAdvanced(double hours) => Advanced?.Invoke(hours);
     }
 }

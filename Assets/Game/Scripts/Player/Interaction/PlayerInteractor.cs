@@ -15,6 +15,7 @@ namespace PlanetSurvival.Player.Interaction
         private PlayerSurvival _survival;
         private PlayerInventory _inventory;
         private IInteractable _focusedInteractable;
+        private string _lastPrompt = string.Empty;
 
         public string CurrentPrompt => _focusedInteractable?.Prompt ?? string.Empty;
         public event Action<string> PromptChanged;
@@ -78,11 +79,20 @@ namespace PlanetSurvival.Player.Interaction
 
             if (ReferenceEquals(closest, _focusedInteractable))
             {
+                NotifyPromptIfChanged();
                 return;
             }
 
             _focusedInteractable = closest;
-            PromptChanged?.Invoke(CurrentPrompt);
+            NotifyPromptIfChanged();
+        }
+
+        private void NotifyPromptIfChanged()
+        {
+            string prompt = CurrentPrompt;
+            if (prompt == _lastPrompt) return;
+            _lastPrompt = prompt;
+            PromptChanged?.Invoke(prompt);
         }
     }
 }

@@ -1,5 +1,7 @@
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
+using PlanetSurvival.Gathering.Definitions;
+using PlanetSurvival.Gathering.Runtime;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Movement;
@@ -17,12 +19,28 @@ namespace PlanetSurvival.Bootstrap
     public sealed class GameBootstrap : MonoBehaviour
     {
         [SerializeField] private TerrainGenerationSettings _terrainSettings;
+        [SerializeField] private PlanetEnvironmentSettings _environmentSettings;
+        [SerializeField] private ResourceSpawnSettings _resourceSpawnSettings;
 
         private const string RuntimeRootName = "Gameplay Runtime";
 
         public void Configure(TerrainGenerationSettings terrainSettings)
         {
             _terrainSettings = terrainSettings;
+        }
+
+        public void Configure(TerrainGenerationSettings terrainSettings, PlanetEnvironmentSettings environmentSettings)
+        {
+            _terrainSettings = terrainSettings;
+            _environmentSettings = environmentSettings;
+        }
+
+        public void Configure(TerrainGenerationSettings terrainSettings, PlanetEnvironmentSettings environmentSettings,
+            ResourceSpawnSettings resourceSpawnSettings)
+        {
+            _terrainSettings = terrainSettings;
+            _environmentSettings = environmentSettings;
+            _resourceSpawnSettings = resourceSpawnSettings;
         }
 
         private void Start()
@@ -32,6 +50,13 @@ namespace PlanetSurvival.Bootstrap
                 Debug.LogError($"{nameof(GameBootstrap)} on '{name}' requires terrain generation settings.", this);
                 enabled = false;
                 return;
+            }
+
+            if (_environmentSettings == null)
+            {
+                Debug.LogWarning($"{nameof(GameBootstrap)} on '{name}' has no environment settings; runtime defaults will be used.", this);
+                _environmentSettings = ScriptableObject.CreateInstance<PlanetEnvironmentSettings>();
+                _environmentSettings.ConfigureDefaults();
             }
 
             if (GameObject.Find(RuntimeRootName) != null)
@@ -44,10 +69,13 @@ namespace PlanetSurvival.Bootstrap
             GridMap map = new GridTerrainGenerator().Generate(_terrainSettings);
 
             CreateTerrain(root.transform, map);
+            ResourceNodeSpawner.Spawn(root.transform, map, _terrainSettings, _resourceSpawnSettings);
             GameObject player = CreatePlayer(root.transform, map);
             CreateCamera(root.transform, player.transform);
-            CreateLighting(root.transform);
+            Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player.GetComponent<SurvivalDecay>());
+            clock.Configure(_environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay);
+            root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
             CreateHud(root.transform, player, clock);
             BindPlayerDeath(player);
         }
@@ -98,7 +126,7 @@ namespace PlanetSurvival.Bootstrap
             followCamera.SetTarget(target);
         }
 
-        private static void CreateLighting(Transform parent)
+        private static Light CreateLighting(Transform parent)
         {
             var lightObject = new GameObject("Sun");
             lightObject.transform.SetParent(parent);
@@ -107,6 +135,7 @@ namespace PlanetSurvival.Bootstrap
             light.type = LightType.Directional;
             light.intensity = 1.1f;
             light.color = new Color(1f, 0.82f, 0.68f);
+            return light;
         }
 
         private static GameClock CreateClock(Transform parent, SurvivalDecay survivalDecay)

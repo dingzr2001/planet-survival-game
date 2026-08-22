@@ -10,20 +10,28 @@ namespace PlanetSurvival.Inventory.Application
         [SerializeField, Min(0)] private int _totalCapacity = 30;
 
         private PlayerSurvival _survival;
+        private Domain.Inventory _inventory;
+        private QuickBarConfiguration _quickBar;
 
-        public Domain.Inventory Inventory { get; private set; }
-        public QuickBarConfiguration QuickBar { get; private set; }
+        public Domain.Inventory Inventory
+        {
+            get { EnsureInitialized(); return _inventory; }
+        }
+
+        public QuickBarConfiguration QuickBar
+        {
+            get { EnsureInitialized(); return _quickBar; }
+        }
 
         private void Awake()
         {
             _survival = GetComponent<PlayerSurvival>();
-            Inventory = new Domain.Inventory(_totalCapacity);
-            QuickBar = new QuickBarConfiguration(Inventory);
+            EnsureInitialized();
         }
 
         private void OnDestroy()
         {
-            QuickBar?.Dispose();
+            _quickBar?.Dispose();
         }
 
         public InventoryOperationResult Use(string stackId)
@@ -51,6 +59,14 @@ namespace PlanetSurvival.Inventory.Application
             }
 
             return Inventory.Remove(stackId, 1);
+        }
+
+        private void EnsureInitialized()
+        {
+            if (_inventory != null) return;
+            _inventory = new Domain.Inventory(_totalCapacity);
+            _quickBar = new QuickBarConfiguration(_inventory);
+            if (_survival == null) _survival = GetComponent<PlayerSurvival>();
         }
     }
 }

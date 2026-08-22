@@ -39,5 +39,35 @@ namespace PlanetSurvival.Tests
             Assert.That(changes, Is.EqualTo(2));
             Object.DestroyImmediate(gameObject);
         }
+
+        [Test]
+        public void Model_PauseAndTimeScale_ProduceDeterministicElapsedTime()
+        {
+            var oneStep = new GameTimeModel(240d, 30, 2d);
+            var splitSteps = new GameTimeModel(240d, 30, 2d);
+
+            oneStep.Advance(60d);
+            for (int i = 0; i < 60; i++) splitSteps.Advance(1d);
+            splitSteps.SetPaused(true);
+            Assert.That(splitSteps.Advance(100d), Is.Zero);
+
+            Assert.That(splitSteps.ElapsedDays, Is.EqualTo(oneStep.ElapsedDays).Within(0.0000001d));
+            Assert.That(oneStep.ElapsedDays, Is.EqualTo(0.5d).Within(0.0000001d));
+        }
+
+        [Test]
+        public void Model_CrossingSeveralDays_ReportsFinalDayAndAccurateRemainder()
+        {
+            var model = new GameTimeModel(24d, 4);
+            int reportedDay = 0;
+            model.DayChanged += day => reportedDay = day;
+
+            model.Advance(54d);
+
+            Assert.That(model.CurrentDay, Is.EqualTo(3));
+            Assert.That(model.Hour, Is.EqualTo(6));
+            Assert.That(reportedDay, Is.EqualTo(3));
+            Assert.That(model.DaysUntilRescue, Is.EqualTo(1));
+        }
     }
 }
