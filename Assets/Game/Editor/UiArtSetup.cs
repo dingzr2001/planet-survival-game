@@ -21,10 +21,9 @@ namespace PlanetSurvival.Editor
 
         private const int IconMaxSize = 256;
 
-        // Nine-sliced corners are drawn at their source-pixel size, so the frame must import smaller
-        // than the narrowest slot (64 px) or opposing corners would overlap and tear the frame.
+        // The frame is scaled to the slot, so it only needs to cover the widest slot (88 px).
+        // Mipmaps are off, so importing much larger would undersample the fine detail instead.
         private const int SlotBackgroundMaxSize = 128;
-        private const int SlotBorderPixels = 10;
         private const float IconPadding = 7f;
 
         [MenuItem("Planet Survival/Setup UI Art")]
@@ -47,7 +46,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(skin, InventorySkinPath);
             }
 
-            skin.Configure(background, SlotBorderPixels, IconPadding);
+            skin.Configure(background, IconPadding);
             EditorUtility.SetDirty(skin);
             return skin;
         }

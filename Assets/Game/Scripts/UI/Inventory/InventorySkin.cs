@@ -11,10 +11,8 @@ namespace PlanetSurvival.UI.Inventory
     public sealed class InventorySkin : ScriptableObject
     {
         [Header("Slot frame")]
-        [SerializeField, Tooltip("Nine-sliced frame drawn behind every slot.")]
+        [SerializeField, Tooltip("Frame drawn behind every slot. Scaled to the slot, so it should stay square.")]
         private Texture2D _slotBackground;
-        [SerializeField, Min(0), Tooltip("Corner size of the frame in source-texture pixels. These regions are never stretched, so they must stay smaller than half a slot.")]
-        private int _slotBorder = 10;
         [SerializeField, Min(0f), Tooltip("Inset between the frame and the item icon.")]
         private float _iconPadding = 7f;
 
@@ -28,17 +26,15 @@ namespace PlanetSurvival.UI.Inventory
         private Color _selectionColor = new(1f, 0.72f, 0.28f, 1f);
 
         public Texture2D SlotBackground => _slotBackground;
-        public int SlotBorder => _slotBorder;
         public float IconPadding => _iconPadding;
         public Color SlotTint => _slotTint;
         public Color EmptySlotTint => _emptySlotTint;
         public Color HoverTint => _hoverTint;
         public Color SelectionColor => _selectionColor;
 
-        public void Configure(Texture2D slotBackground, int slotBorder, float iconPadding)
+        public void Configure(Texture2D slotBackground, float iconPadding)
         {
             _slotBackground = slotBackground;
-            _slotBorder = Mathf.Max(0, slotBorder);
             _iconPadding = Mathf.Max(0f, iconPadding);
         }
     }

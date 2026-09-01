@@ -311,8 +311,10 @@ namespace PlanetSurvival.UI.Inventory
             Texture2D background = _skin != null ? _skin.SlotBackground : null;
             if (background != null)
             {
-                int border = _skin.SlotBorder;
-                _slotStyle = new GUIStyle { border = new RectOffset(border, border, border, border) };
+                // Slots and the frame art are both square, so the whole texture is simply scaled to
+                // the slot. A nine-sliced border would keep its corners at texture-pixel size and
+                // therefore read far thicker than the source art at these slot sizes.
+                _slotStyle = new GUIStyle();
                 _slotStyle.normal.background = background;
                 _slotStyle.hover.background = background;
                 _slotStyle.active.background = background;

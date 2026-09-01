@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: DefaultInventorySkin
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.UI.Inventory.InventorySkin
   _slotBackground: {fileID: 2800000, guid: 68b755fb774d2487598fad426554f31e, type: 3}
-  _slotBorder: 10
   _iconPadding: 7
   _slotTint: {r: 1, g: 1, b: 1, a: 1}
   _emptySlotTint: {r: 1, g: 1, b: 1, a: 0.45}

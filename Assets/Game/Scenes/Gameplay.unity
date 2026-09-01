@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1063328696
+--- !u!1 &1703286973
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,9 +127,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1063328699}
-  - component: {fileID: 1063328698}
-  - component: {fileID: 1063328697}
+  - component: {fileID: 1703286976}
+  - component: {fileID: 1703286975}
+  - component: {fileID: 1703286974}
   m_Layer: 0
   m_Name: Gameplay
   m_TagString: Untagged
@@ -137,25 +137,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1063328697
+--- !u!114 &1703286974
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1063328696}
+  m_GameObject: {fileID: 1703286973}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01a6e9b03086947dd9d8831121f84bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.UI.Menu.PauseMenuView
---- !u!114 &1063328698
+--- !u!114 &1703286975
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1063328696}
+  m_GameObject: {fileID: 1703286973}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70e5a86b73a75480bb8a495e8b54059a, type: 3}
@@ -165,13 +165,13 @@ MonoBehaviour:
   _environmentSettings: {fileID: 11400000, guid: ce17d64772b99412ea45ed8dce4a7395, type: 2}
   _resourceSpawnSettings: {fileID: 11400000, guid: fde790a1d87b64413abeaa93da10d0a1, type: 2}
   _inventorySkin: {fileID: 11400000, guid: 7fe99bd02031d4e54bdc9d95b1551611, type: 2}
---- !u!4 &1063328699
+--- !u!4 &1703286976
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1063328696}
+  m_GameObject: {fileID: 1703286973}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -184,4 +184,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1063328699}
+  - {fileID: 1703286976}
