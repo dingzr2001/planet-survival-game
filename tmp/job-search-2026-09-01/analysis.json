@@ -1,0 +1,2922 @@
+[
+  {
+    "company": "Zoox",
+    "title": "Embedded Software Engineer - Drive Systems",
+    "location": "Foster City, CA",
+    "job_url": "https://jobs.lever.co/zoox/ea3fbfaf-588b-434a-9a5a-c61edc731a40",
+    "job_id": "ea3fbfaf-588b-434a-9a5a-c61edc731a40",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.lever.co/zoox/ea3fbfaf-588b-434a-9a5a-c61edc731a40",
+    "http_status": 200,
+    "page_chars": 10284,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Whatnot",
+    "title": "Software Engineer, 2027 New Grad",
+    "location": "New York City, NY",
+    "job_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930",
+    "job_id": "29bad846-de60-4be7-a222-69b97e044930",
+    "posted_date": "2026-09-01",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy",
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930",
+    "http_status": 200,
+    "page_chars": 17708,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      ", and respect the different skills and experiences represented within our workforce. \",\"secondaryLocationNames\":[\"San Francisco, CA\",\"Los Angeles, CA\",\"Seattle, WA\"],\"teamNames\":[\"Early Career\",\"Engineering New Grads\"],\"compensationTierSummary\":\"$155K – $160K • Offers Equity\",\"compensationTiers\":[{\"id\":\"3b5b0841-f1c3-47a9-b59c-52a05213eeb2\",\"title\":null,\"tierSummary\":\"$155K – $160K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary\":\"$155K - $160K\",\"compensationPhilosophyHtml\":\" The salary or hourly rate range may be inclusive of seve",
+      "rads\"],\"compensationTierSummary\":\"$155K – $160K • Offers Equity\",\"compensationTiers\":[{\"id\":\"3b5b0841-f1c3-47a9-b59c-52a05213eeb2\",\"title\":null,\"tierSummary\":\"$155K – $160K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary\":\"$155K - $160K\",\"compensationPhilosophyHtml\":\" The salary or hourly rate range may be inclusive of several levels that would be applicable to the position. Final salary or hourly rate will be based on a number of factors including, le"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "re more about outcomes than credit and stay close to the product and the people using it. As our next Engineer you should have some industry software engineering experience, plus: Graduated with a CS or Software Engineering degree by Summer 2027 Problem solver and out-of-the-box thinker Willing to take risks and build product and systems for 1M+ users Capable of building scalable systems Excellent product instincts. You f"
+    ],
+    "start_snippets": [
+      "he product and the people using it. As our next Engineer you should have some industry software engineering experience, plus: Graduated with a CS or Software Engineering degree by Summer 2027 Problem solver and out-of-the-box thinker Willing to take risks and build product and systems for 1M+ users Capable of building scalable systems Excellent product instincts. You f"
+    ]
+  },
+  {
+    "company": "Walt Disney",
+    "title": "Software Engineer I",
+    "location": "Glendale, CA, USA",
+    "job_url": "https://disney.wd5.myworkdayjobs.com/job/Glendale-CA-USA/Software-Engineer-I_10158076-2",
+    "job_id": "10158076",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://disney.wd5.myworkdayjobs.com/job/Glendale-CA-USA/Software-Engineer-I_10158076-2",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Textron",
+    "title": "Software Engineer 1 - Electronic Systems",
+    "location": "Hunt Valley, Cockeysville, MD",
+    "job_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666",
+    "http_status": 200,
+    "page_chars": 186336,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ect:text;%22 data-contrast=%22none%22 xml:lang=%22EN-US%22 lang=%22EN-US%22 data-ccp-parastyle=%22No Spacing%22%3EThis position requires an individual to be a U.S citizen with the ability to obtain a security clearance%3C/span%3E%3Cspan class=%22EOP SCXW222195141 BCX0%22 style=%22-webkit-tap-highlight-color:transparent;-webkit-user-drag:none;line-height:18px;margin:0px;padding:0px;user-select:te"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer New Grad",
+    "location": "Toronto, ON, Canada",
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "job_id": "8157838",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8157838?gh_jid=8157838",
+    "http_status": 200,
+    "page_chars": 125137,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ring manager will discuss. This approach helps strike a balance between bringing people together for in-person collaboration and learning from each other, while supporting flexibility when possible. Pay and benefits The annual salary range for this role in the primary location is CA$106,400 - CA$159,600. This range may change if you are hired in another location. For sales roles, the range provided is the role’s On Target Earnings (“OTE”) range, meaning that the range includes both the sales commissions/sales bonuses t"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "measured risks and act boldly, even in the absence of consensus. Minimum requirements A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). Experience and familiarity wit",
+      "red risks and act boldly, even in the absence of consensus. ### Minimum requirements * A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). * Experience and familiarity w"
+    ]
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer New Grad",
+    "location": "London, UK",
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8130930",
+    "job_id": "8130930",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8130930?gh_jid=8130930",
+    "http_status": 200,
+    "page_chars": 125245,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "measured risks and act boldly, even in the absence of consensus. Minimum requirements A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). Experience and familiarity wit",
+      "red risks and act boldly, even in the absence of consensus. ### Minimum requirements * A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). * Experience and familiarity w"
+    ]
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer - New Grad",
+    "location": "San Francisco, CA",
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "job_id": "8128744",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "$207k/yr",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8128744?gh_jid=8128744",
+    "http_status": 200,
+    "page_chars": 125373,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "er will discuss. This approach helps strike a balance between bringing people together for in-person collaboration and learning from each other, while supporting flexibility when possible. Pay and benefits The annual US base salary range for this role is $122,100 - $134,400. For sales roles, the range provided is the role’s On Target Earnings (\"OTE\") range, meaning that the range includes both the sales commissions/sales bonuses target and annual base salary for the role. This salary range"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "measured risks and act boldly, even in the absence of consensus. Minimum requirements A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). Experience and familiarity wit",
+      "red risks and act boldly, even in the absence of consensus. ### Minimum requirements * A Bachelor’s or Master’s degree in computer science or a directly related field, obtained by summer 2027, or equivalent work experience; New grad candidates should have no more than 18 months of professional experience (excluding internship experience). * Experience and familiarity w"
+    ]
+  },
+  {
+    "company": "Space Dynamics Laboratory",
+    "title": "Software Engineer",
+    "location": "North Logan, UT",
+    "job_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer",
+    "http_status": 200,
+    "page_chars": 90754,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "itizen Non-Immigrant Temporary or Student Worker (EAD) Not Currently Authorized to Work in the US Asylee and/or Refugee Are you able to obtain a US Government Security Clearance? (US citizenship is required) For additional information about obtaining a Security Clearance, please visit this link: https://www.state.gov/security-clearances * -- No answer -- YES NO I understand and agree"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "s data visualization techniques Experience or interest in developing algorithms for large datasets (100 GB - 10 TB) Experience or interest in real-time software development (robotics, avionics, industrial safety, etc.) *Salary Range $70,000 - $105,000 Salary commensurate on education and relevant experience This range serves as a general guideline and may vary based on factors such as role, level, location, market conditions, and individual qualifications, including",
+      "/ data visualization techniques Experience or interest in developing algorithms for large datasets (100 GB - 10 TB) Experience or interest in real-time software development (robotics, avionics, industrial safety, etc.) *Salary Range $70,000 - $105,000 Salary commensurate on education and relevant experience This range serves as a general guideline and may vary based on factors such as role, level, location, market conditions, and individual qualifications, including"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Sierra",
+    "title": "Software Engineer - Agent - New Grad 2027",
+    "location": "San Francisco, CA +1",
+    "job_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00",
+    "job_id": "149f368c-52d5-408f-ba26-ad888f318a00",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00",
+    "http_status": 200,
+    "page_chars": 22155,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "us, pregnancy, gender expression or identity, sexual orientation, citizenship, or any other legally protected class. \",\"secondaryLocationNames\":[\"New York, NY\"],\"teamNames\":[\"Early Career\",\"Agent Engineering New Grad\"],\"compensationTierSummary\":\"$150K – $180K • Offers Equity\",\"compensationTiers\":[{\"id\":\"e18a9884-d4d6-4a5d-b263-f528157e2e73\",\"title\":null,\"tierSummary\":\"$150K – $180K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary\":\"$150K - $180K\",\"compensationPhilosophyHtml\":null,\"applicationLimitCalloutHtml\":\" Please Note: You will",
+      "Grad\"],\"compensationTierSummary\":\"$150K – $180K • Offers Equity\",\"compensationTiers\":[{\"id\":\"e18a9884-d4d6-4a5d-b263-f528157e2e73\",\"title\":null,\"tierSummary\":\"$150K – $180K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary\":\"$150K - $180K\",\"compensationPhilosophyHtml\":null,\"applicationLimitCalloutHtml\":\" Please Note: You will be limited to submitting one application for a new grad role. We ask that you select the role that you are most interested in. Tha"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "SharkNinja",
+    "title": "Associate Product Developer - Ninja APAC",
+    "location": "Needham, MA",
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006",
+    "job_id": "4703760006",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006",
+    "http_status": 200,
+    "page_chars": 39391,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "rance, generous paid time off, company holidays, parental leave, identity theft protection, pet insurance, pre-paid legal insurance, back-up child and eldercare days, product discounts, referral bonus program, and more. Pay Range $56,300 - $80,000 USD Our Culture At SharkNinja, we don’t just raise the bar—we push past it every single day. Our Outrageously Extraordinary mindset drives us to tackle the impossible, push boundaries, and deliver results that others on"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "learning from each decision and focusing on the path forward. Salary and Other Compensation: The annual salary range for this position is displayed below. Factors which may affect starting pay within this range may include geography/market, skills, education, experience and other qualifications of the successful candidate. The Company offers the following benefits f",
+      "ion Team \",\"pay_ranges\":[{\"title\":\"Pay Range\",\"description\":\" Salary and Other Compensation: The annual salary range for this position is displayed below. Factors which may affect starting pay within this range may include geography/market, skills, education, experience and other qualifications of the successful candidate. The Company offers the following benefits f"
+    ]
+  },
+  {
+    "company": "SharkNinja",
+    "title": "Associate Product Developer - Indoor Heated",
+    "location": "Needham, MA",
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006",
+    "job_id": "4702969006",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006",
+    "http_status": 200,
+    "page_chars": 39230,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "rance, generous paid time off, company holidays, parental leave, identity theft protection, pet insurance, pre-paid legal insurance, back-up child and eldercare days, product discounts, referral bonus program, and more. Pay Range $56,300 - $75,000 USD Our Culture At SharkNinja, we don’t just raise the bar—we push past it every single day. Our Outrageously Extraordinary mindset drives us to tackle the impossible, push boundaries, and deliver results that others on"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "learning from each decision and focusing on the path forward. Salary and Other Compensation: The annual salary range for this position is displayed below. Factors which may affect starting pay within this range may include geography/market, skills, education, experience and other qualifications of the successful candidate. The Company offers the following benefits f",
+      "ion Team \",\"pay_ranges\":[{\"title\":\"Pay Range\",\"description\":\" Salary and Other Compensation: The annual salary range for this position is displayed below. Factors which may affect starting pay within this range may include geography/market, skills, education, experience and other qualifications of the successful candidate. The Company offers the following benefits f"
+    ]
+  },
+  {
+    "company": "Sentrilock LLC",
+    "title": "Software Engineer I - Cloud Engineer",
+    "location": "West Chester, OH",
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683",
+    "job_id": "4445683",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683",
+    "http_status": 200,
+    "page_chars": 11535,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "STR",
+    "title": "Associate Software Reverse Engineer",
+    "location": "Woburn, MA",
+    "job_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006",
+    "job_id": "4704646006",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006",
+    "http_status": 200,
+    "page_chars": 33861,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "challenging targets Documenting, demonstrating, and presenting research Solving real world problems that have an impact on national security Who you are: This position requires an Active Top Secret (TS) security clearance , for which U.S. citizenship is needed by the U.S. Government BS, MS or PhD in Computer Science, Computer Engineering, Cybersecurity or related field (or equivalent work experienc"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ctures and formats Experience analyzing protocols or message structures Knowledge of anti-reverse engineering techniques Knowledge of intrusion detection and anti-malware systems and techniques Pay Information Full-Time Salary Range: $91,000 - $125,000 The salary range listed is based on external market data. Offers are based on factors, such as but not limited to, the candidate’s experience, education, training, key skills/critical skills, security clearances, and pr"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineering – Systems Engineer I (Onsite)",
+    "location": "US-AL-HUNTSVILLE-401 ~ 401 Jan Davis Dr NW ~ JAN DAVIS 401",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-AL-HUNTSVILLE-401--401-Jan-Davis-Dr-NW--JAN-DAVIS-401/Systems-Engineering---Systems-Engineer-I--Onsite-_01870661",
+    "job_id": "01870661",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-AL-HUNTSVILLE-401--401-Jan-Davis-Dr-NW--JAN-DAVIS-401/Systems-Engineering---Systems-Engineer-I--Onsite-_01870661",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineer I",
+    "location": "US-MA-MARLBOROUGH-MA1 ~ 1001 Boston Post Rd ~ BLDG 1",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA1--1001-Boston-Post-Rd--BLDG-1/Systems-Engineer-I_01866673",
+    "job_id": "01866673",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA1--1001-Boston-Post-Rd--BLDG-1/Systems-Engineer-I_01866673",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "System Engineer I",
+    "location": "US-MA-TEWKSBURY-TB2 ~ 50 Apple Hill Dr ~ SUDBURY BLDG, Tewksbury Tb2 200 Sudbury",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-TEWKSBURY-TB2--50-Apple-Hill-Dr--SUDBURY-BLDG-Tewksbury-Tb2-200-Sudbury/System-Engineer-I_01866674",
+    "job_id": "01866674",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-TEWKSBURY-TB2--50-Apple-Hill-Dr--SUDBURY-BLDG-Tewksbury-Tb2-200-Sudbury/System-Engineer-I_01866674",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I (Onsite)",
+    "location": "US-MA-MARLBOROUGH-MA2 ~ 1001 Boston Post Rd ~ BLDG 2",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA2--1001-Boston-Post-Rd--BLDG-2/Software-Engineer-I--Onsite-_01861525",
+    "job_id": "01861525",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA2--1001-Boston-Post-Rd--BLDG-2/Software-Engineer-I--Onsite-_01861525",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "RTX",
+    "title": "Software Engineer 1",
+    "location": "Cambridge, MAArlington County, Arlington, VA",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647",
+    "job_id": "01870647",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647",
+    "http_status": 200,
+    "page_chars": 12628,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "sition Role Type: Hybrid U.S. Citizen, U.S. Person, or Immigration Status Requirements: The ability to obtain and maintain a U.S. government issued security clearance is required. U.S. citizenship is required, as only U.S. citizens are eligible for a security clearance Security Clearance Type: DoD Clearance: Top Secret Security Clearance Status: Active and existing security clearance r"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "Qualifications You Must Have: Bachelor’s degree in Electrical Engineering, Computer Engineering or related Science, Technology, Engineering or Mathematics (STEM) major obtained by start date. Proficiency in Java, Python, and/or C++ Strong problem solving and analytical skills Excellent written and verbal communication skills Ability to problem solve and autonomously t"
+    ]
+  },
+  {
+    "company": "Johns Hopkins Applied Physics Laboratory",
+    "title": "Software Developer New Grad - Engagement Optimization",
+    "location": "Laurel, MD",
+    "job_url": "https://careers.jhuapl.edu/jobs/59510?icims=1",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://careers.jhuapl.edu/jobs/59510?icims=1",
+    "http_status": 200,
+    "page_chars": 376221,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. About Us Why Work at APL? The Johns Hopkins University Applied Physics Laboratory (APL) brings world-class expertise to our nation’s most critical defense, security, space and sc",
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. \",\"responsibilities\":\" Are you invested in applying analytical methods and modeling and simulation tools to solve critical defense challenges? Are you eager to join a highly coll",
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. \",\"hiring_organization\":\"Johns Hopkins Applied Physics Laboratory\",\"responsibilities\":\" Are you invested in applying analytical methods and modeling and simulation tools to solve"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "be.models.jobs && window._jibe.models.jobs.searchImpression){ var eventData = window._jibe.models.jobs.searchImpression.allFilterTerms; } return { event: event, content_type:'2027 Graduate - Software Developer - Engagement Optimization' ? '2027 Graduate - Software Developer - Engagement Optimization' : '', // The name of the job title the user clicks on ex. Finance Manager, Risk Analyst item_id: '59510' ? '59510' : '', /",
+      ",\"update_date\":\"2026-09-01T20:07:48+0000\",\"create_date\":\"2026-09-01T16:54:54+0000\"},\"jobFormatted\":{\"categories\":\"Software Development\",\"location\":\"Laurel, Maryland\",\"title\":\"2027 Graduate - Software Developer - Engagement Optimization\",\"seo_title\":[\"Software+Development\",\"Laurel%2C+Maryland\",\"2027+Graduate+-+Software+Developer+-+Engagement+Optimization\"],\"description\":\"Description Are you invested in applying analytical methods and modeling and simulation tools to solve cri",
+      "\"update_date\":\"2026-09-01T20:07:48+0000\",\"create_date\":\"2026-09-01T16:54:54+0000\"},\"formattedData\":{\"categories\":\"Software Development\",\"location\":\"Laurel, Maryland\",\"title\":\"2027 Graduate - Software Developer - Engagement Optimization\",\"seo_title\":[\"Software+Development\",\"Laurel%2C+Maryland\",\"2027+Graduate+-+Software+Developer+-+Engagement+Optimization\"],\"description\":\"Description Are you invested in applying analytical methods and modeling and simulation tools to solve cri"
+    ],
+    "start_snippets": [
+      "++ and Python. Are proficient in using software revision control tools while working in a DevOps environment. Are able to obtain an Interim Secret level security clearance by your start date and can ultimately obtain a Final Secret level clearance. If selected, you will be subject to a government security clearance investigation and must meet the requirements for acce",
+      "k History\",\"UPLOAD_TITLE\":\"Upload a resume\",\"JOB_SEARCH\":\"Job Search\",\"PRIVACY_DISCLAIMER\":\"Data Privacy Notice\",\"RECOMMENDATIONS_NONE_PARA\":\"Try using different match criteria or starting a new search? Try searching without your profile.\",\"RESUME_UPLOADED\":\"Resume Uploaded\",\"EDUCATION_HISTORY\":\"Education History\",\"PRIVACY_ERROR\":\"You must acknowledge this message t",
+      "Y_WITH_COVER_LETTER\":\"Apply With Cover Letter\",\"LIST\":{\"NO_FILES\":\"No documents\"},\"EMAIL_RESUME_TEMPLATE\":{\"SUBJECT\":\"Your job application isn't complete!\",\"BODY\":\" Hi, Thanks for starting your application to {{companyName}}. To complete your application you must do one of the following: Forward an email from your mobile device with your resume attached to {{fromEma"
+    ]
+  },
+  {
+    "company": "Johns Hopkins Applied Physics Laboratory",
+    "title": "Software Developer 2027 Graduate - Tactical System Prototyping and Deployment",
+    "location": "Laurel, MD",
+    "job_url": "https://careers.jhuapl.edu/jobs/59558?icims=1",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://careers.jhuapl.edu/jobs/59558?icims=1",
+    "http_status": 200,
+    "page_chars": 379757,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "be.models.jobs && window._jibe.models.jobs.searchImpression){ var eventData = window._jibe.models.jobs.searchImpression.allFilterTerms; } return { event: event, content_type:'2027 Graduate - Software Developer - Tactical System Prototyping and Deployment' ? '2027 Graduate - Software Developer - Tactical System Prototyping and Deployment' : '', // The name of the job title the user clicks on ex. Finance Manager, Risk Analyst item_id: '59558",
+      "pl\"},\"update_date\":\"2026-09-01T20:07:50+0000\",\"create_date\":\"2026-09-01T16:54:55+0000\"},\"jobFormatted\":{\"categories\":\"Computer Science\",\"location\":\"Laurel, Maryland\",\"title\":\"2027 Graduate - Software Developer - Tactical System Prototyping and Deployment\",\"seo_title\":[\"Computer+Science\",\"Laurel%2C+Maryland\",\"2027+Graduate+-+Software+Developer+-+Tactical+System+Prototyping+and+Deployment\"],\"description\":\"Description Do you have an interest in developing software for new warfighter capabilit",
+      "l\"},\"update_date\":\"2026-09-01T20:07:50+0000\",\"create_date\":\"2026-09-01T16:54:55+0000\"},\"formattedData\":{\"categories\":\"Computer Science\",\"location\":\"Laurel, Maryland\",\"title\":\"2027 Graduate - Software Developer - Tactical System Prototyping and Deployment\",\"seo_title\":[\"Computer+Science\",\"Laurel%2C+Maryland\",\"2027+Graduate+-+Software+Developer+-+Tactical+System+Prototyping+and+Deployment\"],\"description\":\"Description Do you have an interest in developing software for new warfighter capabilit"
+    ],
+    "start_snippets": [
+      "uding underway on US Navy ships and aircraft requiring work outside of and in excess of normal working hours. Are able to obtain an Interim Secret level security clearance by your start date and ultimately obt ain a final Secret level security clearance. If selected, you will be subject to a government security clearance investigation and must meet the requirements fo",
+      "k History\",\"UPLOAD_TITLE\":\"Upload a resume\",\"JOB_SEARCH\":\"Job Search\",\"PRIVACY_DISCLAIMER\":\"Data Privacy Notice\",\"RECOMMENDATIONS_NONE_PARA\":\"Try using different match criteria or starting a new search? Try searching without your profile.\",\"RESUME_UPLOADED\":\"Resume Uploaded\",\"EDUCATION_HISTORY\":\"Education History\",\"PRIVACY_ERROR\":\"You must acknowledge this message t",
+      "Y_WITH_COVER_LETTER\":\"Apply With Cover Letter\",\"LIST\":{\"NO_FILES\":\"No documents\"},\"EMAIL_RESUME_TEMPLATE\":{\"SUBJECT\":\"Your job application isn't complete!\",\"BODY\":\" Hi, Thanks for starting your application to {{companyName}}. To complete your application you must do one of the following: Forward an email from your mobile device with your resume attached to {{fromEma"
+    ]
+  },
+  {
+    "company": "InterSystems",
+    "title": "Software Engineer Rotational Program - Early Career",
+    "location": "Boston, MA",
+    "job_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003",
+    "job_id": "7827894003",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003",
+    "http_status": 200,
+    "page_chars": 36053,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "luding: Medical, vision, and dental insurance Short-term and long-term disability, and life insurance 401(k) Profit Sharing Contribution Paid Time Off and Holidays Parental Leave Tuition reimbursement The estimated base compensation range for this role is: $100,000 - $125,000 USD About InterSystems InterSystems, a creative data technology provider, delivers a unified foundation for next-generation applications for healthcare, finance, manufacturing, and supply chain customers in more than 80"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "IXL Learning",
+    "title": "Software Engineer - New Grad",
+    "location": "San Mateo, CA",
+    "job_url": "https://www.ixl.com/company/jobs?gh_jid=8765715002",
+    "job_id": "8765715002",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.ixl.com/company/careers?gh_jid=8765715002",
+    "http_status": 200,
+    "page_chars": 9951,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ge of Unix, Python, Java, SQL, or JavaScript is a plus&lt; li&gt; &lt;li&gt;Passion for improving education through technology&lt; li&gt; &lt; ul&gt; &lt;p&gt;&lt;span style=&quot;font-size: 10pt;&quot;&gt;&lt;em&gt;The base salary range for this full-time position is $110,000 to $135,000 + equity + benefits. Our pay ranges are determined by role, level, and location. The range displayed on each job posting reflects the minimum and maximum target for new hire salaries for the position. Individual pay is"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "IXL Learning",
+    "title": "Software Engineer - New Grad",
+    "location": "Raleigh-Durham, NC +1",
+    "job_url": "https://www.ixl.com/company/jobs?gh_jid=8765745002",
+    "job_id": "8765745002",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.ixl.com/company/careers?gh_jid=8765745002",
+    "http_status": 200,
+    "page_chars": 9880,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ge of Unix, Python, Java, SQL, or JavaScript is a plus&lt; li&gt; &lt;li&gt;Passion for improving education through technology&lt; li&gt; &lt; ul&gt; &lt;p&gt;&lt;span style=&quot;font-size: 10pt;&quot;&gt;&lt;em&gt;The base salary range for this full-time position is $110,000 to $135,000 + equity + benefits. Our pay ranges are determined by role, level, and location. The range displayed on each job posting reflects the minimum and maximum target for new hire salaries for the position. Individual pay is"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "IXL Learning",
+    "title": "Software Developer New Grad - Integrations",
+    "location": "Toronto, ON, Canada",
+    "job_url": "https://www.ixl.com/company/jobs?gh_jid=8765751002",
+    "job_id": "8765751002",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.ixl.com/company/careers?gh_jid=8765751002",
+    "http_status": 200,
+    "page_chars": 10347,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "SQL, JavaScript, CSS, React, Linux, and Git is a plus&lt; li&gt; &lt;li&gt;Passion for improving education through technology&lt; li&gt; &lt; ul&gt; &lt;p&gt;&lt;span style=&quot;font-size: 10pt;&quot;&gt;&lt;em&gt;The base salary range for this full-time position is $90,000 to $92,000 CAD + benefits. Our pay ranges are determined by role, level, and location. The range displayed on each job posting reflects the minimum and maximum target for new hire pay for the position. Individual pay is determined"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Huntington Ingalls Industries",
+    "title": "Software Engineer 1 - CVN 21 Design",
+    "location": "Newport News, VA",
+    "job_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors",
+    "http_status": 200,
+    "page_chars": 11151,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "Start Please wait... ENGINEER SOFTWARE 1 Location: Newport News, Virginia, United States Date: Aug 31, 2026 Req ID: 48914 Team: E79 CVN 21 DESIGN Entity: Newport News Shipbuilding US Citizenship Required for this Position: Yes Full-Time Shift: 1st Relocation: Relocation assistance will be available Virtual/Telework Opportunity: No - Not eligible for telework Travel Requirements: N"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "Yes Full-Time Shift: 1st Relocation: Relocation assistance will be available Virtual/Telework Opportunity: No - Not eligible for telework Travel Requirements: No Clearance Required: No - Clearance Not Required to Start ​Salary Range: $69,000.00 to $86,000.00 The anticipated salary range represents the estimated base pay for this role. Final compensation will be determined based on experience, qualifications, and other job-related factors, and may vary from the posted range"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Harris",
+    "title": "Associate AI Assisted Software Developer",
+    "location": "Remote - Idaho",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Remote---Idaho/Associate-AI-Assisted-Software-Developer_R0046480-2",
+    "job_id": "R0046480-2",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Remote---Idaho/Associate-AI-Assisted-Software-Developer_R0046480-2",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Google",
+    "title": "Software Engineer",
+    "location": "Mountain View, CA",
+    "job_url": "https://www.google.com/about/careers/applications/jobs/results/106684387621249734",
+    "job_id": "106684387621249734",
+    "posted_date": "2026-09-01",
+    "age_days": 1,
+    "salary": "$196k/yr",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://www.google.com/about/careers/applications/jobs/results/106684387621249734",
+    "http_status": 200,
+    "page_chars": 178465,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      ". We are pushing the boundaries across multiple domains. Our global teams offer diverse learning opportunities and varied career pathways for those driven to achieve exceptional results through collective effort. The US base salary range for this full-time position is $149,400 - $175,000 + 15% bonus target + equity + benefits determined by role, level, and location. Individual pay is determined by additional factors, including job-related skills, experience, and relevant education or training. Learn mor",
+      "ls that help developers build more sustainably. Customers in more than 200 countries and territories turn to Google Cloud as their trusted partner to enable growth and solve their most critical business problems. The US base salary range for this full-time position is $138,000 - $201,000 + 15% bonus target + equity + benefits determined by role, level, and location. Individual pay is determined by additional factors, including job-related skills, experience, and relevant education or training. Learn mor"
+    ],
+    "match_signal": "SKIP",
+    "experience_snippets": [
+      "l Writing, English, Computer Science, Information Technology or a related field, and 4 years of experience in the job offered or in a Technical Writer-related occupation. Position requires 4 years of experience in the following: Writing accurate, clear, concise, and well-organized technical content (developer documentation, Computer Science course material, or IT administration playbooks"
+    ],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Generalmotors",
+    "title": "Entry Level Software Engineer",
+    "location": "2 Locations",
+    "job_url": "https://generalmotors.wd5.myworkdayjobs.com/job/Milford-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618501",
+    "job_id": "JR-202618501",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://generalmotors.wd5.myworkdayjobs.com/job/Milford-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618501",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "General Motors",
+    "title": "Entry Level Software Engineer",
+    "location": "Milford, MIWarren, MI",
+    "job_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756",
+    "job_id": "JR-202618756",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756",
+    "http_status": 200,
+    "page_chars": 13388,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "th data storage solutions, databases, and data processing framework Ability to translate business questions into data-driven solutions Experience building AI/ML based solutions GM does not provide immigration-related sponsorship for this role. Do not apply for this role if you will need GM immigration sponsorship now or in the future. This includes direct company sponsorship, entry of GM as the immigr"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Everlaw",
+    "title": "Software Engineer I",
+    "location": "Oakland, CA",
+    "job_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006",
+    "job_id": "4705236006",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006",
+    "http_status": 200,
+    "page_chars": 43193,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "g strategic thinking and a collaborative approach to solving complex technical problems. You are authorized to work in the United States. Please note that at this time, Everlaw is not sponsoring U.S. employment visas for this role. Bonus points You are familiar with Linux operating systems and environments. You have hands-on experience using Git or a similar version contr"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "balancing technical power with a remarkably intuitive experience, Engineering builds systems that help legal teams find the truth in mountains of evidence faster and with greater confidence. Total Rewards & Benefits The base salary for this role is $140,000 per year. This role is also eligible for equity and the benefits below. Health & well-being Comprehensive medical, dental, and vision coverage Flexible Spending Accounts for health and dependent care expenses Membership to Moder"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "EvenUp",
+    "title": "Software Engineer (New Grad), Data Products",
+    "location": "San Francisco, CA / Toronto, ON",
+    "job_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "job_id": "41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "$130,000/year base (San Francisco); CA$113,000/year base (Toronto)",
+    "flags": "",
+    "sources": [
+      "Jobright"
+    ],
+    "discovery_url": "https://jobright.ai/jobs/new-grad-2027---software-engineering-jobs-in-united-states",
+    "aggregator_only": false,
+    "final_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "http_status": 200,
+    "page_chars": 18677,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "minate based on race, religion, color, national origin, gender, sexual orientation, age, marital status, veteran status, or disability status. \",\"secondaryLocationNames\":[\"Toronto (hybrid)\"],\"teamNames\":[\"Engineering\"],\"compensationTierSummary\":\"$130K • Offers Equity • Multiple Ranges\",\"compensationTiers\":[{\"id\":\"55d1adbf-64bf-4638-b03a-5a36e1277718\",\"title\":\"San Francisco\",\"tierSummary\":\"$130K • Offers Equity\"},{\"id\":\"d0027240-a233-437e-bf25-7fe02bbcb2e4\",\"title\":\"Toronto \",\"tierSummary\":\"CA$113K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary",
+      "638-b03a-5a36e1277718\",\"title\":\"San Francisco\",\"tierSummary\":\"$130K • Offers Equity\"},{\"id\":\"d0027240-a233-437e-bf25-7fe02bbcb2e4\",\"title\":\"Toronto \",\"tierSummary\":\"CA$113K • Offers Equity\"}],\"applicationDeadline\":null,\"compensationTierGuideUrl\":null,\"scrapeableCompensationSalarySummary\":\"$130K\",\"compensationPhilosophyHtml\":\" The salary range provided reflects the compensation that EvenUp reasonably expects to offer for this role. The specific salary within this range will be determined based on various factor"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Esri",
+    "title": "Software Development Engineer I - ArcGIS Hub",
+    "location": "Redlands, CA +2",
+    "job_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007",
+    "job_id": "5225186007",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007",
+    "http_status": 200,
+    "page_chars": 7084,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ange for this role take into account many factors including but not limited to skill sets; experience and training; licensure and certifications; and other business and organizational needs. A reasonable estimate of the base salary range is $79,040 - $133,016 USD About Esri At Esri, diversity is more than just a word on a map. When employees of different experiences, perspectives, backgrounds, and cultures come together, we are more innovative and ultimately a better place t"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "DV Trading",
+    "title": "2027 Graduate Software Engineer - DV Commodities",
+    "location": "New York City, NY",
+    "job_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005",
+    "job_id": "4719126005",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005",
+    "http_status": 200,
+    "page_chars": 62146,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "cation, skills, and performance throughout the interview process. This role is also eligible for a discretionary bonus (at DV Trading's discretion) and DV Trading's benefits package, including the benefits listed above. Base Salary Range $135,000 - $150,000 USD Apply for this job * indicates a required field Autofill my application First Name * Last Name * Preferred First Name Email * Phone Country * Phone * Resume/CV * Attach Attach Dropbox Google Drive Enter manually Ent"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "Job Application for 2027 Graduate Software Engineer (DV Commodities) at DV Trading 2027 Graduate Software Engineer (DV Commodities) New York Apply Now About Us : Founded more than 15 years ago and headquartered in Chicago, the DV Group of financial services firms has",
+      "ership of your code: apply engineering judgment across the entire lifecycle, from design and edge case handling through deployment and production support Requirements: Expected to graduate with a degree in Computer Science, Computer Engineering, or related field by Summer 2027 Experience programming in either C++ and/or Python in Linux environments, ideally on quantitative or latency-sensitive problems Accelerate development with AI tools while fully ow",
+      "m your expected graduation date\",\"description\":null,\"fields\":[{\"name\":\"question_8969860005\",\"type\":\"multi_value_single_select\",\"values\":[{\"value\":23854105005,\"label\":\"I've already graduated\"},{\"value\":23854106005,\"label\":\"August 2026 - December 2026\"},{\"value\":23854107005,\"label\":\"January 2027 - July 2027\"},{\"value\":23854108005,\"label\":\"August 2027 - December 2027\"},{\"value\":23854109005,\"label\":\"January 2028 - July 2028\"},{\"value\":23854110005,\"label\":\"August 2028 - December 2028\"},{\"value\":23854111005,\"label\":\"After January 2029\"}]}],\"multi"
+    ],
+    "start_snippets": [
+      "gn and edge case handling through deployment and production support Requirements: Expected to graduate with a degree in Computer Science, Computer Engineering, or related field by Summer 2027 Experience programming in either C++ and/or Python in Linux environments, ideally on quantitative or latency-sensitive problems Accelerate development with AI tools while fully ow",
+      "tach Attach Dropbox Google Drive Enter manually Enter manually Accepted file types: pdf, doc, docx, txt, rtf Education School * Select... Degree * Select... Discipline * Select... Start date month * Select... Start date year * End date month * Select... End date year * Add another LinkedIn Profile Please re-confirm the university you currently attend * Select... Pleas",
+      "ive Enter manually Enter manually Accepted file types: pdf, doc, docx, txt, rtf Education School * Select... Degree * Select... Discipline * Select... Start date month * Select... Start date year * End date month * Select... End date year * Add another LinkedIn Profile Please re-confirm the university you currently attend * Select... Please re-confirm your expected gr"
+    ]
+  },
+  {
+    "company": "Clera",
+    "title": "Software Engineer - AI & Data Systems",
+    "location": "San Francisco, CA",
+    "job_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139",
+    "job_id": "431bb19f-3118-4184-9fc9-65179adbb139",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139",
+    "http_status": 200,
+    "page_chars": 10650,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ntity resolution, data enrichment, or entity-matching systems is a plus. Comfortable using modern AI development tools aggressively while maintaining sound engineering judgment. Available to start by mid-September 2026. Compensation & Benefits Salary range: $200,000 – $280,000 USD annually. Visa sponsorship is not available for this role. Location This is a full-time, on-site role based in San Francisco, California . \",\"directApply\":false,\"identifier\":{\"@type\":\"PropertyValue\",\"name\":\"Clera\",\"",
+      "ntity resolution, data enrichment, or entity-matching systems is a plus. Comfortable using modern AI development tools aggressively while maintaining sound engineering judgment. Available to start by mid-September 2026. Compensation & Benefits Salary range: $200,000 – $280,000 USD annually. Visa sponsorship is not available for this role. Location This is a full-time, on-site role based in San Francisco, California . \",\"secondaryLocationNames\":[],\"teamNames\":[\"Engineering\"],\"compensationTierS"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Chewy",
+    "title": "Software Engineer 1 - WIZMO engineering team",
+    "location": "Boston, MABellevue, WA",
+    "job_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1",
+    "job_id": "R30695-1",
+    "posted_date": "2026-09-01",
+    "age_days": 0,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1",
+    "http_status": 200,
+    "page_chars": 11391,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "rnate / jdbc experience, Postgres, Vertica, Aerospike Experience working in an agile environment (Scrum, XP or etc.) Experience in web technologies such as ES6, Reactive MVC / MVVM Framework, HTML5, Spring Framework The base salary range for this role is $97,500 - $160,000.00. The specific salary offered to a candidate may be influenced by a variety of factors including but not limited to the candidate’s relevant experience, education, and work location. In addition, this position is eligibl"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Avalore",
+    "title": "Support Systems Developer/Engineer",
+    "location": "Arlington County, Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/60903E3667/apply",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://apply.workable.com/avalore/j/60903E3667/apply",
+    "http_status": 200,
+    "page_chars": 1816,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Zip",
+    "title": "Software Engineer, New Grad (2027 Start)",
+    "location": "San Francisco, CA",
+    "job_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "job_id": "df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "$165,000-$170,000/year base",
+    "flags": "",
+    "sources": [
+      "Jobright"
+    ],
+    "discovery_url": "https://jobright.ai/jobs/info/6a8dfde3581f2d7bfdfea5ce",
+    "aggregator_only": false,
+    "final_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "http_status": 200,
+    "page_chars": 14482,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ure patterns, and programming languages as needed Fantastic written and verbal communication skills Prior internship experience at a high-growth startup or leading tech company, in a dynamic, fast-moving environment The salary range for this role is $165,000 - $170,000. The salary for this position is determined based on a variety of job-related factors that may include location, relevant experience, education, or particular skills and expertise . Relocation assistance may be availabl"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "Software Engineer, New Grad (2027 Start) @ Zip {\"@context\":\"https://schema.org/\",\"@type\":\"JobPosting\",\"title\":\"Software Engineer, New Grad (2027 Start)\",\"description\":\" About Zip Zip is the AI platform for enterprise pr",
+      "Software Engineer, New Grad (2027 Start) @ Zip {\"@context\":\"https://schema.org/\",\"@type\":\"JobPosting\",\"title\":\"Software Engineer, New Grad (2027 Start)\",\"description\":\" About Zip Zip is the AI platform for enterprise procurement — built for humans and agents working together. By orchestrating procurement across teams, tools, and",
+      "idateScheduleCancellationReasonRequirementStatus\":\"Optional\",\"showCookieBanner\":false},\"posting\":{\"id\":\"df6eb1ee-b360-46fe-b23f-658626ec59ea\",\"title\":\"Software Engineer, New Grad (2027 Start)\",\"departmentName\":\"Engineering\",\"departmentExternalName\":\"Engineering\",\"locationName\":\"San Francisco\",\"workplaceType\":\"Hybrid\",\"isListed\":true,\"isConfidential\":false,\"employmentT"
+    ]
+  },
+  {
+    "company": "Wyetech",
+    "title": "Software Engineer 1",
+    "location": "Columbia, MD",
+    "job_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "job_id": "a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "http_status": 200,
+    "page_chars": 15165,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "from system level to individual software components. Due to federal contract requirements, United States Citizenship and position appropriate security clearance is required. (e.g. Active TS/SCI security clearance with agency appropriate polygraph). Capabilities Analyze user requirements to derive software design and performance requirements. Analyze user requirements to derive software des",
+        "to improve its performance Design. develop and modify software systems, using scientific analysis and mathematical models to predict and measure outcome and consequences of design Required Qualifications TS/SCI with agency appropriate poly Seven (7) years' experience as a SWE, in programs and contracts of similar scope, type, and complexity is required. Bachelor's degree in Computer Scie",
+        "from system level to individual software components. Due to federal contract requirements, United States Citizenship and position appropriate security clearance is required. (e.g. Active TS/SCI security clearance with agency appropriate polygraph). \\ Capabilities Analyze user requirements to derive software design and performance requirements. Analyze user requirements to derive software d"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "rious team-building events throughout the year such as: monthly lunches, summer company picnic, and an annual holiday party. Employees receive two complementary branded clothing orders annually. $52.46 - $107.37 an hour Pay Range: $52.46 - $ 1 07.37 per hour* Hourly pay rates listed for this position serve as a general guideline and are not a guarantee of compensation. Compensation will vary dependent upon factors including but not limited to: Governmen",
+      "ous team-building events throughout the year such as: monthly lunches, summer company picnic, and an annual holiday party. Employees receive two complementary branded clothing orders annually. \\ $52.46 - $107.37 an hour Pay Range: $52.46 - $ 1 07.37 per hour* Hourly pay rates listed for this position serve as a general guideline and are not a guarantee of compensation. Compensation will vary dependent upon factors including but not limited to: Governmen"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Whatnot",
+    "title": "Software Engineer, 2027 New Grad",
+    "location": "New York, NY, United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95e03ecabc9f6703e1a824",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://jobright.ai/jobs/info/6a95e03ecabc9f6703e1a824",
+    "http_status": 200,
+    "page_chars": 31615,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      "jobLocation\":\"New York, NY\",\"jobLocations\":[\"New York, NY\",\"San Francisco, CA\",\"Los Angeles, CA\",\"Seattle, WA\"],\"isRemote\":false,\"workModel\":\"Hybrid\",\"publishTime\":\"2026-09-01 05:47:42\",\"publishTimeDesc\":\"14 hours ago\",\"salaryDesc\":\"$155K/yr - $160K/yr\",\"minSalary\":155000,\"maxSalary\":160000,\"employmentType\":\"Full-time\",\"jobSummary\":\"Whatnot is a live shopping platform where people buy, sell, and discover products through commerce. The company is seeking post-gradua"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "ign through implementation and launch Triage product or system issues and debug/track/resolve by analyzing the sources of issues, network, or service operations and quality Skills Graduated with a CS or Software Engineering degree by Summer 2027 Problem solver and out-of-the-box thinker Willing to take risks and build product and systems for 1M+ users Capable of building scalable systems Excellent product instincts. You f",
+      "\":0},{\"featureName\":\"q_job_skill_match\",\"displayName\":\"Skill Match\",\"score\":0},{\"featureName\":\"q_industry_match\",\"displayName\":\"Industry Experience\",\"score\":0}],\"skillSummaries\":[\"Graduated with a CS or Software Engineering degree by Summer 2027\",\"Problem solver and out-of-the-box thinker\",\"Willing to take risks and build product and systems for 1M+ users\",\"Capable of building scalable systems\",\"Excellent product instinct",
+      "sClearanceRequired\":false,\"whyJoinUs\":\"\",\"jobtargetEasyapply\":false,\"jobtargetQuestionnaire\":\"\",\"jobtargetJobId\":\"\",\"repost\":false,\"hiddenJob\":false,\"qualifications\":{\"mustHave\":[\"Graduated with a CS or Software Engineering degree by Summer 2027\",\"Problem solver and out-of-the-box thinker\",\"Willing to take risks and build product and systems for 1M+ users\",\"Capable of building scalable systems\",\"Excellent product instinct"
+    ],
+    "start_snippets": [
+      "r system issues and debug/track/resolve by analyzing the sources of issues, network, or service operations and quality Skills Graduated with a CS or Software Engineering degree by Summer 2027 Problem solver and out-of-the-box thinker Willing to take risks and build product and systems for 1M+ users Capable of building scalable systems Excellent product instincts. You f",
+      "\"Skill Match\",\"score\":0},{\"featureName\":\"q_industry_match\",\"displayName\":\"Industry Experience\",\"score\":0}],\"skillSummaries\":[\"Graduated with a CS or Software Engineering degree by Summer 2027\",\"Problem solver and out-of-the-box thinker\",\"Willing to take risks and build product and systems for 1M+ users\",\"Capable of building scalable systems\",\"Excellent product instinct",
+      "yapply\":false,\"jobtargetQuestionnaire\":\"\",\"jobtargetJobId\":\"\",\"repost\":false,\"hiddenJob\":false,\"qualifications\":{\"mustHave\":[\"Graduated with a CS or Software Engineering degree by Summer 2027\",\"Problem solver and out-of-the-box thinker\",\"Willing to take risks and build product and systems for 1M+ users\",\"Capable of building scalable systems\",\"Excellent product instinct"
+    ]
+  },
+  {
+    "company": "WellSky",
+    "title": "Associate Software Engineer",
+    "location": "Overland Park, KS",
+    "job_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078",
+    "job_id": "JR5078",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply",
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078",
+    "http_status": 200,
+    "page_chars": 10409,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "TD Bank",
+    "title": "2027 Summer Analyst - Software Engineering Rotational Program - New York City",
+    "location": "New York City, NY",
+    "job_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053",
+    "job_id": "1508053",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053",
+    "http_status": 200,
+    "page_chars": 16912,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "elopment throughout the rotational period & career. Our Technology leaders are committed to people development, career advancement, and value diversity and inclusion. Requirements Graduation date between December 2027 to May 2029 (undergraduate degree) Pursuing a degree in Computer Science, Engineering, Math or Technology Sciences Strong conceptual, analytical and problem solving skills; basic knowledge of SDLC Excellent verbal & written communic"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "SpaceX",
+    "title": "Software Engineer - HITL - Top Secret Clearance",
+    "location": "Hawthorne, CA",
+    "job_url": "https://boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002",
+    "job_id": "8749210002",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002",
+    "http_status": 200,
+    "page_chars": 59512,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "s? * Select... Citizenship Status * Select... To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat",
+        ",\"label\":\"Citizenship Status\",\"description\":\" To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat"
+      ],
+      "clearance": [
+        "and unit testing Strong creative and innovative problem-solving skills Ability to work effectively in a dynamic environment by quickly adapting to changing needs and requirements Active Top Secret, Top Secret SCI, or DOE Level Q clearance, or the ability to obtain and maintain one ADDITIONAL REQUIREMENTS: This position requires successfully obtaining and maintaining a Top Secret Security Clearance as a condition of",
+        "rue,\"label\":\"Active Security Clearance(s)\",\"description\":null,\"fields\":[{\"name\":\"question_37981879002[]\",\"type\":\"multi_value_multi_select\",\"values\":[{\"value\":252462779002,\"label\":\"Top Secret SCI with Polygraph\"},{\"value\":252462780002,\"label\":\"Top Secret SCI/SAP\"},{\"value\":252462781002,\"label\":\"Top Secret\"},{\"value\":252462782002,\"label\":\"DOE Level Q\"},{\"value\":252462783002,\"label\":\"Secre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "on sensitive SpaceX missions; if so, you will be subject to pre-employment drug and random drug and alcohol test Able to work extended hours and weekends when necessary to support proposal or critical project timelines COMPENSATION AND BENEFITS: Pay Range: Level 1: $125,000.00 - $160,000.00 Level 2: $145,000.00 - $195,000.00 Your actual level and base salary will be determined on a case-by-case basis and may vary based on the following considerations: job-related knowledge and skills, education, and experi"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "SpaceX",
+    "title": "Embedded Software Engineer - Starlink",
+    "location": "Bastrop, TX",
+    "job_url": "https://boards.greenhouse.io/spacex/jobs/8706480002?gh_jid=8706480002",
+    "job_id": "8706480002",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://job-boards.greenhouse.io/spacex/jobs/8706480002?gh_jid=8706480002",
+    "http_status": 200,
+    "page_chars": 56397,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "s? * Select... Citizenship Status * Select... To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat",
+        ",\"label\":\"Citizenship Status\",\"description\":\" To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat"
+      ],
+      "clearance": [
+        "rue,\"label\":\"Active Security Clearance(s)\",\"description\":null,\"fields\":[{\"name\":\"question_37771306002[]\",\"type\":\"multi_value_multi_select\",\"values\":[{\"value\":251451581002,\"label\":\"Top Secret SCI with Polygraph\"},{\"value\":251451582002,\"label\":\"Top Secret SCI/SAP\"},{\"value\":251451583002,\"label\":\"Top Secret\"},{\"value\":251451584002,\"label\":\"DOE Level Q\"},{\"value\":251451585002,\"label\":\"Secre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Southwest Airlines",
+    "title": "Spring 2027 Software Engineering Internships",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a96434ccabc9f6703e1cd92",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://jobright.ai/jobs/info/6a96434ccabc9f6703e1cd92",
+    "http_status": 200,
+    "page_chars": 47929,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "• You must have a valid U.S. Social Security Number to complete the full hiring process • This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future • Coursework or experience with software testing techniques preferred; XRay • Ability to stay organized and manage multiple and concurrent assignments under t",
+        "You must have a valid U.S. Social Security Number to complete the full hiring process\",\"• This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future\",\"• Coursework or experience with software testing techniques preferred; XRay\",\"• Ability to stay organized and manage multiple and concurrent assignments und",
+        "You must have a valid U.S. Social Security Number to complete the full hiring process\",\"• This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future\"],\"preferredHave\":[\"• Coursework or experience with software testing techniques preferred; XRay\",\"• Ability to stay organized and manage multiple and concurre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      "are Engineering Intern\",\"jobSeniority\":\"New Grad\",\"jobLocation\":\"United States\",\"jobLocations\":[\"United States\"],\"isRemote\":true,\"workModel\":\"Remote\",\"publishTime\":\"2026-09-01 03:15:24\",\"publishTimeDesc\":\"16 hours ago\",\"salaryDesc\":\"$26/hr - $30/hr\",\"minSalary\":54080,\"maxSalary\":62400,\"employmentType\":\"Full-time\",\"jobSummary\":\"Southwest Airlines is an airline company whose Technology Department supports technology solutions across employee, financial, airline,"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "mputer Science, Computer Engineering, Information Systems or Information Technology, Operations Research, Industrial Engineering OR similar degree • Progress towards a 4-year undergraduate degree or graduate degree is required • To be eligible, you must be currently enrolled as a full-time student (as defined by your university) at the time of application and during the internship • Minimum 2.5 cumulative GPA at the time of application is required • Must be at least 18 years of age • Must have authorizat",
+      "uter Science, Computer Engineering, Information Systems or Information Technology, Operations Research, Industrial Engineering OR similar degree\",\"• Progress towards a 4-year undergraduate degree or graduate degree is required\",\"• To be eligible, you must be currently enrolled as a full-time student (as defined by your university) at the time of application and during the internship\",\"• Minimum 2.5 cumulative GPA at the time of application is required\",\"• Must be at least 18 years of age\",\"• Must have auth",
+      "nd compassionate preferred\",\"• 1-2 semesters remaining at the time the internship ends is preferred\"]},\"detailQualifications\":{\"mustHave\":{\"yoe\":[\"• Progress towards a 4-year undergraduate degree or graduate degree is required\"],\"education\":[],\"hardSkill\":[{\"skill\":\"NodeJS\"},{\"skill\":\"Java\"},{\"skill\":\"JavaScript\"},{\"skill\":\"C#\"},{\"skill\":\"Python\"},{\"skill\":\"AWS Cloud services\"},{\"skill\":\"S3\""
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "Snap",
+    "title": "Software Engineer - ML Infrastructure - Content Retrieval Platform - Level 4",
+    "location": "Palo Alto, CA",
+    "job_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1",
+    "job_id": "R0046629-1",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "$195k/yr",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1",
+    "http_status": 200,
+    "page_chars": 12062,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ls, experience, qualifications, work location, and market conditions. The starting pay may be negotiable within the salary range for the position. These pay zones may be modified in the future. Zone A (CA, WA, NYC): The base salary range for this position is $157,000-$235,000 annually. Zone B: The base salary range for this position is $149,000-$223,000 annually. Zone C: The base salary range for this position is $133,000-$200,000 annually. This position is eligible for equity in the form of",
+      "ing pay may be negotiable within the salary range for the position. These pay zones may be modified in the future. Zone A (CA, WA, NYC): The base salary range for this position is $157,000-$235,000 annually. Zone B: The base salary range for this position is $149,000-$223,000 annually. Zone C: The base salary range for this position is $133,000-$200,000 annually. This position is eligible for equity in the form of RSUs. Curious what it's like to work at Snap? Meet the people behind our produ",
+      "ones may be modified in the future. Zone A (CA, WA, NYC): The base salary range for this position is $157,000-$235,000 annually. Zone B: The base salary range for this position is $149,000-$223,000 annually. Zone C: The base salary range for this position is $133,000-$200,000 annually. This position is eligible for equity in the form of RSUs. Curious what it's like to work at Snap? Meet the people behind our products and discover how our values shape the way we create, innovate, and connect."
+    ],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "ML teams for architecture changes and model developments. We utilize Java/Go as the main indexing and serving languages with performant pieces in C++. We are building agentic repo starting from retrieval root and incubating L0.5, generative retrieval, and redesign of inference feature sourcing. What you’ll do: Design and optimize infrastructure systems for machine l",
+      "Snap’s long-term success! Compensation In the United States, work locations are assigned a pay zone which determines the salary range for the position. The successful candidate’s starting pay will be determined based on job-related skills, experience, qualifications, work location, and market conditions. The starting pay may be negotiable within the salary range fo",
+      "nge for the position. The successful candidate’s starting pay will be determined based on job-related skills, experience, qualifications, work location, and market conditions. The starting pay may be negotiable within the salary range for the position. These pay zones may be modified in the future. Zone A (CA, WA, NYC): The base salary range for this position is $15"
+    ]
+  },
+  {
+    "company": "Silicon Labs",
+    "title": "DevOps Platform Engineer",
+    "location": "Austin, TX",
+    "job_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1",
+    "job_id": "21029",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1",
+    "http_status": 200,
+    "page_chars": 11116,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      ") Flexible PTO schedule 3 paid volunteer days per year Tuition reimbursement Free downtown parking Onsite gym Monthly wellness offerings Free snacks Monthly company updates with our CEO #LI-MA1 #LI-Hybrid The annualized base pay range for this role is expected to be between $66,500 - $123,500 USD. Actual base pay could vary based on factors including but not limited to experience, geographic location where work will be performed and applicant’s skill set. The base pay is just one component of the total compe"
+    ],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Roblox",
+    "title": "Software Engineer - Creator Business",
+    "location": "San Mateo, CA",
+    "job_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334",
+    "job_id": "8113334",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334",
+    "http_status": 200,
+    "page_chars": 132159,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "fall outside of this expected range. This pay range is subject to change and may be modified in the future. All full-time employees are also eligible for equity compensation and for benefits as described on this page . Annual Salary Range $153,120 — $196,750 USD Roles that are based in an office are onsite Tuesday, Wednesday, and Thursday, with optional presence on Monday and Friday (unless otherwise noted). Roblox provides equal employment opportunities to all employees an",
+      "fall outside of this expected range. This pay range is subject to change and may be modified in the future. All full-time employees are also eligible for equity compensation and for benefits as described on this page . Annual Salary Range $153,120 &mdash; $196,750 USD Roles that are based in an office are onsite Tuesday, Wednesday, and Thursday, with optional presence on Monday and Friday (unless otherwise noted). Roblox provides equal employment opportunities to all employees an"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "oservices architecture Bachelor's degree in Computer Science, Computer Engineering, or a similar technical field For roles that are based at our headquarters in San Mateo, CA: The starting base pay for this position is as shown below. The actual base pay is dependent upon a variety of job-related factors such as professional background, training, work experience, lo"
+    ]
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineer I, V&V Testing (Onsite - Security Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Systems-Engineer-I--V-V-Testing--Onsite---Security-Clearance-_01870858",
+    "job_id": "01870858",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Systems-Engineer-I--V-V-Testing--Onsite---Security-Clearance-_01870858",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {
+      "title_clearance": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I, RCU (Onsite - Security Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--RCU--Onsite---Security-Clearance-_01870743",
+    "job_id": "01870743",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--RCU--Onsite---Security-Clearance-_01870743",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {
+      "title_clearance": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I, CDS (Onsite - Secret Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--CDS--Onsite---Secret-Clearance-_01870383",
+    "job_id": "01870383",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--CDS--Onsite---Secret-Clearance-_01870383",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I (Hybrid - Aguadilla, PR)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--Hybrid---Aguadilla--PR-_01870496",
+    "job_id": "01870496",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--Hybrid---Aguadilla--PR-_01870496",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Raytheon",
+    "title": "Lifecycle Systems Engineer I- Onsite",
+    "location": "US-MA-WOBURN-WB2 ~ 225 Presidential Way ~ GODDARD BLDG",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-WOBURN-WB2--225-Presidential-Way--GODDARD-BLDG/Lifecycle-Systems-Engineer-I--Onsite_01868262",
+    "job_id": "01868262",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-WOBURN-WB2--225-Presidential-Way--GODDARD-BLDG/Lifecycle-Systems-Engineer-I--Onsite_01868262",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Boca Raton - June",
+    "location": "Boca Raton, FL",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023",
+    "job_id": "R116023",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023",
+    "http_status": 200,
+    "page_chars": 11511,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "mato)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Boca Raton - June)\", \"@type\" : \"PropertyValue\", \"value\" : \"R116023\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Boca Raton - June)\", \"description\" : \"Are you a new or upcoming graduate s",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between December 2026 and May 2027 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - June",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2",
+    "job_id": "R117626-2",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2",
+    "http_status": 200,
+    "page_chars": 11478,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "rman)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - June)\", \"@type\" : \"PropertyValue\", \"value\" : \"R117626\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - June)\", \"description\" : \"Are you a new or upcoming graduate s",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between December 2026 and May 2027 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - January",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1",
+    "job_id": "R117617-1",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1",
+    "http_status": 200,
+    "page_chars": 11484,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "rman)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - January)\", \"@type\" : \"PropertyValue\", \"value\" : \"R117617\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - January)\", \"description\" : \"Are you a new or upcoming graduat",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between May 2026 and December 2026 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "Precisely",
+    "title": "Associate software Engineer - Python AI",
+    "location": "USA",
+    "job_url": "https://www.precisely.com/careers-and-culture/us-jobs/job/4722721005?gh_jid=4722721005",
+    "job_id": "4722721005",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.precisely.com/careers-and-culture/us-jobs/job/?gh_jid=4722721005",
+    "http_status": 200,
+    "page_chars": 37130,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Palantir Technologies",
+    "title": "Forward Deployed Infrastructure Engineer, New Grad - US Government",
+    "location": "Honolulu, HI",
+    "job_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12",
+    "job_id": "701a9307-0619-45d3-b077-cabe9897cd12",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12",
+    "http_status": 200,
+    "page_chars": 20526,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ta Science Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, sign",
+        "ta Science Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance \\ Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, si"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ence Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, sign-on bonus and other potential future incentives. Further note that total compensation for this position will be determined by each",
+      "ce Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance \\ Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, sign-on bonus and other potential future incentives. Further note that total compensation for this position will be determined by each"
+    ],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "OmegaHires",
+    "title": "Java Springboot Python AI FS Developer",
+    "location": "USA",
+    "job_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer",
+    "http_status": 200,
+    "page_chars": 73452,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "OmegaHires",
+    "title": "Java Python AI Developer",
+    "location": "Phoenix, AZ",
+    "job_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer",
+    "http_status": 200,
+    "page_chars": 73221,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Northrop Grumman",
+    "title": "2027 Associate Software Engineer / Software Engineer - Huntsville AL",
+    "location": "Huntsville, AL",
+    "job_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1",
+    "job_id": "R10247580-1",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1",
+    "http_status": 200,
+    "page_chars": 11838,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "tional origin, age, veteran status, disability, or any other protected class. For our complete EEO and pay transparency statement, please visit http://www.northropgrumman.com/EEO. U.S. Citizenship is required for all positions with a government clearance and certain other restricted positions. Existing Applicants: Need to update your contact information or email address? Once logged in"
+      ],
+      "clearance": [
+        "pe\" : \"FULL_TIME\", \"title\" : \"2027 Associate Software Engineer / Software Engineer - Huntsville AL\", \"description\" : \"RELOCATION ASSISTANCE: Relocation assistance may be available CLEARANCE REQUIRED FOR START: No CLEARANCE TYPE: Secret TRAVEL: No Description At Northrop Grumman, our employees have incredible opportunities to work on revolutionary systems that impact people's lives around the world today, and for"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Nidec",
+    "title": "Software Development Engineer",
+    "location": "North America/USA/Illinois/St. Charles, IL",
+    "job_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456",
+    "job_id": "R0017456",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456",
+    "http_status": 200,
+    "page_chars": 9617,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "NVIDIA",
+    "title": "Developer Technology Engineer - AI - New College Graduate 2026",
+    "location": "Santa Clara, CA +5",
+    "job_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557",
+    "job_id": "JR2024557",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "$172k/yr",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557",
+    "http_status": 200,
+    "page_chars": 9584,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "DISCOVERY_SOURCE_REVIEW",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "ra\" } }, \"hiringOrganization\" : { \"name\" : \"2100 NVIDIA USA\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Developer Technology Engineer, AI - New College Graduate 2026\", \"@type\" : \"PropertyValue\", \"value\" : \"JR2024557\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Developer Technology Engineer, AI - New College Graduate 2026\", \"description\" : \"Today, NVIDIA is tapping into the unlimited potential of AI to define the next era of computing. An era in which our GPU acts as the brains of com",
+      "2026\", \"@type\" : \"PropertyValue\", \"value\" : \"JR2024557\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Developer Technology Engineer, AI - New College Graduate 2026\", \"description\" : \"Today, NVIDIA is tapping into the unlimited potential of AI to define the next era of computing. An era in which our GPU acts as the brains of computers, robots"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "Mastercard",
+    "title": "Software Engineer, Launch Program 2027 – United States",
+    "location": "O'Fallon, MO, United States",
+    "job_url": "https://jobright.ai/jobs/info/6a96e09bd13b4819f39dd6ff",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://jobright.ai/jobs/info/6a96e09bd13b4819f39dd6ff",
+    "http_status": 200,
+    "page_chars": 33850,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "concepts Familiarity with version control tools (e.g., Git) Experience or coursework involving automated testing Strong problem-solving skills and eagerness to learn This role is not eligible for Mastercard's work authorization sponsorship. As such, candidates must be eligible to work in the United States, now as well as in the future, without employer sponsorship. For example, students or recent graduates in th",
+        "s\",\"Familiarity with version control tools (e.g., Git)\",\"Experience or coursework involving automated testing\",\"Strong problem-solving skills and eagerness to learn\",\"This role is not eligible for Mastercard's work authorization sponsorship. As such, candidates must be eligible to work in the United States, now as well as in the future, without employer sponsorship. For example, students or recent graduates in th"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      "jobLocations\":[\"O'Fallon, MO\",\"Arlington, VA\",\"Salt Lake City, UT\",\"Atlanta, GA\",\"New York, NY\",\"Harrison, NY\"],\"isRemote\":false,\"workModel\":\"Onsite\",\"publishTime\":\"2026-09-01 00:00:00\",\"publishTimeDesc\":\"20 hours ago\",\"salaryDesc\":\"$115K/yr - $115K/yr\",\"minSalary\":115000,\"maxSalary\":115000,\"employmentType\":\"Full-time\",\"jobSummary\":\"Mastercard powers economies and empowers people worldwide through secure, simple, smart, and accessible digital payment solutions. The"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Lilly",
+    "title": "Software Engineer - Fixed Duration",
+    "location": "Indianapolis, IN",
+    "job_url": "https://lilly.wd115.myworkdayjobs.com/en-US/lly/job/US-Louisville-CO-Site-3/Software-Engineer---Fixed-Duration_R-102469",
+    "job_id": "R-102469",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://lilly.wd115.myworkdayjobs.com/en-US/lly/job/US-Louisville-CO-Site-3/Software-Engineer---Fixed-Duration_R-102469",
+    "http_status": 200,
+    "page_chars": 5920,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Boca Raton - June",
+    "location": "Boca Raton, FL",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023-2",
+    "job_id": "R116023-2",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023-2",
+    "http_status": 200,
+    "page_chars": 11267,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "mato)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Boca Raton - June)\", \"@type\" : \"PropertyValue\", \"value\" : \"R116023\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Boca Raton - June)\", \"description\" : \"Are you a new or upcoming graduate s",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between December 2026 and May 2027 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - June",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-1",
+    "job_id": "R117626-1",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-1",
+    "http_status": 200,
+    "page_chars": 11234,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "rman)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - June)\", \"@type\" : \"PropertyValue\", \"value\" : \"R117626\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - June)\", \"description\" : \"Are you a new or upcoming graduate s",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between December 2026 and May 2027 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - January",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617",
+    "job_id": "R117617",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617",
+    "http_status": 200,
+    "page_chars": 11240,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "data modeling principles. Have the ability and desire to learn new processes and technologies. Be knowledgeable about test-driven development. Learn more about the LexisNexis Risk team and how we work here U.S. National Base Pay Range: $59,200 - $98,600. Geographic differentials may apply in some locations to better reflect local market rates. This job is eligible for an annual incentive bonus. We know your well-being and happiness are key to a long and successful care"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "rman)\" } }, \"hiringOrganization\" : { \"name\" : \"LexisNexis Risk Data Management, LLC Company\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - January)\", \"@type\" : \"PropertyValue\", \"value\" : \"R117617\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Tech Accelerate Graduate Program - Software Engineer (Alpharetta - January)\", \"description\" : \"Are you a new or upcoming graduat",
+      "oftware development methodologies and data manipulation languages. Understanding data modeling principles and applicable development languages. Requirements Applicants must have a graduation date between May 2026 and December 2026 to be considered. Have completed or will complete a bachelor’s in Computer Science or a related field of study. Possess excellent communication skills, both written and verbal, to"
+    ],
+    "start_snippets": []
+  },
+  {
+    "company": "Leidos",
+    "title": "Junior DevOps Engineer",
+    "location": "Chantilly, VA +1",
+    "job_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855",
+    "job_id": "R-00190855",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855",
+    "http_status": 200,
+    "page_chars": 10238,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ms. Kudu Dynamics, a Leidos company is uniquely qualified to anticipate tomorrow’s threats and build the next generation of capabilities. Minimum Requirements: US Citizenship with TS/SCI and Counter-Intelligence Polygraph clearance 1–3 years of experience in DevOps, Systems Engineering, or Infrastructure Support Bachelor’s degree in Computer Science, Information Technology, Engineering, or related"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "d on business needs, Leidos reasonably anticipates that this job requisition will remain open for at least 3 days with an anticipated close date of no earlier than 3 days after the original posting date as listed above. Pay Range: Pay Range $69,550.00 - $125,725.00 The Leidos pay range for this job level is a general guideline only and not a guarantee of compensation or salary. Additional factors considered in extending an offer include (but are not limited to) responsibilities of"
+    ],
+    "match_signal": "STRONG",
+    "experience_snippets": [
+      "desktop, mobile, IoT, and embedded platforms. Kudu Dynamics, a Leidos company is uniquely qualified to anticipate tomorrow’s threats and build the next generation of capabilities. Minimum Requirements: US Citizenship with TS/SCI and Counter-Intelligence Polygraph clearance 1–3 years of experience in DevOps, Systems Engineering, or Infrastructure Support Bachelor’s degree in Computer Science, Information Technology, Engineering, or related field Familiarity with Linux syste"
+    ],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Informaticon",
+    "title": "Junior Software Engineer Neu-Ulm (m/w/d)",
+    "location": "Neu-Ulm, DE",
+    "job_url": "https://informaticon.breezy.hr/p/25946aa0d5b1-junior-software-engineer-neu-ulm-m-w-d",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://informaticon.breezy.hr/p/25946aa0d5b1-junior-software-engineer-neu-ulm-m-w-d",
+    "http_status": 200,
+    "page_chars": 2127,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "INFORMATION SYSTEMS SOLUTIONS, INC",
+    "title": "Software Engineer I",
+    "location": "San Diego, CA",
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4462746",
+    "job_id": "4462746",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4462746",
+    "http_status": 200,
+    "page_chars": 9700,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Honeywell Aerospace",
+    "title": "Software Engineering Full Time Employee - Recent Grad 2027 (U.S. Person Required)",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95fac09fcec54423730908",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://jobright.ai/jobs/info/6a95fac09fcec54423730908",
+    "http_status": 200,
+    "page_chars": 33846,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "h U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorship for employment authorization for this position Candidates must be authorized to legally work in the United States without current or future sponsorship requirements Understanding various software development",
+        "nsider applicants who would require current or future sponsorship for employment authorization for this position Candidates must be authorized to legally work in the United States without current or future sponsorship requirements Understanding various software development lifecycle Ability to develop efficient and high-quality software Knowledge of software configuration management and change",
+        "U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S\",\"Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorship for employment authorization for this position\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\",\"Understanding various software developm"
+      ],
+      "citizenship_or_us_person": [
+        "-time work between September 2026-July 2027 Must have obtained degree within 12 months of the start date Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorshi",
+        "e work between September 2026-July 2027\",\"Must have obtained degree within 12 months of the start date\",\"Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S\",\"Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsors"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      "yee - Recent Grad 2027\",\"jobSeniority\":\"New Grad\",\"jobLocation\":\"United States\",\"jobLocations\":[\"United States\"],\"isRemote\":true,\"workModel\":\"Remote\",\"publishTime\":\"2026-08-31 23:59:38\",\"publishTimeDesc\":\"20 hours ago\",\"salaryDesc\":\"$95K/yr - $123K/yr\",\"minSalary\":95000,\"maxSalary\":123000,\"employmentType\":\"Full-time\",\"jobSummary\":\"Honeywell Aerospace develops technologies and systems that support aviation and aerospace operations. The Software Engineering Full Tim"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "rently pursuing a bachelor's degree (or higher) from an accredited college or university in Software Engineering, Computer Science, Computer Engineering or similar field Must have graduated or graduating from an accredited college or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027 Must have obtained degree within 12 months of the start date Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resi",
+      "ntly pursuing a bachelor's degree (or higher) from an accredited college or university in Software Engineering, Computer Science, Computer Engineering or similar field\",\"Must have graduated or graduating from an accredited college or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027\",\"Must have obtained degree within 12 months of the start date\",\"Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent"
+    ],
+    "start_snippets": [
+      "college or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027 Must have obtained degree within 12 months of the start date Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S Honeywell A",
+      "ollege or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027\",\"Must have obtained degree within 12 months of the start date\",\"Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S\",\"Honeywe"
+    ]
+  },
+  {
+    "company": "Honeywell Aerospace",
+    "title": "Software Engineering Full Time Employee - Recent Grad 2027",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95fac04c22023a079373ee",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": true,
+    "final_url": "https://jobright.ai/jobs/info/6a95fac04c22023a079373ee",
+    "http_status": 200,
+    "page_chars": 32122,
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "n full-time work between September 2026-July 2027 * Must have obtained degree within 12 months of the start date Candidates must be authorized to legally work in the United States without current or future sponsorship requirements * Understanding various software development lifecycle * Ability to develop efficient and high-quality software * Knowledge of software configuration management and c",
+        "ll-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\",\"* Understanding various software development lifecycle\",\"* Ability to develop efficient and high-quality software\",\"* Knowledge of software configuration management",
+        "ll-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\"],\"preferredHave\":[\"* Understanding various software development lifecycle\",\"* Ability to develop efficient and high-quality software\",\"* Knowledge of software config"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "PAGE_SNIPPET_REVIEW",
+    "salary_snippets": [
+      "yee - Recent Grad 2027\",\"jobSeniority\":\"New Grad\",\"jobLocation\":\"United States\",\"jobLocations\":[\"United States\"],\"isRemote\":true,\"workModel\":\"Remote\",\"publishTime\":\"2026-08-31 23:59:13\",\"publishTimeDesc\":\"20 hours ago\",\"salaryDesc\":\"$95K/yr - $123K/yr\",\"minSalary\":95000,\"maxSalary\":123000,\"employmentType\":\"Full-time\",\"jobSummary\":\"Honeywell Aerospace is an aviation technology company developing systems that help pilots navigate, aircraft operate efficiently, and o"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "ntly pursuing a bachelor's degree (or higher) from an accredited college or university in Software Engineering, Computer Science, Computer Engineering or similar field * Must have graduated or graduating from an accredited college or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027 * Must have obtained degree within 12 months of the start date Candidates must be authorized to legally work in the United States without current or future sponsorship requirement",
+      "ly pursuing a bachelor's degree (or higher) from an accredited college or university in Software Engineering, Computer Science, Computer Engineering or similar field\",\"* Must have graduated or graduating from an accredited college or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship require"
+    ],
+    "start_snippets": [
+      "ollege or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027 * Must have obtained degree within 12 months of the start date Candidates must be authorized to legally work in the United States without current or future sponsorship requirements * Understanding various software development lifecycle * Abil",
+      "lege or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\",\"* Understanding various software development lifecycle\",\"",
+      "lege or university between August 2026 and May 2027 and be available to begin full-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\"],\"preferredHave\":[\"* Understanding various software develo"
+    ]
+  },
+  {
+    "company": "Harriscomputer",
+    "title": "Associate Software Engineer, RPG",
+    "location": "Tennessee, United States",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601",
+    "job_id": "R0045601",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Harris",
+    "title": "Associate Software Engineer, RPG",
+    "location": "Tennessee, United States",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601-1",
+    "job_id": "R0045601-1",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Workday direct"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601-1",
+    "http_status": 404,
+    "page_chars": 66,
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Esri",
+    "title": "Web Developer I - Apps",
+    "location": "Portland, ME",
+    "job_url": "https://www.esri.com/careers/5210451007?gh_jid=5210451007",
+    "job_id": "5210451007",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://www.esri.com/careers/5210451007?gh_jid=5210451007",
+    "http_status": 200,
+    "page_chars": 6143,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ange for this role take into account many factors including but not limited to skill sets; experience and training; licensure and certifications; and other business and organizational needs. A reasonable estimate of the base salary range is $79,040 - $133,016 USD About Esri At Esri, diversity is more than just a word on a map. When employees of different experiences, perspectives, backgrounds, and cultures come together, we are more innovative and ultimately a better place t"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "DS2",
+    "title": "Junior Software Engineer – Special Operations Mission Systems",
+    "location": "Niceville, FL",
+    "job_url": "https://ds2.breezy.hr/p/9fc9a1db41e1-junior-software-engineer-special-operations-mission-systems",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://ds2.breezy.hr/p/9fc9a1db41e1-junior-software-engineer-special-operations-mission-systems",
+    "http_status": 200,
+    "page_chars": 11948,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "ect to work with a team of committed engineers that lives our core values in an environment where working hard is important and playing hard is just as important. Please Note: You must be a U.S. Citizen and able to complete a U.S. government background investigation. Responsibilities — What you’ll do: DS2 provides full life-cycle software engineering services to DoW, federal, and",
+        "ect to work with a team of committed engineers that lives our core values in an environment where working hard is important and playing hard is just as important. Please Note: You must be a U.S. Citizen and able to complete a U.S. government background investigation. Required Qualifications — We need someone who: Has a bachelor’s degree in Software Engineering, Computer Science,"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "IndeedPopup', params ); } // END INDEED OAUTH FLOW %HEADER_COMPANY_WEBSITE% %HEADER_EMPLOYEES% Junior Software Engineer – Special Operations Mission Systems Niceville, FL %LABEL_POSITION_TYPE_FULL_TIME% Mission Planning $65,000 – $80,000 / year %BREADCRUMB_JOB_OPENINGS% Junior Software Engineer – Special Operations Mission Systems %BUTTON_APPLY_TO_POSITION% %BUTTON_APPLY_USING_INDEED% %BUTTON_APPLY_USING_LINKED_IN% Are you ready to kick off your career in soft"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Citi",
+    "title": "Junior Generative AI Application Developer",
+    "location": "New York City, NY",
+    "job_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250",
+    "job_id": "26962250",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250",
+    "http_status": 200,
+    "page_chars": 17759,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "----------- Time Type: Full time ------------------------------------------------------ Primary Location: New York New York United States ------------------------------------------------------ Primary Location Full Time Salary Range: $95,770.00 - $133,630.00 In addition to salary, Citi’s offerings may also include, for eligible employees, discretionary and formulaic incentive and retention awards. Citi offers competitive employee benefits, including: medical, dental & visio"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "unity to build the future of finance with Citi Tech. We provide you with the knowledge and skills you need to succeed... We're committed to teaching you the ropes. For individuals starting their careers, we offer a supportive environment. Here at Citi, internal development paths are intended to help you build a broad skillset and accelerate your career growth by gai"
+    ]
+  },
+  {
+    "company": "CapTech Consulting",
+    "title": "Software Engineering Associate Consultant - Summer 2027",
+    "location": "Philadelphia, PA, Richmond, VA, Charlotte, NC, Reston, VA, Columbus, OH, Denver, CO, Atlanta, GA",
+    "job_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269",
+    "job_id": "744000146449269",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269",
+    "http_status": 200,
+    "page_chars": 61689,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "9,000-94,000. At this time, CapTech cannot transfer nor sponsor a work visa for this position. Applicants must be authorized to work directly for any employer in the United States without visa sponsorship. CapTech is a Drug-Free work place. CapTech has not contracted/does not contract with any outside vendors in its recruitment process. If you are interested in this position, pleas"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ire(\"../src/style.css\"); },{\"./polyfills\":\"Es8J\",\"./ie11SunsetNotification\":\"oTQa\",\"../src/style.css\":\"jT7x\"}]},{},[\"QCba\"], null) Software Engineering Associate Consultant (Graduating Dec. 2026 - Summer 2027) Full-time Compensation: USD 89000 - USD 94000 - yearly Company Description CapTech is an award-winning consulting firm that collaborates with clients to achieve what’s possible through the power of technology. At CapTech, we’re passionate about the work we do and t",
+      "for All in accordance with the Colorado Equal Pay for Equal Work Act, Illinois Equal Pay Act, and Virginia Transparency Law. Compensation for this role will be commensurate with the candidate’s geographic location. The base pay range for this role is $89,000-94,000. At this time, CapTech cannot transfer nor sponsor a work visa for this position. Applicants must be authorized to work directly for any employer in the United States without visa sponsorship. CapTech is a Drug-F"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [
+      "orted. We welcome applicants from all backgrounds and look forward to helping you grow and thrive in a rewarding career at CapTech. Qualifications Candidates should be on track to graduate in December 2026 or Spring/Summer 2027 with a bachelor's/+1/accelerated masters* degree in Computer Science, Computer Engineering, Business Information Technology, Information Systems, or a related field. We welcome diverse educational backgrounds that provide candid"
+    ],
+    "start_snippets": [
+      "CapTech Consulting Software Engineering Associate Consultant (Graduating Dec. 2026 - Summer 2027) | SmartRecruiters function cleanInactiveCookies() { var config = Optanon.GetDomainData(); var allPossibleGroups = config.Groups.filter(function (group) { return group.hasOwnPrope",
+      ".css\"); },{\"./polyfills\":\"Es8J\",\"./ie11SunsetNotification\":\"oTQa\",\"../src/style.css\":\"jT7x\"}]},{},[\"QCba\"], null) Software Engineering Associate Consultant (Graduating Dec. 2026 - Summer 2027) Full-time Compensation: USD 89000 - USD 94000 - yearly Company Description CapTech is an award-winning consulting firm that collaborates with clients to achieve what’s possible t",
+      "l backgrounds and look forward to helping you grow and thrive in a rewarding career at CapTech. Qualifications Candidates should be on track to graduate in December 2026 or Spring/Summer 2027 with a bachelor's/+1/accelerated masters* degree in Computer Science, Computer Engineering, Business Information Technology, Information Systems, or a related field. We welcome di"
+    ]
+  },
+  {
+    "company": "Cadence",
+    "title": "Software Engineer I",
+    "location": "Austin, TX",
+    "job_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1",
+    "job_id": "R53009-1",
+    "posted_date": "2026-08-31",
+    "age_days": null,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1",
+    "http_status": 200,
+    "page_chars": 10257,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "ed software engineers with: • C/C++ software development experience in Linux environment • Good communication skills Educational Qualification: BS in Computer Science, Computer Engineering, or Electrical Engineering The annual salary range for California is $88,900 to $165,100. You may also be eligible to receive incentive compensation: bonus, equity, and benefits. Sales positions generally offer a competitive On Target Earnings (OTE) incentive compensation structure. Please note that the sal"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "CDK Global",
+    "title": "Associate Software Engineer",
+    "location": "Austin, TX +1",
+    "job_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1",
+    "job_id": "JR9201-1",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1",
+    "http_status": 200,
+    "page_chars": 12787,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "code review, automated testing, and CI/CD Experience anywhere in a modern full stack (mobile/web front ends, backend APIs, databases, cloud) Interest in building software that business operators and consumers depend on Compensation: $70,000 - $85,000 CDK Global is committed to fair and equitable compensation practices. Compensation packages are based on several factors, including but not limited to skills, experience, certifications, and work location. The total com"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Booz Allen",
+    "title": "Software Engineer - Mid",
+    "location": "St. Louis, MO",
+    "job_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/St-Louis-MO/Software-Engineer--Mid_R0248250",
+    "job_id": "R0248250",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/St-Louis-MO/Software-Engineer--Mid_R0248250",
+    "http_status": 200,
+    "page_chars": 13646,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "lications Experience using back-end and front-end languages to develop complete solutions Experience creating solutions to complex problems within a collaborative team environment Active TS/SCI clearance; willingness to take a polygraph exam HS diploma or GED Nice If You Have: Experience with Agile methodology, software engineering, product management, and software products Experi",
+        "ce Bachelor's degree Clearance: Applicants selected will be subject to a security investigation and may need to meet eligibility requirements for access to classified information; TS/SCI clearance is required. Skills Assessment As part of Booz Allen’s skills first hiring process, candidates must complete the required skills assessment to ensure they meet the Basic Qualifications for th"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "t not limited to location, the individual’s particular combination of education, knowledge, skills, competencies, and experience, as well as contract-specific affordability and organizational requirements. The projected compensation range for this position is $69,300.00 to $158,000.00 (annualized USD). The estimate displayed represents the typical salary range for this position and is just one component of Booz Allen’s total compensation package for employees. This posting will close within 90 days f"
+    ],
+    "match_signal": "SKIP",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Booz Allen",
+    "title": "C++ Software Engineer - Junior",
+    "location": "Beavercreek, OH",
+    "job_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788",
+    "job_id": "R0241788",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788",
+    "http_status": 200,
+    "page_chars": 12293,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "agement, and design patterns Ability to problem-solve and critically think through software issues, including utilizing debuggers and testing infrastructure to troubleshoot issues Ability to obtain a Secret clearance Bachelor's degree in a STEM field Nice If You Have: Experience with modeling and simulation frameworks, including AFSIM Experience with large code bases and complex code Ability t"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "t not limited to location, the individual’s particular combination of education, knowledge, skills, competencies, and experience, as well as contract-specific affordability and organizational requirements. The projected compensation range for this position is $55,200.00 to $126,000.00 (annualized USD). The estimate displayed represents the typical salary range for this position and is just one component of Booz Allen’s total compensation package for employees. This posting will close within 90 days f"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "BlueCross BlueShield of Tennessee",
+    "title": "Associate Software Engineer II - Infrastructure & Automation",
+    "location": "Remote - Chattanooga, TN",
+    "job_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858",
+    "job_id": "R-50858",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858",
+    "http_status": 200,
+    "page_chars": 12542,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "the exception of the following states: California, Massachusetts, New Hampshire, New Jersey, and New York. Applicants living in these states may move to an approved state prior to starting a position with BCBST at their own expense. If the position requires the individual to reside in Chattanooga, TN, they may be eligible for relocation assistance.\", \"@context\" : \"h"
+    ]
+  },
+  {
+    "company": "Blue Origin",
+    "title": "Software Development Engineer I - Early Career - 2027 Starts",
+    "location": "Seattle, WA +4",
+    "job_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326",
+    "job_id": "R71326",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326",
+    "http_status": 200,
+    "page_chars": 14887,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "job description, we encourage you to apply anyway. You may be just the right candidate for this or other roles. Export Control Regulations Applicants for employment at Blue Origin must be a U.S. citizen or national, U.S. permanent resident (i.e. current Green Card holder), or lawfully admitted into the U.S. as a refugee or granted asylum. Background Check Required for all positio"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "nclude the relevant programming languages you have used in these settings. If you haven’t yet used a tool in a professional setting, please include relevant coursework that demonstrates your preparation for these roles. Base Pay Range for: CA applicants is $110,623.00 - $154,871.85 CO applicants is $101,405.00 - $141,966.30 WA applicants is $110,623.00 - $154,871.85 Other site ranges may differ Culture Statement Don’t meet all desired requirements? Studies have shown that some people are less like"
+    ],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "iringOrganization\" : { \"name\" : \"Blue Origin Personnel, LLC\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Software Development Engineer I - Early Career (2027 Starts)\", \"@type\" : \"PropertyValue\", \"value\" : \"R71326\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Software Development Engineer I - Early Career (2027 S",
+      "Starts)\", \"@type\" : \"PropertyValue\", \"value\" : \"R71326\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Software Development Engineer I - Early Career (2027 Starts)\", \"description\" : \"Application close date: Applications will be accepted on an ongoing basis until the requisition is closed. At Blue Origin, we envision millions of people livi"
+    ]
+  },
+  {
+    "company": "Blue Origin",
+    "title": "Avionics / Embedded Software Engineer I - Early Career - 2027 Starts",
+    "location": "Seattle, WA +4",
+    "job_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Avionics---Embedded-Software-Engineer-I---Early-Career--2027-Starts-_R71324",
+    "job_id": "R71324",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Avionics---Embedded-Software-Engineer-I---Early-Career--2027-Starts-_R71324",
+    "http_status": 200,
+    "page_chars": 15157,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "job description, we encourage you to apply anyway. You may be just the right candidate for this or other roles. Export Control Regulations Applicants for employment at Blue Origin must be a U.S. citizen or national, U.S. permanent resident (i.e. current Green Card holder), or lawfully admitted into the U.S. as a refugee or granted asylum. Background Check Required for all positio"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "salary_signal": "OFFICIAL_PAGE_SNIPPET",
+    "salary_snippets": [
+      "nclude the relevant programming languages you have used in these settings. If you haven’t yet used a tool in a professional setting, please include relevant coursework that demonstrates your preparation for these roles. Base Pay Range for: CO applicants is $101,405.00 - $141,966.30 WA applicants is $110,623.00 - $154,871.85 Other site ranges may differ Culture Statement Don’t meet all desired requirements? Studies have shown that some people are less likely to apply to jobs unless they meet every"
+    ],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": [
+      "anization\" : { \"name\" : \"Blue Origin Personnel, LLC\", \"@type\" : \"Organization\", \"sameAs\" : \"\" }, \"identifier\" : { \"name\" : \"Avionics / Embedded Software Engineer I - Early Career (2027 Starts)\", \"@type\" : \"PropertyValue\", \"value\" : \"R71324\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Avionics / Embedded Software Engineer I - Early Career",
+      "\", \"@type\" : \"PropertyValue\", \"value\" : \"R71324\" }, \"datePosted\" : \"2026-08-31\", \"employmentType\" : \"FULL_TIME\", \"title\" : \"Avionics / Embedded Software Engineer I - Early Career (2027 Starts)\", \"description\" : \"Application close date: Applications will be accepted on an ongoing basis until the requisition is closed. At Blue Origin, we envision millions of people livi"
+    ]
+  },
+  {
+    "company": "Avalore",
+    "title": "Support Systems Developer/Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/60903E3667",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://apply.workable.com/avalore/j/60903E3667",
+    "http_status": 200,
+    "page_chars": 1816,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Avalore",
+    "title": "Software Tester / QA Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/C4D726AFF6",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://apply.workable.com/avalore/j/C4D726AFF6",
+    "http_status": 200,
+    "page_chars": 1811,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "BORDERLINE",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Avalore",
+    "title": "Software Developer/Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/937906E572",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://apply.workable.com/avalore/j/937906E572",
+    "http_status": 200,
+    "page_chars": 1809,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Avalore",
+    "title": "Site Reliability Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/F21E77744E",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://apply.workable.com/avalore/j/F21E77744E",
+    "http_status": 200,
+    "page_chars": 1807,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "STRONG",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  },
+  {
+    "company": "Alation",
+    "title": "UX Software Engineer I - Contractor",
+    "location": "Redwood City, CA",
+    "job_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770",
+    "job_id": "R10000770",
+    "posted_date": "2026-08-31",
+    "age_days": 1,
+    "salary": "",
+    "flags": "",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "discovery_url": "",
+    "aggregator_only": false,
+    "final_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770",
+    "http_status": 200,
+    "page_chars": 11644,
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "salary_signal": "NOT_FOUND_ON_FETCHED_PAGE",
+    "salary_snippets": [],
+    "match_signal": "GOOD",
+    "experience_snippets": [],
+    "graduation_snippets": [],
+    "start_snippets": []
+  }
+]

@@ -1,4 +1,5 @@
 using PlanetSurvival.Inventory.Domain;
+using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Player.Stats;
 using UnityEngine;
 
@@ -32,6 +33,29 @@ namespace PlanetSurvival.Inventory.Application
         private void OnDestroy()
         {
             _quickBar?.Dispose();
+        }
+
+        public InventoryOperationResult Add(ItemDefinition definition, int quantity)
+        {
+            InventoryOperationResult result = Inventory.Add(definition, quantity);
+            if (!result.Succeeded) return result;
+
+            for (int i = 0; i < Inventory.Stacks.Count; i++)
+            {
+                ItemStack stack = Inventory.Stacks[i];
+                if (stack.Definition.ItemId != definition.ItemId) continue;
+                if (!IsAssignedToQuickBar(stack.StackId)) QuickBar.AssignFirstAvailable(stack.StackId);
+                break;
+            }
+
+            return result;
+        }
+
+        private bool IsAssignedToQuickBar(string stackId)
+        {
+            for (int i = 0; i < QuickBar.StackIds.Count; i++)
+                if (QuickBar.StackIds[i] == stackId) return true;
+            return false;
         }
 
         public InventoryOperationResult Use(string stackId)

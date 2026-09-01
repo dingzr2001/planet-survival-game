@@ -1,0 +1,1042 @@
+[
+  {
+    "job_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005",
+    "job_id": "4719126005",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The December 2026 graduation fits the stated window, sponsorship need is accepted as a disclosure rather than prohibited, and the candidate has unusually direct C++, Python, Linux, production-system, and AI-tool alignment.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Greenhouse posting displays Apply Now for the 2027 Graduate Software Engineer role.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Expected to graduate with a related degree by Summer 2027; the application includes an August 2026–December 2026 option.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Application asks whether sponsorship is required and provides a Yes option plus a visa-details field; no no-sponsorship rule is stated.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Experience programming in C++ and/or Python in Linux environments, ideally on quantitative or latency-sensitive problems.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build proprietary trading tools, architect greenfield solutions, and safely extend established codebases.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      },
+      {
+        "field": "location",
+        "snippet": "Ability to work onsite at the New York office five days a week.",
+        "source_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "job_id": "41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "No mandatory immigration, graduation, enrollment, or start-date conflict is stated. The candidate's internship-backed API, microservices, integration, database, React/TypeScript, and AI experience maps closely to this new-grad data-products role.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Ashby posting is listed and presents an active application for the New Grad role.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      },
+      {
+        "field": "experience",
+        "snippet": "Internship experience or one year of relevant hands-on experience crafting applications and services.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build software integrations and enhance the team's integration engine across the full project lifecycle.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Calls for dependable integration frameworks and RESTful API design and development.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      },
+      {
+        "field": "preferred_match",
+        "snippet": "React/TypeScript and AI experience are bonuses.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      },
+      {
+        "field": "eligibility",
+        "snippet": "The official posting states no mandatory sponsorship, citizenship, clearance, graduation-window, enrollment, or start-date restriction.",
+        "source_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00",
+    "job_id": "149f368c-52d5-408f-ba26-ad888f318a00",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Production AI/LLM systems, end-to-end scaling, and Go align directly with the candidate's LLM-serving and distributed-backend experience.",
+    "evidence": [
+      {
+        "field": "responsibilities",
+        "snippet": "Build and scale end-to-end production systems for enterprise AI agents.",
+        "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"
+      },
+      {
+        "field": "skills",
+        "snippet": "AI/LLM production experience and React, TypeScript, or Go are valued.",
+        "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"
+      },
+      {
+        "field": "compensation",
+        "snippet": "$150,000-$180,000 annual base plus equity.",
+        "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930",
+    "job_id": "29bad846-de60-4be7-a222-69b97e044930",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Designing and operating scalable marketplace services strongly matches the candidate's distributed backend, caching, database, and microservices work.",
+    "evidence": [
+      {
+        "field": "graduation",
+        "snippet": "CS or software engineering degree completed by summer 2027.",
+        "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Design, implement, and operate critical scalable services.",
+        "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"
+      },
+      {
+        "field": "compensation",
+        "snippet": "$155,000-$160,000 annual base plus equity.",
+        "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"
+      }
+    ]
+  },
+  {
+    "job_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1",
+    "job_id": "21029",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "This early-career platform role directly matches Reid's Linux, Python/Go, containers, Kubernetes, cloud, CI/CD, Grafana, automation, and production-system experience, and it explicitly counts internships toward its 1-3 year requirement.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "career_level",
+        "snippet": "Posting explicitly describes the position as an early-career role with hands-on production-systems experience.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "One to three years may include internships, co-ops, apprenticeships, or early full-time roles.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Builds shared platform services, CI/CD, observability, reliability, automation, and AWS/on-prem infrastructure.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Linux, networking, Python/Go/Bash, containers, cloud, CI/CD, Kubernetes, AWS, and Grafana/Prometheus exposure.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "job_id": "8128744",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Large-scale financial infrastructure and backend/API work align closely with the candidate's distributed systems and production backend internships.",
+    "evidence": [
+      {
+        "field": "graduation",
+        "snippet": "Bachelor's or master's degree obtained by summer 2027; at most 18 months non-intern experience.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"
+      },
+      {
+        "field": "skills",
+        "snippet": "Backend and infrastructure specialization is preferred; Stripe uses Java, Scala, and Go among other languages.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"
+      },
+      {
+        "field": "compensation",
+        "snippet": "$122,100-$134,400 annual U.S. base salary.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"
+      }
+    ]
+  },
+  {
+    "job_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1",
+    "job_id": "R30695-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The entry-level backend role is a direct fit for Reid's C#/Java/Go, REST/gRPC microservices, SQL, AWS/cloud, scalable production systems, observability, and testing experience, with no conflicting mandatory eligibility language in the posting.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Designs, deploys, and supports backend services and APIs for fulfillment, transportation, and carrier integrations.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "languages",
+        "snippet": "Accepts statically typed languages including Java, Scala, Kotlin, C#, Swift, Objective-C, or Go.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "backend_requirements",
+        "snippet": "Seeks scalable highly available systems, SQL/RDBMS, REST APIs, gRPC, and service-oriented architecture.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "cloud_observability",
+        "snippet": "Prefers AWS services, asynchronous/event-driven patterns, and monitoring, logging, metrics, and observability.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765715002",
+    "job_id": "8765715002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad role explicitly offers H-1B sponsorship, and its backend application logic, Java/Python, AWS, and database work directly fit the candidate's backend experience.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "H1B sponsorship is available for this position.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "location",
+        "snippet": "Requires working in the San Mateo, CA headquarters office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build back-end wiring, application logic, and UI; own projects through design, coding, testing, debugging, and tuning.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Server-side Java, Python, and TypeScript on AWS, with PostgreSQL, MySQL, MongoDB, and Valkey.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765745002",
+    "job_id": "8765745002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad role explicitly offers H-1B sponsorship, and its backend application logic, Java/Python, AWS, and database work directly fit the candidate's backend experience.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "H1B sponsorship is available for this position.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "location",
+        "snippet": "Requires working in the Raleigh, NC area office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build back-end wiring, application logic, and UI; own projects through design, coding, testing, debugging, and tuning.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Server-side Java, Python, and TypeScript on AWS, with PostgreSQL, MySQL, MongoDB, and Valkey.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003",
+    "job_id": "7827894003",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "The December 2026 graduation exactly fits the program, the application accepts a sponsorship-needed response without stating a prohibition, and the candidate's C++/Python/Java/C# plus data-infrastructure background fits well; final rotation placement is broader than the preferred backend focus.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Greenhouse posting has an active application for the Core Development rotational program.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Designed for students graduating in Fall 2026 or Spring 2027 with a related STEM degree.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Application asks whether employment-based sponsorship is required and offers Yes/No responses; no no-sponsorship rule is stated.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      },
+      {
+        "field": "program_scope",
+        "snippet": "Rotations span front-end, back-end, and full-stack development across product teams.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Requires experience with at least one of JavaScript, Python, Java, C++, or C#.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      },
+      {
+        "field": "domain_match",
+        "snippet": "Program exposure includes interoperability platforms, data infrastructure, and clinical systems.",
+        "source_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007",
+    "job_id": "5225186007",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "No mandatory immigration, graduation, start-date, or citizenship conflict is stated. The candidate brings REST APIs, Node/React, TypeScript, Docker, Kubernetes, and cloud experience, though the role has a larger web/frontend component than the preferred targets.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Esri page currently displays Apply Now and identifies the position as Early Career.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Design and develop secure, stable frontend and backend web applications.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Requires modern JavaScript frameworks, Node.js/server-side JavaScript, web technologies, and RESTful API experience.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      },
+      {
+        "field": "recommended_qualifications",
+        "snippet": "TypeScript plus Docker, Kubernetes, cloud deployments, and Elasticsearch are recommended.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      },
+      {
+        "field": "education",
+        "snippet": "Bachelor's degree in computer information systems, computer science, or a similar field.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      },
+      {
+        "field": "eligibility",
+        "snippet": "The official posting states no mandatory sponsorship, citizenship, clearance, graduation-window, or start-date restriction.",
+        "source_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007"
+      }
+    ]
+  },
+  {
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683",
+    "job_id": "4445683",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "The cloud/backend stack overlaps with Reid's Java, GCP, databases, and scalable-service experience, but the role describes a senior team member and mandates 3-4+ years of enterprise development plus 3+ years of systems design, well beyond his internship-heavy profile.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Paylocity page is live and presents an Apply action.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develops mobile applications, webpages, backends, and databases; leads application, website, or server design.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Requires GCP or another cloud platform, cloud services, scalability, Java Spring Boot, and Node/NestJS.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "3-4+ years of enterprise software development and 3+ years of systems design are required.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "seniority",
+        "snippet": "Posting calls the Engineer I a senior team member who leads releases and mentors junior developers.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      }
+    ]
+  },
+  {
+    "job_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1",
+    "job_id": "R0046629-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Reid's Ray/vLLM/SGLang serving, distributed LLM infrastructure, C++/Python/Java, and large-scale backend work align exceptionally well, but this Level 4 role requires post-bachelor's or post-graduate professional experience he does not yet have.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Designs scalable ML infrastructure, feature pipelines, model serving, cloud training/evaluation, and data systems.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Python/Java, distributed systems, large-scale ML infrastructure, and Spark, Flink, or Ray.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires 2+ years post-bachelor's, or a technical master's plus 1+ year post-grad, or a relevant PhD.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "work_arrangement",
+        "snippet": "Default Together policy expects team members in an office 4+ days per week.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006",
+    "job_id": "4702969006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "SKIP",
+    "why": "No mandatory immigration restriction is stated, but this is a consumer-product management/development role rather than software engineering and does not align with the candidate's backend focus.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Responsibilities require supporting the business onsite at the Needham, MA headquarters.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Lead consumer-product development from brainstorm through mass production and manage product specifications and sales performance.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Seeks 1-2+ years in product development, product marketing, marketing, or human-factors engineering.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "degree",
+        "snippet": "Bachelor's in Business, Marketing, Management, Engineering, or equivalent experience.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "Application asks about sponsorship but the posting states no mandatory sponsorship exclusion.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006",
+    "job_id": "4703760006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "SKIP",
+    "why": "No mandatory immigration restriction is stated, but this is a consumer-product management/development role rather than software engineering and does not align with the candidate's backend focus.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Onsite position based at the Needham, MA headquarters.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Lead consumer-product development from brainstorm through mass production and manage category direction.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Seeks 1-2+ years in product development, product marketing, marketing, or human-factors engineering.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "degree",
+        "snippet": "Bachelor's in Business, Marketing, Management, Engineering, or equivalent experience.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "Application asks about sponsorship but the posting states no mandatory sponsorship exclusion.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      }
+    ]
+  },
+  {
+    "job_url": "https://apply.workable.com/avalore/j/F21E77744E",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The SRE work strongly matches Reid's distributed systems, cloud, automation, observability, and incident-analysis background, but the posting explicitly requires a SECRET clearance and says Avalore will not sponsor work visas.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workable record is published under posting ID 6067827.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "clearance",
+        "snippet": "SECRET Security Clearance Required.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Applicants must already be authorized full-time; Avalore will not sponsor work visas for this position.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Owns SLOs/KPIs, monitoring and alerting, root-cause analysis, automation, capacity planning, and disaster recovery.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Junior level accepts 0-3 years of experience plus a bachelor's degree.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      }
+    ]
+  },
+  {
+    "job_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756",
+    "job_id": "JR-202618756",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The graduation window and Southeast Michigan location are workable, and the candidate closely matches Python, Azure, data pipelines, databases, and AI/ML delivery, but GM expressly rejects candidates needing sponsorship now or in the future.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official GM Workday page returns the current Entry Level Software Engineer requisition JR-202618756.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "GM does not provide immigration-related sponsorship for this role; do not apply if sponsorship is needed now or in the future.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Must be graduating between December 2026 and August 2027.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      },
+      {
+        "field": "location",
+        "snippet": "Must be able to work in Southeast Michigan full-time, 40 hours per week.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Requires Python; prefers SQL, Python/JavaScript, Databricks in Azure, data storage, databases, and data-processing frameworks.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build data pipelines, scalable AI-driven solutions, web apps, and applications that train and serve machine-learning models.",
+        "source_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756"
+      }
+    ]
+  },
+  {
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647",
+    "job_id": "01870647",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The GenAI/agentic-AI role is an excellent technical match for the candidate's LLM serving, RAG, LangChain/LangGraph, Python, and C++ work, but it requires U.S. citizenship and an active Top Secret clearance after day one.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "U.S. citizenship is required because only U.S. citizens are eligible for the required clearance.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "clearance",
+        "snippet": "DoD Top Secret clearance; active and existing security clearance required after day 1.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build and evaluate LLM agentic systems, retrieval/reasoning workflows, tool-using agents, and ML pipelines.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Current seniors or recent undergraduate/master's students; bachelor's degree obtained by start date.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "technology",
+        "snippet": "Requires proficiency in Java, Python, and/or C++; prefers LangChain, LangGraph, Autogen, RAG, and agent evaluation.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006",
+    "job_id": "4705236006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The candidate's C++/Java, Python/JavaScript, large-scale backend, reliability, and end-to-end delivery experience is a strong substantive match, but Everlaw explicitly will not sponsor this role.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Greenhouse page displays Apply for Software Engineer I.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "At this time, Everlaw is not sponsoring U.S. employment visas for this role.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Proficiency in a compiled language such as C++ or Java and a scripting language such as Python or JavaScript.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      },
+      {
+        "field": "experience",
+        "snippet": "Software projects may be delivered through class assignments, personal projects, or internships.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Own complex product features end-to-end and improve reliability across a large-scale codebase.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      },
+      {
+        "field": "location",
+        "snippet": "Oakland hybrid schedule with in-office work Monday, Wednesday, and Thursday.",
+        "source_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139",
+    "job_id": "431bb19f-3118-4184-9fc9-65179adbb139",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Excellent backend, distributed-systems, data-pipeline, and AI-agent alignment, but the candidate needs present and future sponsorship and cannot start by the mandatory mid-September 2026 date.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Ashby posting is listed and exposes the current role and application.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Visa sponsorship is not available for this role.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      },
+      {
+        "field": "start_date",
+        "snippet": "Available to start by mid-September 2026.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      },
+      {
+        "field": "experience",
+        "snippet": "1–6 years of software engineering experience, ideally at an early-stage startup.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Strong backend engineering fundamentals: APIs, data modeling, and distributed systems; high-volume data pipelines and AI-native development.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      },
+      {
+        "field": "location",
+        "snippet": "Full-time, on-site role based in San Francisco, California.",
+        "source_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12",
+    "job_id": "701a9307-0619-45d3-b077-cabe9897cd12",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad infrastructure role is an excellent technical fit for Reid's distributed services, Python/Java/Go, cloud operations, automation, and LLM-infrastructure experience, but it requires an active US clearance or eligibility to obtain one, which conflicts with his profile.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Lever page is live and presents an Apply action.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Requires active US Security clearance, or eligibility and willingness to obtain one.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Operates, deploys, debugs, scales, and automates Palantir services and infrastructure for government customers.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "systems_fit",
+        "snippet": "Values load balancing, monitoring, distributed systems, configuration management, and large-scale production systems.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "languages",
+        "snippet": "Seeks proficiency in Java, Python, Bash, JavaScript, Go, or similar languages.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      }
+    ]
+  },
+  {
+    "job_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855",
+    "job_id": "R-00190855",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The junior DevOps scope closely matches Reid's Linux, Docker, Kubernetes, CI/CD, Grafana, cloud, and deployment experience, but US citizenship and an active TS/SCI clearance with CI polygraph are mandatory.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "citizenship_clearance",
+        "snippet": "Minimum requirement: US Citizenship with TS/SCI and Counter-Intelligence Polygraph clearance.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires 1-3 years in DevOps, systems engineering, or infrastructure support and a related bachelor's degree.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Linux, Docker, CI/CD, Terraform or Ansible, monitoring/logging, networking, and troubleshooting exposure.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Supports deployments, pipelines, monitoring, container orchestration, automation, and production reliability.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      }
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8130930",
+    "job_id": "8130930",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Strong technical fit, but this requisition is based in London and no UK work authorization is established.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Primary office location is London, United Kingdom.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8130930"
+      }
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "job_id": "8157838",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Strong technical fit, but this requisition is based in Toronto and no Canadian work authorization is established.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Primary office location is Toronto, Canada.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8157838"
+      },
+      {
+        "field": "graduation",
+        "snippet": "CS degree obtained by summer 2027; no more than 18 months non-intern experience.",
+        "source_url": "https://stripe.com/jobs/search?gh_jid=8157838"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765751002",
+    "job_id": "8765751002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The integrations-platform work fits the candidate's Java/API background, but the posting mandates work from the Toronto office and the candidate has only confirmed U.S. work authorization.",
+    "evidence": [
+      {
+        "field": "geography",
+        "snippet": "This position requires you to be in the Toronto, Ontario, Canada office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Design and develop tools and systems for school-district integrations and a next-generation integration platform.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Java or another object-oriented language is required; Java, SQL, React, Linux, and Git are pluses.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      }
+    ]
+  },
+  {
+    "job_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer",
+    "job_id": "9400",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The stack is relevant, but the required U.S. Government clearance explicitly requires U.S. citizenship.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "Application states U.S. citizenship is required to obtain the required clearance.",
+        "source_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer"
+      },
+      {
+        "field": "posted",
+        "snippet": "Date posted: August 31, 2026.",
+        "source_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The entry-level experience bar and C#/SQL/full-stack preferences align with the candidate, but the posting explicitly requires U.S. citizenship, which the candidate does not have.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official HII SuccessFactors page shows the current Engineer Software 1 requisition 48914.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      },
+      {
+        "field": "citizenship",
+        "snippet": "US Citizenship Required for this Position: Yes.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Clearance Required: No — clearance not required to start.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      },
+      {
+        "field": "experience",
+        "snippet": "Bachelor's degree and zero years of relevant exempt experience.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Nice-to-have skills include C#, SQL, Visual Studio, full-stack builds, and MVVM architecture.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      },
+      {
+        "field": "work_arrangement",
+        "snippet": "Newport News, Virginia; no telework opportunity.",
+        "source_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.jhuapl.edu/jobs/59510?icims=1",
+    "job_id": "59510",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "Modern C++/Python, DevOps, system design, and high-performance computing are relevant, but U.S. citizenship and eligibility for an Interim Secret clearance by the start date are mandatory.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "Eligibility requirements for classified access include U.S. citizenship.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Must obtain Interim Secret clearance by the start date and ultimately Final Secret clearance.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop C++/Python combat-system models, prototype algorithms, and optimize simulation workflows.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Requires a BS or MS in CS or a related field and fluency in modern C++ and Python.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "preferred",
+        "snippet": "AI/ML workflow experience and GPU or CPU-cluster experience are preferred.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.jhuapl.edu/jobs/59558?icims=1",
+    "job_id": "59558",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The C++/Java, database, AI, networking, and prototype-development work is transferable, but U.S. citizenship and Secret-clearance eligibility are mandatory.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "Eligibility requirements for classified access include U.S. citizenship.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Must obtain Interim Secret clearance by the start date and ultimately Final Secret clearance.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build proof-of-concept software spanning AI, real-time computing, network/web services, data management, and visualization.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Requires a related BS/MS plus coursework or internships involving complex software development.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "technology",
+        "snippet": "C++, Java, or TypeScript in Linux/Unix is preferred.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666",
+    "job_id": "342666",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The role explicitly requires U.S. citizenship and eligibility for a government security clearance.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "U.S. citizenship and ability to obtain a security clearance are required.",
+        "source_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666"
+      },
+      {
+        "field": "compensation",
+        "snippet": "$99,000 annual base pay.",
+        "source_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666"
+      }
+    ]
+  },
+  {
+    "job_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858",
+    "job_id": "R-50858",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Reid brings Linux, Azure/AWS, scripting, and production-service troubleshooting, but the role's core Windows/Active Directory, firewall, patching, and RPA administration requirements are only a partial fit; sponsorship is explicitly unavailable.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted, canApply is true, and the listed end date is September 7, 2026.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Sponsorship is not available for this role.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "core_requirements",
+        "snippet": "Requires Windows/Linux server administration plus Active Directory, password safes, PowerShell, and Bash.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "infrastructure_requirements",
+        "snippet": "Requires patching, vulnerability remediation, firewall administration, networking, VMware, and Azure/AWS support.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires two years of programming and one year of application-development methodology experience.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006",
+    "job_id": "4704646006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Requires an active Top Secret clearance and U.S. citizenship, and the reverse-engineering specialty is outside the target focus.",
+    "evidence": [
+      {
+        "field": "clearance",
+        "snippet": "Active Top Secret clearance required; U.S. citizenship is needed.",
+        "source_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006"
+      }
+    ]
+  }
+]

@@ -1,0 +1,124 @@
+[
+  {
+    "company": "Raytheon",
+    "title": "System Engineer I",
+    "location": "US-MA-TEWKSBURY-TB2 ~ 50 Apple Hill Dr ~ SUDBURY BLDG, Tewksbury Tb2 200 Sudbury",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-TEWKSBURY-TB2--50-Apple-Hill-Dr--SUDBURY-BLDG-Tewksbury-Tb2-200-Sudbury/System-Engineer-I_01866674",
+    "job_id": "01866674",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I (Onsite)",
+    "location": "US-MA-MARLBOROUGH-MA2 ~ 1001 Boston Post Rd ~ BLDG 2",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA2--1001-Boston-Post-Rd--BLDG-2/Software-Engineer-I--Onsite-_01861525",
+    "job_id": "01861525",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Walt Disney",
+    "title": "Software Engineer I",
+    "location": "Glendale, CA, USA",
+    "job_url": "https://disney.wd5.myworkdayjobs.com/job/Glendale-CA-USA/Software-Engineer-I_10158076-2",
+    "job_id": "10158076",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Harris",
+    "title": "Associate Software Engineer, RPG",
+    "location": "Tennessee, United States",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601-1",
+    "job_id": "R0045601-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Harriscomputer",
+    "title": "Associate Software Engineer, RPG",
+    "location": "Tennessee, United States",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Tennessee-United-States/Associate-Software-Engineer--RPG_R0045601",
+    "job_id": "R0045601",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I, RCU (Onsite - Security Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--RCU--Onsite---Security-Clearance-_01870743",
+    "job_id": "01870743",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {
+      "title_clearance": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I, CDS (Onsite - Secret Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--CDS--Onsite---Secret-Clearance-_01870383",
+    "job_id": "01870383",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Software Engineer I (Hybrid - Aguadilla, PR)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Software-Engineer-I--Hybrid---Aguadilla--PR-_01870496",
+    "job_id": "01870496",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

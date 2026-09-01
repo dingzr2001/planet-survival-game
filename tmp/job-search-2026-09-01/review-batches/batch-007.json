@@ -1,0 +1,131 @@
+[
+  {
+    "company": "Nidec",
+    "title": "Software Development Engineer",
+    "location": "North America/USA/Illinois/St. Charles, IL",
+    "job_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456",
+    "job_id": "R0017456",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Northrop Grumman",
+    "title": "2027 Associate Software Engineer / Software Engineer - Huntsville AL",
+    "location": "Huntsville, AL",
+    "job_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1",
+    "job_id": "R10247580-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "tional origin, age, veteran status, disability, or any other protected class. For our complete EEO and pay transparency statement, please visit http://www.northropgrumman.com/EEO. U.S. Citizenship is required for all positions with a government clearance and certain other restricted positions. Existing Applicants: Need to update your contact information or email address? Once logged in"
+      ],
+      "clearance": [
+        "pe\" : \"FULL_TIME\", \"title\" : \"2027 Associate Software Engineer / Software Engineer - Huntsville AL\", \"description\" : \"RELOCATION ASSISTANCE: Relocation assistance may be available CLEARANCE REQUIRED FOR START: No CLEARANCE TYPE: Secret TRAVEL: No Description At Northrop Grumman, our employees have incredible opportunities to work on revolutionary systems that impact people's lives around the world today, and for"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "NVIDIA",
+    "title": "Developer Technology Engineer - AI - New College Graduate 2026",
+    "location": "Santa Clara, CA +5",
+    "job_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557",
+    "job_id": "JR2024557",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "OmegaHires",
+    "title": "Java Springboot Python AI FS Developer",
+    "location": "USA",
+    "job_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "OmegaHires",
+    "title": "Java Python AI Developer",
+    "location": "Phoenix, AZ",
+    "job_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Precisely",
+    "title": "Associate software Engineer - Python AI",
+    "location": "USA",
+    "job_url": "https://www.precisely.com/careers-and-culture/us-jobs/job?gh_jid=4722721005",
+    "job_id": "4722721005",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Boca Raton - June",
+    "location": "Boca Raton, FL",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023",
+    "job_id": "R116023",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - June",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2",
+    "job_id": "R117626-2",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

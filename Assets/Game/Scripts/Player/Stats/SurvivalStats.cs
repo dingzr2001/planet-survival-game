@@ -10,11 +10,13 @@ namespace PlanetSurvival.Player.Stats
         [SerializeField] private Vital _sanity = new(100f, 100f);
         [SerializeField] private Vital _hunger = new(100f, 100f);
         [SerializeField] private Vital _thirst = new(100f, 100f);
+        [SerializeField] private Vital _oxygen = new(100f, 100f);
 
         public Vital Health => _health;
         public Vital Sanity => _sanity;
         public Vital Hunger => _hunger;
         public Vital Thirst => _thirst;
+        public Vital Oxygen => _oxygen;
 
         public Vital Get(VitalType type)
         {
@@ -24,6 +26,7 @@ namespace PlanetSurvival.Player.Stats
                 VitalType.Sanity => _sanity,
                 VitalType.Hunger => _hunger,
                 VitalType.Thirst => _thirst,
+                VitalType.Oxygen => _oxygen,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }

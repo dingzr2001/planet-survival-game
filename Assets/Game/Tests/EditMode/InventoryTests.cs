@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.Items.Definitions;
 using UnityEngine;
@@ -76,6 +77,39 @@ namespace PlanetSurvival.Tests
 
             Assert.That(result.Failure, Is.EqualTo(InventoryFailure.InvalidQuantity));
             Assert.That(inventory.Stacks, Is.Empty);
+        }
+
+        [Test]
+        public void PlayerInventory_FirstPickup_WhenQuickBarIsEmpty_AssignsFirstSlot()
+        {
+            var player = new GameObject("Inventory Test Player");
+            PlayerInventory playerInventory = player.AddComponent<PlayerInventory>();
+
+            InventoryOperationResult result = playerInventory.Add(_water, 1);
+
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(playerInventory.QuickBar.StackIds[0],
+                Is.EqualTo(playerInventory.Inventory.Stacks[0].StackId));
+            Object.DestroyImmediate(player);
+        }
+
+        [Test]
+        public void PlayerInventory_DifferentPickups_AssignConsecutiveQuickBarSlots()
+        {
+            var food = ScriptableObject.CreateInstance<ItemDefinition>();
+            food.Configure("ration", "Ration", 1, 5, true, true);
+            var player = new GameObject("Inventory Test Player");
+            PlayerInventory playerInventory = player.AddComponent<PlayerInventory>();
+
+            playerInventory.Add(_water, 1);
+            playerInventory.Add(food, 1);
+
+            Assert.That(playerInventory.QuickBar.StackIds[0],
+                Is.EqualTo(playerInventory.Inventory.Stacks[0].StackId));
+            Assert.That(playerInventory.QuickBar.StackIds[1],
+                Is.EqualTo(playerInventory.Inventory.Stacks[1].StackId));
+            Object.DestroyImmediate(player);
+            Object.DestroyImmediate(food);
         }
     }
 }

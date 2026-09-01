@@ -1,0 +1,282 @@
+[
+  {
+    "job_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770",
+    "job_id": "R10000770",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "The candidate has transferable React/TypeScript experience, but the role is specialized in frontend UX and interaction design and explicitly limits consideration to local Redwood City candidates; the candidate is currently in Atlanta.",
+    "evidence": [
+      {
+        "field": "geography",
+        "snippet": "Hybrid in Redwood City two days per week; local candidates only, with no relocation offered.",
+        "source_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770"
+      },
+      {
+        "field": "employment",
+        "snippet": "Full-time contract at $40 per hour, open to contract-to-hire.",
+        "source_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Contribute production frontend code and make UX decisions about components, hierarchy, and interactions.",
+        "source_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770"
+      },
+      {
+        "field": "technology",
+        "snippet": "Requires frontend coding with React, TypeScript, and HTML/CSS in a version-controlled codebase.",
+        "source_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770"
+      },
+      {
+        "field": "portfolio",
+        "snippet": "Requires a portfolio showing ownership of interaction design and implementation.",
+        "source_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770"
+      }
+    ]
+  },
+  {
+    "job_url": "https://apply.workable.com/avalore/j/937906E572",
+    "job_id": "937906E572",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Infrastructure-as-code, APIs, databases, scalability, and full-stack integration strongly match the candidate, but the role requires an existing Secret clearance and explicitly provides no visa sponsorship.",
+    "evidence": [
+      {
+        "field": "clearance",
+        "snippet": "SECRET Security Clearance Required.",
+        "source_url": "https://apply.workable.com/avalore/j/937906E572"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Applicants must already have full-time U.S. work authorization; Avalore will not sponsor work visas.",
+        "source_url": "https://apply.workable.com/avalore/j/937906E572"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop infrastructure, data tools, user interfaces, source code, Infrastructure-as-Code, and Configuration-as-Code.",
+        "source_url": "https://apply.workable.com/avalore/j/937906E572"
+      },
+      {
+        "field": "systems",
+        "snippet": "Optimize performance and scalability and integrate APIs, external systems, and database models.",
+        "source_url": "https://apply.workable.com/avalore/j/937906E572"
+      },
+      {
+        "field": "experience",
+        "snippet": "Junior level accepts 0-3 years of experience plus a bachelor's degree.",
+        "source_url": "https://apply.workable.com/avalore/j/937906E572"
+      }
+    ]
+  },
+  {
+    "job_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326",
+    "job_id": "R71326",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The candidate meets the degree/start window and closely matches the C++/Python, server-side, DevOps, cloud, Docker, and Kubernetes work, but Blue Origin's export-control requirement excludes F-1/OPT candidates without U.S.-person status.",
+    "evidence": [
+      {
+        "field": "export_control",
+        "snippet": "Applicants must be a U.S. citizen/national, permanent resident, refugee, or asylee.",
+        "source_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326"
+      },
+      {
+        "field": "graduation_start",
+        "snippet": "Must have earned the degree within the last year and be able to start by Fall 2027.",
+        "source_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Software lifecycle work includes design, coding, testing, maintenance, DevOps, data analysis, and server/client troubleshooting.",
+        "source_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326"
+      },
+      {
+        "field": "technology",
+        "snippet": "Accepts Java, C#, C++, or Python; AWS, Docker, and Kubernetes are desired.",
+        "source_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326"
+      },
+      {
+        "field": "experience",
+        "snippet": "Relevant internship, co-op, or hands-on software-development experience is required.",
+        "source_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326"
+      }
+    ]
+  },
+  {
+    "job_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788",
+    "job_id": "R0241788",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The junior C++ role directly fits the candidate's professional C++, testing, and CI/CD experience, but the ability to obtain a Secret clearance is mandatory and the candidate has no clearance eligibility.",
+    "evidence": [
+      {
+        "field": "clearance",
+        "snippet": "Ability to obtain a Secret clearance is required.",
+        "source_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Design, modify, develop, write, and implement software applications using Agile methods.",
+        "source_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788"
+      },
+      {
+        "field": "technology",
+        "snippet": "Requires C++ fundamentals including OOP, data structures, standard library, memory management, and design patterns.",
+        "source_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788"
+      },
+      {
+        "field": "testing",
+        "snippet": "Requires debugging and testing-infrastructure skills; Git, Jira, Bamboo, and CI/CD are preferred.",
+        "source_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788"
+      },
+      {
+        "field": "degree",
+        "snippet": "Bachelor's degree in a STEM field is required.",
+        "source_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788"
+      }
+    ]
+  },
+  {
+    "job_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1",
+    "job_id": "R53009-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "The candidate's C++ and Linux experience transfers well to this entry-level EDA software role, although synthesis and electronic-design-automation work is a specialized domain not shown in the resume.",
+    "evidence": [
+      {
+        "field": "responsibilities",
+        "snippet": "Analyze, debug, and fix customer problems and develop features that improve synthesis timing, area, and power.",
+        "source_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1"
+      },
+      {
+        "field": "technology",
+        "snippet": "Requires C/C++ software-development experience in a Linux environment.",
+        "source_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1"
+      },
+      {
+        "field": "degree",
+        "snippet": "Requires a BS in Computer Science, Computer Engineering, or Electrical Engineering.",
+        "source_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1"
+      },
+      {
+        "field": "level",
+        "snippet": "Mentoring is provided to develop programming skills into professional software-engineering skills.",
+        "source_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "The posting states no mandatory sponsorship, citizenship, or clearance restriction.",
+        "source_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269",
+    "job_id": "744000146449269",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The candidate fits the cloud-native APIs, DevOps, CI/CD, Java/C#/Python/Go, and major-cloud-platform work and the graduation window, but CapTech explicitly cannot sponsor this position.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "CapTech cannot transfer or sponsor a work visa; applicants must work for any U.S. employer without sponsorship.",
+        "source_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Candidates must graduate in December 2026 or Spring/Summer 2027 in CS or a related field.",
+        "source_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop scalable systems using cloud-native architectures, APIs, automation, DevOps, and CI/CD.",
+        "source_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269"
+      },
+      {
+        "field": "technology",
+        "snippet": "Stack includes Java, .NET/C#, Python, Go, JavaScript/TypeScript, AWS, Azure, GCP, and AI technologies.",
+        "source_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269"
+      },
+      {
+        "field": "experience",
+        "snippet": "Software-application project or internship experience is highly valued.",
+        "source_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269"
+      }
+    ]
+  },
+  {
+    "job_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1",
+    "job_id": "JR9201-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The early-career production-software role fits the candidate's full-stack, API, database, cloud, testing, and AI-development background, but CDK explicitly requires authorization without current or future sponsorship.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "Must be authorized to work in the U.S. without current or future employment-based visa sponsorship.",
+        "source_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1"
+      },
+      {
+        "field": "experience",
+        "snippet": "Bachelor's in CS/Engineering or related field with 0-2 years of professional experience.",
+        "source_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build and ship production software, own correctness and security, test AI-generated code, and join on-call rotations.",
+        "source_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1"
+      },
+      {
+        "field": "systems",
+        "snippet": "Requires core CS and systems-architecture understanding; backend APIs, databases, and cloud are preferred.",
+        "source_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1"
+      },
+      {
+        "field": "engineering_practices",
+        "snippet": "Version control, code review, automated testing, and CI/CD exposure are preferred.",
+        "source_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250",
+    "job_id": "26962250",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The role is an exceptional match for the candidate's LangGraph/LangChain agent project, Python/FastAPI RAG work, distributed LLM serving, microservices, Docker, and Kubernetes, but Citi explicitly rules out present or future sponsorship.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "Must be authorized to work in the U.S. without employer sponsorship now or in the future.",
+        "source_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250"
+      },
+      {
+        "field": "agentic_ai",
+        "snippet": "Work covers LangGraph, multi-agent systems, agentic flows, LangChain, LlamaIndex, and RAG.",
+        "source_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250"
+      },
+      {
+        "field": "backend",
+        "snippet": "Back-end microservices use Java/Spring; GenAI development uses Java and Python/FastAPI.",
+        "source_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250"
+      },
+      {
+        "field": "infrastructure",
+        "snippet": "Includes AWS deployment, MLOps, Kafka/Flink messaging, Docker, Kubernetes, and scalable inference.",
+        "source_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Requires a technology bachelor's degree with AI/ML coursework or equivalent hands-on experience.",
+        "source_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250"
+      }
+    ]
+  }
+]

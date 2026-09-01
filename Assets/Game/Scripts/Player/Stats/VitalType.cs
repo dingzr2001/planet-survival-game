@@ -5,6 +5,7 @@ namespace PlanetSurvival.Player.Stats
         Health,
         Sanity,
         Hunger,
-        Thirst
+        Thirst,
+        Oxygen
     }
 }

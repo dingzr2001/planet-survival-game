@@ -27,7 +27,7 @@ namespace PlanetSurvival.Items.World
 
         public void Interact(in InteractionContext context)
         {
-            InventoryOperationResult result = context.Inventory.Inventory.Add(_definition, _quantity);
+            InventoryOperationResult result = context.Inventory.Add(_definition, _quantity);
             if (result.Succeeded)
             {
                 Destroy(gameObject);

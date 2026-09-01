@@ -21,6 +21,8 @@ namespace PlanetSurvival.Bootstrap
         [SerializeField] private TerrainGenerationSettings _terrainSettings;
         [SerializeField] private PlanetEnvironmentSettings _environmentSettings;
         [SerializeField] private ResourceSpawnSettings _resourceSpawnSettings;
+        [SerializeField, Tooltip("Slot artwork for the quick bar and inventory panel. Optional; the HUD falls back to the built-in GUI skin.")]
+        private InventorySkin _inventorySkin;
 
         private const string RuntimeRootName = "Gameplay Runtime";
 
@@ -41,6 +43,11 @@ namespace PlanetSurvival.Bootstrap
             _terrainSettings = terrainSettings;
             _environmentSettings = environmentSettings;
             _resourceSpawnSettings = resourceSpawnSettings;
+        }
+
+        public void ConfigureUi(InventorySkin inventorySkin)
+        {
+            _inventorySkin = inventorySkin;
         }
 
         private void Start()
@@ -73,10 +80,10 @@ namespace PlanetSurvival.Bootstrap
             GameObject player = CreatePlayer(root.transform, map);
             CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
-            GameClock clock = CreateClock(root.transform, player.GetComponent<SurvivalDecay>());
+            GameClock clock = CreateClock(root.transform, player);
             clock.Configure(_environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay);
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
-            CreateHud(root.transform, player, clock);
+            CreateHud(root.transform, player, clock, _inventorySkin);
             BindPlayerDeath(player);
         }
 
@@ -109,6 +116,8 @@ namespace PlanetSurvival.Bootstrap
             player.AddComponent<PlayerSurvival>();
             player.AddComponent<PlayerInventory>();
             player.AddComponent<SurvivalDecay>();
+            player.AddComponent<PlayerOxygen>();
+            player.AddComponent<PlayerHypoxia>();
             player.AddComponent<PlayerInteractor>();
             player.AddComponent<ThirdPersonMotor>();
             return player;
@@ -138,22 +147,23 @@ namespace PlanetSurvival.Bootstrap
             return light;
         }
 
-        private static GameClock CreateClock(Transform parent, SurvivalDecay survivalDecay)
+        private static GameClock CreateClock(Transform parent, GameObject player)
         {
             var clockObject = new GameObject("Game Clock");
             clockObject.transform.SetParent(parent);
             GameClock clock = clockObject.AddComponent<GameClock>();
-            clock.Bind(survivalDecay);
+            clock.Bind(player.GetComponent<SurvivalDecay>());
+            clock.Bind(player.GetComponent<PlayerHypoxia>());
             return clock;
         }
 
-        private static void CreateHud(Transform parent, GameObject player, GameClock clock)
+        private static void CreateHud(Transform parent, GameObject player, GameClock clock, InventorySkin inventorySkin)
         {
             var hudObject = new GameObject("Survival HUD");
             hudObject.transform.SetParent(parent);
             hudObject.AddComponent<SurvivalHudView>().Bind(player.GetComponent<PlayerSurvival>(), clock);
             hudObject.AddComponent<InteractionPromptView>().Bind(player.GetComponent<PlayerInteractor>());
-            hudObject.AddComponent<InventoryView>().Bind(player.GetComponent<PlayerInventory>());
+            hudObject.AddComponent<InventoryView>().Bind(player.GetComponent<PlayerInventory>(), inventorySkin);
             hudObject.AddComponent<GameOverView>();
         }
 

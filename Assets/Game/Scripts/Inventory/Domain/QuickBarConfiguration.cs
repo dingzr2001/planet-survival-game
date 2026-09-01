@@ -19,6 +19,16 @@ namespace PlanetSurvival.Inventory.Domain
         public IReadOnlyList<string> StackIds => _stackIds;
         public event Action Changed;
 
+        public bool AssignFirstAvailable(string stackId)
+        {
+            for (int i = 0; i < _stackIds.Length; i++)
+            {
+                if (_stackIds[i] == null) return Assign(i, stackId);
+            }
+
+            return false;
+        }
+
         public bool Assign(int slotIndex, string stackId)
         {
             if (!IsValidSlot(slotIndex) || _inventory.FindStack(stackId) == null)

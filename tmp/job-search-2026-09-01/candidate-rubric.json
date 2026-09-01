@@ -1,0 +1,32 @@
+{
+  "graduation_date": "2026-12",
+  "earliest_start_date": "2026-12-20",
+  "us_work_authorized": true,
+  "requires_sponsorship_now": true,
+  "requires_sponsorship_future": true,
+  "us_citizen": false,
+  "us_permanent_resident": false,
+  "security_clearance": false,
+  "target_priority": [
+    "Backend SWE",
+    "Distributed Systems",
+    "Infrastructure / Platform",
+    "AI / ML Infrastructure",
+    "General SWE"
+  ],
+  "match_strengths": [
+    "C++",
+    "Python",
+    "C#",
+    "Java",
+    "Go",
+    "gRPC and REST APIs",
+    "distributed systems",
+    "microservices",
+    "Kubernetes and Docker",
+    "cloud platforms",
+    "databases and caching",
+    "Ray, vLLM, and SGLang",
+    "LLM infrastructure"
+  ]
+}

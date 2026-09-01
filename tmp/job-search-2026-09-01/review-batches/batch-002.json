@@ -1,0 +1,138 @@
+[
+  {
+    "company": "Clera",
+    "title": "Software Engineer - AI & Data Systems",
+    "location": "San Francisco, CA",
+    "job_url": "https://jobs.ashbyhq.com/clera/431bb19f-3118-4184-9fc9-65179adbb139",
+    "job_id": "431bb19f-3118-4184-9fc9-65179adbb139",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "DV Trading",
+    "title": "2027 Graduate Software Engineer - DV Commodities",
+    "location": "New York City, NY",
+    "job_url": "https://job-boards.greenhouse.io/dvtrading/jobs/4719126005",
+    "job_id": "4719126005",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Esri",
+    "title": "Software Development Engineer I - ArcGIS Hub",
+    "location": "Redlands, CA +2",
+    "job_url": "https://www.esri.com/careers/5225186007?gh_jid=5225186007",
+    "job_id": "5225186007",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "EvenUp",
+    "title": "Software Engineer (New Grad), Data Products",
+    "location": "San Francisco, CA / Toronto, ON",
+    "job_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "job_id": "41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Jobright"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Everlaw",
+    "title": "Software Engineer I",
+    "location": "Oakland, CA",
+    "job_url": "https://job-boards.greenhouse.io/everlaw/jobs/4705236006",
+    "job_id": "4705236006",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "g strategic thinking and a collaborative approach to solving complex technical problems. You are authorized to work in the United States. Please note that at this time, Everlaw is not sponsoring U.S. employment visas for this role. Bonus points You are familiar with Linux operating systems and environments. You have hands-on experience using Git or a similar version contr"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "General Motors",
+    "title": "Entry Level Software Engineer",
+    "location": "Milford, MIWarren, MI",
+    "job_url": "https://generalmotors.wd5.myworkdayjobs.com/en-CA/Careers_GM/job/Warren-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618756",
+    "job_id": "JR-202618756",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify",
+      "Workday direct"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "th data storage solutions, databases, and data processing framework Ability to translate business questions into data-driven solutions Experience building AI/ML based solutions GM does not provide immigration-related sponsorship for this role. Do not apply for this role if you will need GM immigration sponsorship now or in the future. This includes direct company sponsorship, entry of GM as the immigr"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Huntington Ingalls Industries",
+    "title": "Software Engineer 1 - CVN 21 Design",
+    "location": "Newport News, VA",
+    "job_url": "https://careers.huntingtoningalls.com/job/Newport-News-ENGINEER-SOFTWARE-1-Virg/1425127900?ats=successfactors",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "Start Please wait... ENGINEER SOFTWARE 1 Location: Newport News, Virginia, United States Date: Aug 31, 2026 Req ID: 48914 Team: E79 CVN 21 DESIGN Entity: Newport News Shipbuilding US Citizenship Required for this Position: Yes Full-Time Shift: 1st Relocation: Relocation assistance will be available Virtual/Telework Opportunity: No - Not eligible for telework Travel Requirements: N"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "InterSystems",
+    "title": "Software Engineer Rotational Program - Early Career",
+    "location": "Boston, MA",
+    "job_url": "https://job-boards.greenhouse.io/intersystems/jobs/7827894003",
+    "job_id": "7827894003",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

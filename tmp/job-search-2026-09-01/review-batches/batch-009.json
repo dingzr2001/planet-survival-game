@@ -1,0 +1,156 @@
+[
+  {
+    "company": "Zoox",
+    "title": "Embedded Software Engineer - Drive Systems",
+    "location": "Foster City, CA",
+    "job_url": "https://jobs.lever.co/zoox/ea3fbfaf-588b-434a-9a5a-c61edc731a40",
+    "job_id": "ea3fbfaf-588b-434a-9a5a-c61edc731a40",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  },
+  {
+    "company": "Avalore",
+    "title": "Support Systems Developer/Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/60903E3667",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  },
+  {
+    "company": "Avalore",
+    "title": "Software Tester / QA Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/C4D726AFF6",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  },
+  {
+    "company": "Blue Origin",
+    "title": "Avionics / Embedded Software Engineer I - Early Career - 2027 Starts",
+    "location": "Seattle, WA +4",
+    "job_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Avionics---Embedded-Software-Engineer-I---Early-Career--2027-Starts-_R71324",
+    "job_id": "R71324",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "job description, we encourage you to apply anyway. You may be just the right candidate for this or other roles. Export Control Regulations Applicants for employment at Blue Origin must be a U.S. citizen or national, U.S. permanent resident (i.e. current Green Card holder), or lawfully admitted into the U.S. as a refugee or granted asylum. Background Check Required for all positio"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  },
+  {
+    "company": "SpaceX",
+    "title": "Embedded Software Engineer - Starlink",
+    "location": "Bastrop, TX",
+    "job_url": "https://job-boards.greenhouse.io/spacex/jobs/8706480002?gh_jid=8706480002",
+    "job_id": "8706480002",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "s? * Select... Citizenship Status * Select... To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat",
+        ",\"label\":\"Citizenship Status\",\"description\":\" To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat"
+      ],
+      "clearance": [
+        "rue,\"label\":\"Active Security Clearance(s)\",\"description\":null,\"fields\":[{\"name\":\"question_37771306002[]\",\"type\":\"multi_value_multi_select\",\"values\":[{\"value\":251451581002,\"label\":\"Top Secret SCI with Polygraph\"},{\"value\":251451582002,\"label\":\"Top Secret SCI/SAP\"},{\"value\":251451583002,\"label\":\"Top Secret\"},{\"value\":251451584002,\"label\":\"DOE Level Q\"},{\"value\":251451585002,\"label\":\"Secre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  },
+  {
+    "company": "Booz Allen",
+    "title": "Software Engineer - Mid",
+    "location": "St. Louis, MO",
+    "job_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/St-Louis-MO/Software-Engineer--Mid_R0248250",
+    "job_id": "R0248250",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "lications Experience using back-end and front-end languages to develop complete solutions Experience creating solutions to complex problems within a collaborative team environment Active TS/SCI clearance; willingness to take a polygraph exam HS diploma or GED Nice If You Have: Experience with Agile methodology, software engineering, product management, and software products Experi",
+        "ce Bachelor's degree Clearance: Applicants selected will be subject to a security investigation and may need to meet eligibility requirements for access to classified information; TS/SCI clearance is required. Skills Assessment As part of Booz Allen’s skills first hiring process, candidates must complete the required skills assessment to ensure they meet the Basic Qualifications for th"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "SKIP"
+  },
+  {
+    "company": "Honeywell Aerospace",
+    "title": "Software Engineering Full Time Employee - Recent Grad 2027 (U.S. Person Required)",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95fac09fcec54423730908",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "h U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorship for employment authorization for this position Candidates must be authorized to legally work in the United States without current or future sponsorship requirements Understanding various software development",
+        "nsider applicants who would require current or future sponsorship for employment authorization for this position Candidates must be authorized to legally work in the United States without current or future sponsorship requirements Understanding various software development lifecycle Ability to develop efficient and high-quality software Knowledge of software configuration management and change",
+        "U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S\",\"Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorship for employment authorization for this position\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\",\"Understanding various software developm"
+      ],
+      "citizenship_or_us_person": [
+        "-time work between September 2026-July 2027 Must have obtained degree within 12 months of the start date Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsorshi",
+        "e work between September 2026-July 2027\",\"Must have obtained degree within 12 months of the start date\",\"Due to compliance with U.S. export control laws and regulations, candidate must be a U.S. citizen, U.S. permanent resident, or have asylum or refugee status in the U.S\",\"Honeywell Aerospace is currently unable to consider applicants who would require current or future sponsors"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Honeywell Aerospace",
+    "title": "Software Engineering Full Time Employee - Recent Grad 2027",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95fac04c22023a079373ee",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "n full-time work between September 2026-July 2027 * Must have obtained degree within 12 months of the start date Candidates must be authorized to legally work in the United States without current or future sponsorship requirements * Understanding various software development lifecycle * Ability to develop efficient and high-quality software * Knowledge of software configuration management and c",
+        "ll-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\",\"* Understanding various software development lifecycle\",\"* Ability to develop efficient and high-quality software\",\"* Knowledge of software configuration management",
+        "ll-time work between September 2026-July 2027\",\"* Must have obtained degree within 12 months of the start date\",\"Candidates must be authorized to legally work in the United States without current or future sponsorship requirements\"],\"preferredHave\":[\"* Understanding various software development lifecycle\",\"* Ability to develop efficient and high-quality software\",\"* Knowledge of software config"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

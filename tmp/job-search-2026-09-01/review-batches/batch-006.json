@@ -1,0 +1,133 @@
+[
+  {
+    "company": "DS2",
+    "title": "Junior Software Engineer – Special Operations Mission Systems",
+    "location": "Niceville, FL",
+    "job_url": "https://ds2.breezy.hr/p/9fc9a1db41e1-junior-software-engineer-special-operations-mission-systems",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "ect to work with a team of committed engineers that lives our core values in an environment where working hard is important and playing hard is just as important. Please Note: You must be a U.S. Citizen and able to complete a U.S. government background investigation. Responsibilities — What you’ll do: DS2 provides full life-cycle software engineering services to DoW, federal, and",
+        "ect to work with a team of committed engineers that lives our core values in an environment where working hard is important and playing hard is just as important. Please Note: You must be a U.S. Citizen and able to complete a U.S. government background investigation. Required Qualifications — We need someone who: Has a bachelor’s degree in Software Engineering, Computer Science,"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Esri",
+    "title": "Web Developer I - Apps",
+    "location": "Portland, ME",
+    "job_url": "https://www.esri.com/careers/5210451007?gh_jid=5210451007",
+    "job_id": "5210451007",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Informaticon",
+    "title": "Junior Software Engineer Neu-Ulm (m/w/d)",
+    "location": "Neu-Ulm, DE",
+    "job_url": "https://informaticon.breezy.hr/p/25946aa0d5b1-junior-software-engineer-neu-ulm-m-w-d",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "INFORMATION SYSTEMS SOLUTIONS, INC",
+    "title": "Software Engineer I",
+    "location": "San Diego, CA",
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4462746",
+    "job_id": "4462746",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Boca Raton - June",
+    "location": "Boca Raton, FL",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023-2",
+    "job_id": "R116023-2",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - June",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-1",
+    "job_id": "R117626-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "LexisNexis Risk Solutions",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - January",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/risksolutions/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617",
+    "job_id": "R117617",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Lilly",
+    "title": "Software Engineer - Fixed Duration",
+    "location": "Indianapolis, IN",
+    "job_url": "https://lilly.wd115.myworkdayjobs.com/en-US/lly/job/US-Louisville-CO-Site-3/Software-Engineer---Fixed-Duration_R-102469",
+    "job_id": "R-102469",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

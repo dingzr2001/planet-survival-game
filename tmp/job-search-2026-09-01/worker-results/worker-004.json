@@ -1,0 +1,99 @@
+[
+  {
+    "job_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00",
+    "job_id": "149f368c-52d5-408f-ba26-ad888f318a00",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Production AI/LLM systems, end-to-end scaling, and Go align directly with the candidate's LLM-serving and distributed-backend experience.",
+    "evidence": [
+      {"field": "responsibilities", "snippet": "Build and scale end-to-end production systems for enterprise AI agents.", "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"},
+      {"field": "skills", "snippet": "AI/LLM production experience and React, TypeScript, or Go are valued.", "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"},
+      {"field": "compensation", "snippet": "$150,000-$180,000 annual base plus equity.", "source_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00"}
+    ]
+  },
+  {
+    "job_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer",
+    "job_id": "9400",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The stack is relevant, but the required U.S. Government clearance explicitly requires U.S. citizenship.",
+    "evidence": [
+      {"field": "citizenship", "snippet": "Application states U.S. citizenship is required to obtain the required clearance.", "source_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer"},
+      {"field": "posted", "snippet": "Date posted: August 31, 2026.", "source_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer"}
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006",
+    "job_id": "4704646006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Requires an active Top Secret clearance and U.S. citizenship, and the reverse-engineering specialty is outside the target focus.",
+    "evidence": [
+      {"field": "clearance", "snippet": "Active Top Secret clearance required; U.S. citizenship is needed.", "source_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006"}
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "job_id": "8157838",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Strong technical fit, but this requisition is based in Toronto and no Canadian work authorization is established.",
+    "evidence": [
+      {"field": "location", "snippet": "Primary office location is Toronto, Canada.", "source_url": "https://stripe.com/jobs/search?gh_jid=8157838"},
+      {"field": "graduation", "snippet": "CS degree obtained by summer 2027; no more than 18 months non-intern experience.", "source_url": "https://stripe.com/jobs/search?gh_jid=8157838"}
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8130930",
+    "job_id": "8130930",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "Strong technical fit, but this requisition is based in London and no UK work authorization is established.",
+    "evidence": [
+      {"field": "location", "snippet": "Primary office location is London, United Kingdom.", "source_url": "https://stripe.com/jobs/search?gh_jid=8130930"}
+    ]
+  },
+  {
+    "job_url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "job_id": "8128744",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Large-scale financial infrastructure and backend/API work align closely with the candidate's distributed systems and production backend internships.",
+    "evidence": [
+      {"field": "graduation", "snippet": "Bachelor's or master's degree obtained by summer 2027; at most 18 months non-intern experience.", "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"},
+      {"field": "skills", "snippet": "Backend and infrastructure specialization is preferred; Stripe uses Java, Scala, and Go among other languages.", "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"},
+      {"field": "compensation", "snippet": "$122,100-$134,400 annual U.S. base salary.", "source_url": "https://stripe.com/jobs/search?gh_jid=8128744"}
+    ]
+  },
+  {
+    "job_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666",
+    "job_id": "342666",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The role explicitly requires U.S. citizenship and eligibility for a government security clearance.",
+    "evidence": [
+      {"field": "citizenship", "snippet": "U.S. citizenship and ability to obtain a security clearance are required.", "source_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666"},
+      {"field": "compensation", "snippet": "$99,000 annual base pay.", "source_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666"}
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930",
+    "job_id": "29bad846-de60-4be7-a222-69b97e044930",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Designing and operating scalable marketplace services strongly matches the candidate's distributed backend, caching, database, and microservices work.",
+    "evidence": [
+      {"field": "graduation", "snippet": "CS or software engineering degree completed by summer 2027.", "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"},
+      {"field": "responsibilities", "snippet": "Design, implement, and operate critical scalable services.", "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"},
+      {"field": "compensation", "snippet": "$155,000-$160,000 annual base plus equity.", "source_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930"}
+    ]
+  }
+]

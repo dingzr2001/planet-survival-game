@@ -1,0 +1,317 @@
+[
+  {
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1",
+    "job_id": "R117617-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The candidate's December 2026 graduation fits the explicit window, the January 2027 program timing is compatible with the December 20 availability, and the rotations strongly align with the candidate's big-data, AI, SRE/DevOps, AWS/Azure, C++/Python/C#/Java, and Linux background.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official RELX Workday page displays the 2027 entry-level graduate-program requisition R117617-1.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Applicants must have a graduation date between May 2026 and December 2026.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      },
+      {
+        "field": "program_timing",
+        "snippet": "The role is the Alpharetta January intake for the 2027 Technology Graduate Program.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      },
+      {
+        "field": "program_scope",
+        "snippet": "Twelve-month program with two six-month rotations spanning big data, AI, SRE, DevOps, security engineering, AWS, and Azure.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Lists Java/J2EE, Python, JavaScript, C/C++, SQL, Windows, Linux, and .NET among relevant development technologies.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      },
+      {
+        "field": "eligibility",
+        "snippet": "The official posting states no mandatory sponsorship, citizenship, permanent-residency, or clearance restriction.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334",
+    "job_id": "8113334",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "UNKNOWN",
+    "match": "STRONG",
+    "why": "The role is an excellent fit for the candidate's scaled data pipelines, distributed systems, APIs, microservices, and billing-platform experience, but Roblox says it may be unable to employ certain visa categories or support future H-1B sponsorship without identifying the affected categories; this candidate needs both present and future sponsorship.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Roblox page identifies the role as Early Career and displays Apply Now.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "The company may not be able to employ candidates with certain U.S. visa categories or support future H-1B sponsorship at this time.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      },
+      {
+        "field": "experience",
+        "snippet": "Requires 1–3 years of Software Engineering/Computer Science experience.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Requires proficiency building and scaling data pipelines plus distributed-systems, API-design, and microservices experience.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build and own a scalable, secure, reliable creator-business platform and drive end-to-end system design.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      },
+      {
+        "field": "work_arrangement",
+        "snippet": "San Mateo office role, onsite Tuesday through Thursday with optional Monday and Friday attendance.",
+        "source_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002",
+    "job_id": "8749210002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The candidate has strong transferable C++/Python, CI/CD, Docker/Kubernetes, Linux, databases, and full-stack experience, but lacks the required HITL background and, decisively, cannot satisfy the mandatory Top Secret clearance and ITAR-status gates.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official SpaceX Greenhouse page displays Apply for the HITL Top Secret Clearance role.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Successfully obtaining and maintaining a Top Secret Security Clearance is a condition of employment.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      },
+      {
+        "field": "itar",
+        "snippet": "ITAR eligibility is limited to U.S. citizens/nationals, lawful permanent residents, refugees, asylees, or candidates able to obtain State Department authorization.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      },
+      {
+        "field": "basic_qualifications",
+        "snippet": "Requires one year of Python, C++, or Java development plus HITL/HOOTL automated-testing and CI/CD-pipeline experience.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Preferred stack includes React, Jenkins, Grafana, Docker, Kubernetes, Linux, and Postgres/MySQL/Oracle.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop full-stack HITL test solutions and contribute to test-automation and CI/CD infrastructure.",
+        "source_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053",
+    "job_id": "1508053",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The technical work strongly matches the candidate's backend, distributed-data, Kafka, Spark, API, C++/C#/Java/Python, and finance-adjacent billing experience, but this is a 2027 summer undergraduate internship requiring December 2027–May 2029 graduation and U.S. citizenship or permanent residency.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official TD Workday page displays Apply for requisition R_1508053 and an application end date of September 13, 2026.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Requires an undergraduate graduation date between December 2027 and May 2029.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      },
+      {
+        "field": "citizenship_or_residency",
+        "snippet": "Must have U.S. citizenship or permanent-residency status.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      },
+      {
+        "field": "program_type",
+        "snippet": "Ten-week, full-time, on-site FinTech Summer Internship in New York City.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Technologies include C++, C#, Java, Python, Node.js, REST APIs, Hadoop, Spark, Kafka, SQL, and NoSQL.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      },
+      {
+        "field": "domain_match",
+        "snippet": "Projects include real-time pricing, risk, algorithmic execution, big-data analytics, electronic trading, and straight-through processing.",
+        "source_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053"
+      }
+    ]
+  },
+  {
+    "job_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078",
+    "job_id": "JR5078",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The candidate is legally authorized to work in the U.S., and no sponsorship prohibition is stated. The 0–2-year level plus C#, HTTP/client-server, SQL, REST APIs, testing, and AI-tool requirements directly match the candidate's Microsoft and SLB backend experience.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official WellSky Workday page returns the current Associate Software Engineer requisition JR5078.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "Applicants must be legally authorized to work in the United States, with employment eligibility verified at hire.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      },
+      {
+        "field": "experience",
+        "snippet": "Requires a related bachelor's degree or equivalent experience and 0–2 years of related work experience.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Requires C#, object-oriented programming, HTTP/client-server fundamentals, Angular or another modern frontend framework, and relational SQL concepts.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      },
+      {
+        "field": "preferred_match",
+        "snippet": "REST API design/consumption/testing and familiarity with AI concepts or tools are preferred.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "The official posting requires current U.S. work authorization but does not state that present or future sponsorship is unavailable.",
+        "source_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "job_id": "a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "SKIP",
+    "why": "The large-data and real-time systems work is relevant, but the posting requires seven years of SWE experience and an active TS/SCI polygraph; it also expressly requires U.S. citizenship, so the candidate fails both eligibility and seniority gates.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Exact official Lever posting remains live for Software Engineer 1.",
+        "source_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad"
+      },
+      {
+        "field": "citizenship",
+        "snippet": "Due to federal contract requirements, United States citizenship is required.",
+        "source_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Requires TS/SCI with agency-appropriate polygraph.",
+        "source_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad"
+      },
+      {
+        "field": "experience",
+        "snippet": "Seven years of SWE experience on programs and contracts of similar scope, type, and complexity is required.",
+        "source_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop and enhance processing-intensive analytics, large-data, real-time, and business-management software systems.",
+        "source_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "job_id": "df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The graduation window exactly includes December 2026, relocation to San Francisco is acceptable, and the candidate's leading-tech internships plus Python, TypeScript/JavaScript, React, API, reliable backend, and AI-platform experience align closely.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Ashby posting is listed and displays an active application for the 2027-start New Grad role.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      },
+      {
+        "field": "graduation",
+        "snippet": "Requires graduation between December 2026 and June 2027 while pursuing a BS or MS in a related technical field.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      },
+      {
+        "field": "location",
+        "snippet": "Requires ability to work on site at the San Francisco headquarters on a hybrid schedule.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      },
+      {
+        "field": "technical_match",
+        "snippet": "Seeks web-application and API-development experience; stack includes Python, JavaScript/TypeScript, React, and GraphQL.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      },
+      {
+        "field": "experience",
+        "snippet": "Requires prior internship experience at a high-growth startup or leading technology company.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      },
+      {
+        "field": "eligibility",
+        "snippet": "The official posting states no mandatory sponsorship, citizenship, permanent-residency, or clearance restriction.",
+        "source_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea"
+      }
+    ]
+  },
+  {
+    "job_url": "https://apply.workable.com/avalore/j/60903E3667/apply",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "The junior experience tier and AI chatbot/automation work are adjacent to the candidate's LLM and backend automation experience, but the support-desk/RPA focus and security-certification requirements are less aligned; the mandatory Secret clearance and explicit no-sponsorship rule independently make the candidate ineligible.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workable posting is live, dated August 31, 2026, and links to the Avalore application.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Applicants must be currently authorized full-time in the U.S.; Avalore will not sponsor work visas for this position.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Secret Security Clearance required.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      },
+      {
+        "field": "experience",
+        "snippet": "Junior level accepts 0–3 years of experience plus a bachelor's degree.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      },
+      {
+        "field": "certification",
+        "snippet": "Junior and journeyman roles require CSSLP, GSEC, or Security+ certification.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Modernize support systems with AI chatbots, robotic-process automation, and AI/ML-based predictive support capabilities.",
+        "source_url": "https://apply.workable.com/avalore/j/60903E3667"
+      }
+    ]
+  }
+]

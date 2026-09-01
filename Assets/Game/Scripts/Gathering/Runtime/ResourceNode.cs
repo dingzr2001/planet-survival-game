@@ -142,7 +142,7 @@ namespace PlanetSurvival.Gathering.Runtime
             for (int i = 0; i < _definition.Yields.Count; i++)
             {
                 ResourceYield yield = _definition.Yields[i];
-                InventoryOperationResult result = _inventory.Inventory.Add(yield.Item, yield.Quantity);
+                InventoryOperationResult result = _inventory.Add(yield.Item, yield.Quantity);
                 if (!result.Succeeded)
                 {
                     Debug.LogError($"Validated resource yield failed unexpectedly: {result.Message}", this);

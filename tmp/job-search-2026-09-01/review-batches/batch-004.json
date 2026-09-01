@@ -1,0 +1,143 @@
+[
+  {
+    "company": "Sierra",
+    "title": "Software Engineer - Agent - New Grad 2027",
+    "location": "San Francisco, CA +1",
+    "job_url": "https://jobs.ashbyhq.com/sierra/149f368c-52d5-408f-ba26-ad888f318a00",
+    "job_id": "149f368c-52d5-408f-ba26-ad888f318a00",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Space Dynamics Laboratory",
+    "title": "Software Engineer",
+    "location": "North Logan, UT",
+    "job_url": "http://spacedynamicslaboratory.applytojob.com/apply/bpQKRcIwMJ/Software-Engineer",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "itizen Non-Immigrant Temporary or Student Worker (EAD) Not Currently Authorized to Work in the US Asylee and/or Refugee Are you able to obtain a US Government Security Clearance? (US citizenship is required) For additional information about obtaining a Security Clearance, please visit this link: https://www.state.gov/security-clearances * -- No answer -- YES NO I understand and agree"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "STR",
+    "title": "Associate Software Reverse Engineer",
+    "location": "Woburn, MA",
+    "job_url": "https://job-boards.greenhouse.io/systemstechnologyresearch/jobs/4704646006",
+    "job_id": "4704646006",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "challenging targets Documenting, demonstrating, and presenting research Solving real world problems that have an impact on national security Who you are: This position requires an Active Top Secret (TS) security clearance , for which U.S. citizenship is needed by the U.S. Government BS, MS or PhD in Computer Science, Computer Engineering, Cybersecurity or related field (or equivalent work experienc"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer New Grad",
+    "location": "Toronto, ON, Canada",
+    "job_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8157838?gh_jid=8157838",
+    "job_id": "8157838",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer New Grad",
+    "location": "London, UK",
+    "job_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8130930?gh_jid=8130930",
+    "job_id": "8130930",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer - New Grad",
+    "location": "San Francisco, CA",
+    "job_url": "https://stripe.com/careers/listing/software-engineer-new-grad/8128744?gh_jid=8128744",
+    "job_id": "8128744",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Textron",
+    "title": "Software Engineer 1 - Electronic Systems",
+    "location": "Hunt Valley, Cockeysville, MD",
+    "job_url": "https://textron.taleo.net/careersection/textron/jobdetail.ftl?job=342666",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ect:text;%22 data-contrast=%22none%22 xml:lang=%22EN-US%22 lang=%22EN-US%22 data-ccp-parastyle=%22No Spacing%22%3EThis position requires an individual to be a U.S citizen with the ability to obtain a security clearance%3C/span%3E%3Cspan class=%22EOP SCXW222195141 BCX0%22 style=%22-webkit-tap-highlight-color:transparent;-webkit-user-drag:none;line-height:18px;margin:0px;padding:0px;user-select:te"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Whatnot",
+    "title": "Software Engineer, 2027 New Grad",
+    "location": "New York City, NY",
+    "job_url": "https://jobs.ashbyhq.com/whatnot/29bad846-de60-4be7-a222-69b97e044930",
+    "job_id": "29bad846-de60-4be7-a222-69b97e044930",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "ApplyGuy",
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

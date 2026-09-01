@@ -1,0 +1,25 @@
+{
+  "analysis": "tmp/job-search-2026-09-01/analysis.json",
+  "candidate_count": 90,
+  "batch_size": 8,
+  "batch_count": 12,
+  "verification_signals": {
+    "CLOSED": 14,
+    "OPEN_PAGE": 70,
+    "UNVERIFIED": 6
+  },
+  "batches": [
+    "tmp/job-search-2026-09-01/review-batches/batch-001.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-002.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-003.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-004.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-005.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-006.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-007.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-008.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-009.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-010.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-011.json",
+    "tmp/job-search-2026-09-01/review-batches/batch-012.json"
+  ]
+}

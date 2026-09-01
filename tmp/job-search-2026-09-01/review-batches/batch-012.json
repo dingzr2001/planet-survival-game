@@ -1,0 +1,34 @@
+[
+  {
+    "company": "Raytheon",
+    "title": "Lifecycle Systems Engineer I- Onsite",
+    "location": "US-MA-WOBURN-WB2 ~ 225 Presidential Way ~ GODDARD BLDG",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-WOBURN-WB2--225-Presidential-Way--GODDARD-BLDG/Lifecycle-Systems-Engineer-I--Onsite_01868262",
+    "job_id": "01868262",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineer I, V&V Testing (Onsite - Security Clearance)",
+    "location": "US-PR-AGUADILLA-110 ~ Rd 110 N Km 28.8 ~ RD110",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-PR-AGUADILLA-110--Rd-110-N-Km-288--RD110/Systems-Engineer-I--V-V-Testing--Onsite---Security-Clearance-_01870858",
+    "job_id": "01870858",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {
+      "title_clearance": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  }
+]

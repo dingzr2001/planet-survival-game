@@ -1,7 +1,7 @@
 {
   "name": "Game.EditModeTests",
   "rootNamespace": "PlanetSurvival.Tests",
-  "references": ["Game.Runtime"],
+  "references": ["Game.Runtime", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

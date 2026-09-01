@@ -1,0 +1,138 @@
+[
+  {
+    "company": "Alation",
+    "title": "UX Software Engineer I - Contractor",
+    "location": "Redwood City, CA",
+    "job_url": "https://alation.wd503.myworkdayjobs.com/en-US/externalsite/job/USA-CA-REDWOOD-CITY/UX-Software-Engineer-I--Contractor-_R10000770",
+    "job_id": "R10000770",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Avalore",
+    "title": "Software Developer/Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/937906E572",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Blue Origin",
+    "title": "Software Development Engineer I - Early Career - 2027 Starts",
+    "location": "Seattle, WA +4",
+    "job_url": "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin/job/Greater-Seattle-Area/Software-Development-Engineer-I---Early-Career--2027-Starts-_R71326",
+    "job_id": "R71326",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "job description, we encourage you to apply anyway. You may be just the right candidate for this or other roles. Export Control Regulations Applicants for employment at Blue Origin must be a U.S. citizen or national, U.S. permanent resident (i.e. current Green Card holder), or lawfully admitted into the U.S. as a refugee or granted asylum. Background Check Required for all positio"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Booz Allen",
+    "title": "C++ Software Engineer - Junior",
+    "location": "Beavercreek, OH",
+    "job_url": "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs/job/Beavercreek-OH/C---Software-Engineer--Junior_R0241788",
+    "job_id": "R0241788",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "agement, and design patterns Ability to problem-solve and critically think through software issues, including utilizing debuggers and testing infrastructure to troubleshoot issues Ability to obtain a Secret clearance Bachelor's degree in a STEM field Nice If You Have: Experience with modeling and simulation frameworks, including AFSIM Experience with large code bases and complex code Ability t"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Cadence",
+    "title": "Software Engineer I",
+    "location": "Austin, TX",
+    "job_url": "https://cadence.wd1.myworkdayjobs.com/en-US/external_careers/job/AUSTIN-03/Software-Engineer-I_R53009-1",
+    "job_id": "R53009-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "CapTech Consulting",
+    "title": "Software Engineering Associate Consultant - Summer 2027",
+    "location": "Philadelphia, PA, Richmond, VA, Charlotte, NC, Reston, VA, Columbus, OH, Denver, CO, Atlanta, GA",
+    "job_url": "https://jobs.smartrecruiters.com/CapTechConsulting/744000146449269",
+    "job_id": "744000146449269",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "9,000-94,000. At this time, CapTech cannot transfer nor sponsor a work visa for this position. Applicants must be authorized to work directly for any employer in the United States without visa sponsorship. CapTech is a Drug-Free work place. CapTech has not contracted/does not contract with any outside vendors in its recruitment process. If you are interested in this position, pleas"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "CDK Global",
+    "title": "Associate Software Engineer",
+    "location": "Austin, TX +1",
+    "job_url": "https://cdk.wd1.myworkdayjobs.com/en-US/cdk/job/Austin-TX-USA/Associate-Software-Engineer_JR9201-1",
+    "job_id": "JR9201-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Citi",
+    "title": "Junior Generative AI Application Developer",
+    "location": "New York City, NY",
+    "job_url": "https://citi.wd5.myworkdayjobs.com/en-US/2/job/New-York-New-York-United-States/Junior-Generative-AI-Application-Developer_26962250",
+    "job_id": "26962250",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

@@ -1,0 +1,131 @@
+[
+  {
+    "company": "Sentrilock LLC",
+    "title": "Software Engineer I - Cloud Engineer",
+    "location": "West Chester, OH",
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683",
+    "job_id": "4445683",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Avalore",
+    "title": "Site Reliability Engineer",
+    "location": "Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/F21E77744E",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "BlueCross BlueShield of Tennessee",
+    "title": "Associate Software Engineer II - Infrastructure & Automation",
+    "location": "Remote - Chattanooga, TN",
+    "job_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858",
+    "job_id": "R-50858",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Leidos",
+    "title": "Junior DevOps Engineer",
+    "location": "Chantilly, VA +1",
+    "job_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855",
+    "job_id": "R-00190855",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ms. Kudu Dynamics, a Leidos company is uniquely qualified to anticipate tomorrow’s threats and build the next generation of capabilities. Minimum Requirements: US Citizenship with TS/SCI and Counter-Intelligence Polygraph clearance 1–3 years of experience in DevOps, Systems Engineering, or Infrastructure Support Bachelor’s degree in Computer Science, Information Technology, Engineering, or related"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Palantir Technologies",
+    "title": "Forward Deployed Infrastructure Engineer, New Grad - US Government",
+    "location": "Honolulu, HI",
+    "job_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12",
+    "job_id": "701a9307-0619-45d3-b077-cabe9897cd12",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "ta Science Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, sign",
+        "ta Science Strong coder with shown proficiency in programming languages such as Java, Go, Python, JavaScript, or similar languages Active US Security clearance, or eligibility and willingness to obtain a US Security clearance \\ Salary The estimated salary range for this position is estimated to be $135,000 - $145,000/year. Total compensation for this position may also include Restricted Stock units, si"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Silicon Labs",
+    "title": "DevOps Platform Engineer",
+    "location": "Austin, TX",
+    "job_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1",
+    "job_id": "21029",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Snap",
+    "title": "Software Engineer - ML Infrastructure - Content Retrieval Platform - Level 4",
+    "location": "Palo Alto, CA",
+    "job_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1",
+    "job_id": "R0046629-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "STRONG"
+  },
+  {
+    "company": "Chewy",
+    "title": "Software Engineer 1 - WIZMO engineering team",
+    "location": "Boston, MABellevue, WA",
+    "job_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1",
+    "job_id": "R30695-1",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

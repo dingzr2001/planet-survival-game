@@ -15,7 +15,7 @@ MonoBehaviour:
   _itemId: raw_stone
   _displayName: Raw Stone
   _description: 
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: 2d76c1b7c81ed49e481fe3dce1819d4f, type: 3}
   _capacityPerItem: 1
   _maximumStackSize: 20
   _canUse: 0

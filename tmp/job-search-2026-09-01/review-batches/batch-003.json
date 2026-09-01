@@ -1,0 +1,138 @@
+[
+  {
+    "company": "IXL Learning",
+    "title": "Software Engineer - New Grad",
+    "location": "San Mateo, CA",
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765715002",
+    "job_id": "8765715002",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "IXL Learning",
+    "title": "Software Engineer - New Grad",
+    "location": "Raleigh-Durham, NC +1",
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765745002",
+    "job_id": "8765745002",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "IXL Learning",
+    "title": "Software Developer New Grad - Integrations",
+    "location": "Toronto, ON, Canada",
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765751002",
+    "job_id": "8765751002",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "geography": true
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Johns Hopkins Applied Physics Laboratory",
+    "title": "Software Developer New Grad - Engagement Optimization",
+    "location": "Laurel, MD",
+    "job_url": "https://careers.jhuapl.edu/jobs/59510?icims=1",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. About Us Why Work at APL? The Johns Hopkins University Applied Physics Laboratory (APL) brings world-class expertise to our nation’s most critical defense, security, space and sc",
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. \",\"responsibilities\":\" Are you invested in applying analytical methods and modeling and simulation tools to solve critical defense challenges? Are you eager to join a highly coll",
+        "s. Have demonstrated ability in system design, modeling and simulation, and/or verification and validation. Are experienced in using Agile methods for product development. Hold an active Secret or Top Secret security clearance. \",\"hiring_organization\":\"Johns Hopkins Applied Physics Laboratory\",\"responsibilities\":\" Are you invested in applying analytical methods and modeling and simulation tools to solve"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Johns Hopkins Applied Physics Laboratory",
+    "title": "Software Developer 2027 Graduate - Tactical System Prototyping and Deployment",
+    "location": "Laurel, MD",
+    "job_url": "https://careers.jhuapl.edu/jobs/59558?icims=1",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "RTX",
+    "title": "Software Engineer 1",
+    "location": "Cambridge, MAArlington County, Arlington, VA",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647",
+    "job_id": "01870647",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Simplify"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "sition Role Type: Hybrid U.S. Citizen, U.S. Person, or Immigration Status Requirements: The ability to obtain and maintain a U.S. government issued security clearance is required. U.S. citizenship is required, as only U.S. citizens are eligible for a security clearance Security Clearance Type: DoD Clearance: Top Secret Security Clearance Status: Active and existing security clearance r"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "SharkNinja",
+    "title": "Associate Product Developer - Ninja APAC",
+    "location": "Needham, MA",
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006",
+    "job_id": "4703760006",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "SharkNinja",
+    "title": "Associate Product Developer - Indoor Heated",
+    "location": "Needham, MA",
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006",
+    "job_id": "4702969006",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

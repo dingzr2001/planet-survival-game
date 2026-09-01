@@ -1,0 +1,26 @@
+{
+  "jobs": [
+    {
+      "source": "Jobright",
+      "company": "EvenUp",
+      "title": "Software Engineer (New Grad), Data Products",
+      "location": "San Francisco, CA / Toronto, ON",
+      "posted_date": "2026-09-01",
+      "listing_url": "https://jobright.ai/jobs/new-grad-2027---software-engineering-jobs-in-united-states",
+      "official_url": "https://jobs.ashbyhq.com/evenup/41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+      "job_id": "41488eae-50a9-4ad3-b6e0-2fd28efb238e",
+      "salary": "$130,000/year base (San Francisco); CA$113,000/year base (Toronto)"
+    },
+    {
+      "source": "Jobright",
+      "company": "Zip",
+      "title": "Software Engineer, New Grad (2027 Start)",
+      "location": "San Francisco, CA",
+      "posted_date": "2026-08-31",
+      "listing_url": "https://jobright.ai/jobs/info/6a8dfde3581f2d7bfdfea5ce",
+      "official_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea",
+      "job_id": "df6eb1ee-b360-46fe-b23f-658626ec59ea",
+      "salary": "$165,000-$170,000/year base"
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+[
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765715002",
+    "job_id": "8765715002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad role explicitly offers H-1B sponsorship, and its backend application logic, Java/Python, AWS, and database work directly fit the candidate's backend experience.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "H1B sponsorship is available for this position.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "location",
+        "snippet": "Requires working in the San Mateo, CA headquarters office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build back-end wiring, application logic, and UI; own projects through design, coding, testing, debugging, and tuning.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Server-side Java, Python, and TypeScript on AWS, with PostgreSQL, MySQL, MongoDB, and Valkey.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765715002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765745002",
+    "job_id": "8765745002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad role explicitly offers H-1B sponsorship, and its backend application logic, Java/Python, AWS, and database work directly fit the candidate's backend experience.",
+    "evidence": [
+      {
+        "field": "sponsorship",
+        "snippet": "H1B sponsorship is available for this position.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "location",
+        "snippet": "Requires working in the Raleigh, NC area office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build back-end wiring, application logic, and UI; own projects through design, coding, testing, debugging, and tuning.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Server-side Java, Python, and TypeScript on AWS, with PostgreSQL, MySQL, MongoDB, and Valkey.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765745002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.ixl.com/company/careers?gh_jid=8765751002",
+    "job_id": "8765751002",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The integrations-platform work fits the candidate's Java/API background, but the posting mandates work from the Toronto office and the candidate has only confirmed U.S. work authorization.",
+    "evidence": [
+      {
+        "field": "geography",
+        "snippet": "This position requires you to be in the Toronto, Ontario, Canada office.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Design and develop tools and systems for school-district integrations and a next-generation integration platform.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "technology",
+        "snippet": "Java or another object-oriented language is required; Java, SQL, React, Linux, and Git are pluses.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Bachelor's or advanced degree in computer science or a related discipline; no experience minimum stated.",
+        "source_url": "https://www.ixl.com/company/careers?gh_jid=8765751002"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.jhuapl.edu/jobs/59510?icims=1",
+    "job_id": "59510",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "Modern C++/Python, DevOps, system design, and high-performance computing are relevant, but U.S. citizenship and eligibility for an Interim Secret clearance by the start date are mandatory.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "Eligibility requirements for classified access include U.S. citizenship.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Must obtain Interim Secret clearance by the start date and ultimately Final Secret clearance.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develop C++/Python combat-system models, prototype algorithms, and optimize simulation workflows.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Requires a BS or MS in CS or a related field and fluency in modern C++ and Python.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      },
+      {
+        "field": "preferred",
+        "snippet": "AI/ML workflow experience and GPU or CPU-cluster experience are preferred.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59510?icims=1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://careers.jhuapl.edu/jobs/59558?icims=1",
+    "job_id": "59558",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "GOOD",
+    "why": "The C++/Java, database, AI, networking, and prototype-development work is transferable, but U.S. citizenship and Secret-clearance eligibility are mandatory.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "Eligibility requirements for classified access include U.S. citizenship.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Must obtain Interim Secret clearance by the start date and ultimately Final Secret clearance.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build proof-of-concept software spanning AI, real-time computing, network/web services, data management, and visualization.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Requires a related BS/MS plus coursework or internships involving complex software development.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      },
+      {
+        "field": "technology",
+        "snippet": "C++, Java, or TypeScript in Linux/Unix is preferred.",
+        "source_url": "https://careers.jhuapl.edu/jobs/59558?icims=1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647",
+    "job_id": "01870647",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The GenAI/agentic-AI role is an excellent technical match for the candidate's LLM serving, RAG, LangChain/LangGraph, Python, and C++ work, but it requires U.S. citizenship and an active Top Secret clearance after day one.",
+    "evidence": [
+      {
+        "field": "citizenship",
+        "snippet": "U.S. citizenship is required because only U.S. citizens are eligible for the required clearance.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "clearance",
+        "snippet": "DoD Top Secret clearance; active and existing security clearance required after day 1.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Build and evaluate LLM agentic systems, retrieval/reasoning workflows, tool-using agents, and ML pipelines.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Current seniors or recent undergraduate/master's students; bachelor's degree obtained by start date.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      },
+      {
+        "field": "technology",
+        "snippet": "Requires proficiency in Java, Python, and/or C++; prefers LangChain, LangGraph, Autogen, RAG, and agent evaluation.",
+        "source_url": "https://globalhr.wd5.myworkdayjobs.com/fr-CA/Private_Posting_No_TMP/job/US-VA-ARLINGTON-111--1300-17Th-St-N--BBN-ARLINGTON/Software-Engineer-I--Hybrid--Arlington--VA---Cambridge--MA_01870647"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006",
+    "job_id": "4703760006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "SKIP",
+    "why": "No mandatory immigration restriction is stated, but this is a consumer-product management/development role rather than software engineering and does not align with the candidate's backend focus.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Onsite position based at the Needham, MA headquarters.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Lead consumer-product development from brainstorm through mass production and manage category direction.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Seeks 1-2+ years in product development, product marketing, marketing, or human-factors engineering.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "degree",
+        "snippet": "Bachelor's in Business, Marketing, Management, Engineering, or equivalent experience.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "Application asks about sponsorship but the posting states no mandatory sponsorship exclusion.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4703760006"
+      }
+    ]
+  },
+  {
+    "job_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006",
+    "job_id": "4702969006",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "SKIP",
+    "why": "No mandatory immigration restriction is stated, but this is a consumer-product management/development role rather than software engineering and does not align with the candidate's backend focus.",
+    "evidence": [
+      {
+        "field": "location",
+        "snippet": "Responsibilities require supporting the business onsite at the Needham, MA headquarters.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Lead consumer-product development from brainstorm through mass production and manage product specifications and sales performance.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "qualifications",
+        "snippet": "Seeks 1-2+ years in product development, product marketing, marketing, or human-factors engineering.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "degree",
+        "snippet": "Bachelor's in Business, Marketing, Management, Engineering, or equivalent experience.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      },
+      {
+        "field": "work_authorization",
+        "snippet": "Application asks about sponsorship but the posting states no mandatory sponsorship exclusion.",
+        "source_url": "https://job-boards.greenhouse.io/sharkninjaoperatingllc/jobs/4702969006"
+      }
+    ]
+  }
+]

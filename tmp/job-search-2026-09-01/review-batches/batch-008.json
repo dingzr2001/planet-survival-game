@@ -1,0 +1,141 @@
+[
+  {
+    "company": "RELX",
+    "title": "Tech Accelerate Graduate Program - Software Engineer - Alpharetta - January",
+    "location": "Alpharetta, GA",
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---January-_R117617-1",
+    "job_id": "R117617-1",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Simplify",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Roblox",
+    "title": "Software Engineer - Creator Business",
+    "location": "San Mateo, CA",
+    "job_url": "https://careers.roblox.com/jobs/8113334?gh_jid=8113334",
+    "job_id": "8113334",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "SpaceX",
+    "title": "Software Engineer - HITL - Top Secret Clearance",
+    "location": "Hawthorne, CA",
+    "job_url": "https://job-boards.greenhouse.io/spacex/jobs/8749210002?gh_jid=8749210002",
+    "job_id": "8749210002",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "citizenship_or_us_person": [
+        "s? * Select... Citizenship Status * Select... To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat",
+        ",\"label\":\"Citizenship Status\",\"description\":\" To conform to U.S. Government space technology export regulations, including the International Traffic in Arms Regulations (ITAR) you must be a U.S. citizen, lawful permanent resident of the U.S., protected individual as defined by 8 U.S.C. 1324b(a)(3), or eligible to obtain the required authorizations from the U.S. Department of Stat"
+      ],
+      "clearance": [
+        "and unit testing Strong creative and innovative problem-solving skills Ability to work effectively in a dynamic environment by quickly adapting to changing needs and requirements Active Top Secret, Top Secret SCI, or DOE Level Q clearance, or the ability to obtain and maintain one ADDITIONAL REQUIREMENTS: This position requires successfully obtaining and maintaining a Top Secret Security Clearance as a condition of",
+        "rue,\"label\":\"Active Security Clearance(s)\",\"description\":null,\"fields\":[{\"name\":\"question_37981879002[]\",\"type\":\"multi_value_multi_select\",\"values\":[{\"value\":252462779002,\"label\":\"Top Secret SCI with Polygraph\"},{\"value\":252462780002,\"label\":\"Top Secret SCI/SAP\"},{\"value\":252462781002,\"label\":\"Top Secret\"},{\"value\":252462782002,\"label\":\"DOE Level Q\"},{\"value\":252462783002,\"label\":\"Secre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "TD Bank",
+    "title": "2027 Summer Analyst - Software Engineering Rotational Program - New York City",
+    "location": "New York City, NY",
+    "job_url": "https://td.wd3.myworkdayjobs.com/en-US/td_bank_careers/job/New-York-New-York/XMLNAME-2027-Summer-Analyst---Software-Engineering-Rotational-Program--New-York-City-_R_1508053",
+    "job_id": "1508053",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "SpeedyApply"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "WellSky",
+    "title": "Associate Software Engineer",
+    "location": "Overland Park, KS",
+    "job_url": "https://wellsky.wd1.myworkdayjobs.com/en-US/wellskycareers/job/Overland-Park-KS/Associate-Software-Engineer_JR5078",
+    "job_id": "JR5078",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx",
+      "SpeedyApply",
+      "Workday direct"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Wyetech",
+    "title": "Software Engineer 1",
+    "location": "Columbia, MD",
+    "job_url": "https://jobs.lever.co/wyetechllc/a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "job_id": "a1dbedae-7905-44a0-99be-a6fadd39d0ad",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "ApplyGuy"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {
+      "clearance": [
+        "from system level to individual software components. Due to federal contract requirements, United States Citizenship and position appropriate security clearance is required. (e.g. Active TS/SCI security clearance with agency appropriate polygraph). Capabilities Analyze user requirements to derive software design and performance requirements. Analyze user requirements to derive software des",
+        "to improve its performance Design. develop and modify software systems, using scientific analysis and mathematical models to predict and measure outcome and consequences of design Required Qualifications TS/SCI with agency appropriate poly Seven (7) years' experience as a SWE, in programs and contracts of similar scope, type, and complexity is required. Bachelor's degree in Computer Scie",
+        "from system level to individual software components. Due to federal contract requirements, United States Citizenship and position appropriate security clearance is required. (e.g. Active TS/SCI security clearance with agency appropriate polygraph). \\ Capabilities Analyze user requirements to derive software design and performance requirements. Analyze user requirements to derive software d"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Zip",
+    "title": "Software Engineer, New Grad (2027 Start)",
+    "location": "San Francisco, CA",
+    "job_url": "https://jobs.ashbyhq.com/zip/df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "job_id": "df6eb1ee-b360-46fe-b23f-658626ec59ea",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Jobright"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Avalore",
+    "title": "Support Systems Developer/Engineer",
+    "location": "Arlington County, Arlington, VA",
+    "job_url": "https://apply.workable.com/avalore/j/60903E3667/apply",
+    "job_id": "",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "OPEN_PAGE",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "BORDERLINE"
+  }
+]

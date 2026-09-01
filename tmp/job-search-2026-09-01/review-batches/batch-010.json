@@ -1,0 +1,134 @@
+[
+  {
+    "company": "Mastercard",
+    "title": "Software Engineer, Launch Program 2027 – United States",
+    "location": "O'Fallon, MO, United States",
+    "job_url": "https://jobright.ai/jobs/info/6a96e09bd13b4819f39dd6ff",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "concepts Familiarity with version control tools (e.g., Git) Experience or coursework involving automated testing Strong problem-solving skills and eagerness to learn This role is not eligible for Mastercard's work authorization sponsorship. As such, candidates must be eligible to work in the United States, now as well as in the future, without employer sponsorship. For example, students or recent graduates in th",
+        "s\",\"Familiarity with version control tools (e.g., Git)\",\"Experience or coursework involving automated testing\",\"Strong problem-solving skills and eagerness to learn\",\"This role is not eligible for Mastercard's work authorization sponsorship. As such, candidates must be eligible to work in the United States, now as well as in the future, without employer sponsorship. For example, students or recent graduates in th"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Southwest Airlines",
+    "title": "Spring 2027 Software Engineering Internships",
+    "location": "United States",
+    "job_url": "https://jobright.ai/jobs/info/6a96434ccabc9f6703e1cd92",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {
+      "sponsorship": [
+        "• You must have a valid U.S. Social Security Number to complete the full hiring process • This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future • Coursework or experience with software testing techniques preferred; XRay • Ability to stay organized and manage multiple and concurrent assignments under t",
+        "You must have a valid U.S. Social Security Number to complete the full hiring process\",\"• This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future\",\"• Coursework or experience with software testing techniques preferred; XRay\",\"• Ability to stay organized and manage multiple and concurrent assignments und",
+        "You must have a valid U.S. Social Security Number to complete the full hiring process\",\"• This position requires authorization to work in the United States as a permanent employee without sponsorship now or in the future\"],\"preferredHave\":[\"• Coursework or experience with software testing techniques preferred; XRay\",\"• Ability to stay organized and manage multiple and concurre"
+      ]
+    },
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Whatnot",
+    "title": "Software Engineer, 2027 New Grad",
+    "location": "New York, NY, United States",
+    "job_url": "https://jobright.ai/jobs/info/6a95e03ecabc9f6703e1a824",
+    "job_id": "",
+    "posted_date": "2026-08-31",
+    "sources": [
+      "Keryx"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Google",
+    "title": "Software Engineer",
+    "location": "Mountain View, CA",
+    "job_url": "https://www.google.com/about/careers/applications/jobs/results/106684387621249734",
+    "job_id": "106684387621249734",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Keryx",
+      "SpeedyApply"
+    ],
+    "verification_signal": "UNVERIFIED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "SKIP"
+  },
+  {
+    "company": "Generalmotors",
+    "title": "Entry Level Software Engineer",
+    "location": "2 Locations",
+    "job_url": "https://generalmotors.wd5.myworkdayjobs.com/job/Milford-Michigan-United-States-of-America/Entry-Level-Software-Engineer_JR-202618501",
+    "job_id": "JR-202618501",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Harris",
+    "title": "Associate AI Assisted Software Developer",
+    "location": "Remote - Idaho",
+    "job_url": "https://harriscomputer.wd3.myworkdayjobs.com/job/Remote---Idaho/Associate-AI-Assisted-Software-Developer_R0046480-2",
+    "job_id": "R0046480-2",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineering – Systems Engineer I (Onsite)",
+    "location": "US-AL-HUNTSVILLE-401 ~ 401 Jan Davis Dr NW ~ JAN DAVIS 401",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-AL-HUNTSVILLE-401--401-Jan-Davis-Dr-NW--JAN-DAVIS-401/Systems-Engineering---Systems-Engineer-I--Onsite-_01870661",
+    "job_id": "01870661",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  },
+  {
+    "company": "Raytheon",
+    "title": "Systems Engineer I",
+    "location": "US-MA-MARLBOROUGH-MA1 ~ 1001 Boston Post Rd ~ BLDG 1",
+    "job_url": "https://globalhr.wd5.myworkdayjobs.com/job/US-MA-MARLBOROUGH-MA1--1001-Boston-Post-Rd--BLDG-1/Systems-Engineer-I_01866673",
+    "job_id": "01866673",
+    "posted_date": "2026-09-01",
+    "sources": [
+      "Workday direct"
+    ],
+    "verification_signal": "CLOSED",
+    "hard_gate_signals": {},
+    "ambiguous_gate_signals": [],
+    "match_signal": "GOOD"
+  }
+]

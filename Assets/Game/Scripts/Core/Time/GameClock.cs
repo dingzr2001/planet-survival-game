@@ -12,6 +12,7 @@ namespace PlanetSurvival.Core.Time
         [SerializeField, Min(0f)] private float _timeScale = 1f;
         private GameTimeModel _time;
         private SurvivalDecay _survivalDecay;
+        private PlayerHypoxia _hypoxia;
 
         public double ElapsedDays => Time.ElapsedDays;
         public int CurrentDay => Time.CurrentDay;
@@ -33,6 +34,8 @@ namespace PlanetSurvival.Core.Time
         }
 
         public void Bind(SurvivalDecay survivalDecay) => _survivalDecay = survivalDecay;
+
+        public void Bind(PlayerHypoxia hypoxia) => _hypoxia = hypoxia;
 
         public void Configure(float realSecondsPerGameDay, int rescueDay, float timeScale = 1f)
         {
@@ -56,9 +59,20 @@ namespace PlanetSurvival.Core.Time
         public void Advance(float elapsedRealSeconds)
         {
             double elapsedGameHours = Time.Advance(elapsedRealSeconds);
-            if (elapsedGameHours > 0d)
+            if (elapsedGameHours <= 0d)
             {
-                _survivalDecay?.Tick((float)elapsedGameHours);
+                return;
+            }
+
+            var elapsedHours = (float)elapsedGameHours;
+            if (_survivalDecay != null)
+            {
+                _survivalDecay.Tick(elapsedHours);
+            }
+
+            if (_hypoxia != null)
+            {
+                _hypoxia.Tick(elapsedHours);
             }
         }
 

@@ -1,0 +1,282 @@
+[
+  {
+    "job_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683",
+    "job_id": "4445683",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "The cloud/backend stack overlaps with Reid's Java, GCP, databases, and scalable-service experience, but the role describes a senior team member and mandates 3-4+ years of enterprise development plus 3+ years of systems design, well beyond his internship-heavy profile.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Paylocity page is live and presents an Apply action.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develops mobile applications, webpages, backends, and databases; leads application, website, or server design.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Requires GCP or another cloud platform, cloud services, scalability, Java Spring Boot, and Node/NestJS.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "3-4+ years of enterprise software development and 3+ years of systems design are required.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      },
+      {
+        "field": "seniority",
+        "snippet": "Posting calls the Engineer I a senior team member who leads releases and mentors junior developers.",
+        "source_url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4445683"
+      }
+    ]
+  },
+  {
+    "job_url": "https://apply.workable.com/avalore/j/F21E77744E",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The SRE work strongly matches Reid's distributed systems, cloud, automation, observability, and incident-analysis background, but the posting explicitly requires a SECRET clearance and says Avalore will not sponsor work visas.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workable record is published under posting ID 6067827.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "clearance",
+        "snippet": "SECRET Security Clearance Required.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Applicants must already be authorized full-time; Avalore will not sponsor work visas for this position.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Owns SLOs/KPIs, monitoring and alerting, root-cause analysis, automation, capacity planning, and disaster recovery.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Junior level accepts 0-3 years of experience plus a bachelor's degree.",
+        "source_url": "https://apply.workable.com/avalore/j/F21E77744E"
+      }
+    ]
+  },
+  {
+    "job_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858",
+    "job_id": "R-50858",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Reid brings Linux, Azure/AWS, scripting, and production-service troubleshooting, but the role's core Windows/Active Directory, firewall, patching, and RPA administration requirements are only a partial fit; sponsorship is explicitly unavailable.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted, canApply is true, and the listed end date is September 7, 2026.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "sponsorship",
+        "snippet": "Sponsorship is not available for this role.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "core_requirements",
+        "snippet": "Requires Windows/Linux server administration plus Active Directory, password safes, PowerShell, and Bash.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "infrastructure_requirements",
+        "snippet": "Requires patching, vulnerability remediation, firewall administration, networking, VMware, and Azure/AWS support.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires two years of programming and one year of application-development methodology experience.",
+        "source_url": "https://bcbst.wd1.myworkdayjobs.com/en-US/external/job/USA-TN-Chattanooga-Remote/Associate-Software-Engineer-II--Infrastructure---Automation-_R-50858"
+      }
+    ]
+  },
+  {
+    "job_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855",
+    "job_id": "R-00190855",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The junior DevOps scope closely matches Reid's Linux, Docker, Kubernetes, CI/CD, Grafana, cloud, and deployment experience, but US citizenship and an active TS/SCI clearance with CI polygraph are mandatory.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "citizenship_clearance",
+        "snippet": "Minimum requirement: US Citizenship with TS/SCI and Counter-Intelligence Polygraph clearance.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires 1-3 years in DevOps, systems engineering, or infrastructure support and a related bachelor's degree.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Linux, Docker, CI/CD, Terraform or Ansible, monitoring/logging, networking, and troubleshooting exposure.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Supports deployments, pipelines, monitoring, container orchestration, automation, and production reliability.",
+        "source_url": "https://leidos.wd5.myworkdayjobs.com/en-US/external/job/Chantilly-VA/Junior-DevOps-Engineer_R-00190855"
+      }
+    ]
+  },
+  {
+    "job_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12",
+    "job_id": "701a9307-0619-45d3-b077-cabe9897cd12",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "STRONG",
+    "why": "The new-grad infrastructure role is an excellent technical fit for Reid's distributed services, Python/Java/Go, cloud operations, automation, and LLM-infrastructure experience, but it requires an active US clearance or eligibility to obtain one, which conflicts with his profile.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Lever page is live and presents an Apply action.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "clearance",
+        "snippet": "Requires active US Security clearance, or eligibility and willingness to obtain one.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Operates, deploys, debugs, scales, and automates Palantir services and infrastructure for government customers.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "systems_fit",
+        "snippet": "Values load balancing, monitoring, distributed systems, configuration management, and large-scale production systems.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      },
+      {
+        "field": "languages",
+        "snippet": "Seeks proficiency in Java, Python, Bash, JavaScript, Go, or similar languages.",
+        "source_url": "https://jobs.lever.co/palantir/701a9307-0619-45d3-b077-cabe9897cd12"
+      }
+    ]
+  },
+  {
+    "job_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1",
+    "job_id": "21029",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "This early-career platform role directly matches Reid's Linux, Python/Go, containers, Kubernetes, cloud, CI/CD, Grafana, automation, and production-system experience, and it explicitly counts internships toward its 1-3 year requirement.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "career_level",
+        "snippet": "Posting explicitly describes the position as an early-career role with hands-on production-systems experience.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "One to three years may include internships, co-ops, apprenticeships, or early full-time roles.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Builds shared platform services, CI/CD, observability, reliability, automation, and AWS/on-prem infrastructure.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Linux, networking, Python/Go/Bash, containers, cloud, CI/CD, Kubernetes, AWS, and Grafana/Prometheus exposure.",
+        "source_url": "https://silabs.wd1.myworkdayjobs.com/en-US/siliconlabscareers/job/Austin/DevOps-Platform-Engineer_21029-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1",
+    "job_id": "R0046629-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Reid's Ray/vLLM/SGLang serving, distributed LLM infrastructure, C++/Python/Java, and large-scale backend work align exceptionally well, but this Level 4 role requires post-bachelor's or post-graduate professional experience he does not yet have.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Designs scalable ML infrastructure, feature pipelines, model serving, cloud training/evaluation, and data systems.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks Python/Java, distributed systems, large-scale ML infrastructure, and Spark, Flink, or Ray.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires 2+ years post-bachelor's, or a technical master's plus 1+ year post-grad, or a relevant PhD.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      },
+      {
+        "field": "work_arrangement",
+        "snippet": "Default Together policy expects team members in an office 4+ days per week.",
+        "source_url": "https://snapchat.wd1.myworkdayjobs.com/en-US/snap/job/Palo-Alto-California/Software-Engineer--ML-Infrastructure_R0046629-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1",
+    "job_id": "R30695-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "The entry-level backend role is a direct fit for Reid's C#/Java/Go, REST/gRPC microservices, SQL, AWS/cloud, scalable production systems, observability, and testing experience, with no conflicting mandatory eligibility language in the posting.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Designs, deploys, and supports backend services and APIs for fulfillment, transportation, and carrier integrations.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "languages",
+        "snippet": "Accepts statically typed languages including Java, Scala, Kotlin, C#, Swift, Objective-C, or Go.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "backend_requirements",
+        "snippet": "Seeks scalable highly available systems, SQL/RDBMS, REST APIs, gRPC, and service-oriented architecture.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      },
+      {
+        "field": "cloud_observability",
+        "snippet": "Prefers AWS services, asynchronous/event-driven patterns, and monitoring, logging, metrics, and observability.",
+        "source_url": "https://wd5.myworkdaysite.com/recruiting/chewy/External/job/Bellevue-WA/Software-Engineer-I_R30695-1"
+      }
+    ]
+  }
+]

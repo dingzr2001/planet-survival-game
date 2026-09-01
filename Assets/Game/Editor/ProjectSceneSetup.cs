@@ -2,6 +2,7 @@ using PlanetSurvival.Bootstrap;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.World.Generation;
 using UnityEditor;
@@ -31,9 +32,11 @@ namespace PlanetSurvival.Editor
             TerrainGenerationSettings settings = GetOrCreateTerrainSettings();
             PlanetEnvironmentSettings environmentSettings = GetOrCreateEnvironmentSettings();
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings();
+            InventorySkin inventorySkin = UiArtSetup.GetOrCreateInventorySkin();
+            UiArtSetup.AssignItemIcons();
             CreateBootstrapScene();
             CreateMainMenuScene();
-            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings);
+            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, inventorySkin);
             ConfigureBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -145,11 +148,14 @@ namespace PlanetSurvival.Editor
         }
 
         private static void CreateGameplayScene(TerrainGenerationSettings settings,
-            PlanetEnvironmentSettings environmentSettings, ResourceSpawnSettings resourceSpawnSettings)
+            PlanetEnvironmentSettings environmentSettings, ResourceSpawnSettings resourceSpawnSettings,
+            InventorySkin inventorySkin)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var gameplay = new GameObject("Gameplay");
-            gameplay.AddComponent<GameBootstrap>().Configure(settings, environmentSettings, resourceSpawnSettings);
+            GameBootstrap bootstrap = gameplay.AddComponent<GameBootstrap>();
+            bootstrap.Configure(settings, environmentSettings, resourceSpawnSettings);
+            bootstrap.ConfigureUi(inventorySkin);
             gameplay.AddComponent<PauseMenuView>();
             EditorSceneManager.SaveScene(scene, GameplayScenePath);
         }

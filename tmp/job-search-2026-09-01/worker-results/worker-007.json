@@ -1,0 +1,262 @@
+[
+  {
+    "job_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456",
+    "job_id": "R0017456",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "SKIP",
+    "why": "Reid meets the entry-level experience band and has strong C/C++, Git, Python, CI/CD, and Jenkins exposure, but this is primarily embedded microcontroller development requiring lab-equipment proficiency, a major specialization mismatch with his backend and infrastructure record.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456"
+      },
+      {
+        "field": "experience_requirement",
+        "snippet": "Requires 0-1+ years of software development engineering experience; embedded experience is preferred.",
+        "source_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456"
+      },
+      {
+        "field": "core_specialization",
+        "snippet": "Requires embedded C or C++ for 8-, 16-, and 32-bit microcontroller target environments.",
+        "source_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456"
+      },
+      {
+        "field": "hardware_requirement",
+        "snippet": "Requires proficiency with oscilloscopes, logic analyzers, and function generators.",
+        "source_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456"
+      },
+      {
+        "field": "secondary_skills",
+        "snippet": "Python or scripting, Git, CI/CD, and Jenkins are listed as required or optional supporting skills.",
+        "source_url": "https://nidec.wd1.myworkdayjobs.com/en-US/nidec/job/North-AmericaUSAIllinoisSt-Charles-IL/Software-Development-Engineer_R0017456"
+      }
+    ]
+  },
+  {
+    "job_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1",
+    "job_id": "R10247580-1",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "INELIGIBLE",
+    "match": "BORDERLINE",
+    "why": "Reid's CS education, strong GPA, internships, and systems background suit the entry-level band, but the work emphasizes architecture artifacts, requirements traceability, and MBSE more than backend implementation; US citizenship and clearance eligibility are mandatory.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted, canApply is true, and lists an end date of September 2, 2026.",
+        "source_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1"
+      },
+      {
+        "field": "citizenship_clearance",
+        "snippet": "Must be able to obtain a U.S. Government security clearance; U.S. citizenship is a prerequisite.",
+        "source_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1"
+      },
+      {
+        "field": "education_requirement",
+        "snippet": "T01 accepts a completing/completed bachelor's; T02 accepts a completing/completed master's in a relevant discipline.",
+        "source_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Creates architecture artifacts, analyzes requirements and traceability, and supports MBSE tools and methods.",
+        "source_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1"
+      },
+      {
+        "field": "preferred_qualifications",
+        "snippet": "A 3.70+ GPA and prior internship or co-op experience are preferred.",
+        "source_url": "https://ngc.wd1.myworkdayjobs.com/en-US/northrop_grumman_external_site/job/United-States-Alabama-Huntsville/XMLNAME-2027-Associate-Software-Engineer---Software-Engineer---Huntsville-AL_R10247580-1"
+      }
+    ]
+  },
+  {
+    "job_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557",
+    "job_id": "JR2024557",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "Reid's C++, CUDA, distributed LLM serving, Ray, and AI-infrastructure experience transfer well to GPU deep-learning optimization, although his resume does not demonstrate the posting's preferred depth in CUDA parallel programming and low-level performance optimization.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true; applications are accepted at least through September 4, 2026.",
+        "source_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557"
+      },
+      {
+        "field": "education_requirement",
+        "snippet": "Requires pursuit or recent completion of an MS or PhD in engineering, computer science, or equivalent experience.",
+        "source_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develops and optimizes deep-learning and machine-learning techniques for current and next-generation GPU architectures.",
+        "source_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks strong C/C++, software design, AI algorithms, and parallel programming, ideally CUDA C/C++.",
+        "source_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557"
+      },
+      {
+        "field": "preferred_depth",
+        "snippet": "Low-level performance optimization, computer architecture, and deep-learning parallelization distinguish candidates.",
+        "source_url": "https://nvidia.wd5.myworkdayjobs.com/en-US/nvidiaexternalcareersite/job/US-CA-Santa-Clara/Developer-Technology-Engineer--AI---New-College-Graduate-2026_JR2024557"
+      }
+    ]
+  },
+  {
+    "job_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "The entry-level contract directly overlaps with Reid's Java/Spring Boot, Python, AI, API, debugging, and cross-functional engineering work; the posting is brief and provides little systems-depth or experience specificity, limiting confidence to GOOD.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official OmegaHires ATS page is live and presents an Apply action.",
+        "source_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer"
+      },
+      {
+        "field": "employment_type",
+        "snippet": "Listed as an entry-level contracted position in Phoenix or Charlotte, with relocation welcomed.",
+        "source_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develops and maintains Java Spring Boot and Python applications, reviews code, troubleshoots, and optimizes performance.",
+        "source_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks proven Java Spring Boot and Python experience; AI and financial-services familiarity are pluses.",
+        "source_url": "http://omegahires.applytojob.com/apply/Oj9Hboc7Zk/Java-Springboot-Python-AI-FS-Developer"
+      }
+    ]
+  },
+  {
+    "job_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer",
+    "job_id": "",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "GOOD",
+    "why": "Reid has direct Java/Spring Boot, Python, AI, backend, and debugging experience for this entry-level contract, but the unusually brief posting offers little detail on system scope, team, or minimum experience, so it is a good rather than strong evidence-backed match.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official OmegaHires ATS page is live and presents an Apply action.",
+        "source_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer"
+      },
+      {
+        "field": "employment_type",
+        "snippet": "Listed as an entry-level contracted position in Phoenix, Arizona.",
+        "source_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer"
+      },
+      {
+        "field": "responsibilities",
+        "snippet": "Develops Java Spring Boot and Python applications, ships features, reviews code, and troubleshoots performance.",
+        "source_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Seeks proven Java Spring Boot and Python experience; AI and financial-services familiarity are pluses.",
+        "source_url": "http://omegahires.applytojob.com/apply/aDHPuh97BW/Java-Python-AI-Developer"
+      }
+    ]
+  },
+  {
+    "job_url": "https://www.precisely.com/careers-and-culture/us-jobs/job?gh_jid=4722721005",
+    "job_id": "4722721005",
+    "review_status": "CLOSED",
+    "eligibility": "UNKNOWN",
+    "match": "GOOD",
+    "why": "The Associate Software Engineer - Python AI title aligns with Reid's Python and AI-infrastructure background, but the exact official Greenhouse requisition now returns Job not found, so mandatory eligibility terms and detailed responsibilities cannot be verified.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "The exact official Greenhouse job endpoint for requisition 4722721005 returns 404 Job not found.",
+        "source_url": "https://www.precisely.com/careers-and-culture/us-jobs/job?gh_jid=4722721005"
+      },
+      {
+        "field": "verification_limit",
+        "snippet": "The official Precisely job URL no longer exposes the requisition content, so its gates and duties cannot be checked.",
+        "source_url": "https://www.precisely.com/careers-and-culture/us-jobs/job?gh_jid=4722721005"
+      },
+      {
+        "field": "title_fit",
+        "snippet": "Discovered title was Associate Software Engineer - Python AI, matching the candidate's Python and AI background.",
+        "source_url": "https://www.precisely.com/careers-and-culture/us-jobs/job?gh_jid=4722721005"
+      }
+    ]
+  },
+  {
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023",
+    "job_id": "R116023",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Reid's December 2026 graduation falls exactly within the required window, and his Java, Python, C/C++, SQL, Linux, .NET, cloud, big-data, AI, SRE, DevOps, Agile, and testing experience closely matches the rotational graduate program.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023"
+      },
+      {
+        "field": "graduation_requirement",
+        "snippet": "Applicants must graduate between December 2026 and May 2027.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023"
+      },
+      {
+        "field": "program_scope",
+        "snippet": "The 12-month program rotates through big data, AI, SRE, DevOps, security engineering, AWS, and Azure.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Lists Java/J2EE, Python, JavaScript, C/C++, SQL, Windows, Linux, and .NET.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023"
+      },
+      {
+        "field": "engineering_practices",
+        "snippet": "Seeks software-development methodologies, data modeling, data manipulation, and test-driven development knowledge.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Boca-Raton-FL/Tech-Accelerate-Graduate-Program---Software-Engineer--Boca-Raton---June-_R116023"
+      }
+    ]
+  },
+  {
+    "job_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2",
+    "job_id": "R117626-2",
+    "review_status": "OPEN_OFFICIAL",
+    "eligibility": "ELIGIBLE",
+    "match": "STRONG",
+    "why": "Reid's December 2026 graduation meets the exact cohort window, and his backend, AI, big-data, SRE/DevOps, AWS/Azure, Java, Python, C/C++, SQL, Linux, .NET, Agile, and testing record is unusually broad for this graduate rotation.",
+    "evidence": [
+      {
+        "field": "status",
+        "snippet": "Official Workday record is posted and canApply is true.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2"
+      },
+      {
+        "field": "graduation_requirement",
+        "snippet": "Applicants must graduate between December 2026 and May 2027.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2"
+      },
+      {
+        "field": "program_scope",
+        "snippet": "The 12-month program rotates through big data, AI, SRE, DevOps, security engineering, AWS, and Azure.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2"
+      },
+      {
+        "field": "technical_requirements",
+        "snippet": "Lists Java/J2EE, Python, JavaScript, C/C++, SQL, Windows, Linux, and .NET.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2"
+      },
+      {
+        "field": "engineering_practices",
+        "snippet": "Seeks software-development methodologies, data modeling, data manipulation, and test-driven development knowledge.",
+        "source_url": "https://relx.wd3.myworkdayjobs.com/en-US/relx/job/Alpharetta-GA/Tech-Accelerate-Graduate-Program---Software-Engineer--Alpharetta---June-_R117626-2"
+      }
+    ]
+  }
+]
