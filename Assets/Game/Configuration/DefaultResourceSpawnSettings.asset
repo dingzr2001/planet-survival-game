@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: DefaultResourceSpawnSettings
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Gathering.Definitions.ResourceSpawnSettings
   _seedOffset: 7919
-  _minimumSpacing: 3
+  _chunkSize: 32
+  _loadRadiusInChunks: 2
+  _minimumSpacing: 4
+  _spawnClearanceRadius: 3
   _entries:
   - _definition: {fileID: 11400000, guid: d650910d677854228875d06348fdab17, type: 2}
-    _count: 48
+    _nodesPerChunk: 2.5
   - _definition: {fileID: 11400000, guid: a99195e715afe41daa29242b6f6ddcff, type: 2}
-    _count: 32
+    _nodesPerChunk: 1.5
   - _definition: {fileID: 11400000, guid: d58c8eeda58b84bc894ec92198b1fe04, type: 2}
-    _count: 56
+    _nodesPerChunk: 2.5

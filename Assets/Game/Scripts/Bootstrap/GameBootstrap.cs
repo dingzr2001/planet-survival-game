@@ -84,9 +84,9 @@ namespace PlanetSurvival.Bootstrap
             GridMap map = new GridTerrainGenerator().Generate(_terrainSettings);
 
             GridTerrainView terrainView = CreateTerrain(root.transform, map);
-            ResourceNodeSpawner.Spawn(root.transform, map, _terrainSettings, _resourceSpawnSettings, _worldVisuals);
             GameObject player = CreatePlayer(root.transform, map);
             terrainView.SetTarget(player.transform);
+            CreateResourceStreaming(root.transform, player.transform);
             CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player);
@@ -103,6 +103,22 @@ namespace PlanetSurvival.Bootstrap
             GridTerrainView terrainView = terrain.AddComponent<GridTerrainView>();
             terrainView.Build(map, _terrainSettings, _worldVisuals);
             return terrainView;
+        }
+
+        private void CreateResourceStreaming(Transform parent, Transform target)
+        {
+            if (_resourceSpawnSettings == null)
+            {
+                Debug.LogWarning($"{nameof(GameBootstrap)} on '{name}' has no resource spawn settings; the world will contain no resources.", this);
+                return;
+            }
+
+            var streaming = new GameObject("Resource Streaming");
+            streaming.transform.SetParent(parent);
+            ResourceChunkStreamer streamer = streaming.AddComponent<ResourceChunkStreamer>();
+            streamer.Configure(_resourceSpawnSettings, _worldVisuals,
+                _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position);
+            streamer.SetTarget(target);
         }
 
         private GameObject CreatePlayer(Transform parent, GridMap map)

@@ -16,6 +16,16 @@ namespace PlanetSurvival.Editor
     {
         private const int DefaultMapWidth = 48;
         private const int DefaultMapLength = 48;
+        private const int ResourceSeedOffset = 7919;
+
+        // A 32m chunk carries roughly 6.5 nodes on average, about one node per 150m² instead of the previous
+        // one per 17m² inside the single starting area.
+        private const float ResourceChunkSize = 32f;
+        private const int ResourceLoadRadiusInChunks = 2;
+        private const float ResourceMinimumSpacing = 4f;
+
+        // Wide enough that the largest node plus the player capsule cannot overlap the start position.
+        private const float ResourceSpawnClearanceRadius = 3f;
         private const string ScenesDirectory = "Assets/Game/Scenes";
         private const string ConfigurationDirectory = "Assets/Game/Configuration";
         private const string TerrainSettingsPath = ConfigurationDirectory + "/DefaultTerrainSettings.asset";
@@ -69,8 +79,11 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(settings, ResourceSpawnSettingsPath);
             }
 
-            settings.Configure(7919, 3f, new ResourceSpawnEntry(rock, 48), new ResourceSpawnEntry(debris, 32),
-                new ResourceSpawnEntry(plant, 56));
+            settings.Configure(ResourceSeedOffset, ResourceChunkSize, ResourceLoadRadiusInChunks,
+                ResourceMinimumSpacing, ResourceSpawnClearanceRadius,
+                new ResourceSpawnEntry(rock, 2.5f),
+                new ResourceSpawnEntry(debris, 1.5f),
+                new ResourceSpawnEntry(plant, 2.5f));
             EditorUtility.SetDirty(settings);
             return settings;
         }
