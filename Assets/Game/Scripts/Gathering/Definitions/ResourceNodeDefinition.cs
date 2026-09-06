@@ -13,6 +13,8 @@ namespace PlanetSurvival.Gathering.Definitions
         [SerializeField, Min(.1f)] private float _gatherDistance = 2f;
         [SerializeField] private string _requiredToolItemId = string.Empty;
         [SerializeField] private ResourceYield[] _yields = Array.Empty<ResourceYield>();
+        [SerializeField, Tooltip("Transparent cutout used by the flat 2.5D world presentation.")]
+        private Sprite _worldSprite;
         [SerializeField] private Color _displayColor = Color.gray;
         [SerializeField] private Vector3 _displayScale = Vector3.one;
 
@@ -22,6 +24,7 @@ namespace PlanetSurvival.Gathering.Definitions
         public float GatherDistance => _gatherDistance;
         public string RequiredToolItemId => _requiredToolItemId;
         public IReadOnlyList<ResourceYield> Yields => _yields;
+        public Sprite WorldSprite => _worldSprite;
         public Color DisplayColor => _displayColor;
         public Vector3 DisplayScale => _displayScale;
 
@@ -63,6 +66,11 @@ namespace PlanetSurvival.Gathering.Definitions
             _displayColor = displayColor;
             _displayScale = displayScale;
             _yields = yields ?? Array.Empty<ResourceYield>();
+        }
+
+        public void SetWorldSprite(Sprite worldSprite)
+        {
+            _worldSprite = worldSprite;
         }
     }
 }

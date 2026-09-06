@@ -3,6 +3,8 @@ using NUnit.Framework;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Player.Stats;
+using PlanetSurvival.Player.Movement;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -28,6 +30,14 @@ namespace PlanetSurvival.Tests
             Assert.That(Object.FindObjectsByType<PlayerSurvival>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
             Assert.That(Object.FindObjectsByType<GameClock>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
             Assert.That(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+            Camera gameCamera = Object.FindFirstObjectByType<Camera>();
+            Assert.That(gameCamera.orthographic, Is.False);
+            HorizonBackdrop backdrop = gameCamera.GetComponentInChildren<HorizonBackdrop>();
+            Assert.That(backdrop, Is.Not.Null);
+            Assert.That(backdrop.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
+            Assert.That(Object.FindFirstObjectByType<PlanarPlayerMotor>(), Is.Not.Null);
+            Assert.That(Object.FindObjectsByType<WorldSpriteView>(FindObjectsSortMode.None).Length,
+                Is.GreaterThan(1));
 
             flowController.Pause();
             Assert.That(flowController.State, Is.EqualTo(GameFlowState.Paused));

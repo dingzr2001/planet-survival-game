@@ -12,10 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a92520e400122460ca9106dbd24751e3, type: 3}
   m_Name: DefaultTerrainSettings
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Generation.TerrainGenerationSettings
-  _width: 24
-  _length: 24
+  _width: 48
+  _length: 48
   _cellSize: 1
-  _undergroundDepth: 2
-  _noiseScale: 0.08
-  _heightAmplitude: 4
   _seed: 8128

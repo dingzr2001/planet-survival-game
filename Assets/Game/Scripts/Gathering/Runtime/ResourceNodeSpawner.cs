@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Grid;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Gathering.Runtime
 {
     public static class ResourceNodeSpawner
     {
-        public static void Spawn(Transform parent, GridMap map, TerrainGenerationSettings terrain, ResourceSpawnSettings settings)
+        public static void Spawn(Transform parent, GridMap map, TerrainGenerationSettings terrain,
+            ResourceSpawnSettings settings, WorldVisualSettings visuals)
         {
             if (settings == null) return;
             var occupied = new List<Vector3>();
@@ -25,10 +27,9 @@ namespace PlanetSurvival.Gathering.Runtime
                 for (int i = 0; i < positions.Count && spawned < entry.Count; i++)
                 {
                     GridCoordinate coordinate = positions[i];
-                    Vector3 position = new(coordinate.X * terrain.CellSize, map[coordinate.X, coordinate.Z].SurfaceHeight,
-                        coordinate.Z * terrain.CellSize);
+                    Vector3 position = new(coordinate.X * terrain.CellSize, 0f, coordinate.Z * terrain.CellSize);
                     if (!IsFarEnough(position, occupied, settings.MinimumSpacing)) continue;
-                    CreateNode(parent, entry.Definition, position);
+                    CreateNode(parent, entry.Definition, position, visuals);
                     occupied.Add(position);
                     spawned++;
                 }
@@ -50,15 +51,33 @@ namespace PlanetSurvival.Gathering.Runtime
             return true;
         }
 
-        private static void CreateNode(Transform parent, ResourceNodeDefinition definition, Vector3 position)
+        private static void CreateNode(Transform parent, ResourceNodeDefinition definition, Vector3 position,
+            WorldVisualSettings visuals)
         {
-            GameObject node = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var node = new GameObject();
             node.name = $"Resource - {definition.DisplayName}";
             node.transform.SetParent(parent);
-            node.transform.localScale = definition.DisplayScale;
-            node.transform.position = position + Vector3.up * definition.DisplayScale.y * .5f;
-            node.GetComponent<Renderer>().material.color = definition.DisplayColor;
+            node.transform.position = position;
+
+            var collider = node.AddComponent<BoxCollider>();
+            collider.size = new Vector3(
+                Mathf.Max(.2f, definition.DisplayScale.x),
+                Mathf.Max(.3f, definition.DisplayScale.y),
+                Mathf.Max(.2f, definition.DisplayScale.z));
+            collider.center = Vector3.up * collider.size.y * .5f;
             node.AddComponent<ResourceNode>().Configure(definition);
+
+            var visual = new GameObject("Sprite");
+            visual.transform.SetParent(node.transform, false);
+            visual.AddComponent<SpriteRenderer>();
+            visual.AddComponent<WorldSpriteView>().Configure(
+                definition.WorldSprite,
+                Mathf.Max(.5f, definition.DisplayScale.y));
+
+            Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
+            BlobShadow.Create(node.transform,
+                new Vector2(collider.size.x * 1.1f, collider.size.z * .75f),
+                shadowColor);
         }
     }
 }

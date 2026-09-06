@@ -14,6 +14,8 @@ namespace PlanetSurvival.Editor
 {
     public static class ProjectSceneSetup
     {
+        private const int DefaultMapWidth = 48;
+        private const int DefaultMapLength = 48;
         private const string ScenesDirectory = "Assets/Game/Scenes";
         private const string ConfigurationDirectory = "Assets/Game/Configuration";
         private const string TerrainSettingsPath = ConfigurationDirectory + "/DefaultTerrainSettings.asset";
@@ -33,10 +35,12 @@ namespace PlanetSurvival.Editor
             PlanetEnvironmentSettings environmentSettings = GetOrCreateEnvironmentSettings();
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings();
             InventorySkin inventorySkin = UiArtSetup.GetOrCreateInventorySkin();
+            WorldVisualSettings worldVisuals = WorldArtSetup.GetOrCreateWorldVisualSettings();
+            WorldArtSetup.AssignResourceSprites();
             UiArtSetup.AssignItemIcons();
             CreateBootstrapScene();
             CreateMainMenuScene();
-            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, inventorySkin);
+            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, inventorySkin, worldVisuals);
             ConfigureBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -51,11 +55,11 @@ namespace PlanetSurvival.Editor
             ItemDefinition fiber = GetOrCreateItem("PlantFiber", "plant_fiber", "Plant Fiber", 1, 20);
 
             ResourceNodeDefinition rock = GetOrCreateNode("RockNode", "rock", "Rock", 2.5f, Color.gray,
-                new Vector3(1.2f, .8f, 1f), new ResourceYield(stone, 2));
+                new Vector3(.9f, 1.1f, .72f), new ResourceYield(stone, 2));
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
-                new Color(.38f, .42f, .46f), new Vector3(1.1f, .45f, 1.4f), new ResourceYield(scrap, 1));
+                new Color(.38f, .42f, .46f), new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
             ResourceNodeDefinition plant = GetOrCreateNode("PlantNode", "plant", "Alien Plant", 1.5f,
-                new Color(.24f, .7f, .32f), new Vector3(.55f, 1.2f, .55f), new ResourceYield(fiber, 2));
+                new Color(.24f, .7f, .32f), new Vector3(.6f, 1.05f, .55f), new ResourceYield(fiber, 2));
 
             ResourceSpawnSettings settings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(ResourceSpawnSettingsPath);
             if (settings == null)
@@ -65,8 +69,8 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(settings, ResourceSpawnSettingsPath);
             }
 
-            settings.Configure(7919, 3f, new ResourceSpawnEntry(rock, 12), new ResourceSpawnEntry(debris, 8),
-                new ResourceSpawnEntry(plant, 14));
+            settings.Configure(7919, 3f, new ResourceSpawnEntry(rock, 48), new ResourceSpawnEntry(debris, 32),
+                new ResourceSpawnEntry(plant, 56));
             EditorUtility.SetDirty(settings);
             return settings;
         }
@@ -121,12 +125,14 @@ namespace PlanetSurvival.Editor
             TerrainGenerationSettings settings = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(TerrainSettingsPath);
             if (settings != null)
             {
+                settings.Configure(DefaultMapWidth, DefaultMapLength, 1f, 8128);
+                EditorUtility.SetDirty(settings);
                 return settings;
             }
 
             settings = ScriptableObject.CreateInstance<TerrainGenerationSettings>();
             settings.name = "Default Terrain Settings";
-            settings.Configure(24, 24, 1f, 2f, 8128);
+            settings.Configure(DefaultMapWidth, DefaultMapLength, 1f, 8128);
             AssetDatabase.CreateAsset(settings, TerrainSettingsPath);
             return settings;
         }
@@ -149,13 +155,14 @@ namespace PlanetSurvival.Editor
 
         private static void CreateGameplayScene(TerrainGenerationSettings settings,
             PlanetEnvironmentSettings environmentSettings, ResourceSpawnSettings resourceSpawnSettings,
-            InventorySkin inventorySkin)
+            InventorySkin inventorySkin, WorldVisualSettings worldVisuals)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var gameplay = new GameObject("Gameplay");
             GameBootstrap bootstrap = gameplay.AddComponent<GameBootstrap>();
             bootstrap.Configure(settings, environmentSettings, resourceSpawnSettings);
             bootstrap.ConfigureUi(inventorySkin);
+            bootstrap.ConfigureVisuals(worldVisuals);
             gameplay.AddComponent<PauseMenuView>();
             EditorSceneManager.SaveScene(scene, GameplayScenePath);
         }

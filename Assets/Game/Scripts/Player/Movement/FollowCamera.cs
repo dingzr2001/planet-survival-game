@@ -5,11 +5,13 @@ namespace PlanetSurvival.Player.Movement
     [DisallowMultipleComponent]
     public sealed class FollowCamera : MonoBehaviour
     {
-        [SerializeField] private Vector3 _offset = new(8f, 10f, -8f);
-        [SerializeField, Min(0f)] private float _smoothTime = 0.15f;
+        [SerializeField, Tooltip("A fixed elevated perspective that keeps a narrow band of horizon visible.")]
+        private Vector3 _offset = new(5.5f, 8.5f, -8.5f);
+
+        [SerializeField, Min(0f), Tooltip("Raises the framing so the upper portion of the screen can show the sky and distant landmarks.")]
+        private float _lookAtHeight = 4.85f;
 
         private Transform _target;
-        private Vector3 _velocity;
 
         public void SetTarget(Transform target)
         {
@@ -24,9 +26,7 @@ namespace PlanetSurvival.Player.Movement
                 return;
             }
 
-            Vector3 targetPosition = _target.position + _offset;
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, _smoothTime);
-            transform.LookAt(_target.position + Vector3.up);
+            transform.position = _target.position + _offset;
         }
 
         private void SnapToTarget()
@@ -37,7 +37,7 @@ namespace PlanetSurvival.Player.Movement
             }
 
             transform.position = _target.position + _offset;
-            transform.LookAt(_target.position + Vector3.up);
+            transform.LookAt(_target.position + Vector3.up * _lookAtHeight);
         }
     }
 }

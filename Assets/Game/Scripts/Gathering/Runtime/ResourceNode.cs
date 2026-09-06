@@ -159,8 +159,11 @@ namespace PlanetSurvival.Gathering.Runtime
         private void SetDepletedPresentation()
         {
             if (InteractionCollider != null) InteractionCollider.enabled = false;
-            Renderer nodeRenderer = GetComponent<Renderer>();
-            if (nodeRenderer != null) nodeRenderer.enabled = false;
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].enabled = false;
+            }
         }
     }
 }

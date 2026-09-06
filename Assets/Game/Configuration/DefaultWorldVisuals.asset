@@ -1,0 +1,217 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d3c6ac3359c4f3495d10ab7dc248f7, type: 3}
+  m_Name: DefaultWorldVisuals
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Generation.WorldVisualSettings
+  _groundTexture: {fileID: 2800000, guid: e52b3c8b6eee94a8eae4261ad4b6d29e, type: 3}
+  _groundTint: {r: 1, g: 1, b: 1, a: 1}
+  _groundTileSize: 8
+  _playerSprite: {fileID: 21300000, guid: 05f6e9d6d6a074646bf2a8cd179e43de, type: 3}
+  _playerHeight: 1.8
+  _playerAnimationSheet: {fileID: 2800000, guid: 832003f5279974af293b9dd50ed55612, type: 3}
+  _playerFramesPerDirection: 8
+  _playerFrameRects:
+  - serializedVersion: 2
+    x: 0
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 256
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 512
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 768
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1024
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1280
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1536
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1792
+    y: 1536
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 0
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 256
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 512
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 768
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1024
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1280
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1536
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1792
+    y: 1024
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 0
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 256
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 512
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 768
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1024
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1280
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1536
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1792
+    y: 512
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 0
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 256
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 512
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 768
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1024
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1280
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1536
+    y: 0
+    width: 256
+    height: 512
+  - serializedVersion: 2
+    x: 1792
+    y: 0
+    width: 256
+    height: 512
+  _playerFramePivots:
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.50035137, y: 0.044921875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.47827637, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.5178175, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  - {x: 0.49351087, y: 0.04296875}
+  _horizonSprite: {fileID: 21300000, guid: c5a30097d888245b08ef614cfcfe7457, type: 3}
+  _shadowColor: {r: 0.08, g: 0.035, b: 0.02, a: 0.48}
