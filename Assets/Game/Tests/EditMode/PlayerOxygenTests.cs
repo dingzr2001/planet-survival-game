@@ -91,7 +91,7 @@ namespace PlanetSurvival.Tests
         [Test]
         public void Normalized_WithZeroMaximum_IsZero()
         {
-            _survival.Stats.Oxygen.SetBaseMaximum(0f);
+            _survival.Stats.Oxygen.SetMaximum(0f);
 
             Assert.That(_oxygen.Maximum, Is.EqualTo(0f));
             Assert.That(_oxygen.Normalized, Is.EqualTo(0f));

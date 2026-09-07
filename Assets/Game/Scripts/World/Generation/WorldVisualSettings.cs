@@ -21,6 +21,12 @@ namespace PlanetSurvival.World.Generation
         [SerializeField, HideInInspector] private Rect[] _playerFrameRects = System.Array.Empty<Rect>();
         [SerializeField, HideInInspector] private Vector2[] _playerFramePivots = System.Array.Empty<Vector2>();
 
+        [Header("Landing Pod")]
+        [SerializeField, Tooltip("Camera-facing exterior artwork used by the surface landing pod.")]
+        private Sprite _landingPodExteriorSprite;
+        [SerializeField, Min(.1f), Tooltip("Displayed height of the landing pod exterior in world units.")]
+        private float _landingPodExteriorHeight = 5.4f;
+
         [Header("Presentation")]
         [SerializeField, Tooltip("Camera-relative distant sky and horizon backdrop.")]
         private Sprite _horizonSprite;
@@ -35,6 +41,8 @@ namespace PlanetSurvival.World.Generation
         public int PlayerFramesPerDirection => _playerFramesPerDirection;
         public IReadOnlyList<Rect> PlayerFrameRects => _playerFrameRects;
         public IReadOnlyList<Vector2> PlayerFramePivots => _playerFramePivots;
+        public Sprite LandingPodExteriorSprite => _landingPodExteriorSprite;
+        public float LandingPodExteriorHeight => _landingPodExteriorHeight;
         public Sprite HorizonSprite => _horizonSprite;
         public Color ShadowColor => _shadowColor;
 
@@ -52,6 +60,12 @@ namespace PlanetSurvival.World.Generation
             _playerFramesPerDirection = Mathf.Max(1, framesPerDirection);
             _playerFrameRects = frameRects ?? System.Array.Empty<Rect>();
             _playerFramePivots = framePivots ?? System.Array.Empty<Vector2>();
+        }
+
+        public void ConfigureLandingPod(Sprite exteriorSprite, float exteriorHeight)
+        {
+            _landingPodExteriorSprite = exteriorSprite;
+            _landingPodExteriorHeight = Mathf.Max(.1f, exteriorHeight);
         }
     }
 }

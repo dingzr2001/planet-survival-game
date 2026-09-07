@@ -1,4 +1,3 @@
-using PlanetSurvival.World.Grid;
 using UnityEngine;
 
 namespace PlanetSurvival.World.Generation
@@ -23,18 +22,18 @@ namespace PlanetSurvival.World.Generation
             EnsureGroundCoverage();
         }
 
-        public void Build(GridMap map, TerrainGenerationSettings settings, WorldVisualSettings visuals)
+        public void Build(TerrainGenerationSettings settings, WorldVisualSettings visuals)
         {
             var ground = new GameObject();
             ground.name = "Flat Ground";
             ground.transform.SetParent(transform, false);
             _ground = ground.transform;
             _ground.localPosition = new Vector3(
-                (map.Width - 1) * settings.CellSize * .5f,
+                (settings.Width - 1) * settings.CellSize * .5f,
                 0f,
-                (map.Length - 1) * settings.CellSize * .5f);
+                (settings.Length - 1) * settings.CellSize * .5f);
 
-            float logicalDiameter = Mathf.Max(map.Width, map.Length) * settings.CellSize;
+            float logicalDiameter = Mathf.Max(settings.Width, settings.Length) * settings.CellSize;
             float radius = Mathf.Max(MinimumRadius, logicalDiameter);
             _tileSize = visuals != null ? visuals.GroundTileSize : 8f;
             _mesh = CreateDisc(radius, _tileSize);

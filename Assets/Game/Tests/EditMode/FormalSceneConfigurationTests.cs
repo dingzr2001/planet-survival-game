@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using PlanetSurvival.Gathering.Definitions;
+using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.World.Generation;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace PlanetSurvival.Tests
         {
             "Assets/Game/Scenes/Bootstrap.unity",
             "Assets/Game/Scenes/MainMenu.unity",
+            "Assets/Game/Scenes/LandingPodHabitat.unity",
+            "Assets/Game/Scenes/LandingPodCargo.unity",
             "Assets/Game/Scenes/Gameplay.unity"
         };
 
@@ -27,6 +30,40 @@ namespace PlanetSurvival.Tests
                 Assert.That(scenes[i].path, Is.EqualTo(ExpectedScenePaths[i]));
                 Assert.That(AssetDatabase.LoadAssetAtPath<SceneAsset>(scenes[i].path), Is.Not.Null);
             }
+        }
+
+        [Test]
+        public void OxygenHudTexture_IsImportedForTransparentUiRendering()
+        {
+            const string path = "Assets/Game/Resources/Oxygen/Oxygen.png";
+            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+            Assert.That(texture, Is.Not.Null);
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.maxTextureSize, Is.EqualTo(256));
+        }
+
+        [Test]
+        public void EnergyBar_HasNutritionAndTransparentInventoryIcon()
+        {
+            const string itemPath = "Assets/Game/Configuration/EnergyBar.asset";
+            const string iconPath = "Assets/Game/Art/UI/Icons/Items/EnergyBar.png";
+            ItemDefinition energyBar = AssetDatabase.LoadAssetAtPath<ItemDefinition>(itemPath);
+            var importer = AssetImporter.GetAtPath(iconPath) as TextureImporter;
+
+            Assert.That(energyBar, Is.Not.Null);
+            Assert.That(energyBar.ItemId, Is.EqualTo("energy_bar"));
+            Assert.That(energyBar.Calories, Is.EqualTo(500));
+            Assert.That(energyBar.CanUse, Is.True);
+            Assert.That(energyBar.Icon, Is.Not.Null);
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.maxTextureSize, Is.EqualTo(256));
         }
 
         [Test]
@@ -61,6 +98,8 @@ namespace PlanetSurvival.Tests
             Assert.That(visuals.PlayerFramesPerDirection, Is.EqualTo(8));
             Assert.That(visuals.PlayerFrameRects.Count, Is.EqualTo(32));
             Assert.That(visuals.PlayerFramePivots.Count, Is.EqualTo(32));
+            Assert.That(visuals.LandingPodExteriorSprite, Is.Not.Null);
+            Assert.That(visuals.LandingPodExteriorHeight, Is.GreaterThan(0f));
             int cellWidth = visuals.PlayerAnimationSheet.width / visuals.PlayerFramesPerDirection;
             int cellHeight = visuals.PlayerAnimationSheet.height / 4;
             for (int row = 0; row < 4; row++)

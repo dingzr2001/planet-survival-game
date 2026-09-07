@@ -23,7 +23,7 @@ namespace PlanetSurvival.Core.Flow
 
         public void StartGame()
         {
-            LoadScene(GameSceneNames.Gameplay, GameFlowState.Playing);
+            LoadScene(GameSceneNames.LandingPodHabitat, GameFlowState.Playing);
         }
 
         public bool Pause()
@@ -57,7 +57,7 @@ namespace PlanetSurvival.Core.Flow
                 return false;
             }
 
-            LoadScene(GameSceneNames.Gameplay, GameFlowState.Playing);
+            LoadScene(GameSceneNames.LandingPodHabitat, GameFlowState.Playing);
             return true;
         }
 

@@ -85,7 +85,6 @@ namespace PlanetSurvival.Player.Stats
             float step = Mathf.Max(0f, elapsedGameHours);
 
             return new HypoxiaResult(
-                oxygen,
                 sanitySeverity,
                 healthSeverity,
                 Loss(MaximumSanityLossPerGameHour, sanitySeverity, SanityExponent, step),

@@ -9,9 +9,6 @@ namespace PlanetSurvival.World.Generation
         [SerializeField, Min(1f), Tooltip("Real seconds required for one complete game day.")]
         private float _realSecondsPerGameDay = 600f;
         [SerializeField, Min(1)] private int _rescueDay = 30;
-        [Header("Atmosphere")]
-        [SerializeField, Range(0f, 1f)] private float _surfaceOxygen = 0.21f;
-        [SerializeField, Min(1f)] private float _oxygenFalloffHeight = 1000f;
         [Header("Day and night")]
         [SerializeField] private Gradient _sunColor = new();
         [SerializeField] private AnimationCurve _sunIntensity = new();
@@ -20,7 +17,6 @@ namespace PlanetSurvival.World.Generation
 
         public float RealSecondsPerGameDay => _realSecondsPerGameDay;
         public int RescueDay => _rescueDay;
-        public AtmosphereModel CreateAtmosphere() => new(_surfaceOxygen, _oxygenFalloffHeight);
         public Color EvaluateSunColor(float timeOfDay) => _sunColor.Evaluate(timeOfDay);
         public float EvaluateSunIntensity(float timeOfDay) => Mathf.Max(0f, _sunIntensity.Evaluate(timeOfDay));
         public Color EvaluateAmbientColor(float timeOfDay) => _ambientColor.Evaluate(timeOfDay);

@@ -16,26 +16,32 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void TemporaryOverflow_AllowsValueAboveEffectiveMaximum()
+        public void Change_ClampsAtTheMaximum()
         {
-            var vital = new Vital(100f, 100f);
-            vital.SetTemporaryOverflow(10f);
+            var vital = new Vital(100f, 90f);
 
-            vital.Change(20f);
+            vital.Change(50f);
 
-            Assert.That(vital.Current, Is.EqualTo(110f));
-            Assert.That(vital.EffectiveMaximum, Is.EqualTo(100f));
+            Assert.That(vital.Current, Is.EqualTo(100f));
         }
 
         [Test]
-        public void NegativeMaximumModifier_RestrictsCurrentValue()
+        public void SetMaximum_PullsAnOversizedCurrentValueDown()
         {
             var vital = new Vital(100f, 100f);
 
-            vital.SetMaximumModifier(-30f);
+            vital.SetMaximum(70f);
 
             Assert.That(vital.Current, Is.EqualTo(70f));
-            Assert.That(vital.EffectiveMaximum, Is.EqualTo(70f));
+            Assert.That(vital.Maximum, Is.EqualTo(70f));
+        }
+
+        [Test]
+        public void Normalized_WithZeroMaximum_IsEmptyRatherThanFull()
+        {
+            var vital = new Vital(0f, 0f);
+
+            Assert.That(vital.Normalized, Is.EqualTo(0f));
         }
     }
 }

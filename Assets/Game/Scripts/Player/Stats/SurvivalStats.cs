@@ -18,6 +18,15 @@ namespace PlanetSurvival.Player.Stats
         public Vital Thirst => _thirst;
         public Vital Oxygen => _oxygen;
 
+        public void Reset()
+        {
+            _health.SetCurrent(_health.Maximum);
+            _sanity.SetCurrent(_sanity.Maximum);
+            _hunger.SetCurrent(_hunger.Maximum);
+            _thirst.SetCurrent(_thirst.Maximum);
+            _oxygen.SetCurrent(_oxygen.Maximum);
+        }
+
         public Vital Get(VitalType type)
         {
             return type switch

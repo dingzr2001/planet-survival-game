@@ -15,7 +15,6 @@ namespace PlanetSurvival.Gathering.Definitions
         [SerializeField] private ResourceYield[] _yields = Array.Empty<ResourceYield>();
         [SerializeField, Tooltip("Transparent cutout used by the flat 2.5D world presentation.")]
         private Sprite _worldSprite;
-        [SerializeField] private Color _displayColor = Color.gray;
         [SerializeField] private Vector3 _displayScale = Vector3.one;
 
         public string ResourceId => _resourceId;
@@ -25,7 +24,6 @@ namespace PlanetSurvival.Gathering.Definitions
         public string RequiredToolItemId => _requiredToolItemId;
         public IReadOnlyList<ResourceYield> Yields => _yields;
         public Sprite WorldSprite => _worldSprite;
-        public Color DisplayColor => _displayColor;
         public Vector3 DisplayScale => _displayScale;
 
         public bool IsValid(out string error)
@@ -56,14 +54,13 @@ namespace PlanetSurvival.Gathering.Definitions
         }
 
         public void Configure(string resourceId, string displayName, float gatherDuration, float gatherDistance,
-            string requiredToolItemId, Color displayColor, Vector3 displayScale, params ResourceYield[] yields)
+            string requiredToolItemId, Vector3 displayScale, params ResourceYield[] yields)
         {
             _resourceId = resourceId;
             _displayName = displayName;
             _gatherDuration = Mathf.Max(.1f, gatherDuration);
             _gatherDistance = Mathf.Max(.1f, gatherDistance);
             _requiredToolItemId = requiredToolItemId ?? string.Empty;
-            _displayColor = displayColor;
             _displayScale = displayScale;
             _yields = yields ?? Array.Empty<ResourceYield>();
         }

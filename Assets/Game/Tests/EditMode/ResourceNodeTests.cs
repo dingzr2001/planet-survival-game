@@ -22,7 +22,7 @@ namespace PlanetSurvival.Tests
             _item = ScriptableObject.CreateInstance<ItemDefinition>();
             _item.Configure("test_resource", "Test Resource", 1, 20, false, true);
             _definition = ScriptableObject.CreateInstance<ResourceNodeDefinition>();
-            _definition.Configure("test_node", "Test Node", 1f, 2f, string.Empty, Color.white,
+            _definition.Configure("test_node", "Test Node", 1f, 2f, string.Empty,
                 Vector3.one, new ResourceYield(_item, 2));
 
             _actor = new GameObject("Gatherer");

@@ -213,5 +213,7 @@ MonoBehaviour:
   - {x: 0.49351087, y: 0.04296875}
   - {x: 0.49351087, y: 0.04296875}
   - {x: 0.49351087, y: 0.04296875}
+  _landingPodExteriorSprite: {fileID: 21300000, guid: c39e27255dc14434bb80e7b59794db6c, type: 3}
+  _landingPodExteriorHeight: 5.4
   _horizonSprite: {fileID: 21300000, guid: c5a30097d888245b08ef614cfcfe7457, type: 3}
   _shadowColor: {r: 0.08, g: 0.035, b: 0.02, a: 0.48}

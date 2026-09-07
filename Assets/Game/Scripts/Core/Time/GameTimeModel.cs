@@ -28,7 +28,6 @@ namespace PlanetSurvival.Core.Time
         public float NormalizedTimeOfDay => (float)(ElapsedDays - Math.Floor(ElapsedDays));
         public event Action<int> DayChanged;
         public event Action TimeChanged;
-        public event Action<double> Advanced;
 
         public void SetPaused(bool isPaused) => IsPaused = isPaused;
 
@@ -45,7 +44,6 @@ namespace PlanetSurvival.Core.Time
             double elapsedDays = elapsedRealSeconds * TimeScale / _realSecondsPerGameDay;
             ElapsedDays += elapsedDays;
             double elapsedGameHours = elapsedDays * 24d;
-            Advanced?.Invoke(elapsedGameHours);
             for (int day = previousDay + 1; day <= CurrentDay; day++)
             {
                 DayChanged?.Invoke(day);

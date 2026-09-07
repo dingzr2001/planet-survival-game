@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/MainMenu.unity
     guid: a1b48894495394438bee34808174fa3f
   - enabled: 1
+    path: Assets/Game/Scenes/LandingPodHabitat.unity
+    guid: b31f72c9baf2549df804ff0b4891820a
+  - enabled: 1
+    path: Assets/Game/Scenes/LandingPodCargo.unity
+    guid: 6139423a4397f4199b324fdd62889357
+  - enabled: 1
     path: Assets/Game/Scenes/Gameplay.unity
     guid: 39adb6b43bcf94d99bc44023ea807165
   m_configObjects: {}

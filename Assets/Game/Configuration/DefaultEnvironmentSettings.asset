@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Generation.PlanetEnvironmentSettings
   _realSecondsPerGameDay: 600
   _rescueDay: 30
-  _surfaceOxygen: 0.21
-  _oxygenFalloffHeight: 1000
   _sunColor:
     serializedVersion: 2
     key0: {r: 1, g: 0.35, b: 0.2, a: 1}

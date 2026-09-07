@@ -6,11 +6,12 @@ using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
+using PlanetSurvival.Suit.Runtime;
 using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
+using PlanetSurvival.Water.Runtime;
 using PlanetSurvival.World.Generation;
-using PlanetSurvival.World.Grid;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -81,11 +82,11 @@ namespace PlanetSurvival.Bootstrap
             }
 
             var root = new GameObject(RuntimeRootName);
-            GridMap map = new GridTerrainGenerator().Generate(_terrainSettings);
-
-            GridTerrainView terrainView = CreateTerrain(root.transform, map);
-            GameObject player = CreatePlayer(root.transform, map);
+            GridTerrainView terrainView = CreateTerrain(root.transform);
+            GameObject player = CreatePlayer(root.transform, ResolveSession());
             terrainView.SetTarget(player.transform);
+            LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
+                _worldVisuals);
             CreateResourceStreaming(root.transform, player.transform);
             CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
@@ -96,12 +97,12 @@ namespace PlanetSurvival.Bootstrap
             BindPlayerDeath(player);
         }
 
-        private GridTerrainView CreateTerrain(Transform parent, GridMap map)
+        private GridTerrainView CreateTerrain(Transform parent)
         {
             var terrain = new GameObject("Grid Terrain");
             terrain.transform.SetParent(parent);
             GridTerrainView terrainView = terrain.AddComponent<GridTerrainView>();
-            terrainView.Build(map, _terrainSettings, _worldVisuals);
+            terrainView.Build(_terrainSettings, _worldVisuals);
             return terrainView;
         }
 
@@ -121,10 +122,16 @@ namespace PlanetSurvival.Bootstrap
             streamer.SetTarget(target);
         }
 
-        private GameObject CreatePlayer(Transform parent, GridMap map)
+        private static GameSessionState ResolveSession()
         {
-            int centerX = map.Width / 2;
-            int centerZ = map.Length / 2;
+            GameFlowController flowController = FindFirstObjectByType<GameFlowController>();
+            return flowController != null ? flowController.Session : new GameSessionState();
+        }
+
+        private GameObject CreatePlayer(Transform parent, GameSessionState session)
+        {
+            int centerX = _terrainSettings.Width / 2;
+            int centerZ = _terrainSettings.Length / 2;
             var player = new GameObject();
             player.name = "Player";
             player.transform.SetParent(parent);
@@ -138,12 +145,17 @@ namespace PlanetSurvival.Bootstrap
             controller.radius = .32f;
             controller.center = Vector3.up * .75f;
 
-            player.AddComponent<PlayerSurvival>();
-            player.AddComponent<PlayerInventory>();
+            PlayerSurvival survival = player.AddComponent<PlayerSurvival>();
+            survival.Bind(session.SurvivalStats);
+            player.AddComponent<PlayerInventory>().Bind(session.PlayerInventory);
             player.AddComponent<SurvivalDecay>();
-            player.AddComponent<PlayerOxygen>();
+            PlayerOxygen oxygen = player.AddComponent<PlayerOxygen>();
             player.AddComponent<PlayerHypoxia>();
             player.AddComponent<PlayerInteractor>();
+            PlayerSpaceSuit spaceSuit = player.AddComponent<PlayerSpaceSuit>();
+            spaceSuit.Bind(session.SpaceSuit, true);
+            player.AddComponent<PlayerOxygenConsumption>().Bind(oxygen, spaceSuit);
+            player.AddComponent<PlayerWaterBottle>().Bind(session.SpaceSuit.Water, survival);
             CreatePlayerVisual(player.transform);
             player.AddComponent<PlanarPlayerMotor>();
             return player;
@@ -231,6 +243,7 @@ namespace PlanetSurvival.Bootstrap
             GameClock clock = clockObject.AddComponent<GameClock>();
             clock.Bind(player.GetComponent<SurvivalDecay>());
             clock.Bind(player.GetComponent<PlayerHypoxia>());
+            clock.Bind(player.GetComponent<PlayerOxygenConsumption>());
             return clock;
         }
 
@@ -240,7 +253,12 @@ namespace PlanetSurvival.Bootstrap
             hudObject.transform.SetParent(parent);
             hudObject.AddComponent<SurvivalHudView>().Bind(player.GetComponent<PlayerSurvival>(), clock);
             hudObject.AddComponent<InteractionPromptView>().Bind(player.GetComponent<PlayerInteractor>());
-            hudObject.AddComponent<InventoryView>().Bind(player.GetComponent<PlayerInventory>(), inventorySkin);
+            hudObject.AddComponent<InventoryView>().Bind(
+                player.GetComponent<PlayerInventory>(),
+                inventorySkin,
+                player.GetComponent<PlayerWaterBottle>());
+            hudObject.AddComponent<SuitResourceView>().Bind(
+                player.GetComponent<PlayerSpaceSuit>().Resources);
             hudObject.AddComponent<GameOverView>();
         }
 

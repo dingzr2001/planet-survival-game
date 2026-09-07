@@ -13,6 +13,7 @@ namespace PlanetSurvival.Core.Time
         private GameTimeModel _time;
         private SurvivalDecay _survivalDecay;
         private PlayerHypoxia _hypoxia;
+        private PlayerOxygenConsumption _oxygenConsumption;
 
         public double ElapsedDays => Time.ElapsedDays;
         public int CurrentDay => Time.CurrentDay;
@@ -26,7 +27,6 @@ namespace PlanetSurvival.Core.Time
         public float NormalizedTimeOfDay => Time.NormalizedTimeOfDay;
         public event Action<int> DayChanged;
         public event Action TimeChanged;
-        public event Action<double> Advanced;
 
         private GameTimeModel Time
         {
@@ -36,6 +36,8 @@ namespace PlanetSurvival.Core.Time
         public void Bind(SurvivalDecay survivalDecay) => _survivalDecay = survivalDecay;
 
         public void Bind(PlayerHypoxia hypoxia) => _hypoxia = hypoxia;
+
+        public void Bind(PlayerOxygenConsumption oxygenConsumption) => _oxygenConsumption = oxygenConsumption;
 
         public void Configure(float realSecondsPerGameDay, int rescueDay, float timeScale = 1f)
         {
@@ -70,6 +72,12 @@ namespace PlanetSurvival.Core.Time
                 _survivalDecay.Tick(elapsedHours);
             }
 
+            // Settle the breathable supply first so hypoxia observes the state reached this tick.
+            if (_oxygenConsumption != null)
+            {
+                _oxygenConsumption.Tick(elapsedHours);
+            }
+
             if (_hypoxia != null)
             {
                 _hypoxia.Tick(elapsedHours);
@@ -87,18 +95,15 @@ namespace PlanetSurvival.Core.Time
             _time = new GameTimeModel(_realSecondsPerGameDay, _rescueDay, _timeScale);
             _time.DayChanged += ForwardDayChanged;
             _time.TimeChanged += ForwardTimeChanged;
-            _time.Advanced += ForwardAdvanced;
         }
 
         private void Unsubscribe(GameTimeModel time)
         {
             time.DayChanged -= ForwardDayChanged;
             time.TimeChanged -= ForwardTimeChanged;
-            time.Advanced -= ForwardAdvanced;
         }
 
         private void ForwardDayChanged(int day) => DayChanged?.Invoke(day);
         private void ForwardTimeChanged() => TimeChanged?.Invoke();
-        private void ForwardAdvanced(double hours) => Advanced?.Invoke(hours);
     }
 }

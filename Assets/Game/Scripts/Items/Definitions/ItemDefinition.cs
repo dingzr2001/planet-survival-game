@@ -16,6 +16,7 @@ namespace PlanetSurvival.Items.Definitions
         [SerializeField, Min(1)] private int _maximumStackSize = 1;
         [SerializeField] private bool _canUse;
         [SerializeField] private bool _canDrop = true;
+        [SerializeField, Min(0)] private int _calories;
         [SerializeField] private VitalEffect[] _effects = Array.Empty<VitalEffect>();
 
         public string ItemId => _itemId;
@@ -26,6 +27,7 @@ namespace PlanetSurvival.Items.Definitions
         public int MaximumStackSize => _maximumStackSize;
         public bool CanUse => _canUse;
         public bool CanDrop => _canDrop;
+        public int Calories => _calories;
         public IReadOnlyList<VitalEffect> Effects => _effects;
 
         public bool IsValid(out string error)
@@ -48,6 +50,12 @@ namespace PlanetSurvival.Items.Definitions
                 return false;
             }
 
+            if (_calories < 0)
+            {
+                error = $"Item '{_itemId}' cannot contain negative calories.";
+                return false;
+            }
+
             error = string.Empty;
             return true;
         }
@@ -67,7 +75,18 @@ namespace PlanetSurvival.Items.Definitions
             _maximumStackSize = maximumStackSize;
             _canUse = canUse;
             _canDrop = canDrop;
+            _calories = 0;
             _effects = effects ?? Array.Empty<VitalEffect>();
+        }
+
+        public void ConfigureNutrition(int calories)
+        {
+            _calories = Mathf.Max(0, calories);
+        }
+
+        public void ConfigureDescription(string description)
+        {
+            _description = description ?? string.Empty;
         }
     }
 

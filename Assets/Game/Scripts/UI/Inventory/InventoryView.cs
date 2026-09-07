@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Inventory.Domain;
+using PlanetSurvival.Water.Runtime;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.Inventory
@@ -12,22 +13,33 @@ namespace PlanetSurvival.UI.Inventory
         private const float SlotSpacing = 6f;
         private const float InventorySlotSize = 88f;
         private const float SelectionOutlineWidth = 2f;
+        private const string WaterBottleTextureResource = "Water/WaterBottle";
+        private const float FeedbackDurationSeconds = 2.5f;
 
         private PlayerInventory _playerInventory;
+        private PlayerWaterBottle _waterBottle;
         private InventorySkin _skin;
         private bool _isPanelOpen;
+        private bool _isWaterBottleSelected;
         private string _selectedStackId;
+        private string _waterFeedback = string.Empty;
+        private float _waterFeedbackExpiresAt;
         private Vector2 _scrollPosition;
+        private Texture2D _waterBottleTexture;
         private GUIStyle _slotStyle;
         private GUIStyle _quantityStyle;
         private GUIStyle _quantityShadowStyle;
         private GUIStyle _hotkeyStyle;
         private GUIStyle _placeholderStyle;
 
-        public void Bind(PlayerInventory playerInventory, InventorySkin skin)
+        public bool HasWaterBottle => _waterBottle != null;
+
+        public void Bind(PlayerInventory playerInventory, InventorySkin skin, PlayerWaterBottle waterBottle = null)
         {
             _playerInventory = playerInventory;
             _skin = skin;
+            _waterBottle = waterBottle;
+            _waterBottleTexture = Resources.Load<Texture2D>(WaterBottleTextureResource);
             if (_playerInventory == null)
             {
                 Debug.LogError($"{nameof(InventoryView)} requires a player inventory.", this);
@@ -48,6 +60,11 @@ namespace PlanetSurvival.UI.Inventory
             if (Input.GetKeyDown(KeyCode.I))
             {
                 _isPanelOpen = !_isPanelOpen;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                TryDrinkWater();
             }
 
             for (int i = 0; i < QuickBarConfiguration.SlotCount; i++)
@@ -77,14 +94,27 @@ namespace PlanetSurvival.UI.Inventory
 
         private void DrawQuickBar()
         {
-            float width = QuickBarConfiguration.SlotCount * (QuickSlotSize + SlotSpacing) + SlotSpacing;
+            int visibleSlotCount = QuickBarConfiguration.SlotCount + (_waterBottle != null ? 1 : 0);
+            float width = visibleSlotCount * (QuickSlotSize + SlotSpacing) + SlotSpacing;
             var area = new Rect((Screen.width - width) * 0.5f, Screen.height - QuickSlotSize - 46f, width, QuickSlotSize + 40f);
             PanelBackground.Draw(area);
+
+            float itemSlotsStart = area.x + SlotSpacing;
+            if (_waterBottle != null)
+            {
+                var bottleSlot = new Rect(itemSlotsStart, area.y + SlotSpacing, QuickSlotSize, QuickSlotSize);
+                if (DrawWaterBottleSlot(bottleSlot, "Q", false))
+                {
+                    TryDrinkWater();
+                }
+
+                itemSlotsStart += QuickSlotSize + SlotSpacing;
+            }
 
             for (int i = 0; i < QuickBarConfiguration.SlotCount; i++)
             {
                 var slot = new Rect(
-                    area.x + SlotSpacing + i * (QuickSlotSize + SlotSpacing),
+                    itemSlotsStart + i * (QuickSlotSize + SlotSpacing),
                     area.y + SlotSpacing,
                     QuickSlotSize,
                     QuickSlotSize);
@@ -97,6 +127,10 @@ namespace PlanetSurvival.UI.Inventory
 
             var caption = new Rect(area.x, area.yMax - 20f, area.width, 18f);
             GUI.Label(caption, $"{_playerInventory.Inventory.UsedCapacity} / {_playerInventory.Inventory.TotalCapacity}    [I] Inventory", _hotkeyStyle);
+            if (!string.IsNullOrEmpty(_waterFeedback) && Time.unscaledTime < _waterFeedbackExpiresAt)
+            {
+                GUI.Label(new Rect(area.x, area.y - 24f, area.width, 20f), _waterFeedback, _hotkeyStyle);
+            }
         }
 
         private void DrawInventoryPanel()
@@ -108,7 +142,10 @@ namespace PlanetSurvival.UI.Inventory
 
             GUILayout.BeginArea(new Rect(area.x + 14f, area.y + 12f, area.width - 28f, area.height - 24f));
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"Inventory    {_playerInventory.Inventory.UsedCapacity} / {_playerInventory.Inventory.TotalCapacity}");
+            GUILayout.Label($"Inventory    {_playerInventory.Inventory.UsedSlots} / " +
+                            $"{_playerInventory.Inventory.TotalSlots} slots  ·  " +
+                            $"{_playerInventory.Inventory.UsedCapacity} / " +
+                            $"{_playerInventory.Inventory.TotalCapacity} capacity");
             if (GUILayout.Button("Close", GUILayout.Width(70f)))
             {
                 _isPanelOpen = false;
@@ -128,24 +165,41 @@ namespace PlanetSurvival.UI.Inventory
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(gridHeight));
 
             IReadOnlyList<ItemStack> stacks = _playerInventory.Inventory.Stacks;
-            for (int rowStart = 0; rowStart < stacks.Count; rowStart += columns)
+            int equipmentOffset = _waterBottle != null ? 1 : 0;
+            int itemCount = _playerInventory.Inventory.TotalSlots + equipmentOffset;
+            for (int rowStart = 0; rowStart < itemCount; rowStart += columns)
             {
                 GUILayout.BeginHorizontal();
                 for (int column = 0; column < columns; column++)
                 {
                     int index = rowStart + column;
-                    if (index >= stacks.Count)
+                    if (index >= itemCount)
                     {
                         GUILayout.Space(InventorySlotSize + SlotSpacing);
                         continue;
                     }
 
-                    ItemStack stack = stacks[index];
                     Rect slot = GUILayoutUtility.GetRect(InventorySlotSize, InventorySlotSize,
                         GUILayout.Width(InventorySlotSize), GUILayout.Height(InventorySlotSize));
-                    if (DrawSlot(slot, stack, string.Empty, stack.StackId == _selectedStackId))
+                    if (equipmentOffset == 1 && index == 0)
+                    {
+                        if (DrawWaterBottleSlot(slot, string.Empty, _isWaterBottleSelected))
+                        {
+                            _isWaterBottleSelected = true;
+                            _selectedStackId = null;
+                        }
+
+                        GUILayout.Space(SlotSpacing);
+                        continue;
+                    }
+
+                    int stackIndex = index - equipmentOffset;
+                    ItemStack stack = stackIndex < stacks.Count ? stacks[stackIndex] : null;
+                    if (DrawSlot(slot, stack, string.Empty,
+                            stack != null && stack.StackId == _selectedStackId) && stack != null)
                     {
                         _selectedStackId = stack.StackId;
+                        _isWaterBottleSelected = false;
                     }
 
                     GUILayout.Space(SlotSpacing);
@@ -155,16 +209,17 @@ namespace PlanetSurvival.UI.Inventory
                 GUILayout.Space(SlotSpacing);
             }
 
-            if (stacks.Count == 0)
-            {
-                GUILayout.Label("Inventory is empty.");
-            }
-
             GUILayout.EndScrollView();
         }
 
         private void DrawSelectedItemActions()
         {
+            if (_isWaterBottleSelected && _waterBottle != null)
+            {
+                DrawWaterBottleActions();
+                return;
+            }
+
             ItemStack selected = _playerInventory.Inventory.FindStack(_selectedStackId);
             if (selected == null)
             {
@@ -200,6 +255,91 @@ namespace PlanetSurvival.UI.Inventory
 
             GUI.enabled = true;
             GUILayout.EndHorizontal();
+        }
+
+        private void DrawWaterBottleActions()
+        {
+            GUILayout.BeginHorizontal(GUI.skin.box, GUILayout.Height(64f));
+            Rect preview = GUILayoutUtility.GetRect(56f, 56f, GUILayout.Width(56f), GUILayout.Height(56f));
+            DrawWaterBottleSlot(preview, string.Empty, false);
+            GUILayout.BeginVertical();
+            GUILayout.Label("Personal Water Bottle");
+            GUILayout.Label(
+                $"{_waterBottle.Container.CurrentMilliliters} / {_waterBottle.Container.CapacityMilliliters} mL · " +
+                $"Drink {PlayerWaterBottle.DrinkVolumeMilliliters} mL",
+                _placeholderStyle);
+            GUILayout.EndVertical();
+            GUILayout.FlexibleSpace();
+            GUI.enabled = _waterBottle.CanDrink;
+            if (GUILayout.Button("Drink", GUILayout.Width(64f), GUILayout.Height(32f)))
+            {
+                TryDrinkWater();
+            }
+
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+        }
+
+        private bool DrawWaterBottleSlot(Rect slot, string hotkey, bool selected)
+        {
+            bool hovered = slot.Contains(Event.current.mousePosition);
+            Color previousColor = GUI.color;
+            GUI.color = ResolveSlotTint(true, hovered);
+            bool clicked = GUI.Button(slot, GUIContent.none, _slotStyle);
+            GUI.color = previousColor;
+
+            float padding = _skin != null ? _skin.IconPadding : 7f;
+            if (_waterBottleTexture != null)
+            {
+                var content = new Rect(slot.x + padding, slot.y + padding,
+                    slot.width - padding * 2f, slot.height - padding * 2f);
+                GUI.DrawTexture(content, _waterBottleTexture, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                GUI.Label(slot, "Water", _placeholderStyle);
+            }
+
+            if (!string.IsNullOrEmpty(hotkey))
+            {
+                GUI.Label(new Rect(slot.x + 6f, slot.y + 3f, 18f, 16f), hotkey, _hotkeyStyle);
+            }
+
+            string volume = $"{_waterBottle.Container.CurrentMilliliters} mL";
+            var amount = new Rect(slot.x, slot.yMax - 21f, slot.width - 6f, 16f);
+            GUI.Label(new Rect(amount.x + 1f, amount.y + 1f, amount.width, amount.height),
+                volume, _quantityShadowStyle);
+            GUI.Label(amount, volume, _quantityStyle);
+
+            if (selected)
+            {
+                Color outline = _skin != null ? _skin.SelectionColor : new Color(1f, .72f, .28f);
+                GUI.DrawTexture(slot, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f, outline,
+                    new Vector4(SelectionOutlineWidth, SelectionOutlineWidth, SelectionOutlineWidth, SelectionOutlineWidth),
+                    Vector4.zero);
+            }
+
+            return clicked;
+        }
+
+        private void TryDrinkWater()
+        {
+            if (_waterBottle == null)
+            {
+                return;
+            }
+
+            WaterDrinkResult result = _waterBottle.TryDrink();
+            _waterFeedback = result switch
+            {
+                WaterDrinkResult.Succeeded =>
+                    $"Drank {PlayerWaterBottle.DrinkVolumeMilliliters} mL · Thirst restored",
+                WaterDrinkResult.NotEnoughWater => $"At least {PlayerWaterBottle.DrinkVolumeMilliliters} mL is needed.",
+                WaterDrinkResult.NotThirsty => "You are not thirsty.",
+                WaterDrinkResult.ActorUnavailable => "You cannot drink right now.",
+                _ => "Water bottle is unavailable."
+            };
+            _waterFeedbackExpiresAt = Time.unscaledTime + FeedbackDurationSeconds;
         }
 
         /// <summary>Draws one slot frame with its icon, quantity and hotkey. Returns true when clicked.</summary>

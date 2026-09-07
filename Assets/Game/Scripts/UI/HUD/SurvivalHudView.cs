@@ -60,7 +60,7 @@ namespace PlanetSurvival.UI.HUD
 
         private void OnGUI()
         {
-            if (_survival == null)
+            if (!EnsureVitalDisplays())
             {
                 return;
             }
@@ -95,12 +95,37 @@ namespace PlanetSurvival.UI.HUD
             }
         }
 
+        /// <summary>
+        /// Guarantees the invariant every draw depends on: either all gauges exist, or nothing is drawn.
+        /// Only Unity-serialized data survives an editor domain reload, so the gauges and event
+        /// subscriptions created by <see cref="Bind"/> can be gone while the bound components are still
+        /// alive. Rebinding restores them instead of repainting a half-initialised view.
+        /// </summary>
+        private bool EnsureVitalDisplays()
+        {
+            if (_survival == null || _clock == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < _vitals.Length; i++)
+            {
+                if (_vitals[i] == null)
+                {
+                    Bind(_survival, _clock);
+                    break;
+                }
+            }
+
+            return true;
+        }
+
         private void BindVital(int index, string label, Color color, Vital vital)
         {
             var display = new VitalDisplay(label, color, vital);
             _vitals[index] = display;
             vital.Changed += display.Refresh;
-            display.Refresh(vital.Current, vital.EffectiveMaximum);
+            display.Refresh(vital.Current, vital.Maximum);
         }
 
         private void RefreshTime()

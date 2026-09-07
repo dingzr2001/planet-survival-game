@@ -49,30 +49,6 @@ namespace PlanetSurvival.Inventory.Domain
             return true;
         }
 
-        public bool Swap(int firstSlot, int secondSlot)
-        {
-            if (!IsValidSlot(firstSlot) || !IsValidSlot(secondSlot))
-            {
-                return false;
-            }
-
-            (_stackIds[firstSlot], _stackIds[secondSlot]) = (_stackIds[secondSlot], _stackIds[firstSlot]);
-            Changed?.Invoke();
-            return true;
-        }
-
-        public bool Clear(int slotIndex)
-        {
-            if (!IsValidSlot(slotIndex) || _stackIds[slotIndex] == null)
-            {
-                return false;
-            }
-
-            _stackIds[slotIndex] = null;
-            Changed?.Invoke();
-            return true;
-        }
-
         public void Dispose()
         {
             _inventory.StackRemoved -= ClearStack;

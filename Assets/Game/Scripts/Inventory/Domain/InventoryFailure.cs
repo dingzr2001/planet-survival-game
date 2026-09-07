@@ -6,6 +6,7 @@ namespace PlanetSurvival.Inventory.Domain
         InvalidItem,
         InvalidQuantity,
         InsufficientCapacity,
+        InsufficientSlots,
         StackNotFound,
         InsufficientQuantity,
         ItemCannotBeUsed,

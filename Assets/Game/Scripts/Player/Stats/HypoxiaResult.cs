@@ -6,19 +6,15 @@ namespace PlanetSurvival.Player.Stats
     /// </summary>
     public readonly struct HypoxiaResult
     {
-        public HypoxiaResult(float normalizedOxygen, float sanitySeverity, float healthSeverity,
+        public HypoxiaResult(float sanitySeverity, float healthSeverity,
             float sanityLoss, float healthLoss, HypoxiaLevel level)
         {
-            NormalizedOxygen = normalizedOxygen;
             SanitySeverity = sanitySeverity;
             HealthSeverity = healthSeverity;
             SanityLoss = sanityLoss;
             HealthLoss = healthLoss;
             Level = level;
         }
-
-        /// <summary>Normalized oxygen the evaluation used, clamped to [0, 1].</summary>
-        public float NormalizedOxygen { get; }
 
         /// <summary>How far oxygen dropped below the sanity threshold, in [0, 1].</summary>
         public float SanitySeverity { get; }

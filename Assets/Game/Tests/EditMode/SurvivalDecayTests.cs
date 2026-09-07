@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Player.Stats;
 using UnityEngine;
 
@@ -52,6 +53,28 @@ namespace PlanetSurvival.Tests
             Assert.That(split.Stats.Health.Current, Is.EqualTo(combined.Stats.Health.Current).Within(.0001f));
             Object.DestroyImmediate(combinedPlayer);
             Object.DestroyImmediate(splitPlayer);
+        }
+
+        [Test]
+        public void Bind_WhenPlayerIsRecreated_PreservesSessionVitals()
+        {
+            var session = new GameSessionState();
+            GameObject indoorPlayer = CreatePlayer(out PlayerSurvival indoorSurvival, out _);
+            indoorSurvival.Bind(session.SurvivalStats);
+            indoorSurvival.Apply(VitalType.Health, -15f);
+            indoorSurvival.Apply(VitalType.Sanity, -20f);
+            indoorSurvival.Apply(VitalType.Hunger, -25f);
+            indoorSurvival.Apply(VitalType.Thirst, -30f);
+            Object.DestroyImmediate(indoorPlayer);
+
+            GameObject outdoorPlayer = CreatePlayer(out PlayerSurvival outdoorSurvival, out _);
+            outdoorSurvival.Bind(session.SurvivalStats);
+
+            Assert.That(outdoorSurvival.Stats.Health.Current, Is.EqualTo(85f));
+            Assert.That(outdoorSurvival.Stats.Sanity.Current, Is.EqualTo(80f));
+            Assert.That(outdoorSurvival.Stats.Hunger.Current, Is.EqualTo(75f));
+            Assert.That(outdoorSurvival.Stats.Thirst.Current, Is.EqualTo(70f));
+            Object.DestroyImmediate(outdoorPlayer);
         }
 
         private static GameObject CreatePlayer(out PlayerSurvival survival, out SurvivalDecay decay)

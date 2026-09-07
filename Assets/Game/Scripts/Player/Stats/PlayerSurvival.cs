@@ -13,6 +13,25 @@ namespace PlanetSurvival.Player.Stats
         public bool IsDead { get; private set; }
         public event Action Died;
 
+        /// <summary>Binds this scene's player facade to expedition-scoped survival state.</summary>
+        public void Bind(SurvivalStats stats)
+        {
+            if (stats == null)
+            {
+                throw new ArgumentNullException(nameof(stats));
+            }
+
+            if (_initialized)
+            {
+                _stats.Health.Changed -= HandleHealthChanged;
+            }
+
+            _stats = stats;
+            _initialized = true;
+            IsDead = _stats.Health.Current <= 0f;
+            _stats.Health.Changed += HandleHealthChanged;
+        }
+
         private void Awake()
         {
             EnsureInitialized();
@@ -37,6 +56,16 @@ namespace PlanetSurvival.Player.Stats
             _stats.Get(type).Change(amount);
         }
 
+        public void ConsumeCalories(int calories)
+        {
+            if (calories <= 0)
+            {
+                return;
+            }
+
+            Apply(VitalType.Hunger, NutritionBalance.ToHungerPoints(calories));
+        }
+
         private void EnsureInitialized()
         {
             if (_initialized)
@@ -46,7 +75,7 @@ namespace PlanetSurvival.Player.Stats
 
             _initialized = true;
             _stats.Health.Changed += HandleHealthChanged;
-            HandleHealthChanged(_stats.Health.Current, _stats.Health.EffectiveMaximum);
+            HandleHealthChanged(_stats.Health.Current, _stats.Health.Maximum);
         }
 
         private void HandleHealthChanged(float current, float maximum)

@@ -161,6 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b3de8b77c4cb423e9c31ca2def9b8d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Core.Flow.GameFlowController
+  _energyBarDefinition: {fileID: 11400000, guid: b3b76c245b6e441d90c508fa783c141f, type: 2}
 --- !u!4 &450817829
 Transform:
   m_ObjectHideFlags: 0

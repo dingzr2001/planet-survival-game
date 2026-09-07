@@ -52,6 +52,15 @@ namespace PlanetSurvival.World.Presentation
             transform.localPosition = Vector3.up * Mathf.Max(.1f, worldHeight) * .5f;
         }
 
+        /// <summary>
+        /// Places a sprite whose import pivot represents its contact point directly on the owner's ground position.
+        /// </summary>
+        public void ConfigureGrounded(Sprite sprite, float worldHeight)
+        {
+            Configure(sprite, worldHeight);
+            transform.localPosition = Vector3.zero;
+        }
+
         public void ConfigureDirectional(Sprite fallbackSprite, float worldHeight,
             Texture2D animationSheet)
         {

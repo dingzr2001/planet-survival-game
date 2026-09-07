@@ -2,9 +2,11 @@ using PlanetSurvival.Bootstrap;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Player.Stats;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Interiors;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -31,9 +33,12 @@ namespace PlanetSurvival.Editor
         private const string TerrainSettingsPath = ConfigurationDirectory + "/DefaultTerrainSettings.asset";
         private const string EnvironmentSettingsPath = ConfigurationDirectory + "/DefaultEnvironmentSettings.asset";
         private const string ResourceSpawnSettingsPath = ConfigurationDirectory + "/DefaultResourceSpawnSettings.asset";
+        private const string EnergyBarPath = ConfigurationDirectory + "/EnergyBar.asset";
         private const string BootstrapScenePath = ScenesDirectory + "/Bootstrap.unity";
         private const string MainMenuScenePath = ScenesDirectory + "/MainMenu.unity";
         private const string GameplayScenePath = ScenesDirectory + "/Gameplay.unity";
+        private const string LandingPodHabitatScenePath = ScenesDirectory + "/LandingPodHabitat.unity";
+        private const string LandingPodCargoScenePath = ScenesDirectory + "/LandingPodCargo.unity";
 
         [MenuItem("Planet Survival/Setup Formal Scenes")]
         public static void CreateOrUpdate()
@@ -46,10 +51,15 @@ namespace PlanetSurvival.Editor
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings();
             InventorySkin inventorySkin = UiArtSetup.GetOrCreateInventorySkin();
             WorldVisualSettings worldVisuals = WorldArtSetup.GetOrCreateWorldVisualSettings();
+            ItemDefinition energyBar = GetOrCreateEnergyBar();
             WorldArtSetup.AssignResourceSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene();
+            CreateBootstrapScene(energyBar);
             CreateMainMenuScene();
+            CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
+                LandingPodHabitatScenePath);
+            CreateLandingPodScene(LandingPodDeck.Cargo, environmentSettings, inventorySkin, worldVisuals,
+                LandingPodCargoScenePath);
             CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, inventorySkin, worldVisuals);
             ConfigureBuildSettings();
 
@@ -64,12 +74,12 @@ namespace PlanetSurvival.Editor
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
             ItemDefinition fiber = GetOrCreateItem("PlantFiber", "plant_fiber", "Plant Fiber", 1, 20);
 
-            ResourceNodeDefinition rock = GetOrCreateNode("RockNode", "rock", "Rock", 2.5f, Color.gray,
+            ResourceNodeDefinition rock = GetOrCreateNode("RockNode", "rock", "Rock", 2.5f,
                 new Vector3(.9f, 1.1f, .72f), new ResourceYield(stone, 2));
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
-                new Color(.38f, .42f, .46f), new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
+                new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
             ResourceNodeDefinition plant = GetOrCreateNode("PlantNode", "plant", "Alien Plant", 1.5f,
-                new Color(.24f, .7f, .32f), new Vector3(.6f, 1.05f, .55f), new ResourceYield(fiber, 2));
+                new Vector3(.6f, 1.05f, .55f), new ResourceYield(fiber, 2));
 
             ResourceSpawnSettings settings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(ResourceSpawnSettingsPath);
             if (settings == null)
@@ -105,8 +115,32 @@ namespace PlanetSurvival.Editor
             return item;
         }
 
+        private static ItemDefinition GetOrCreateEnergyBar()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(EnergyBarPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Energy Bar";
+                AssetDatabase.CreateAsset(item, EnergyBarPath);
+            }
+
+            item.Configure(
+                "energy_bar",
+                "Energy Bar",
+                1,
+                GameSessionState.InitialEnergyBarCount,
+                true,
+                true,
+                new VitalEffect(VitalType.Sanity, 6f));
+            item.ConfigureNutrition(500);
+            item.ConfigureDescription("500 kcal emergency ration. Restores 20 hunger and 6 sanity.");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
         private static ResourceNodeDefinition GetOrCreateNode(string assetName, string resourceId,
-            string displayName, float duration, Color color, Vector3 scale, params ResourceYield[] yields)
+            string displayName, float duration, Vector3 scale, params ResourceYield[] yields)
         {
             string path = $"{ConfigurationDirectory}/{assetName}.asset";
             ResourceNodeDefinition node = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(path);
@@ -117,7 +151,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(node, path);
             }
 
-            node.Configure(resourceId, displayName, duration, 2.25f, string.Empty, color, scale, yields);
+            node.Configure(resourceId, displayName, duration, 2.25f, string.Empty, scale, yields);
             EditorUtility.SetDirty(node);
             return node;
         }
@@ -150,11 +184,11 @@ namespace PlanetSurvival.Editor
             return settings;
         }
 
-        private static void CreateBootstrapScene()
+        private static void CreateBootstrapScene(ItemDefinition energyBar)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
-            root.AddComponent<GameFlowController>();
+            root.AddComponent<GameFlowController>().ConfigureStartingSupplies(energyBar);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -180,12 +214,28 @@ namespace PlanetSurvival.Editor
             EditorSceneManager.SaveScene(scene, GameplayScenePath);
         }
 
+        private static void CreateLandingPodScene(LandingPodDeck deck,
+            PlanetEnvironmentSettings environmentSettings, InventorySkin inventorySkin,
+            WorldVisualSettings worldVisuals, string scenePath)
+        {
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var landingPod = new GameObject(deck == LandingPodDeck.Habitat
+                ? "Landing Pod Habitat"
+                : "Landing Pod Cargo");
+            LandingPodBootstrap bootstrap = landingPod.AddComponent<LandingPodBootstrap>();
+            bootstrap.Configure(deck, environmentSettings, worldVisuals, inventorySkin);
+            landingPod.AddComponent<PauseMenuView>();
+            EditorSceneManager.SaveScene(scene, scenePath);
+        }
+
         private static void ConfigureBuildSettings()
         {
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene(BootstrapScenePath, true),
                 new EditorBuildSettingsScene(MainMenuScenePath, true),
+                new EditorBuildSettingsScene(LandingPodHabitatScenePath, true),
+                new EditorBuildSettingsScene(LandingPodCargoScenePath, true),
                 new EditorBuildSettingsScene(GameplayScenePath, true)
             };
         }

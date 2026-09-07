@@ -20,7 +20,7 @@ namespace PlanetSurvival.Player.Stats
         public event Action<float, float> Changed;
 
         public float Current => Oxygen.Current;
-        public float Maximum => Oxygen.EffectiveMaximum;
+        public float Maximum => Oxygen.Maximum;
         public float Normalized => Oxygen.Normalized;
 
         private Vital Oxygen
@@ -79,7 +79,7 @@ namespace PlanetSurvival.Player.Stats
                 return;
             }
 
-            Oxygen.SetCurrent(Oxygen.EffectiveMaximum * Mathf.Clamp01(ratio));
+            Oxygen.SetCurrent(Oxygen.Maximum * Mathf.Clamp01(ratio));
         }
 
         private void EnsureInitialized()

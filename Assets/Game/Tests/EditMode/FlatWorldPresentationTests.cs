@@ -1,7 +1,8 @@
 using NUnit.Framework;
+using PlanetSurvival.Core.Flow;
+using PlanetSurvival.Core.SceneManagement;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.World.Generation;
-using PlanetSurvival.World.Grid;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
@@ -23,25 +24,12 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Generator_CreatesCoordinateOnlyCellsForAFlatMap()
-        {
-            TerrainGenerationSettings settings = CreateSettings(4, 3, 2f);
-
-            GridMap map = new GridTerrainGenerator().Generate(settings);
-
-            Assert.That(map.Width, Is.EqualTo(4));
-            Assert.That(map.Length, Is.EqualTo(3));
-            Assert.That(map[3, 2].Coordinate, Is.EqualTo(new GridCoordinate(3, 2)));
-        }
-
-        [Test]
         public void TerrainView_BuildsOneGroundPlaneAtZeroHeight()
         {
             TerrainGenerationSettings settings = CreateSettings(4, 3, 2f);
-            GridMap map = new GridTerrainGenerator().Generate(settings);
             var root = Track(new GameObject("Terrain"));
 
-            root.AddComponent<GridTerrainView>().Build(map, settings, null);
+            root.AddComponent<GridTerrainView>().Build(settings, null);
 
             Assert.That(root.transform.childCount, Is.EqualTo(1));
             Transform ground = root.transform.GetChild(0);
@@ -59,10 +47,9 @@ namespace PlanetSurvival.Tests
         public void TerrainView_RecentersDiscAroundDistantPlayer()
         {
             TerrainGenerationSettings settings = CreateSettings(4, 3, 2f);
-            GridMap map = new GridTerrainGenerator().Generate(settings);
             var root = Track(new GameObject("Terrain"));
             GridTerrainView terrainView = root.AddComponent<GridTerrainView>();
-            terrainView.Build(map, settings, null);
+            terrainView.Build(settings, null);
             var target = Track(new GameObject("Target"));
             terrainView.SetTarget(target.transform);
             target.transform.position = new Vector3(100f, 0f, 100f);
@@ -87,6 +74,36 @@ namespace PlanetSurvival.Tests
 
             Assert.That(root.transform.localPosition.y, Is.EqualTo(1f).Within(.0001f));
             Assert.That(root.transform.localScale.y, Is.EqualTo(1f).Within(.0001f));
+        }
+
+        [Test]
+        public void LandingPodExterior_HasArtworkSolidBodyAndSeparateAirlockTrigger()
+        {
+            var texture = Track(new Texture2D(16, 12));
+            var sprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 16f, 12f), new Vector2(.5f, .5f), 4f));
+            var visuals = Track(ScriptableObject.CreateInstance<WorldVisualSettings>());
+            visuals.ConfigureLandingPod(sprite, 5.4f);
+            var parent = Track(new GameObject("Parent"));
+
+            GameObject pod = LandingPodExterior.Create(parent.transform, new Vector3(4f, 0f, 2f), visuals);
+
+            _created.Add(pod);
+            BoxCollider body = pod.GetComponent<BoxCollider>();
+            Assert.That(body, Is.Not.Null);
+            Assert.That(body.isTrigger, Is.False);
+            Assert.That(body.bounds.min.y, Is.EqualTo(0f).Within(.001f));
+            Assert.That(body.size.x, Is.GreaterThanOrEqualTo(6f));
+            Assert.That(body.size.z, Is.GreaterThanOrEqualTo(4f));
+
+            WorldSpriteView view = pod.GetComponentInChildren<WorldSpriteView>();
+            Assert.That(view, Is.Not.Null);
+            Assert.That(view.Renderer.sprite, Is.EqualTo(sprite));
+            Assert.That(view.transform.localPosition, Is.EqualTo(Vector3.zero));
+
+            ScenePortal portal = pod.GetComponentInChildren<ScenePortal>();
+            Assert.That(portal, Is.Not.Null);
+            Assert.That(portal.TargetScene, Is.EqualTo(GameSceneNames.LandingPodCargo));
+            Assert.That(portal.GetComponent<Collider>().isTrigger, Is.True);
         }
 
         [Test]

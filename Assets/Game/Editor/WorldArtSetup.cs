@@ -12,11 +12,13 @@ namespace PlanetSurvival.Editor
         private const string GroundPath = "Assets/Game/Art/World/Ground/MartianRegolith.png";
         private const string PlayerPath = "Assets/Game/Art/World/Characters/Explorer.png";
         private const string PlayerWalkPath = "Assets/Game/Art/World/Characters/ExplorerWalkDirectional8.png";
+        private const string LandingPodExteriorPath = "Assets/Game/Resources/World/LandingPodExterior.png";
         private const string HorizonPath = "Assets/Game/Resources/World/MartianHorizon.png";
         private const string ResourceDirectory = "Assets/Game/Art/World/Resources";
         private const int PlayerDirectionCount = 4;
         private const int PlayerFramesPerDirection = 8;
         private const byte OpaqueAlphaThreshold = 128;
+        private static readonly Vector2 LandingPodGroundAnchor = new(.43f, .18f);
 
         [MenuItem("Planet Survival/Setup World Art")]
         public static void CreateOrUpdate()
@@ -34,7 +36,32 @@ namespace PlanetSurvival.Editor
             if (!Application.isBatchMode)
             {
                 EditorApplication.delayCall += EnsurePlayerAnimationIsConfigured;
+                EditorApplication.delayCall += EnsureLandingPodExteriorIsConfigured;
             }
+        }
+
+        private static void EnsureLandingPodExteriorIsConfigured()
+        {
+            if (AssetImporter.GetAtPath(LandingPodExteriorPath) is not TextureImporter importer)
+            {
+                return;
+            }
+
+            WorldVisualSettings settings = AssetDatabase.LoadAssetAtPath<WorldVisualSettings>(VisualSettingsPath);
+            var textureSettings = new TextureImporterSettings();
+            importer.ReadTextureSettings(textureSettings);
+            if (settings != null
+                && settings.LandingPodExteriorSprite != null
+                && AssetDatabase.GetAssetPath(settings.LandingPodExteriorSprite) == LandingPodExteriorPath
+                && textureSettings.spriteAlignment == (int)SpriteAlignment.Custom
+                && (textureSettings.spritePivot - LandingPodGroundAnchor).sqrMagnitude < .0001f)
+            {
+                return;
+            }
+
+            GetOrCreateWorldVisualSettings();
+            AssetDatabase.SaveAssets();
+            Debug.Log("Configured the surface landing pod exterior artwork.");
         }
 
         private static void EnsurePlayerAnimationIsConfigured()
@@ -65,6 +92,9 @@ namespace PlanetSurvival.Editor
             Texture2D ground = ImportGround();
             Texture2D playerAnimation = ImportPlayerAnimation(out Rect[] frameRects, out Vector2[] framePivots);
             Sprite player = ImportSprite(PlayerPath, 2048);
+            Sprite landingPodExterior = ImportSprite(
+                LandingPodExteriorPath, 2048, false, TextureImporterCompression.Uncompressed,
+                LandingPodGroundAnchor);
             Sprite horizon = ImportSprite(HorizonPath, 4096, false, TextureImporterCompression.Uncompressed);
             WorldVisualSettings settings = AssetDatabase.LoadAssetAtPath<WorldVisualSettings>(VisualSettingsPath);
             if (settings == null)
@@ -77,6 +107,7 @@ namespace PlanetSurvival.Editor
             settings.Configure(ground, player, horizon);
             settings.ConfigurePlayerAnimation(
                 playerAnimation, PlayerFramesPerDirection, frameRects, framePivots);
+            settings.ConfigureLandingPod(landingPodExterior, 5.4f);
             EditorUtility.SetDirty(settings);
             return settings;
         }
@@ -243,7 +274,8 @@ namespace PlanetSurvival.Editor
 
         private static Sprite ImportSprite(string path, int maxSize,
             bool mipmapEnabled = true,
-            TextureImporterCompression compression = TextureImporterCompression.CompressedHQ)
+            TextureImporterCompression compression = TextureImporterCompression.CompressedHQ,
+            Vector2? customPivot = null)
         {
             if (AssetImporter.GetAtPath(path) is not TextureImporter importer)
             {
@@ -254,6 +286,13 @@ namespace PlanetSurvival.Editor
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
             importer.spritePixelsPerUnit = 512f;
+            var textureSettings = new TextureImporterSettings();
+            importer.ReadTextureSettings(textureSettings);
+            textureSettings.spriteAlignment = customPivot.HasValue
+                ? (int)SpriteAlignment.Custom
+                : (int)SpriteAlignment.Center;
+            textureSettings.spritePivot = customPivot ?? new Vector2(.5f, .5f);
+            importer.SetTextureSettings(textureSettings);
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = mipmapEnabled;
             importer.wrapMode = TextureWrapMode.Clamp;

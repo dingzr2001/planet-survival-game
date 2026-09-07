@@ -16,7 +16,7 @@ namespace PlanetSurvival.Tests
             flow.StartGame();
 
             Assert.That(flow.State, Is.EqualTo(GameFlowState.Loading));
-            Assert.That(loader.RequestedScene, Is.EqualTo(GameSceneNames.Gameplay));
+            Assert.That(loader.RequestedScene, Is.EqualTo(GameSceneNames.LandingPodHabitat));
 
             loader.Complete();
 

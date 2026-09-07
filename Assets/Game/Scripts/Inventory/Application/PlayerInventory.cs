@@ -9,6 +9,7 @@ namespace PlanetSurvival.Inventory.Application
     public sealed class PlayerInventory : MonoBehaviour
     {
         [SerializeField, Min(0)] private int _totalCapacity = 30;
+        [SerializeField, Min(1)] private int _slotCount = 20;
 
         private PlayerSurvival _survival;
         private Domain.Inventory _inventory;
@@ -51,6 +52,51 @@ namespace PlanetSurvival.Inventory.Application
             return result;
         }
 
+        public void Bind(Domain.Inventory inventory)
+        {
+            if (inventory == null)
+            {
+                Debug.LogError($"{nameof(PlayerInventory)} cannot bind a missing inventory.", this);
+                return;
+            }
+
+            _quickBar?.Dispose();
+            _inventory = inventory;
+            _quickBar = new QuickBarConfiguration(_inventory);
+            RefreshQuickBarAssignments();
+            if (_survival == null)
+            {
+                _survival = GetComponent<PlayerSurvival>();
+            }
+        }
+
+        public void RefreshQuickBarAssignments()
+        {
+            for (int i = 0; i < Inventory.Stacks.Count; i++)
+            {
+                ItemStack stack = Inventory.Stacks[i];
+                if (!IsItemAssignedToQuickBar(stack.Definition.ItemId) &&
+                    !QuickBar.AssignFirstAvailable(stack.StackId))
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool IsItemAssignedToQuickBar(string itemId)
+        {
+            for (int i = 0; i < QuickBar.StackIds.Count; i++)
+            {
+                ItemStack assigned = Inventory.FindStack(QuickBar.StackIds[i]);
+                if (assigned != null && assigned.Definition.ItemId == itemId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool IsAssignedToQuickBar(string stackId)
         {
             for (int i = 0; i < QuickBar.StackIds.Count; i++)
@@ -76,6 +122,11 @@ namespace PlanetSurvival.Inventory.Application
                 return InventoryOperationResult.Fail(InventoryFailure.EffectRejected, "The actor cannot receive item effects.");
             }
 
+            if (stack.Definition.Calories > 0)
+            {
+                _survival.ConsumeCalories(stack.Definition.Calories);
+            }
+
             for (int i = 0; i < stack.Definition.Effects.Count; i++)
             {
                 var effect = stack.Definition.Effects[i];
@@ -88,7 +139,7 @@ namespace PlanetSurvival.Inventory.Application
         private void EnsureInitialized()
         {
             if (_inventory != null) return;
-            _inventory = new Domain.Inventory(_totalCapacity);
+            _inventory = new Domain.Inventory(_totalCapacity, _slotCount);
             _quickBar = new QuickBarConfiguration(_inventory);
             if (_survival == null) _survival = GetComponent<PlayerSurvival>();
         }
