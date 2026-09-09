@@ -5,6 +5,7 @@ using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Stats;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Tests
@@ -88,6 +89,55 @@ namespace PlanetSurvival.Tests
 
             Assert.That(node.IsGathering, Is.True);
             Assert.That(node.IsDepleted, Is.False);
+        }
+
+        /// <summary>
+        /// A node that lies flat on the ground must not be a wall, but it still needs its volume: the
+        /// interactor's overlap query and the gathering distance both measure against the collider.
+        /// </summary>
+        [Test]
+        public void Create_WalkableResource_KeepsItsVolumeAsATriggerInsteadOfBlockingTheWay()
+        {
+            _definition.ConfigureCollision(false);
+            var parent = new GameObject("Chunk");
+
+            ResourceNode node = ResourceNodeFactory.Create(
+                parent.transform, _definition, Vector3.zero, null);
+
+            var collider = node.GetComponent<BoxCollider>();
+            Assert.That(collider, Is.Not.Null);
+            Assert.That(collider.isTrigger, Is.True, "A walkable node must not block the character controller.");
+            Assert.That(collider.enabled, Is.True, "The volume still carries the interaction.");
+            Object.DestroyImmediate(parent);
+        }
+
+        [Test]
+        public void Create_GroundResource_LiesFlatAndDoesNotCastABlobShadow()
+        {
+            _definition.ConfigureGroundPresentation(true);
+            var parent = new GameObject("Chunk");
+
+            ResourceNode node = ResourceNodeFactory.Create(
+                parent.transform, _definition, Vector3.zero, null);
+
+            WorldSpriteView view = node.GetComponentInChildren<WorldSpriteView>();
+            Assert.That(view.transform.localEulerAngles.x, Is.EqualTo(90f).Within(.01f));
+            Assert.That(node.transform.Find("Blob Shadow"), Is.Null,
+                "A surface already touching the ground must not receive a floating-object shadow.");
+            Object.DestroyImmediate(parent);
+        }
+
+        [Test]
+        public void Create_SolidResource_StaysAnObstacle()
+        {
+            _definition.ConfigureCollision(true);
+            var parent = new GameObject("Chunk");
+
+            ResourceNode node = ResourceNodeFactory.Create(
+                parent.transform, _definition, Vector3.zero, null);
+
+            Assert.That(node.GetComponent<BoxCollider>().isTrigger, Is.False);
+            Object.DestroyImmediate(parent);
         }
     }
 }

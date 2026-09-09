@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &2073165628
+--- !u!1 &1906551960
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,9 +127,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2073165631}
-  - component: {fileID: 2073165630}
-  - component: {fileID: 2073165629}
+  - component: {fileID: 1906551963}
+  - component: {fileID: 1906551962}
+  - component: {fileID: 1906551961}
   m_Layer: 0
   m_Name: Landing Pod Cargo
   m_TagString: Untagged
@@ -137,25 +137,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2073165629
+--- !u!114 &1906551961
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2073165628}
+  m_GameObject: {fileID: 1906551960}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01a6e9b03086947dd9d8831121f84bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.UI.Menu.PauseMenuView
---- !u!114 &2073165630
+--- !u!114 &1906551962
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2073165628}
+  m_GameObject: {fileID: 1906551960}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdbb1fd9b530d4280888ba2a7d9274dc, type: 3}
@@ -165,13 +165,16 @@ MonoBehaviour:
   _environmentSettings: {fileID: 11400000, guid: ce17d64772b99412ea45ed8dce4a7395, type: 2}
   _worldVisuals: {fileID: 11400000, guid: e80c7a19338fd40559a59fc9268cc6ac, type: 2}
   _inventorySkin: {fileID: 11400000, guid: 7fe99bd02031d4e54bdc9d95b1551611, type: 2}
---- !u!4 &2073165631
+  _ovenStation: {fileID: 11400000, guid: 45606db405b0472da683b094d08c9bcd, type: 2}
+  _hydroponicsCrop: {fileID: 11400000, guid: ba204aa7cd3af4216a88dda4760e7587, type: 2}
+  _iceItem: {fileID: 11400000, guid: 14b91185ac96747488479e5bb8d289cd, type: 2}
+--- !u!4 &1906551963
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2073165628}
+  m_GameObject: {fileID: 1906551960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -184,4 +187,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 2073165631}
+  - {fileID: 1906551963}

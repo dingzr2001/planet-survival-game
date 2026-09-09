@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c2caced4c7ec47eeb8fda69b51ac2c0, type: 3}
+  m_Name: RoastPotatoRecipe
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Crafting.Definitions.CraftingRecipe
+  _recipeId: roast_potato
+  _displayName: Roast Potato
+  _inputs:
+  - _item: {fileID: 11400000, guid: 093686de6adf64cd68c3c931538a2211, type: 2}
+    _quantity: 1
+  _outputs:
+  - _item: {fileID: 11400000, guid: 36839a04c8d64c25a39c3bd7c33431bc, type: 2}
+    _quantity: 1
+  _requiredConditionIds:
+  - station.oven
+  _durationSeconds: 30

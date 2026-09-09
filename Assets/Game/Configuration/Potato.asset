@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da33e9c1a6e38427d94a3d8ec2bd3250, type: 3}
-  m_Name: PlantFiber
+  m_Name: Potato
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
-  _itemId: plant_fiber
-  _displayName: Plant Fiber
-  _description: 
-  _icon: {fileID: 0}
+  _itemId: potato
+  _displayName: Potato
+  _description: A raw vegetable ingredient. Roast it in an oven to eat it, or plant
+    it in the habitat hydroponics rack to grow more.
+  _icon: {fileID: 21300000, guid: 943ae73595d13442d86606aeda903b81, type: 3}
   _capacityPerItem: 1
   _maximumStackSize: 20
   _canUse: 0
   _canDrop: 1
+  _calories: 0
   _effects: []

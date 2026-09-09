@@ -1,10 +1,17 @@
+using PlanetSurvival.Cooking.Definitions;
+using PlanetSurvival.Cooking.Runtime;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
+using PlanetSurvival.Farming.Definitions;
+using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Inventory.Application;
+using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.UI.Farming;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
+using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
@@ -25,6 +32,12 @@ namespace PlanetSurvival.Bootstrap
         [SerializeField] private PlanetEnvironmentSettings _environmentSettings;
         [SerializeField] private WorldVisualSettings _worldVisuals;
         [SerializeField] private InventorySkin _inventorySkin;
+        [SerializeField, Tooltip("Cooking appliance offered on the habitat deck.")]
+        private CookingStationDefinition _ovenStation;
+        [SerializeField, Tooltip("Crop the habitat hydroponics rack grows.")]
+        private CropDefinition _hydroponicsCrop;
+        [SerializeField, Tooltip("Gathered ice the cargo-deck processor purifies into pod water.")]
+        private ItemDefinition _iceItem;
         private const string RuntimeRootName = "Landing Pod Runtime";
         private const string HabitatBackgroundResource = "Interiors/LandingPodHabitat";
         private const string CargoBackgroundResource = "Interiors/LandingPodCargo";
@@ -40,6 +53,18 @@ namespace PlanetSurvival.Bootstrap
             _environmentSettings = environmentSettings;
             _worldVisuals = worldVisuals;
             _inventorySkin = inventorySkin;
+        }
+
+        public void ConfigureCooking(CookingStationDefinition ovenStation)
+        {
+            _ovenStation = ovenStation;
+        }
+
+        /// <summary>Wires the two fixtures of the ice-water-food loop to the assets they operate on.</summary>
+        public void ConfigureLifeSupport(CropDefinition hydroponicsCrop, ItemDefinition iceItem)
+        {
+            _hydroponicsCrop = hydroponicsCrop;
+            _iceItem = iceItem;
         }
 
         private void Start()
@@ -75,11 +100,11 @@ namespace PlanetSurvival.Bootstrap
             GameObject player = CreatePlayer(root.transform, session);
             Camera camera = CreateCamera(root.transform, backgroundSprite);
             GameClock clock = CreateClock(root.transform, player);
-            clock.Configure(_environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay);
-            WaterRefillView refillView = CreateHud(root.transform, player, clock, session);
+            clock.Bind(session.ConfigureTime(
+                _environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay));
+            GameObject hud = CreateHud(root.transform, player, clock, session);
             new LandingPodInteriorBuilder().Build(root.transform, _deck, diningTableSprite, camera,
-                session.LandingPodWaterSupply, session.WaterBottle, refillView,
-                session.RefrigeratorStorage, session.CargoStorage, refillView.GetComponent<StorageView>());
+                CreateFixtures(session, hud, clock));
             BindPlayerDeath(player);
         }
 
@@ -197,7 +222,72 @@ namespace PlanetSurvival.Bootstrap
             return clock;
         }
 
-        private WaterRefillView CreateHud(Transform parent, GameObject player, GameClock clock,
+        private CookingStationBinding CreateCookingBinding(GameSessionState session, CookingView view)
+        {
+            if (_deck != LandingPodDeck.Habitat || _ovenStation == null)
+            {
+                return default;
+            }
+
+            return new CookingStationBinding(
+                _ovenStation, session.GetCookingProcess(_ovenStation.StationId), view);
+        }
+
+        private LandingPodFixtures CreateFixtures(GameSessionState session, GameObject hud, GameClock clock)
+        {
+            return new LandingPodFixtures(
+                session.LandingPodWaterSupply,
+                session.WaterBottle,
+                hud.GetComponent<WaterRefillView>(),
+                session.RefrigeratorStorage,
+                session.CargoStorage,
+                hud.GetComponent<StorageView>(),
+                CreateCookingBinding(session, hud.GetComponent<CookingView>()),
+                CreateProcessorBinding(session, hud.GetComponent<WaterProcessorView>(), clock),
+                CreateHydroponicsBinding(session, hud.GetComponent<HydroponicsView>(), clock));
+        }
+
+        private WaterProcessorBinding CreateProcessorBinding(GameSessionState session, WaterProcessorView view,
+            GameClock clock)
+        {
+            if (_deck != LandingPodDeck.Cargo)
+            {
+                return default;
+            }
+
+            if (_iceItem == null)
+            {
+                Debug.LogError(
+                    $"{nameof(LandingPodBootstrap)} on '{name}' has no ice item; the water processor is unavailable.",
+                    this);
+                return default;
+            }
+
+            return new WaterProcessorBinding(
+                session.WaterProcessor, _iceItem, session.LandingPodWaterSupply, view, clock);
+        }
+
+        private HydroponicsBinding CreateHydroponicsBinding(GameSessionState session, HydroponicsView view,
+            GameClock clock)
+        {
+            if (_deck != LandingPodDeck.Habitat)
+            {
+                return default;
+            }
+
+            if (_hydroponicsCrop == null)
+            {
+                Debug.LogError(
+                    $"{nameof(LandingPodBootstrap)} on '{name}' has no crop; the hydroponics rack is unavailable.",
+                    this);
+                return default;
+            }
+
+            return new HydroponicsBinding(
+                session.Hydroponics, _hydroponicsCrop, session.LandingPodWaterSupply, view, clock);
+        }
+
+        private GameObject CreateHud(Transform parent, GameObject player, GameClock clock,
             GameSessionState session)
         {
             var hudObject = new GameObject("Survival HUD");
@@ -209,8 +299,11 @@ namespace PlanetSurvival.Bootstrap
                 _inventorySkin,
                 player.GetComponent<PlayerWaterBottle>());
             hudObject.AddComponent<GameOverView>();
-            WaterRefillView refillView = hudObject.AddComponent<WaterRefillView>();
+            hudObject.AddComponent<WaterRefillView>();
             hudObject.AddComponent<StorageView>().Bind(_inventorySkin);
+            hudObject.AddComponent<CookingView>();
+            hudObject.AddComponent<WaterProcessorView>();
+            hudObject.AddComponent<HydroponicsView>();
             hudObject.AddComponent<LandingPodResourceView>().Bind(
                 session.LandingPodOxygenSupply,
                 session.LandingPodWaterSupply);
@@ -225,7 +318,7 @@ namespace PlanetSurvival.Bootstrap
                 locationView.Configure("LANDING POD · DECK 1", "Cargo / Surface Operations");
             }
 
-            return refillView;
+            return hudObject;
         }
 
         private static void BindPlayerDeath(GameObject player)

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: FieldOvenBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: field_oven
+  _displayName: Field Oven
+  _description: An outdoor range. Cooks the same dishes as the galley oven.
+  _icon: {fileID: 0}
+  _footprint: {x: 2, y: 2}
+  _buildSeconds: 20
+  _cost:
+  - _item: {fileID: 11400000, guid: f23bfd6a697a949a4ba7578d9f0e1bed, type: 2}
+    _quantity: 6
+  - _item: {fileID: 11400000, guid: 20290619ae85e43558b63ab7f3d0bf3b, type: 2}
+    _quantity: 6
+  _worldSprite: {fileID: 0}
+  _worldHeight: 1.6
+  _bodyColor: {r: 0.72, g: 0.44, b: 0.26, a: 1}
+  _cookingStation: {fileID: 11400000, guid: 45606db405b0472da683b094d08c9bcd, type: 2}

@@ -13,6 +13,7 @@ namespace PlanetSurvival.UI.Inventory
         private const float SlotSpacing = 6f;
         private const float InventorySlotSize = 88f;
         private const float SelectionOutlineWidth = 2f;
+        private const float PromptRowHeight = 26f;
         private const string WaterBottleTextureResource = "Water/WaterBottle";
         private const float FeedbackDurationSeconds = 2.5f;
 
@@ -23,6 +24,7 @@ namespace PlanetSurvival.UI.Inventory
         private bool _isWaterBottleSelected;
         private string _selectedStackId;
         private string _waterFeedback = string.Empty;
+        private string _interactionPrompt = string.Empty;
         private float _waterFeedbackExpiresAt;
         private Vector2 _scrollPosition;
         private Texture2D _waterBottleTexture;
@@ -31,8 +33,18 @@ namespace PlanetSurvival.UI.Inventory
         private GUIStyle _quantityShadowStyle;
         private GUIStyle _hotkeyStyle;
         private GUIStyle _placeholderStyle;
+        private GUIStyle _promptStyle;
 
         public bool HasWaterBottle => _waterBottle != null;
+
+        /// <summary>
+        /// Shows the current interaction hint on top of the quick bar, so every on-screen
+        /// instruction lives in one place instead of floating over the world.
+        /// </summary>
+        public void SetInteractionPrompt(string prompt)
+        {
+            _interactionPrompt = prompt ?? string.Empty;
+        }
 
         public void Bind(PlayerInventory playerInventory, InventorySkin skin, PlayerWaterBottle waterBottle = null)
         {
@@ -96,13 +108,23 @@ namespace PlanetSurvival.UI.Inventory
         {
             int visibleSlotCount = QuickBarConfiguration.SlotCount + (_waterBottle != null ? 1 : 0);
             float width = visibleSlotCount * (QuickSlotSize + SlotSpacing) + SlotSpacing;
-            var area = new Rect((Screen.width - width) * 0.5f, Screen.height - QuickSlotSize - 46f, width, QuickSlotSize + 40f);
+            bool hasPrompt = !string.IsNullOrWhiteSpace(_interactionPrompt);
+            float promptHeight = hasPrompt ? PromptRowHeight : 0f;
+            float height = QuickSlotSize + 40f + promptHeight;
+            var area = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 6f, width, height);
             PanelBackground.Draw(area);
 
+            if (hasPrompt)
+            {
+                var promptRow = new Rect(area.x + SlotSpacing, area.y + 4f, area.width - SlotSpacing * 2f, PromptRowHeight - 6f);
+                GUI.Label(promptRow, $"Press E to {_interactionPrompt}", _promptStyle);
+            }
+
+            float slotsTop = area.y + promptHeight + SlotSpacing;
             float itemSlotsStart = area.x + SlotSpacing;
             if (_waterBottle != null)
             {
-                var bottleSlot = new Rect(itemSlotsStart, area.y + SlotSpacing, QuickSlotSize, QuickSlotSize);
+                var bottleSlot = new Rect(itemSlotsStart, slotsTop, QuickSlotSize, QuickSlotSize);
                 if (DrawWaterBottleSlot(bottleSlot, "Q", false))
                 {
                     TryDrinkWater();
@@ -115,7 +137,7 @@ namespace PlanetSurvival.UI.Inventory
             {
                 var slot = new Rect(
                     itemSlotsStart + i * (QuickSlotSize + SlotSpacing),
-                    area.y + SlotSpacing,
+                    slotsTop,
                     QuickSlotSize,
                     QuickSlotSize);
                 ItemStack stack = GetQuickStack(i);
@@ -378,7 +400,7 @@ namespace PlanetSurvival.UI.Inventory
             var content = new Rect(slot.x + padding, slot.y + padding, slot.width - padding * 2f, slot.height - padding * 2f);
             if (stack.Definition.Icon != null)
             {
-                DrawIcon(content, stack.Definition.Icon);
+                SpriteIcon.Draw(content, stack.Definition.Icon);
             }
             else
             {
@@ -392,42 +414,6 @@ namespace PlanetSurvival.UI.Inventory
                 GUI.Label(new Rect(quantity.x + 1f, quantity.y + 1f, quantity.width, quantity.height), text, _quantityShadowStyle);
                 GUI.Label(quantity, text, _quantityStyle);
             }
-        }
-
-        /// <summary>Draws a sprite through its texture rectangle so packed or trimmed sprites stay correct.</summary>
-        private static void DrawIcon(Rect area, Sprite icon)
-        {
-            Texture2D texture = icon.texture;
-            if (texture == null)
-            {
-                return;
-            }
-
-            Rect textureRect = icon.textureRect;
-            var coordinates = new Rect(
-                textureRect.x / texture.width,
-                textureRect.y / texture.height,
-                textureRect.width / texture.width,
-                textureRect.height / texture.height);
-            GUI.DrawTextureWithTexCoords(FitAspect(area, textureRect.width / textureRect.height), texture, coordinates, true);
-        }
-
-        private static Rect FitAspect(Rect area, float aspect)
-        {
-            if (aspect <= 0f)
-            {
-                return area;
-            }
-
-            float width = area.width;
-            float height = width / aspect;
-            if (height > area.height)
-            {
-                height = area.height;
-                width = height * aspect;
-            }
-
-            return new Rect(area.x + (area.width - width) * 0.5f, area.y + (area.height - height) * 0.5f, width, height);
         }
 
         private Color ResolveSlotTint(bool occupied, bool hovered)
@@ -489,6 +475,14 @@ namespace PlanetSurvival.UI.Inventory
                 wordWrap = true
             };
             _placeholderStyle.normal.textColor = new Color(0.8f, 0.85f, 0.9f);
+
+            _promptStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 13,
+                fontStyle = FontStyle.Bold
+            };
+            _promptStyle.normal.textColor = new Color(1f, 0.86f, 0.5f);
         }
 
         private ItemStack GetQuickStack(int slotIndex)

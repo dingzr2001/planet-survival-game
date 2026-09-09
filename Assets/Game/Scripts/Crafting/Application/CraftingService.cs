@@ -45,7 +45,7 @@ namespace PlanetSurvival.Crafting.Application
                 }
             }
 
-            List<InventoryItemAmount> inputs = ConvertAmounts(recipe.Inputs);
+            List<InventoryItemAmount> inputs = CraftingItemAmount.ToInventoryAmounts(recipe.Inputs);
             for (int i = 0; i < inputs.Count; i++)
             {
                 if (_inventory.GetQuantity(inputs[i].Definition.ItemId) < inputs[i].Quantity)
@@ -57,7 +57,7 @@ namespace PlanetSurvival.Crafting.Application
             }
 
             InventoryOperationResult inventoryResult = _inventory.CanApplyTransaction(
-                inputs, ConvertAmounts(recipe.Outputs));
+                inputs, CraftingItemAmount.ToInventoryAmounts(recipe.Outputs));
             if (!inventoryResult.Succeeded)
             {
                 CraftingFailure failure = inventoryResult.Failure == InventoryFailure.InsufficientQuantity
@@ -78,7 +78,7 @@ namespace PlanetSurvival.Crafting.Application
             }
 
             InventoryOperationResult inventoryResult = _inventory.ApplyTransaction(
-                ConvertAmounts(recipe.Inputs), ConvertAmounts(recipe.Outputs));
+                CraftingItemAmount.ToInventoryAmounts(recipe.Inputs), CraftingItemAmount.ToInventoryAmounts(recipe.Outputs));
             if (!inventoryResult.Succeeded)
             {
                 return CraftingResult.Fail(CraftingFailure.InventoryFull, inventoryResult.Message);
@@ -122,17 +122,6 @@ namespace PlanetSurvival.Crafting.Application
             }
 
             return false;
-        }
-
-        private static List<InventoryItemAmount> ConvertAmounts(IReadOnlyList<CraftingItemAmount> amounts)
-        {
-            var converted = new List<InventoryItemAmount>(amounts.Count);
-            for (int i = 0; i < amounts.Count; i++)
-            {
-                converted.Add(amounts[i].ToInventoryAmount());
-            }
-
-            return converted;
         }
     }
 }

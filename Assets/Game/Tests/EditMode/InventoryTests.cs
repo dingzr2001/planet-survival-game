@@ -179,6 +179,27 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void GameSessionReset_WithMultipleStartingSupplies_ProvisionsEveryItemInCargoOnly()
+        {
+            var potato = ScriptableObject.CreateInstance<ItemDefinition>();
+            potato.Configure("potato", "Potato", 1, 20, false, true);
+            var session = new GameSessionState();
+
+            InventoryOperationResult result = session.Reset(new[]
+            {
+                new InventoryItemAmount(_water, 2),
+                new InventoryItemAmount(potato, 12)
+            });
+
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(session.PlayerInventory.Stacks, Is.Empty);
+            Assert.That(session.RefrigeratorStorage.Stacks, Is.Empty);
+            Assert.That(session.CargoStorage.GetQuantity("water_bag"), Is.EqualTo(2));
+            Assert.That(session.CargoStorage.GetQuantity("potato"), Is.EqualTo(12));
+            Object.DestroyImmediate(potato);
+        }
+
+        [Test]
         public void PlayerInventory_FirstPickup_WhenQuickBarIsEmpty_AssignsFirstSlot()
         {
             var player = new GameObject("Inventory Test Player");

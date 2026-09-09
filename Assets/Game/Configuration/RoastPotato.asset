@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da33e9c1a6e38427d94a3d8ec2bd3250, type: 3}
+  m_Name: RoastPotato
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
+  _itemId: roast_potato
+  _displayName: Roast Potato
+  _description: Oven-roasted in the habitat galley. 300 kcal, restores 12 hunger
+    and 4 sanity.
+  _icon: {fileID: 21300000, guid: a808c2646ad44078b114b518cff06594, type: 3}
+  _capacityPerItem: 1
+  _maximumStackSize: 20
+  _canUse: 1
+  _canDrop: 1
+  _calories: 300
+  _effects:
+  - _vitalType: 1
+    _amount: 4

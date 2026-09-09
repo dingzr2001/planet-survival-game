@@ -20,4 +20,5 @@ MonoBehaviour:
   _maximumStackSize: 10
   _canUse: 0
   _canDrop: 1
+  _calories: 0
   _effects: []

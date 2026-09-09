@@ -15,12 +15,12 @@ MonoBehaviour:
   _seedOffset: 7919
   _chunkSize: 32
   _loadRadiusInChunks: 2
-  _minimumSpacing: 4
+  _minimumSpacing: 8
   _spawnClearanceRadius: 3
   _entries:
   - _definition: {fileID: 11400000, guid: d650910d677854228875d06348fdab17, type: 2}
-    _nodesPerChunk: 2.5
+    _nodesPerChunk: 0.5
   - _definition: {fileID: 11400000, guid: a99195e715afe41daa29242b6f6ddcff, type: 2}
-    _nodesPerChunk: 1.5
-  - _definition: {fileID: 11400000, guid: d58c8eeda58b84bc894ec92198b1fe04, type: 2}
-    _nodesPerChunk: 2.5
+    _nodesPerChunk: 0.25
+  - _definition: {fileID: 11400000, guid: 93d4338ddce284c318f517852e9331af, type: 2}
+    _nodesPerChunk: 0.4

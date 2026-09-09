@@ -33,6 +33,34 @@ namespace PlanetSurvival.Core.Time
             get { EnsureInitialized(); return _time; }
         }
 
+        /// <summary>
+        /// Drives this scene's clock from an expedition-scoped time model instead of a private one, so
+        /// elapsed days survive a scene change. The model outlives the clock, which is why the
+        /// subscription is released again in <see cref="OnDestroy"/>.
+        /// </summary>
+        public void Bind(GameTimeModel time)
+        {
+            if (time == null)
+            {
+                Debug.LogError($"{nameof(GameClock)} on '{name}' cannot bind a null time model.", this);
+                return;
+            }
+
+            if (ReferenceEquals(_time, time))
+            {
+                return;
+            }
+
+            if (_time != null)
+            {
+                Unsubscribe(_time);
+            }
+
+            _time = time;
+            _time.DayChanged += ForwardDayChanged;
+            _time.TimeChanged += ForwardTimeChanged;
+        }
+
         public void Bind(SurvivalDecay survivalDecay) => _survivalDecay = survivalDecay;
 
         public void Bind(PlayerHypoxia hypoxia) => _hypoxia = hypoxia;
@@ -57,6 +85,14 @@ namespace PlanetSurvival.Core.Time
 
         private void Awake() => EnsureInitialized();
         private void Update() => Advance(UnityEngine.Time.deltaTime);
+
+        private void OnDestroy()
+        {
+            if (_time != null)
+            {
+                Unsubscribe(_time);
+            }
+        }
 
         public void Advance(float elapsedRealSeconds)
         {

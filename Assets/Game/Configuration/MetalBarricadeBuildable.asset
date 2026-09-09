@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: MetalBarricadeBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: metal_barricade
+  _displayName: Metal Barricade
+  _description: A welded hull panel, two cells wide.
+  _icon: {fileID: 0}
+  _footprint: {x: 2, y: 1}
+  _buildSeconds: 8
+  _cost:
+  - _item: {fileID: 11400000, guid: f23bfd6a697a949a4ba7578d9f0e1bed, type: 2}
+    _quantity: 3
+  _worldSprite: {fileID: 0}
+  _worldHeight: 1.1
+  _bodyColor: {r: 0.62, g: 0.66, b: 0.72, a: 1}
+  _cookingStation: {fileID: 0}

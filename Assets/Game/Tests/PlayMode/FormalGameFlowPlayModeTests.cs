@@ -3,6 +3,7 @@ using NUnit.Framework;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Core.SceneManagement;
+using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Player.Movement;
@@ -83,6 +84,19 @@ namespace PlanetSurvival.Tests
             Assert.That(roomBoundary, Is.Not.Null);
             Assert.That(roomBoundary.GetComponentsInChildren<BoxCollider>(), Has.Length.EqualTo(6));
 
+            HydroponicsStation hydroponics = Object.FindFirstObjectByType<HydroponicsStation>();
+            Assert.That(hydroponics, Is.Not.Null, "The habitat deck grows the food half of the loop.");
+            Assert.That(hydroponics.Rack, Is.SameAs(flowController.Session.Hydroponics));
+            Assert.That(Object.FindFirstObjectByType<PlanetSurvival.UI.Farming.HydroponicsView>(), Is.Not.Null);
+            AssertPropUsesItsArtwork(hydroponics.gameObject);
+
+            // Half a game day is short enough that no vital empties, and long enough to prove the clock
+            // is not restarted by the deck change below.
+            GameClock habitatClock = Object.FindFirstObjectByType<GameClock>();
+            habitatClock.Advance(300f);
+            double elapsedBeforeDeckChange = habitatClock.ElapsedDays;
+            Assert.That(elapsedBeforeDeckChange, Is.GreaterThan(.4d));
+
             GameObject player = Object.FindFirstObjectByType<PlayerSurvival>().gameObject;
             ScenePortal ladder = FindPortal(GameSceneNames.LandingPodCargo);
             Assert.That(ladder, Is.Not.Null);
@@ -96,16 +110,28 @@ namespace PlanetSurvival.Tests
             Assert.That(FindPortal(GameSceneNames.LandingPodHabitat), Is.Not.Null);
             Assert.That(Object.FindFirstObjectByType<PlayerWaterBottle>().Container.CurrentMilliliters,
                 Is.EqualTo(400), "The carried bottle must survive deck changes.");
+
+            GameClock cargoClock = Object.FindFirstObjectByType<GameClock>();
+            Assert.That(cargoClock.ElapsedDays, Is.EqualTo(elapsedBeforeDeckChange).Within(.05d),
+                "A deck change must not rewind the expedition clock or the rescue countdown.");
+            WaterProcessorStation processor = Object.FindFirstObjectByType<WaterProcessorStation>();
+            Assert.That(processor, Is.Not.Null, "The cargo deck makes the water half of the loop.");
+            Assert.That(processor.Processor, Is.SameAs(flowController.Session.WaterProcessor));
+            Assert.That(Object.FindFirstObjectByType<WaterProcessorView>(), Is.Not.Null);
+            AssertPropUsesItsArtwork(processor.gameObject);
             Assert.That(Object.FindFirstObjectByType<FixedInteriorBackdrop>(), Is.Not.Null);
             Assert.That(GameObject.Find("Dining Table"), Is.Null);
             StorageContainer cargoStorage = Object.FindFirstObjectByType<StorageContainer>();
             Assert.That(cargoStorage, Is.Not.Null);
             Assert.That(cargoStorage.gameObject.name, Is.EqualTo("Cargo Storage Racks"));
             Assert.That(cargoStorage.Inventory.TotalSlots, Is.EqualTo(30));
-            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(1));
-            Assert.That(cargoStorage.Inventory.Stacks[0].Definition.ItemId, Is.EqualTo("energy_bar"));
-            Assert.That(cargoStorage.Inventory.Stacks[0].Quantity,
+            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(3));
+            Assert.That(cargoStorage.Inventory.GetQuantity("energy_bar"),
                 Is.EqualTo(GameSessionState.InitialEnergyBarCount));
+            Assert.That(cargoStorage.Inventory.GetQuantity("potato"),
+                Is.EqualTo(GameSessionState.InitialPotatoCount));
+            Assert.That(cargoStorage.Inventory.GetQuantity("aluminum_alloy"),
+                Is.EqualTo(GameSessionState.InitialAluminumAlloyCount));
             ScenePortal airlock = FindPortal(GameSceneNames.Gameplay);
             Assert.That(airlock, Is.Not.Null);
             player = Object.FindFirstObjectByType<PlayerSurvival>().gameObject;
@@ -143,6 +169,21 @@ namespace PlanetSurvival.Tests
 
             Object.Destroy(flowController.gameObject);
             yield return null;
+        }
+
+        /// <summary>
+        /// A fixture whose texture is not imported as a sprite loads no artwork and quietly draws its
+        /// placeholder block instead, which looks like working art in a build until someone opens the
+        /// deck. Assert the real sprite so a bad import fails here rather than in playtesting.
+        /// </summary>
+        private static void AssertPropUsesItsArtwork(GameObject prop)
+        {
+            SpriteRenderer renderer = prop.GetComponentInChildren<SpriteRenderer>();
+            Assert.That(renderer, Is.Not.Null, $"'{prop.name}' has no sprite renderer.");
+            Assert.That(renderer.sprite, Is.Not.Null, $"'{prop.name}' is rendering nothing.");
+            Assert.That(renderer.sprite.name, Is.Not.EqualTo("PlaceholderBlock"),
+                $"'{prop.name}' fell back to its placeholder block; its artwork is missing or is not " +
+                "imported as a sprite. Run 'Planet Survival/Setup World Art'.");
         }
 
         private static IEnumerator WaitForScene(string sceneName)

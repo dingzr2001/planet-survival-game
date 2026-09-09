@@ -20,5 +20,7 @@ MonoBehaviour:
   _yields:
   - _item: {fileID: 11400000, guid: f23bfd6a697a949a4ba7578d9f0e1bed, type: 2}
     _quantity: 1
-  _worldSprite: {fileID: 21300000, guid: e7a014c705ae04c77a6f05d9d3487b0d, type: 3}
+  _worldSprites:
+  - {fileID: 21300000, guid: e7a014c705ae04c77a6f05d9d3487b0d, type: 3}
   _displayScale: {x: 1, y: 1, z: 0.8}
+  _blocksMovement: 1

@@ -12,6 +12,10 @@ namespace PlanetSurvival.Core.Flow
         private static GameFlowController _instance;
         [SerializeField, Tooltip("Non-craftable emergency food placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _energyBarDefinition;
+        [SerializeField, Tooltip("Raw vegetable ingredient placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _potatoDefinition;
+        [SerializeField, Tooltip("Structural building material placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _aluminumAlloyDefinition;
         private GameFlow _flow;
         private readonly GameSessionState _session = new();
 
@@ -34,9 +38,12 @@ namespace PlanetSurvival.Core.Flow
         public GameFlowState State => _flow?.State ?? GameFlowState.Booting;
         public GameSessionState Session => _session;
 
-        public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition)
+        public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
+            ItemDefinition aluminumAlloyDefinition)
         {
             _energyBarDefinition = energyBarDefinition;
+            _potatoDefinition = potatoDefinition;
+            _aluminumAlloyDefinition = aluminumAlloyDefinition;
         }
 
         public void Initialize()
@@ -76,19 +83,22 @@ namespace PlanetSurvival.Core.Flow
 
         private void ResetSession()
         {
-            if (_energyBarDefinition == null)
+            if (_energyBarDefinition == null || _potatoDefinition == null || _aluminumAlloyDefinition == null)
             {
                 _session.Reset();
-                Debug.LogError($"{nameof(GameFlowController)} requires an energy bar definition for starting cargo.", this);
+                Debug.LogError($"{nameof(GameFlowController)} requires energy bar, potato and aluminum alloy definitions for starting cargo.", this);
                 return;
             }
 
-            InventoryOperationResult result = _session.Reset(
-                _energyBarDefinition,
-                GameSessionState.InitialEnergyBarCount);
+            InventoryOperationResult result = _session.Reset(new[]
+            {
+                new InventoryItemAmount(_energyBarDefinition, GameSessionState.InitialEnergyBarCount),
+                new InventoryItemAmount(_potatoDefinition, GameSessionState.InitialPotatoCount),
+                new InventoryItemAmount(_aluminumAlloyDefinition, GameSessionState.InitialAluminumAlloyCount)
+            });
             if (!result.Succeeded)
             {
-                Debug.LogError($"Could not provision starting energy bars: {result.Message}", this);
+                Debug.LogError($"Could not provision starting cargo: {result.Message}", this);
             }
         }
 

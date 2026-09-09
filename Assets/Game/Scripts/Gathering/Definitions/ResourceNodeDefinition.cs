@@ -13,9 +13,13 @@ namespace PlanetSurvival.Gathering.Definitions
         [SerializeField, Min(.1f)] private float _gatherDistance = 2f;
         [SerializeField] private string _requiredToolItemId = string.Empty;
         [SerializeField] private ResourceYield[] _yields = Array.Empty<ResourceYield>();
-        [SerializeField, Tooltip("Transparent cutout used by the flat 2.5D world presentation.")]
-        private Sprite _worldSprite;
+        [SerializeField, Tooltip("Transparent cutouts used by the flat 2.5D world presentation. With more than one, each node picks a variant, so a stretch of surface does not repeat one silhouette. Every variant shares this resource's display scale, so they should have similar proportions.")]
+        private Sprite[] _worldSprites = Array.Empty<Sprite>();
         [SerializeField] private Vector3 _displayScale = Vector3.one;
+        [SerializeField, Tooltip("Whether the node is solid. Boulders block the way; something lying flat on the ground, such as an ice sheet, should be walked over instead. Either way the volume still carries the interaction.")]
+        private bool _blocksMovement = true;
+        [SerializeField, Tooltip("Draws the cutout on the ground using the X/Z footprint instead of as a camera-facing upright sprite.")]
+        private bool _liesFlatOnGround;
 
         public string ResourceId => _resourceId;
         public string DisplayName => _displayName;
@@ -23,8 +27,31 @@ namespace PlanetSurvival.Gathering.Definitions
         public float GatherDistance => _gatherDistance;
         public string RequiredToolItemId => _requiredToolItemId;
         public IReadOnlyList<ResourceYield> Yields => _yields;
-        public Sprite WorldSprite => _worldSprite;
+        public IReadOnlyList<Sprite> WorldSprites => _worldSprites;
+
+        /// <summary>The first cutout, or null when this resource has no artwork yet.</summary>
+        public Sprite WorldSprite => _worldSprites.Length > 0 ? _worldSprites[0] : null;
+
         public Vector3 DisplayScale => _displayScale;
+
+        /// <summary>False when the player walks straight over the node instead of around it.</summary>
+        public bool BlocksMovement => _blocksMovement;
+        public bool LiesFlatOnGround => _liesFlatOnGround;
+
+        /// <summary>
+        /// Picks the cutout for one node. The same seed always returns the same variant, which is what
+        /// keeps a deposit looking like itself after its chunk is unloaded and streamed back in.
+        /// </summary>
+        public Sprite SelectWorldSprite(int variantSeed)
+        {
+            if (_worldSprites.Length == 0)
+            {
+                return null;
+            }
+
+            // The seed is a hash and may be negative; masking keeps the remainder in range.
+            return _worldSprites[(variantSeed & int.MaxValue) % _worldSprites.Length];
+        }
 
         public bool IsValid(out string error)
         {
@@ -65,9 +92,28 @@ namespace PlanetSurvival.Gathering.Definitions
             _yields = yields ?? Array.Empty<ResourceYield>();
         }
 
-        public void SetWorldSprite(Sprite worldSprite)
+        /// <summary>
+        /// Sets whether the node is solid. Kept separate from <see cref="Configure"/> so existing
+        /// resources keep blocking the way unless they are explicitly made walkable.
+        /// </summary>
+        public void ConfigureCollision(bool blocksMovement)
         {
-            _worldSprite = worldSprite;
+            _blocksMovement = blocksMovement;
+        }
+
+        /// <summary>Chooses between an upright cutout and a footprint-aligned surface.</summary>
+        public void ConfigureGroundPresentation(bool liesFlatOnGround)
+        {
+            _liesFlatOnGround = liesFlatOnGround;
+        }
+
+        /// <summary>
+        /// Replaces the cutout set. Order decides which seed maps to which look, so the caller must
+        /// supply a stable order or nodes change appearance between runs.
+        /// </summary>
+        public void SetWorldSprites(params Sprite[] worldSprites)
+        {
+            _worldSprites = worldSprites ?? Array.Empty<Sprite>();
         }
     }
 }

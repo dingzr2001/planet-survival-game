@@ -30,6 +30,7 @@ namespace PlanetSurvival.World.Presentation
         private Camera _camera;
         private float _elapsed;
         private bool _isMoving;
+        private bool _liesFlatOnGround;
         private FacingDirection _facing = FacingDirection.Down;
         private Sprite[] _runtimeSprites = System.Array.Empty<Sprite>();
 
@@ -59,6 +60,26 @@ namespace PlanetSurvival.World.Presentation
         {
             Configure(sprite, worldHeight);
             transform.localPosition = Vector3.zero;
+        }
+
+        /// <summary>Places a top-down cutout directly on the X/Z ground plane.</summary>
+        public void ConfigureGroundPlane(Sprite sprite, Vector2 footprint)
+        {
+            if (_renderer == null)
+            {
+                _renderer = GetComponent<SpriteRenderer>();
+            }
+
+            _renderer.sprite = sprite;
+            Sprite[] fallbackFrames = sprite == null ? System.Array.Empty<Sprite>() : new[] { sprite };
+            _downFrames = fallbackFrames;
+            _leftFrames = fallbackFrames;
+            _rightFrames = fallbackFrames;
+            _upFrames = fallbackFrames;
+            _liesFlatOnGround = true;
+            FitFootprint(footprint);
+            transform.localPosition = Vector3.up * .015f;
+            transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
         }
 
         public void ConfigureDirectional(Sprite fallbackSprite, float worldHeight,
@@ -201,7 +222,11 @@ namespace PlanetSurvival.World.Presentation
 
         private void FaceCamera()
         {
-            if (_camera != null)
+            if (_liesFlatOnGround)
+            {
+                transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            }
+            else if (_camera != null)
             {
                 transform.rotation = _camera.transform.rotation;
             }
@@ -312,7 +337,7 @@ namespace PlanetSurvival.World.Presentation
             }
 
             float depth = Vector3.Dot(_camera.transform.forward, transform.position - _camera.transform.position);
-            _renderer.sortingOrder = -Mathf.RoundToInt(depth * 100f);
+            _renderer.sortingOrder = -Mathf.RoundToInt(depth * 100f) - (_liesFlatOnGround ? 1 : 0);
         }
 
         private void FitHeight(float worldHeight)
@@ -324,6 +349,20 @@ namespace PlanetSurvival.World.Presentation
 
             float spriteHeight = Mathf.Max(MinimumSpriteSize, _renderer.sprite.bounds.size.y);
             float scale = Mathf.Max(.1f, worldHeight) / spriteHeight;
+            transform.localScale = Vector3.one * scale;
+        }
+
+        private void FitFootprint(Vector2 footprint)
+        {
+            if (_renderer == null || _renderer.sprite == null)
+            {
+                return;
+            }
+
+            Vector2 spriteSize = _renderer.sprite.bounds.size;
+            float widthScale = Mathf.Max(.1f, footprint.x) / Mathf.Max(MinimumSpriteSize, spriteSize.x);
+            float depthScale = Mathf.Max(.1f, footprint.y) / Mathf.Max(MinimumSpriteSize, spriteSize.y);
+            float scale = Mathf.Min(widthScale, depthScale);
             transform.localScale = Vector3.one * scale;
         }
     }

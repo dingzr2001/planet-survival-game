@@ -31,7 +31,8 @@ namespace PlanetSurvival.Gathering.Runtime
                 return Array.Empty<ChunkResourcePlacement>();
             }
 
-            var random = new Random(CreateChunkSeed(worldSeed, chunk));
+            int chunkSeed = CreateChunkSeed(worldSeed, chunk);
+            var random = new Random(chunkSeed);
             float originX = chunk.OriginX(chunkSize);
             float originZ = chunk.OriginZ(chunkSize);
             float squaredSpacing = Math.Max(0f, minimumSpacing) * Math.Max(0f, minimumSpacing);
@@ -51,7 +52,10 @@ namespace PlanetSurvival.Gathering.Runtime
                             continue;
                         }
 
-                        placements.Add(new ChunkResourcePlacement(entryIndex, worldX, worldZ));
+                        // Derived from the chunk seed and the node's index rather than drawn from the
+                        // random sequence, so adding art variants never shifts where anything spawns.
+                        placements.Add(new ChunkResourcePlacement(
+                            entryIndex, worldX, worldZ, CreateVariantSeed(chunkSeed, placements.Count)));
                         break;
                     }
                 }
@@ -86,6 +90,21 @@ namespace PlanetSurvival.Gathering.Runtime
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// A stable per-node number used to pick its art variant. Mixing the index into the chunk seed
+        /// keeps neighbouring nodes of one chunk from all landing on the same variant.
+        /// </summary>
+        private static int CreateVariantSeed(int chunkSeed, int placementIndex)
+        {
+            unchecked
+            {
+                const int prime = 16777619;
+                int hash = (chunkSeed ^ 0x5f356495) * prime;
+                hash = (hash ^ placementIndex) * prime;
+                return hash;
+            }
         }
 
         // FNV-1a keeps neighbouring chunks from sharing similar seeds, which would make their layouts correlate.

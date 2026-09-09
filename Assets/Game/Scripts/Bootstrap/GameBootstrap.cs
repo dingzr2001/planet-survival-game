@@ -1,3 +1,5 @@
+using PlanetSurvival.Building.Definitions;
+using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Gathering.Definitions;
@@ -7,6 +9,8 @@ using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
+using PlanetSurvival.UI.Building;
+using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
@@ -27,6 +31,8 @@ namespace PlanetSurvival.Bootstrap
         [SerializeField] private WorldVisualSettings _worldVisuals;
         [SerializeField, Tooltip("Slot artwork for the quick bar and inventory panel. Optional; the HUD falls back to the built-in GUI skin.")]
         private InventorySkin _inventorySkin;
+        [SerializeField, Tooltip("Structures the build panel offers. Without it the surface has no building.")]
+        private BuildingCatalog _buildingCatalog;
 
         private const string RuntimeRootName = "Gameplay Runtime";
 
@@ -59,6 +65,11 @@ namespace PlanetSurvival.Bootstrap
             _worldVisuals = worldVisuals;
         }
 
+        public void ConfigureBuilding(BuildingCatalog buildingCatalog)
+        {
+            _buildingCatalog = buildingCatalog;
+        }
+
         private void Start()
         {
             if (_terrainSettings == null)
@@ -82,8 +93,9 @@ namespace PlanetSurvival.Bootstrap
             }
 
             var root = new GameObject(RuntimeRootName);
+            GameSessionState session = ResolveSession();
             GridTerrainView terrainView = CreateTerrain(root.transform);
-            GameObject player = CreatePlayer(root.transform, ResolveSession());
+            GameObject player = CreatePlayer(root.transform, session);
             terrainView.SetTarget(player.transform);
             LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
                 _worldVisuals);
@@ -91,9 +103,11 @@ namespace PlanetSurvival.Bootstrap
             CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player);
-            clock.Configure(_environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay);
+            clock.Bind(session.ConfigureTime(
+                _environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay));
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
-            CreateHud(root.transform, player, clock, _inventorySkin);
+            GameObject hud = CreateHud(root.transform, player, clock, _inventorySkin);
+            CreateBuildingSystem(root.transform, player, hud, session);
             BindPlayerDeath(player);
         }
 
@@ -247,7 +261,33 @@ namespace PlanetSurvival.Bootstrap
             return clock;
         }
 
-        private static void CreateHud(Transform parent, GameObject player, GameClock clock, InventorySkin inventorySkin)
+        /// <summary>
+        /// Placement lives next to the world rather than on the HUD: the panel only picks a structure, the
+        /// controller owns the grid preview and the sites the session carries between scenes.
+        /// </summary>
+        private void CreateBuildingSystem(Transform parent, GameObject player, GameObject hud, GameSessionState session)
+        {
+            if (_buildingCatalog == null)
+            {
+                Debug.LogWarning($"{nameof(GameBootstrap)} on '{name}' has no building catalog; the build panel is unavailable.", this);
+                return;
+            }
+
+            var systemObject = new GameObject("Building System");
+            systemObject.transform.SetParent(parent);
+            BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
+            PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
+            controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
+                hud.GetComponent<CookingView>());
+
+            hud.AddComponent<BuildMenuView>().Bind(
+                controller,
+                playerInventory,
+                player.GetComponent<PlanarPlayerMotor>(),
+                player.GetComponent<PlayerInteractor>());
+        }
+
+        private static GameObject CreateHud(Transform parent, GameObject player, GameClock clock, InventorySkin inventorySkin)
         {
             var hudObject = new GameObject("Survival HUD");
             hudObject.transform.SetParent(parent);
@@ -259,7 +299,10 @@ namespace PlanetSurvival.Bootstrap
                 player.GetComponent<PlayerWaterBottle>());
             hudObject.AddComponent<SuitResourceView>().Bind(
                 player.GetComponent<PlayerSpaceSuit>().Resources);
+            // Built appliances open their menu through this panel, exactly like the ones inside the pod.
+            hudObject.AddComponent<CookingView>();
             hudObject.AddComponent<GameOverView>();
+            return hudObject;
         }
 
         private static void BindPlayerDeath(GameObject player)

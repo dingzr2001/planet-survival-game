@@ -15,12 +15,15 @@ namespace PlanetSurvival.Crafting.Definitions
         private CraftingItemAmount[] _outputs = Array.Empty<CraftingItemAmount>();
         [SerializeField, Tooltip("Stable condition IDs supplied by the current crafting context, such as station.workbench.")]
         private string[] _requiredConditionIds = Array.Empty<string>();
+        [SerializeField, Min(0f), Tooltip("Real seconds the station needs to finish one craft. Zero completes instantly.")]
+        private float _durationSeconds;
 
         public string RecipeId => _recipeId;
         public string DisplayName => _displayName;
         public IReadOnlyList<CraftingItemAmount> Inputs => _inputs;
         public IReadOnlyList<CraftingItemAmount> Outputs => _outputs;
         public IReadOnlyList<string> RequiredConditionIds => _requiredConditionIds;
+        public float DurationSeconds => _durationSeconds;
 
         public bool IsValid(out string error)
         {
@@ -68,6 +71,12 @@ namespace PlanetSurvival.Crafting.Definitions
             _inputs = inputs ?? Array.Empty<CraftingItemAmount>();
             _outputs = outputs ?? Array.Empty<CraftingItemAmount>();
             _requiredConditionIds = requiredConditionIds ?? Array.Empty<string>();
+        }
+
+        /// <summary>Timed stations read this; the instant <see cref="Application.CraftingService"/> ignores it.</summary>
+        public void ConfigureDuration(float durationSeconds)
+        {
+            _durationSeconds = Mathf.Max(0f, durationSeconds);
         }
 
         private bool ValidateItems(CraftingItemAmount[] amounts, string role, out string error)

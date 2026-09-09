@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.World.Generation;
 using UnityEditor;
@@ -15,6 +17,12 @@ namespace PlanetSurvival.Editor
         private const string LandingPodExteriorPath = "Assets/Game/Resources/World/LandingPodExterior.png";
         private const string HorizonPath = "Assets/Game/Resources/World/MartianHorizon.png";
         private const string ResourceDirectory = "Assets/Game/Art/World/Resources";
+        private const string InteriorPropDirectory = "Assets/Game/Resources/Interiors";
+
+        /// <summary>
+        /// Free-standing interior machines, loaded at runtime through <c>Resources.Load&lt;Sprite&gt;</c>.
+        /// </summary>
+        private static readonly string[] InteriorPropNames = { "HydroponicsRack", "WaterProcessor" };
         private const int PlayerDirectionCount = 4;
         private const int PlayerFramesPerDirection = 8;
         private const byte OpaqueAlphaThreshold = 128;
@@ -25,9 +33,11 @@ namespace PlanetSurvival.Editor
         {
             WorldVisualSettings settings = GetOrCreateWorldVisualSettings();
             int assigned = AssignResourceSprites();
+            int props = ConfigureInteriorPropSprites();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"World art ready at '{AssetDatabase.GetAssetPath(settings)}'; {assigned} resource sprite(s) assigned.");
+            Debug.Log($"World art ready at '{AssetDatabase.GetAssetPath(settings)}'; {assigned} resource sprite(s) assigned, " +
+                      $"{props} interior prop sprite(s) imported.");
         }
 
         [InitializeOnLoadMethod]
@@ -242,34 +252,101 @@ namespace PlanetSurvival.Editor
             public float AnchorX { get; }
         }
 
+        /// <summary>
+        /// Applies the sprite import the interior machines depend on. <c>Resources.Load&lt;Sprite&gt;</c>
+        /// returns null for a texture left at the default import type, and the fixture then silently
+        /// falls back to its placeholder block — so newly delivered prop art is imported here rather
+        /// than by hand in the Inspector.
+        /// </summary>
+        public static int ConfigureInteriorPropSprites()
+        {
+            int configured = 0;
+            for (int i = 0; i < InteriorPropNames.Length; i++)
+            {
+                if (ImportSprite($"{InteriorPropDirectory}/{InteriorPropNames[i]}.png", 2048) != null)
+                {
+                    configured++;
+                }
+            }
+
+            return configured;
+        }
+
         public static int AssignResourceSprites()
         {
             int assigned = 0;
             assigned += Assign("RockNode", "Rock") ? 1 : 0;
             assigned += Assign("DebrisNode", "Debris") ? 1 : 0;
-            assigned += Assign("PlantNode", "Plant") ? 1 : 0;
+            assigned += Assign("IceDepositNode", "IceDeposit") ? 1 : 0;
             return assigned;
         }
 
+        /// <summary>
+        /// Connects a resource to every cutout named after it: 'IceDeposit.png', 'IceDeposit2.png' and
+        /// so on all become variants of one deposit. Files are taken in name order so a node keeps the
+        /// same look between runs; inserting a variant that sorts before the existing ones reshuffles
+        /// which deposit wears which art, which is harmless but visible.
+        /// </summary>
         private static bool Assign(string definitionName, string spriteName)
         {
             string definitionPath = $"{ConfigurationDirectory}/{definitionName}.asset";
             var definition = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(definitionPath);
-            Sprite sprite = ImportSprite($"{ResourceDirectory}/{spriteName}.png", 2048);
-            if (definition == null || sprite == null)
+            if (definition == null)
             {
-                Debug.LogWarning($"Could not connect world art '{spriteName}' to '{definitionName}'.");
+                Debug.LogWarning($"Could not connect world art '{spriteName}': '{definitionName}' does not exist.");
                 return false;
             }
 
-            if (definition.WorldSprite == sprite)
+            var sprites = new List<Sprite>();
+            foreach (string path in FindVariantPaths(spriteName))
             {
+                Sprite sprite = ImportSprite(path, 2048);
+                if (sprite != null)
+                {
+                    sprites.Add(sprite);
+                }
+            }
+
+            if (sprites.Count == 0)
+            {
+                Debug.LogWarning($"Could not connect world art '{spriteName}' to '{definitionName}': no cutouts found.");
                 return false;
             }
 
-            definition.SetWorldSprite(sprite);
+            if (sprites.Count == definition.WorldSprites.Count)
+            {
+                bool unchanged = true;
+                for (int i = 0; i < sprites.Count && unchanged; i++)
+                {
+                    unchanged = definition.WorldSprites[i] == sprites[i];
+                }
+
+                if (unchanged)
+                {
+                    return false;
+                }
+            }
+
+            definition.SetWorldSprites(sprites.ToArray());
             EditorUtility.SetDirty(definition);
             return true;
+        }
+
+        /// <summary>Every '&lt;name&gt;*.png' in the resource art folder, in a stable name order.</summary>
+        private static List<string> FindVariantPaths(string spriteName)
+        {
+            var paths = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets($"{spriteName} t:Texture2D", new[] { ResourceDirectory }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetFileNameWithoutExtension(path).StartsWith(spriteName, System.StringComparison.Ordinal))
+                {
+                    paths.Add(path);
+                }
+            }
+
+            paths.Sort(System.StringComparer.Ordinal);
+            return paths;
         }
 
         private static Sprite ImportSprite(string path, int maxSize,

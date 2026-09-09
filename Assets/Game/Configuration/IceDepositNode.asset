@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffbdf72fe16146be864e454f03efd1e, type: 3}
+  m_Name: IceDepositNode
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Gathering.Definitions.ResourceNodeDefinition
+  _resourceId: ice_deposit
+  _displayName: Ice Deposit
+  _gatherDuration: 4
+  _gatherDistance: 2.25
+  _requiredToolItemId: 
+  _yields:
+  - _item: {fileID: 11400000, guid: 14b91185ac96747488479e5bb8d289cd, type: 2}
+    _quantity: 3
+  _worldSprites:
+  - {fileID: 21300000, guid: 422d896780a354ecd928c1b9a4a6e7cc, type: 3}
+  - {fileID: 21300000, guid: ef0b67631703d4d3fbe69ed0527c96ed, type: 3}
+  - {fileID: 21300000, guid: b18cfb5fff09a4897aee866865bf85ae, type: 3}
+  - {fileID: 21300000, guid: 891a3eb959d27487e98f6b3d8a83e360, type: 3}
+  - {fileID: 21300000, guid: 19953bf95270a4eb79ed72848b99da61, type: 3}
+  _displayScale: {x: 2.6, y: 0.15, z: 1.4}
+  _blocksMovement: 0
+  _liesFlatOnGround: 1

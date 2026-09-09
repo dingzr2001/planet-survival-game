@@ -127,7 +127,7 @@ namespace PlanetSurvival.Gathering.Runtime
 
                 ResourceNodeDefinition definition = entries[placement.EntryIndex].Definition;
                 ResourceNode node = ResourceNodeFactory.Create(root.transform, definition,
-                    new Vector3(placement.WorldX, 0f, placement.WorldZ), _visuals);
+                    new Vector3(placement.WorldX, 0f, placement.WorldZ), _visuals, placement.VariantSeed);
                 loaded.Add(i, node);
             }
 

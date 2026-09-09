@@ -1,4 +1,5 @@
 using PlanetSurvival.Player.Interaction;
+using PlanetSurvival.UI.Inventory;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.HUD
@@ -7,6 +8,7 @@ namespace PlanetSurvival.UI.HUD
     public sealed class InteractionPromptView : MonoBehaviour
     {
         private PlayerInteractor _interactor;
+        private InventoryView _inventoryView;
         private string _prompt = string.Empty;
 
         public void Bind(PlayerInteractor interactor)
@@ -24,14 +26,32 @@ namespace PlanetSurvival.UI.HUD
             HandlePromptChanged(_interactor.CurrentPrompt);
         }
 
+        private void OnDisable()
+        {
+            _inventoryView?.SetInteractionPrompt(string.Empty);
+        }
+
         private void OnDestroy()
         {
+            _inventoryView?.SetInteractionPrompt(string.Empty);
             Unsubscribe();
+        }
+
+        private void LateUpdate()
+        {
+            // The quick bar is created after this view, so the hand-off is resolved lazily.
+            if (_inventoryView == null)
+            {
+                _inventoryView = GetComponent<InventoryView>();
+            }
+
+            _inventoryView?.SetInteractionPrompt(_prompt);
         }
 
         private void OnGUI()
         {
-            if (string.IsNullOrWhiteSpace(_prompt))
+            // The quick bar renders the prompt whenever it is available.
+            if (_inventoryView != null || string.IsNullOrWhiteSpace(_prompt))
             {
                 return;
             }
