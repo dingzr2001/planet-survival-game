@@ -162,8 +162,10 @@ namespace PlanetSurvival.Tests
                 "Water must stay reachable with bare hands until tools exist.");
             Assert.That(deposit.BlocksMovement, Is.False,
                 "The sheet lies flat on the ground; the explorer walks over it rather than around it.");
-            Assert.That(deposit.LiesFlatOnGround, Is.True,
-                "Top-down ice artwork must use its footprint instead of standing upright as a billboard.");
+            Assert.That(deposit.VisualMode, Is.EqualTo(ResourceVisualMode.GroundDecal),
+                "Ice is a floor surface and must stay below actors instead of joining billboard depth sorting.");
+            Assert.That(deposit.CastsBlobShadow, Is.False,
+                "A ground-hugging ice slab must not receive a floating-object shadow.");
 
             Assert.That(spawnSettings, Is.Not.Null);
             bool spawnsIce = false;

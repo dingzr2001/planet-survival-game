@@ -18,8 +18,12 @@ namespace PlanetSurvival.Gathering.Definitions
         [SerializeField] private Vector3 _displayScale = Vector3.one;
         [SerializeField, Tooltip("Whether the node is solid. Boulders block the way; something lying flat on the ground, such as an ice sheet, should be walked over instead. Either way the volume still carries the interaction.")]
         private bool _blocksMovement = true;
-        [SerializeField, Tooltip("Draws the cutout on the ground using the X/Z footprint instead of as a camera-facing upright sprite.")]
-        private bool _liesFlatOnGround;
+        [SerializeField, Tooltip("Controls whether the cutout is an upright camera-facing prop or a floor decal below all actors.")]
+        private ResourceVisualMode _visualMode = ResourceVisualMode.Billboard;
+        [SerializeField, Tooltip("Disables the generic oval shadow when the artwork already represents a surface touching the ground.")]
+        private bool _suppressBlobShadow;
+        [SerializeField, Tooltip("Possible tile footprints for one ground decal node. Repeating a size weights it more heavily. Non-ground resources ignore this setting.")]
+        private Vector2Int[] _groundPatchFootprints = Array.Empty<Vector2Int>();
 
         public string ResourceId => _resourceId;
         public string DisplayName => _displayName;
@@ -36,7 +40,22 @@ namespace PlanetSurvival.Gathering.Definitions
 
         /// <summary>False when the player walks straight over the node instead of around it.</summary>
         public bool BlocksMovement => _blocksMovement;
-        public bool LiesFlatOnGround => _liesFlatOnGround;
+        public ResourceVisualMode VisualMode => _visualMode;
+        public bool CastsBlobShadow => !_suppressBlobShadow;
+
+        /// <summary>
+        /// Selects a stable tiled footprint for a ground patch. An empty list preserves the historical 1x1 shape.
+        /// </summary>
+        public Vector2Int SelectGroundPatchFootprint(int variantSeed)
+        {
+            if (_groundPatchFootprints == null || _groundPatchFootprints.Length == 0)
+            {
+                return Vector2Int.one;
+            }
+
+            Vector2Int footprint = _groundPatchFootprints[(variantSeed & int.MaxValue) % _groundPatchFootprints.Length];
+            return new Vector2Int(Mathf.Max(1, footprint.x), Mathf.Max(1, footprint.y));
+        }
 
         /// <summary>
         /// Picks the cutout for one node. The same seed always returns the same variant, which is what
@@ -101,10 +120,24 @@ namespace PlanetSurvival.Gathering.Definitions
             _blocksMovement = blocksMovement;
         }
 
-        /// <summary>Chooses between an upright cutout and a footprint-aligned surface.</summary>
-        public void ConfigureGroundPresentation(bool liesFlatOnGround)
+        /// <summary>Chooses how this resource is rendered without coupling presentation to collision.</summary>
+        public void ConfigurePresentation(ResourceVisualMode visualMode)
         {
-            _liesFlatOnGround = liesFlatOnGround;
+            _visualMode = visualMode;
+        }
+
+        public void ConfigureBlobShadow(bool castsBlobShadow)
+        {
+            _suppressBlobShadow = !castsBlobShadow;
+        }
+
+        /// <summary>
+        /// Configures the possible X/Z tile counts for one ground patch. Duplicate entries provide simple,
+        /// inspectable weighting without introducing a second set of probability data.
+        /// </summary>
+        public void ConfigureGroundPatchFootprints(params Vector2Int[] footprints)
+        {
+            _groundPatchFootprints = footprints ?? Array.Empty<Vector2Int>();
         }
 
         /// <summary>

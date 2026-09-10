@@ -5,8 +5,8 @@ namespace PlanetSurvival.Player.Movement
     [DisallowMultipleComponent]
     public sealed class FollowCamera : MonoBehaviour
     {
-        [SerializeField, Tooltip("A fixed elevated perspective that keeps a narrow band of horizon visible.")]
-        private Vector3 _offset = new(5.5f, 8.5f, -8.5f);
+        [SerializeField, Tooltip("A fixed elevated perspective aligned to the world Z axis, so X/Z build-grid lines remain horizontal and vertical on screen.")]
+        private Vector3 _offset = new(0f, 8.5f, -10.12f);
 
         [SerializeField, Min(0f), Tooltip("Raises the framing so the upper portion of the screen can show the sky and distant landmarks.")]
         private float _lookAtHeight = 4.85f;

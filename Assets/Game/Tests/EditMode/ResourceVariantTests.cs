@@ -103,6 +103,24 @@ namespace PlanetSurvival.Tests
             Assert.That(definition.WorldSprite, Is.Null);
         }
 
+        [Test]
+        public void SelectGroundPatchFootprint_IsStableAndKeepsConfiguredLargeSheets()
+        {
+            ResourceNodeDefinition definition = CreateDefinition();
+            definition.ConfigureGroundPatchFootprints(Vector2Int.one, new Vector2Int(2, 2), new Vector2Int(3, 2));
+
+            Assert.That(definition.SelectGroundPatchFootprint(1), Is.EqualTo(new Vector2Int(2, 2)));
+            Assert.That(definition.SelectGroundPatchFootprint(2), Is.EqualTo(new Vector2Int(3, 2)));
+            Assert.That(definition.SelectGroundPatchFootprint(2), Is.EqualTo(
+                definition.SelectGroundPatchFootprint(2)), "Reloading a chunk must restore the same patch shape.");
+        }
+
+        [Test]
+        public void SelectGroundPatchFootprint_WithoutConfiguration_PreservesSingleTileNodes()
+        {
+            Assert.That(CreateDefinition().SelectGroundPatchFootprint(123), Is.EqualTo(Vector2Int.one));
+        }
+
         private static IReadOnlyList<ChunkResourcePlacement> Plan(ChunkCoordinate chunk)
         {
             return ChunkResourcePlanner.Plan(chunk, WorldSeed, ChunkSize, 4f, new[] { 2.5f, 1.5f });

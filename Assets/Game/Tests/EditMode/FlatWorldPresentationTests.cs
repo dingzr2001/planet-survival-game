@@ -215,6 +215,23 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void FollowCamera_AlignsWorldGridAxesWithScreenAxes()
+        {
+            var camera = Track(new GameObject("Camera"));
+            var target = Track(new GameObject("Target"));
+            FollowCamera follow = camera.AddComponent<FollowCamera>();
+
+            follow.SetTarget(target.transform);
+
+            Vector3 groundForward = Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up).normalized;
+            Vector3 groundRight = Vector3.ProjectOnPlane(camera.transform.right, Vector3.up).normalized;
+            Assert.That(groundForward.x, Is.Zero.Within(.0001f),
+                "World Z grid lines should project vertically instead of diagonally.");
+            Assert.That(groundRight.z, Is.Zero.Within(.0001f),
+                "World X grid lines should project horizontally instead of diagonally.");
+        }
+
+        [Test]
         public void HorizonBackdrop_IsCameraRelativeAndCoversPerspectiveView()
         {
             var cameraObject = Track(new GameObject("Camera"));

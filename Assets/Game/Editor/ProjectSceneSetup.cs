@@ -123,12 +123,19 @@ namespace PlanetSurvival.Editor
                 new Vector3(.9f, 1.1f, .72f), new ResourceYield(stone, 2));
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
                 new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
-            // A broad, shallow patch reads as a surface deposit without turning into a waist-high wall.
+            // Compose the authored square decal instead of stretching it. Repeated entries weight the mix:
+            // small remnants remain, but most deposits read as substantial connected sheets.
             ResourceNodeDefinition iceDeposit = GetOrCreateNode("IceDepositNode", "ice_deposit", "Ice Deposit",
-                IceGatherSeconds, new Vector3(2.6f, .15f, 1.4f), new ResourceYield(iceChunk, IceChunksPerDeposit));
+                IceGatherSeconds, new Vector3(1.1f, .15f, 1.1f), new ResourceYield(iceChunk, IceChunksPerDeposit));
             // The sheet lies flat on the ground: the explorer walks over it rather than around it.
             iceDeposit.ConfigureCollision(false);
-            iceDeposit.ConfigureGroundPresentation(true);
+            iceDeposit.ConfigurePresentation(ResourceVisualMode.GroundDecal);
+            iceDeposit.ConfigureBlobShadow(false);
+            iceDeposit.ConfigureGroundPatchFootprints(
+                Vector2Int.one,
+                new Vector2Int(2, 2), new Vector2Int(2, 2), new Vector2Int(2, 2),
+                new Vector2Int(2, 3), new Vector2Int(3, 2),
+                new Vector2Int(3, 3));
             EditorUtility.SetDirty(iceDeposit);
 
             ResourceSpawnSettings settings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(ResourceSpawnSettingsPath);

@@ -114,14 +114,19 @@ namespace PlanetSurvival.Tests
         [Test]
         public void Create_GroundResource_LiesFlatAndDoesNotCastABlobShadow()
         {
-            _definition.ConfigureGroundPresentation(true);
+            _definition.ConfigurePresentation(ResourceVisualMode.GroundDecal);
+            _definition.ConfigureBlobShadow(false);
             var parent = new GameObject("Chunk");
 
             ResourceNode node = ResourceNodeFactory.Create(
                 parent.transform, _definition, Vector3.zero, null);
 
-            WorldSpriteView view = node.GetComponentInChildren<WorldSpriteView>();
+            GroundDecalView view = node.GetComponentInChildren<GroundDecalView>();
+            Assert.That(view, Is.Not.Null);
             Assert.That(view.transform.localEulerAngles.x, Is.EqualTo(90f).Within(.01f));
+            Assert.That(view.Renderer.sortingOrder, Is.EqualTo(GroundDecalView.SortingOrder));
+            Assert.That(node.GetComponentInChildren<WorldSpriteView>(), Is.Null,
+                "A floor surface must not participate in billboard depth sorting.");
             Assert.That(node.transform.Find("Blob Shadow"), Is.Null,
                 "A surface already touching the ground must not receive a floating-object shadow.");
             Object.DestroyImmediate(parent);

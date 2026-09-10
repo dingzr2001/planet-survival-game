@@ -29,11 +29,14 @@ namespace PlanetSurvival.Gathering.Runtime
             node.transform.SetParent(parent);
             node.transform.position = position;
 
+            Vector2Int patchFootprint = definition.VisualMode == ResourceVisualMode.GroundDecal
+                ? definition.SelectGroundPatchFootprint(variantSeed)
+                : Vector2Int.one;
             var collider = node.AddComponent<BoxCollider>();
             collider.size = new Vector3(
-                Mathf.Max(.2f, definition.DisplayScale.x),
+                Mathf.Max(.2f, definition.DisplayScale.x * patchFootprint.x),
                 Mathf.Max(.3f, definition.DisplayScale.y),
-                Mathf.Max(.2f, definition.DisplayScale.z));
+                Mathf.Max(.2f, definition.DisplayScale.z * patchFootprint.y));
             collider.center = Vector3.up * collider.size.y * .5f;
             // A walkable node keeps its volume as a trigger: the interactor's overlap query includes
             // triggers, so gathering still works while the player walks straight over the node.
@@ -41,34 +44,32 @@ namespace PlanetSurvival.Gathering.Runtime
             ResourceNode resourceNode = node.AddComponent<ResourceNode>();
             resourceNode.Configure(definition);
 
-            var visual = new GameObject("Sprite");
-            visual.transform.SetParent(node.transform, false);
-            visual.AddComponent<SpriteRenderer>();
-            WorldSpriteView spriteView = visual.AddComponent<WorldSpriteView>();
             float displayHeight = Mathf.Max(.5f, definition.DisplayScale.y);
             Sprite cutout = definition.SelectWorldSprite(variantSeed);
             Sprite displayedSprite = cutout != null ? cutout : PlaceholderArt.SolidSprite();
-            if (definition.LiesFlatOnGround)
+            if (definition.VisualMode == ResourceVisualMode.GroundDecal)
             {
-                spriteView.ConfigureGroundPlane(displayedSprite,
-                    new Vector2(definition.DisplayScale.x, definition.DisplayScale.z));
+                CreateGroundPatch(node.transform, definition, displayedSprite, cutout == null, patchFootprint,
+                    variantSeed);
             }
             else
             {
+                var visual = new GameObject("Sprite");
+                visual.transform.SetParent(node.transform, false);
+                SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
+                WorldSpriteView spriteView = visual.AddComponent<WorldSpriteView>();
                 spriteView.Configure(displayedSprite, displayHeight);
-            }
-            if (cutout == null)
-            {
-                // Without a cutout the node would be invisible and only its shadow would hint at it, so
-                // it is drawn as a footprint-wide block until its artwork exists.
-                spriteView.Renderer.color = PlaceholderNodeColor;
-                visual.transform.localScale = new Vector3(
-                    Mathf.Max(.2f, definition.DisplayScale.x) / displayHeight * visual.transform.localScale.x,
-                    visual.transform.localScale.y,
-                    visual.transform.localScale.z);
+                if (cutout == null)
+                {
+                    renderer.color = PlaceholderNodeColor;
+                    spriteView.transform.localScale = new Vector3(
+                        Mathf.Max(.2f, definition.DisplayScale.x) / displayHeight * spriteView.transform.localScale.x,
+                        spriteView.transform.localScale.y,
+                        spriteView.transform.localScale.z);
+                }
             }
 
-            if (!definition.LiesFlatOnGround)
+            if (definition.VisualMode == ResourceVisualMode.Billboard && definition.CastsBlobShadow)
             {
                 Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
                 BlobShadow.Create(node.transform,
@@ -76,6 +77,46 @@ namespace PlanetSurvival.Gathering.Runtime
                     shadowColor);
             }
             return resourceNode;
+        }
+
+        private static void CreateGroundPatch(Transform parent, ResourceNodeDefinition definition, Sprite sprite,
+            bool isPlaceholder, Vector2Int footprint, int variantSeed)
+        {
+            float tileWidth = definition.DisplayScale.x;
+            float tileDepth = definition.DisplayScale.z;
+            float originX = (footprint.x - 1) * tileWidth * -.5f;
+            float originZ = (footprint.y - 1) * tileDepth * -.5f;
+
+            for (int x = 0; x < footprint.x; x++)
+            {
+                for (int z = 0; z < footprint.y; z++)
+                {
+                    var visual = new GameObject($"Ground Tile {x + 1},{z + 1}");
+                    visual.transform.SetParent(parent, false);
+                    visual.transform.localPosition = new Vector3(originX + x * tileWidth, 0f,
+                        originZ + z * tileDepth);
+                    SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
+                    GroundDecalView decal = visual.AddComponent<GroundDecalView>();
+                    decal.Configure(sprite, new Vector2(tileWidth * 1.08f, tileDepth * 1.08f));
+                    // Quarter turns break up repeated edge details while keeping every streamed reload deterministic.
+                    decal.transform.Rotate(Vector3.forward, StableQuarterTurn(variantSeed, x, z), Space.Self);
+                    if (isPlaceholder)
+                    {
+                        renderer.color = PlaceholderNodeColor;
+                    }
+                }
+            }
+        }
+
+        private static float StableQuarterTurn(int variantSeed, int x, int z)
+        {
+            unchecked
+            {
+                int hash = variantSeed;
+                hash = hash * 397 ^ x;
+                hash = hash * 397 ^ z;
+                return (hash & 3) * 90f;
+            }
         }
     }
 }
