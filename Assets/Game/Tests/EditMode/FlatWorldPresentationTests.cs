@@ -197,11 +197,11 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void FollowCamera_UsesSteeperFramingAndKeepsPlayerAboveHud()
+        public void FollowCamera_UsesWeakPerspectiveFramingWithVisibleSky()
         {
             var camera = Track(new GameObject("Camera"));
             Camera unityCamera = camera.AddComponent<Camera>();
-            unityCamera.fieldOfView = 90f;
+            unityCamera.fieldOfView = 55f;
             var target = Track(new GameObject("Target"));
             FollowCamera follow = camera.AddComponent<FollowCamera>();
 
@@ -210,8 +210,12 @@ namespace PlanetSurvival.Tests
             Vector3 horizontalForward = Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up);
             float downwardPitch = Vector3.Angle(horizontalForward, camera.transform.forward);
             Vector3 targetViewportPosition = unityCamera.WorldToViewportPoint(target.transform.position);
-            Assert.That(downwardPitch, Is.GreaterThanOrEqualTo(18f));
+            Vector3 horizonViewportPosition = unityCamera.WorldToViewportPoint(
+                camera.transform.position + horizontalForward.normalized * 1000f);
+            Assert.That(downwardPitch, Is.InRange(14f, 17f));
             Assert.That(targetViewportPosition.y, Is.GreaterThanOrEqualTo(.25f));
+            Assert.That(horizonViewportPosition.y, Is.InRange(.7f, .82f),
+                "The ground/sky boundary should leave a deliberate atmospheric band without crowding gameplay.");
         }
 
         [Test]

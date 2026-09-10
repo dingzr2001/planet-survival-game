@@ -35,6 +35,7 @@ namespace PlanetSurvival.Bootstrap
         private BuildingCatalog _buildingCatalog;
 
         private const string RuntimeRootName = "Gameplay Runtime";
+        private const float SurfaceCameraFieldOfView = 55f;
 
         public void Configure(TerrainGenerationSettings terrainSettings)
         {
@@ -207,7 +208,9 @@ namespace PlanetSurvival.Bootstrap
             cameraObject.transform.SetParent(parent);
             var camera = cameraObject.AddComponent<Camera>();
             camera.orthographic = false;
-            camera.fieldOfView = 90f;
+            // A conventional lens keeps the distant sky in frame without the strong edge distortion of
+            // the old 90-degree view. FollowCamera moves back to preserve the existing gameplay scale.
+            camera.fieldOfView = SurfaceCameraFieldOfView;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(.003f, .006f, .012f);
             camera.nearClipPlane = .1f;

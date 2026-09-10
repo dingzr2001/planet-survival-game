@@ -143,6 +143,9 @@ namespace PlanetSurvival.Tests
             yield return null;
 
             Camera surfaceCamera = Object.FindFirstObjectByType<Camera>();
+            Assert.That(surfaceCamera.orthographic, Is.False);
+            Assert.That(surfaceCamera.fieldOfView, Is.EqualTo(55f).Within(.01f),
+                "The surface uses a longer lens so 2D cutouts keep their proportions while the sky remains visible.");
             HorizonBackdrop backdrop = surfaceCamera.GetComponentInChildren<HorizonBackdrop>();
             Assert.That(backdrop, Is.Not.Null);
             Assert.That(backdrop.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
