@@ -1,3 +1,4 @@
+using System;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Inventory.Domain;
@@ -28,6 +29,9 @@ namespace PlanetSurvival.Gathering.Runtime
 
         public bool IsGathering => _gatherer != null;
         public bool IsDepleted => _depleted;
+
+        public event Action<ResourceNode> Depleted;
+
         public string Prompt
         {
             get
@@ -154,6 +158,7 @@ namespace PlanetSurvival.Gathering.Runtime
             _depleted = true;
             CancelGathering();
             SetDepletedPresentation();
+            Depleted?.Invoke(this);
         }
 
         private void SetDepletedPresentation()

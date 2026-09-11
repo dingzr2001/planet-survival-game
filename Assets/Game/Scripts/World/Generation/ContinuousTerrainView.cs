@@ -3,7 +3,7 @@ using UnityEngine;
 namespace PlanetSurvival.World.Generation
 {
     [DisallowMultipleComponent]
-    public sealed class GridTerrainView : MonoBehaviour
+    public sealed class ContinuousTerrainView : MonoBehaviour
     {
         private const int DiscSegments = 128;
         private const float MaximumRadialStep = 250f;
@@ -28,13 +28,11 @@ namespace PlanetSurvival.World.Generation
             ground.name = "Flat Ground";
             ground.transform.SetParent(transform, false);
             _ground = ground.transform;
-            _ground.localPosition = new Vector3(
-                (settings.Width - 1) * settings.CellSize * .5f,
-                0f,
-                (settings.Length - 1) * settings.CellSize * .5f);
+            _ground.localPosition = settings.StartingAreaCenter;
 
-            float logicalDiameter = Mathf.Max(settings.Width, settings.Length) * settings.CellSize;
-            float radius = Mathf.Max(MinimumRadius, logicalDiameter);
+            Vector2 startingAreaSize = settings.StartingAreaSize;
+            float logicalDiameter = Mathf.Max(startingAreaSize.x, startingAreaSize.y);
+            float radius = Mathf.Max(MinimumRadius, logicalDiameter * .5f);
             _tileSize = visuals != null ? visuals.GroundTileSize : 8f;
             _mesh = CreateDisc(radius, _tileSize);
             ground.AddComponent<MeshFilter>().sharedMesh = _mesh;

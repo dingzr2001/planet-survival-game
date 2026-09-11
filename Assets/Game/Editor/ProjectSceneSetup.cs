@@ -21,15 +21,16 @@ namespace PlanetSurvival.Editor
 {
     public static class ProjectSceneSetup
     {
-        private const int DefaultMapWidth = 48;
-        private const int DefaultMapLength = 48;
+        private static readonly Vector2 DefaultStartingAreaSize = new(48f, 48f);
         private const int ResourceSeedOffset = 7919;
 
-        // A 32m chunk carries 0.75 nodes on average, about one node per 1350m². The surface is meant to feel
-        // barren, so a walk of a few chunks yields a single rock or debris pile rather than a field of them.
+        // A 32m chunk carries 0.2875 nodes on average, about one node per 3560m². The surface is meant to
+        // feel genuinely scarce, so expeditions cross several chunks between useful deposits.
         private const float ResourceChunkSize = 32f;
         private const int ResourceLoadRadiusInChunks = 2;
         private const float ResourceMinimumSpacing = 8f;
+        private const float RockNodesPerChunk = .125f;
+        private const float DebrisNodesPerChunk = .0625f;
 
         // Wide enough that the largest node plus the player capsule cannot overlap the start position.
         private const float ResourceSpawnClearanceRadius = 3f;
@@ -59,7 +60,7 @@ namespace PlanetSurvival.Editor
         // Ice sits in the open, so it is the one resource a stranded explorer can always work towards.
         private const float IceGatherSeconds = 4f;
         private const int IceChunksPerDeposit = 3;
-        private const float IceNodesPerChunk = .4f;
+        private const float IceNodesPerChunk = .1f;
 
         // Starter structures. The costs are deliberately small: the first shelter should be reachable from
         // one gathering trip, so the placement grid is learned long before resources become a constraint.
@@ -123,7 +124,7 @@ namespace PlanetSurvival.Editor
                 new Vector3(.9f, 1.1f, .72f), new ResourceYield(stone, 2));
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
                 new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
-            // Compose the authored square decal instead of stretching it. Repeated entries weight the mix:
+            // Physical sizes are world-space values rather than tile counts. Repeated entries weight the mix:
             // small remnants remain, but most deposits read as substantial connected sheets.
             ResourceNodeDefinition iceDeposit = GetOrCreateNode("IceDepositNode", "ice_deposit", "Ice Deposit",
                 IceGatherSeconds, new Vector3(1.1f, .15f, 1.1f), new ResourceYield(iceChunk, IceChunksPerDeposit));
@@ -131,11 +132,11 @@ namespace PlanetSurvival.Editor
             iceDeposit.ConfigureCollision(false);
             iceDeposit.ConfigurePresentation(ResourceVisualMode.GroundDecal);
             iceDeposit.ConfigureBlobShadow(false);
-            iceDeposit.ConfigureGroundPatchFootprints(
-                Vector2Int.one,
-                new Vector2Int(2, 2), new Vector2Int(2, 2), new Vector2Int(2, 2),
-                new Vector2Int(2, 3), new Vector2Int(3, 2),
-                new Vector2Int(3, 3));
+            iceDeposit.ConfigureGroundPatchSizes(
+                new Vector2(1.1f, 1.1f),
+                new Vector2(2.25f, 2.1f), new Vector2(2.25f, 2.1f), new Vector2(2.25f, 2.1f),
+                new Vector2(2.4f, 3.35f), new Vector2(3.45f, 2.3f),
+                new Vector2(3.6f, 3.25f));
             EditorUtility.SetDirty(iceDeposit);
 
             ResourceSpawnSettings settings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(ResourceSpawnSettingsPath);
@@ -148,8 +149,8 @@ namespace PlanetSurvival.Editor
 
             settings.Configure(ResourceSeedOffset, ResourceChunkSize, ResourceLoadRadiusInChunks,
                 ResourceMinimumSpacing, ResourceSpawnClearanceRadius,
-                new ResourceSpawnEntry(rock, 0.5f),
-                new ResourceSpawnEntry(debris, 0.25f),
+                new ResourceSpawnEntry(rock, RockNodesPerChunk),
+                new ResourceSpawnEntry(debris, DebrisNodesPerChunk),
                 new ResourceSpawnEntry(iceDeposit, IceNodesPerChunk));
             EditorUtility.SetDirty(settings);
             return settings;
@@ -435,14 +436,14 @@ namespace PlanetSurvival.Editor
             TerrainGenerationSettings settings = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(TerrainSettingsPath);
             if (settings != null)
             {
-                settings.Configure(DefaultMapWidth, DefaultMapLength, 1f, 8128);
+                settings.Configure(DefaultStartingAreaSize, 8128);
                 EditorUtility.SetDirty(settings);
                 return settings;
             }
 
             settings = ScriptableObject.CreateInstance<TerrainGenerationSettings>();
             settings.name = "Default Terrain Settings";
-            settings.Configure(DefaultMapWidth, DefaultMapLength, 1f, 8128);
+            settings.Configure(DefaultStartingAreaSize, 8128);
             AssetDatabase.CreateAsset(settings, TerrainSettingsPath);
             return settings;
         }

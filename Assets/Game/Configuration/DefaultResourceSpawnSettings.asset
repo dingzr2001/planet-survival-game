@@ -19,8 +19,8 @@ MonoBehaviour:
   _spawnClearanceRadius: 3
   _entries:
   - _definition: {fileID: 11400000, guid: d650910d677854228875d06348fdab17, type: 2}
-    _nodesPerChunk: 0.5
+    _nodesPerChunk: 0.125
   - _definition: {fileID: 11400000, guid: a99195e715afe41daa29242b6f6ddcff, type: 2}
-    _nodesPerChunk: 0.25
+    _nodesPerChunk: 0.0625
   - _definition: {fileID: 11400000, guid: 93d4338ddce284c318f517852e9331af, type: 2}
-    _nodesPerChunk: 0.4
+    _nodesPerChunk: 0.1

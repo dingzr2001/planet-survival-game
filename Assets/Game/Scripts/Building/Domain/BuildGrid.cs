@@ -72,6 +72,31 @@ namespace PlanetSurvival.Building.Domain
             return new BuildFootprint(origin, safeSize);
         }
 
+        /// <summary>
+        /// Projects a continuous world-space rectangle onto every construction cell it touches. Natural
+        /// obstacles keep their free position and size; this projection exists only so snapped buildings
+        /// cannot be placed through them.
+        /// </summary>
+        public BuildFootprint CreateCoveringFootprint(Vector3 worldCenter, Vector2 worldSize)
+        {
+            Vector2 safeSize = new(Mathf.Max(.01f, worldSize.x), Mathf.Max(.01f, worldSize.y));
+            float epsilon = _cellSize * .0001f;
+            var minimum = new Vector3(
+                worldCenter.x - safeSize.x * .5f + epsilon,
+                _origin.y,
+                worldCenter.z - safeSize.y * .5f + epsilon);
+            var maximum = new Vector3(
+                worldCenter.x + safeSize.x * .5f - epsilon,
+                _origin.y,
+                worldCenter.z + safeSize.y * .5f - epsilon);
+            Vector2Int minimumCell = WorldToCell(minimum);
+            Vector2Int maximumCell = WorldToCell(maximum);
+            var size = new Vector2Int(
+                Mathf.Max(1, maximumCell.x - minimumCell.x + 1),
+                Mathf.Max(1, maximumCell.y - minimumCell.y + 1));
+            return new BuildFootprint(minimumCell, size);
+        }
+
         public bool IsFree(in BuildFootprint footprint)
         {
             return IsFree(footprint, null);

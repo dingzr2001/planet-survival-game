@@ -1,9 +1,11 @@
 using System.Collections;
 using NUnit.Framework;
+using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Core.SceneManagement;
 using PlanetSurvival.Farming.Runtime;
+using PlanetSurvival.Gathering.Runtime;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Player.Movement;
@@ -143,17 +145,27 @@ namespace PlanetSurvival.Tests
             yield return null;
 
             Camera surfaceCamera = Object.FindFirstObjectByType<Camera>();
-            Assert.That(surfaceCamera.orthographic, Is.False);
-            Assert.That(surfaceCamera.fieldOfView, Is.EqualTo(55f).Within(.01f),
-                "The surface uses a longer lens so 2D cutouts keep their proportions while the sky remains visible.");
+            Assert.That(surfaceCamera.orthographic, Is.True);
+            Assert.That(surfaceCamera.orthographicSize, Is.EqualTo(9.5f).Within(.01f),
+                "The surface uses a stable oblique scale for cutout art and gameplay footprints.");
             HorizonBackdrop backdrop = surfaceCamera.GetComponentInChildren<HorizonBackdrop>();
-            Assert.That(backdrop, Is.Not.Null);
-            Assert.That(backdrop.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
+            Assert.That(backdrop, Is.Null,
+                "The overhead surface view should be filled by terrain rather than a distant horizon.");
             Assert.That(FindPortal(GameSceneNames.LandingPodCargo), Is.Not.Null);
             Assert.That(Object.FindFirstObjectByType<PlayerSpaceSuit>().IsEquipped, Is.True);
             Assert.That(Object.FindFirstObjectByType<PlayerOxygenConsumption>().ActiveSupply,
                 Is.SameAs(flowController.Session.SpaceSuit.Oxygen));
             Assert.That(Object.FindFirstObjectByType<PlanetSurvival.UI.HUD.SuitResourceView>(), Is.Not.Null);
+
+            ResourceNode surfaceResource = Object.FindFirstObjectByType<ResourceNode>();
+            Assert.That(surfaceResource, Is.Not.Null, "The streamed surface should contain natural resources.");
+            Collider resourceCollider = surfaceResource.GetComponent<Collider>();
+            BuildGrid buildGrid = flowController.Session.Buildings.Grid;
+            BuildFootprint resourceCells = buildGrid.CreateCoveringFootprint(
+                resourceCollider.bounds.center,
+                new Vector2(resourceCollider.bounds.size.x, resourceCollider.bounds.size.z));
+            Assert.That(buildGrid.IsFree(resourceCells), Is.False,
+                "A free-positioned natural resource must block every construction cell its bounds touch.");
 
             flowController.Pause();
             Assert.That(flowController.State, Is.EqualTo(GameFlowState.Paused));
@@ -168,6 +180,8 @@ namespace PlanetSurvival.Tests
 
             Assert.That(Object.FindObjectsByType<PlayerSurvival>(FindObjectsSortMode.None), Is.Empty);
             Assert.That(Object.FindObjectsByType<GameFlowController>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+            Assert.That(flowController.Session.Buildings.Grid.OccupiedCellCount, Is.Zero,
+                "Leaving the surface must release streamed resource reservations from the persistent build grid.");
             Assert.That(UnityEngine.Time.timeScale, Is.EqualTo(1f));
 
             Object.Destroy(flowController.gameObject);

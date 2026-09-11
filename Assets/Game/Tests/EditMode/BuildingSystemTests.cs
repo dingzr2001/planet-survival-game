@@ -65,6 +65,18 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void Grid_ProjectsAFractionalWorldObstacleOntoEveryTouchedBuildCell()
+        {
+            var grid = new BuildGrid();
+
+            BuildFootprint footprint = grid.CreateCoveringFootprint(
+                new Vector3(1.4f, 0f, -.2f), new Vector2(2.35f, 1.3f));
+
+            Assert.That(footprint.Origin, Is.EqualTo(new Vector2Int(0, -1)));
+            Assert.That(footprint.Size, Is.EqualTo(new Vector2Int(3, 2)));
+        }
+
+        [Test]
         public void Place_SpendsTheMaterialsAndClaimsEveryCell()
         {
             var inventory = new InventoryModel(30, 20);
@@ -187,6 +199,23 @@ namespace PlanetSurvival.Tests
             Assert.That(service.Sites.Count, Is.Zero);
             Assert.That(service.Grid.OccupiedCellCount, Is.Zero);
             Assert.That(service.CanAfford(_wall), Is.False, "Clearing refunds nothing.");
+        }
+
+        [Test]
+        public void Clear_PreservesEnvironmentCellsNotOwnedByBuildingService()
+        {
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(_stone, 4);
+            var grid = new BuildGrid();
+            var obstacle = new object();
+            grid.TryOccupy(new BuildFootprint(new Vector2Int(4, 4), Vector2Int.one), obstacle);
+            var service = new BuildingService(inventory, grid);
+            service.TryPlace(_wall, new BuildFootprint(Vector2Int.zero, Vector2Int.one), out BuildSite _);
+
+            service.Clear();
+
+            Assert.That(grid.OccupiedCellCount, Is.EqualTo(1));
+            Assert.That(grid.GetOccupant(new Vector2Int(4, 4)), Is.SameAs(obstacle));
         }
 
         private ItemDefinition CreateItem(string itemId, string displayName)

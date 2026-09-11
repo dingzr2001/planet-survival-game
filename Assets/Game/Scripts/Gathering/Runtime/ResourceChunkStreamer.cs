@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.World.Chunks;
 using PlanetSurvival.World.Generation;
@@ -24,8 +25,8 @@ namespace PlanetSurvival.Gathering.Runtime
         private readonly Dictionary<ChunkCoordinate, LoadedChunk> _loadedChunks = new();
         private readonly HashSet<NodeKey> _gatheredNodes = new();
         private readonly List<ChunkCoordinate> _unloadBuffer = new();
-        private float[] _densities = Array.Empty<float>();
         private Transform _target;
+        private BuildGrid _buildGrid;
         private int _worldSeed;
         private ChunkCoordinate _center;
         private bool _hasCenter;
@@ -37,12 +38,13 @@ namespace PlanetSurvival.Gathering.Runtime
         /// player never wakes up inside a rock. The point is fixed for the run and does not follow the target.
         /// </param>
         public void Configure(ResourceSpawnSettings settings, WorldVisualSettings visuals, int worldSeed,
-            Vector3 spawnClearanceCenter)
+            Vector3 spawnClearanceCenter, BuildGrid buildGrid = null)
         {
+            ReleaseBuildReservations();
             _settings = settings;
             _visuals = visuals;
             _worldSeed = worldSeed;
-            _densities = BuildDensities(settings);
+            _buildGrid = buildGrid;
             _spawnClearanceCenter = new Vector2(spawnClearanceCenter.x, spawnClearanceCenter.z);
             float clearance = settings != null ? settings.SpawnClearanceRadius : 0f;
             _squaredSpawnClearance = clearance * clearance;
@@ -56,14 +58,6 @@ namespace PlanetSurvival.Gathering.Runtime
             RefreshAroundTarget(true);
         }
 
-        private void Awake()
-        {
-            if (_densities.Length == 0)
-            {
-                _densities = BuildDensities(_settings);
-            }
-        }
-
         private void Update()
         {
             RefreshAroundTarget(false);
@@ -71,12 +65,13 @@ namespace PlanetSurvival.Gathering.Runtime
 
         private void OnDestroy()
         {
+            ReleaseBuildReservations();
             _loadedChunks.Clear();
         }
 
         private void RefreshAroundTarget(bool force)
         {
-            if (_target == null || _settings == null || _densities.Length == 0)
+            if (_target == null || _settings == null || _settings.Entries.Count == 0)
             {
                 return;
             }
@@ -108,8 +103,8 @@ namespace PlanetSurvival.Gathering.Runtime
 
         private void Load(ChunkCoordinate chunk)
         {
-            IReadOnlyList<ChunkResourcePlacement> placements = ChunkResourcePlanner.Plan(
-                chunk, _worldSeed, _settings.ChunkSize, _settings.MinimumSpacing, _densities);
+            IReadOnlyList<ChunkResourcePlacement> placements = ChunkResourcePlanner.PlanResources(
+                chunk, _worldSeed, _settings.ChunkSize, _settings.MinimumSpacing, _settings.Entries);
 
             var root = new GameObject($"Resource Chunk {chunk}");
             root.transform.SetParent(transform);
@@ -119,31 +114,66 @@ namespace PlanetSurvival.Gathering.Runtime
             for (int i = 0; i < placements.Count; i++)
             {
                 ChunkResourcePlacement placement = placements[i];
-                // Skipping by placement index keeps the remaining indices stable, so gathered nodes stay identified.
-                if (IsInsideSpawnClearance(placement) || _gatheredNodes.Contains(new NodeKey(chunk, i)))
+                ResourceNodeDefinition definition = entries[placement.EntryIndex].Definition;
+                if (definition == null || IsInsideSpawnClearance(placement, definition) ||
+                    _gatheredNodes.Contains(new NodeKey(chunk, placement.PlacementId)))
                 {
                     continue;
                 }
 
-                ResourceNodeDefinition definition = entries[placement.EntryIndex].Definition;
-                ResourceNode node = ResourceNodeFactory.Create(root.transform, definition,
-                    new Vector3(placement.WorldX, 0f, placement.WorldZ), _visuals, placement.VariantSeed);
-                loaded.Add(i, node);
+                var position = new Vector3(placement.WorldX, 0f, placement.WorldZ);
+                ResourceNode node = ResourceNodeFactory.Create(
+                    root.transform, definition, position, _visuals, placement.VariantSeed);
+                if (!TryReserveBuildCells(node, position, definition.SelectWorldFootprint(placement.VariantSeed)))
+                {
+                    Destroy(node.gameObject);
+                    continue;
+                }
+
+                loaded.Add(placement.PlacementId, node);
             }
 
             _loadedChunks.Add(chunk, loaded);
         }
 
-        private bool IsInsideSpawnClearance(ChunkResourcePlacement placement)
+        private bool IsInsideSpawnClearance(ChunkResourcePlacement placement, ResourceNodeDefinition definition)
         {
             if (_squaredSpawnClearance <= 0f)
             {
                 return false;
             }
 
-            float deltaX = placement.WorldX - _spawnClearanceCenter.x;
-            float deltaZ = placement.WorldZ - _spawnClearanceCenter.y;
+            Vector2 footprint = definition.SelectWorldFootprint(placement.VariantSeed);
+            float deltaX = Mathf.Max(0f,
+                Mathf.Abs(placement.WorldX - _spawnClearanceCenter.x) - footprint.x * .5f);
+            float deltaZ = Mathf.Max(0f,
+                Mathf.Abs(placement.WorldZ - _spawnClearanceCenter.y) - footprint.y * .5f);
             return deltaX * deltaX + deltaZ * deltaZ < _squaredSpawnClearance;
+        }
+
+        private bool TryReserveBuildCells(ResourceNode node, Vector3 position, Vector2 worldFootprint)
+        {
+            if (_buildGrid == null)
+            {
+                return true;
+            }
+
+            BuildFootprint occupiedCells = _buildGrid.CreateCoveringFootprint(position, worldFootprint);
+            if (!_buildGrid.TryOccupy(occupiedCells, node))
+            {
+                return false;
+            }
+
+            node.Depleted += OnNodeDepleted;
+            return true;
+        }
+
+        private void OnNodeDepleted(ResourceNode node)
+        {
+            if (_buildGrid != null)
+            {
+                _buildGrid.Release(node);
+            }
         }
 
         private void UnloadBeyond(ChunkCoordinate center, int unloadRadius)
@@ -178,9 +208,10 @@ namespace PlanetSurvival.Gathering.Runtime
             for (int i = 0; i < nodes.Count; i++)
             {
                 LoadedChunk.SpawnedNode spawned = nodes[i];
+                ReleaseBuildReservation(spawned.Node);
                 if (spawned.Node != null && spawned.Node.IsDepleted)
                 {
-                    _gatheredNodes.Add(new NodeKey(chunk, spawned.PlacementIndex));
+                    _gatheredNodes.Add(new NodeKey(chunk, spawned.PlacementId));
                 }
             }
 
@@ -191,22 +222,34 @@ namespace PlanetSurvival.Gathering.Runtime
             }
         }
 
-        /// <summary>Entries without a definition keep their index but never spawn, so layouts stay stable.</summary>
-        private static float[] BuildDensities(ResourceSpawnSettings settings)
+        private void ReleaseBuildReservations()
         {
-            if (settings == null)
+            foreach (LoadedChunk loaded in _loadedChunks.Values)
             {
-                return Array.Empty<float>();
+                IReadOnlyList<LoadedChunk.SpawnedNode> nodes = loaded.Nodes;
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    ReleaseBuildReservation(nodes[i].Node);
+                }
+            }
+        }
+
+        private void ReleaseBuildReservation(ResourceNode node)
+        {
+            if (ReferenceEquals(node, null))
+            {
+                return;
             }
 
-            IReadOnlyList<ResourceSpawnEntry> entries = settings.Entries;
-            var densities = new float[entries.Count];
-            for (int i = 0; i < entries.Count; i++)
+            if (_buildGrid != null)
             {
-                densities[i] = entries[i].Definition != null ? entries[i].NodesPerChunk : 0f;
+                _buildGrid.Release(node);
             }
 
-            return densities;
+            if (node != null)
+            {
+                node.Depleted -= OnNodeDepleted;
+            }
         }
 
         private sealed class LoadedChunk
@@ -218,17 +261,17 @@ namespace PlanetSurvival.Gathering.Runtime
             public GameObject Root { get; }
             public IReadOnlyList<SpawnedNode> Nodes => _nodes;
 
-            public void Add(int placementIndex, ResourceNode node) => _nodes.Add(new SpawnedNode(placementIndex, node));
+            public void Add(int placementId, ResourceNode node) => _nodes.Add(new SpawnedNode(placementId, node));
 
             public readonly struct SpawnedNode
             {
-                public SpawnedNode(int placementIndex, ResourceNode node)
+                public SpawnedNode(int placementId, ResourceNode node)
                 {
-                    PlacementIndex = placementIndex;
+                    PlacementId = placementId;
                     Node = node;
                 }
 
-                public int PlacementIndex { get; }
+                public int PlacementId { get; }
                 public ResourceNode Node { get; }
             }
         }
@@ -236,17 +279,17 @@ namespace PlanetSurvival.Gathering.Runtime
         private readonly struct NodeKey : IEquatable<NodeKey>
         {
             private readonly ChunkCoordinate _chunk;
-            private readonly int _placementIndex;
+            private readonly int _placementId;
 
-            public NodeKey(ChunkCoordinate chunk, int placementIndex)
+            public NodeKey(ChunkCoordinate chunk, int placementId)
             {
                 _chunk = chunk;
-                _placementIndex = placementIndex;
+                _placementId = placementId;
             }
 
-            public bool Equals(NodeKey other) => _chunk.Equals(other._chunk) && _placementIndex == other._placementIndex;
+            public bool Equals(NodeKey other) => _chunk.Equals(other._chunk) && _placementId == other._placementId;
             public override bool Equals(object obj) => obj is NodeKey other && Equals(other);
-            public override int GetHashCode() => (_chunk.GetHashCode() * 397) ^ _placementIndex;
+            public override int GetHashCode() => (_chunk.GetHashCode() * 397) ^ _placementId;
         }
     }
 }

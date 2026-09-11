@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Gathering.Runtime;
 using PlanetSurvival.World.Chunks;
+using UnityEngine;
 
 namespace PlanetSurvival.Tests
 {
@@ -109,6 +111,37 @@ namespace PlanetSurvival.Tests
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 ChunkResourcePlanner.Plan(new ChunkCoordinate(0, 0), WorldSeed, 0f, 4f, new[] { 1f }));
+        }
+
+        [Test]
+        public void PlanResources_KeepsArbitrarySizedFootprintsApartAcrossChunkBoundaries()
+        {
+            var definition = ScriptableObject.CreateInstance<ResourceNodeDefinition>();
+            definition.Configure("large", "Large Resource", 1f, 2f, string.Empty,
+                new Vector3(11.25f, 1f, 8.4f));
+            var entries = new[] { new ResourceSpawnEntry(definition, 3f) };
+            var placements = new List<ChunkResourcePlacement>();
+
+            for (int x = -2; x <= 2; x++)
+            for (int z = -2; z <= 2; z++)
+            {
+                placements.AddRange(ChunkResourcePlanner.PlanResources(
+                    new ChunkCoordinate(x, z), WorldSeed, ChunkSize, 1.5f, entries));
+            }
+
+            Assert.That(placements.Count, Is.GreaterThan(0));
+            Vector2 size = definition.SelectWorldFootprint(0);
+            for (int i = 0; i < placements.Count; i++)
+            for (int j = i + 1; j < placements.Count; j++)
+            {
+                float gapX = Mathf.Max(0f,
+                    Mathf.Abs(placements[i].WorldX - placements[j].WorldX) - size.x);
+                float gapZ = Mathf.Max(0f,
+                    Mathf.Abs(placements[i].WorldZ - placements[j].WorldZ) - size.y);
+                Assert.That(gapX * gapX + gapZ * gapZ, Is.GreaterThanOrEqualTo(1.5f * 1.5f));
+            }
+
+            UnityEngine.Object.DestroyImmediate(definition);
         }
 
         private static IReadOnlyList<ChunkResourcePlacement> Plan(ChunkCoordinate chunk, float minimumSpacing,

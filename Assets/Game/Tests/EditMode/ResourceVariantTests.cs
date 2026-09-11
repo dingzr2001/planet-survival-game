@@ -104,21 +104,22 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void SelectGroundPatchFootprint_IsStableAndKeepsConfiguredLargeSheets()
+        public void SelectGroundPatchSize_IsStableAndKeepsFractionalWorldSizes()
         {
             ResourceNodeDefinition definition = CreateDefinition();
-            definition.ConfigureGroundPatchFootprints(Vector2Int.one, new Vector2Int(2, 2), new Vector2Int(3, 2));
+            definition.ConfigureGroundPatchSizes(
+                new Vector2(1.2f, .8f), new Vector2(2.35f, 2.1f), new Vector2(3.4f, 2.65f));
 
-            Assert.That(definition.SelectGroundPatchFootprint(1), Is.EqualTo(new Vector2Int(2, 2)));
-            Assert.That(definition.SelectGroundPatchFootprint(2), Is.EqualTo(new Vector2Int(3, 2)));
-            Assert.That(definition.SelectGroundPatchFootprint(2), Is.EqualTo(
-                definition.SelectGroundPatchFootprint(2)), "Reloading a chunk must restore the same patch shape.");
+            Assert.That(definition.SelectGroundPatchSize(1), Is.EqualTo(new Vector2(2.35f, 2.1f)));
+            Assert.That(definition.SelectGroundPatchSize(2), Is.EqualTo(new Vector2(3.4f, 2.65f)));
+            Assert.That(definition.SelectGroundPatchSize(2), Is.EqualTo(
+                definition.SelectGroundPatchSize(2)), "Reloading a chunk must restore the same patch shape.");
         }
 
         [Test]
-        public void SelectGroundPatchFootprint_WithoutConfiguration_PreservesSingleTileNodes()
+        public void SelectGroundPatchSize_WithoutConfiguration_UsesContinuousDisplayScale()
         {
-            Assert.That(CreateDefinition().SelectGroundPatchFootprint(123), Is.EqualTo(Vector2Int.one));
+            Assert.That(CreateDefinition().SelectGroundPatchSize(123), Is.EqualTo(new Vector2(2.4f, 1.4f)));
         }
 
         private static IReadOnlyList<ChunkResourcePlacement> Plan(ChunkCoordinate chunk)

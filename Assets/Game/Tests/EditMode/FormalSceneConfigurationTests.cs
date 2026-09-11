@@ -226,17 +226,15 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void DefaultTerrainSettings_HasValidPlayableDimensions()
+        public void DefaultTerrainSettings_HasValidContinuousPlayableDimensions()
         {
             TerrainGenerationSettings settings = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(
                 "Assets/Game/Configuration/DefaultTerrainSettings.asset");
 
             Assert.That(settings, Is.Not.Null);
-            Assert.That(settings.Width, Is.GreaterThan(0));
-            Assert.That(settings.Length, Is.GreaterThan(0));
-            Assert.That(settings.Width, Is.EqualTo(48));
-            Assert.That(settings.Length, Is.EqualTo(48));
-            Assert.That(settings.CellSize, Is.GreaterThan(0f));
+            Assert.That(settings.StartingAreaSize.x, Is.EqualTo(48f));
+            Assert.That(settings.StartingAreaSize.y, Is.EqualTo(48f));
+            Assert.That(settings.StartingAreaCenter, Is.EqualTo(new Vector3(24f, 0f, 24f)));
             Assert.That(settings.Seed, Is.EqualTo(8128));
         }
 

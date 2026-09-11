@@ -29,14 +29,12 @@ namespace PlanetSurvival.Gathering.Runtime
             node.transform.SetParent(parent);
             node.transform.position = position;
 
-            Vector2Int patchFootprint = definition.VisualMode == ResourceVisualMode.GroundDecal
-                ? definition.SelectGroundPatchFootprint(variantSeed)
-                : Vector2Int.one;
+            Vector2 worldFootprint = definition.SelectWorldFootprint(variantSeed);
             var collider = node.AddComponent<BoxCollider>();
             collider.size = new Vector3(
-                Mathf.Max(.2f, definition.DisplayScale.x * patchFootprint.x),
+                worldFootprint.x,
                 Mathf.Max(.3f, definition.DisplayScale.y),
-                Mathf.Max(.2f, definition.DisplayScale.z * patchFootprint.y));
+                worldFootprint.y);
             collider.center = Vector3.up * collider.size.y * .5f;
             // A walkable node keeps its volume as a trigger: the interactor's overlap query includes
             // triggers, so gathering still works while the player walks straight over the node.
@@ -49,8 +47,7 @@ namespace PlanetSurvival.Gathering.Runtime
             Sprite displayedSprite = cutout != null ? cutout : PlaceholderArt.SolidSprite();
             if (definition.VisualMode == ResourceVisualMode.GroundDecal)
             {
-                CreateGroundPatch(node.transform, definition, displayedSprite, cutout == null, patchFootprint,
-                    variantSeed);
+                CreateGroundPatch(node.transform, displayedSprite, cutout == null, worldFootprint, variantSeed);
             }
             else
             {
@@ -79,44 +76,25 @@ namespace PlanetSurvival.Gathering.Runtime
             return resourceNode;
         }
 
-        private static void CreateGroundPatch(Transform parent, ResourceNodeDefinition definition, Sprite sprite,
-            bool isPlaceholder, Vector2Int footprint, int variantSeed)
+        private static void CreateGroundPatch(Transform parent, Sprite sprite, bool isPlaceholder,
+            Vector2 footprint, int variantSeed)
         {
-            float tileWidth = definition.DisplayScale.x;
-            float tileDepth = definition.DisplayScale.z;
-            float originX = (footprint.x - 1) * tileWidth * -.5f;
-            float originZ = (footprint.y - 1) * tileDepth * -.5f;
-
-            for (int x = 0; x < footprint.x; x++)
+            var visual = new GameObject("Ground Decal");
+            visual.transform.SetParent(parent, false);
+            SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
+            GroundDecalView decal = visual.AddComponent<GroundDecalView>();
+            decal.Configure(sprite, footprint);
+            // Half turns add variation without swapping the physical axes of a rectangular deposit.
+            decal.transform.Rotate(Vector3.forward, StableHalfTurn(variantSeed), Space.Self);
+            if (isPlaceholder)
             {
-                for (int z = 0; z < footprint.y; z++)
-                {
-                    var visual = new GameObject($"Ground Tile {x + 1},{z + 1}");
-                    visual.transform.SetParent(parent, false);
-                    visual.transform.localPosition = new Vector3(originX + x * tileWidth, 0f,
-                        originZ + z * tileDepth);
-                    SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
-                    GroundDecalView decal = visual.AddComponent<GroundDecalView>();
-                    decal.Configure(sprite, new Vector2(tileWidth * 1.08f, tileDepth * 1.08f));
-                    // Quarter turns break up repeated edge details while keeping every streamed reload deterministic.
-                    decal.transform.Rotate(Vector3.forward, StableQuarterTurn(variantSeed, x, z), Space.Self);
-                    if (isPlaceholder)
-                    {
-                        renderer.color = PlaceholderNodeColor;
-                    }
-                }
+                renderer.color = PlaceholderNodeColor;
             }
         }
 
-        private static float StableQuarterTurn(int variantSeed, int x, int z)
+        private static float StableHalfTurn(int variantSeed)
         {
-            unchecked
-            {
-                int hash = variantSeed;
-                hash = hash * 397 ^ x;
-                hash = hash * 397 ^ z;
-                return (hash & 3) * 90f;
-            }
+            return (variantSeed & 1) * 180f;
         }
     }
 }

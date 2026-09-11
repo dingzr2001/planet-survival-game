@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a92520e400122460ca9106dbd24751e3, type: 3}
   m_Name: DefaultTerrainSettings
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Generation.TerrainGenerationSettings
-  _width: 48
-  _length: 48
-  _cellSize: 1
+  _startingAreaSize: {x: 48, y: 48}
   _seed: 8128
+  _legacyWidth: 0
+  _legacyLength: 0
+  _legacyCellSize: 0

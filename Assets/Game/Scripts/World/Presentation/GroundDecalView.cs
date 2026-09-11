@@ -50,7 +50,7 @@ namespace PlanetSurvival.World.Presentation
             Vector2 spriteSize = _renderer.sprite.bounds.size;
             float widthScale = Mathf.Max(.1f, footprint.x) / Mathf.Max(MinimumSize, spriteSize.x);
             float depthScale = Mathf.Max(.1f, footprint.y) / Mathf.Max(MinimumSize, spriteSize.y);
-            transform.localScale = Vector3.one * Mathf.Min(widthScale, depthScale);
+            transform.localScale = new Vector3(widthScale, depthScale, 1f);
         }
     }
 }

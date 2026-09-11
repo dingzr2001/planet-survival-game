@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PlanetSurvival.Gathering.Definitions
 {
@@ -22,8 +23,10 @@ namespace PlanetSurvival.Gathering.Definitions
         private ResourceVisualMode _visualMode = ResourceVisualMode.Billboard;
         [SerializeField, Tooltip("Disables the generic oval shadow when the artwork already represents a surface touching the ground.")]
         private bool _suppressBlobShadow;
-        [SerializeField, Tooltip("Possible tile footprints for one ground decal node. Repeating a size weights it more heavily. Non-ground resources ignore this setting.")]
-        private Vector2Int[] _groundPatchFootprints = Array.Empty<Vector2Int>();
+        [SerializeField, Tooltip("Possible physical X/Z sizes in world units for one ground decal. Values may be fractional; repeating a size weights it more heavily. Non-ground resources ignore this setting.")]
+        private Vector2[] _groundPatchSizes = Array.Empty<Vector2>();
+        [SerializeField, HideInInspector, FormerlySerializedAs("_groundPatchFootprints")]
+        private Vector2Int[] _legacyGroundPatchFootprints = Array.Empty<Vector2Int>();
 
         public string ResourceId => _resourceId;
         public string DisplayName => _displayName;
@@ -44,17 +47,46 @@ namespace PlanetSurvival.Gathering.Definitions
         public bool CastsBlobShadow => !_suppressBlobShadow;
 
         /// <summary>
-        /// Selects a stable tiled footprint for a ground patch. An empty list preserves the historical 1x1 shape.
+        /// Selects a stable physical size for a ground patch. An empty list uses the resource display scale.
         /// </summary>
-        public Vector2Int SelectGroundPatchFootprint(int variantSeed)
+        public Vector2 SelectGroundPatchSize(int variantSeed)
         {
-            if (_groundPatchFootprints == null || _groundPatchFootprints.Length == 0)
+            if (_groundPatchSizes == null || _groundPatchSizes.Length == 0)
             {
-                return Vector2Int.one;
+                return DisplayScaleFootprint;
             }
 
-            Vector2Int footprint = _groundPatchFootprints[(variantSeed & int.MaxValue) % _groundPatchFootprints.Length];
-            return new Vector2Int(Mathf.Max(1, footprint.x), Mathf.Max(1, footprint.y));
+            Vector2 size = _groundPatchSizes[(variantSeed & int.MaxValue) % _groundPatchSizes.Length];
+            return SanitizeFootprint(size);
+        }
+
+        /// <summary>The physical X/Z area occupied by this particular visual variant.</summary>
+        public Vector2 SelectWorldFootprint(int variantSeed)
+        {
+            return _visualMode == ResourceVisualMode.GroundDecal
+                ? SelectGroundPatchSize(variantSeed)
+                : DisplayScaleFootprint;
+        }
+
+        /// <summary>Largest configured footprint, used to inspect neighbouring chunks during generation.</summary>
+        public Vector2 MaximumWorldFootprint
+        {
+            get
+            {
+                Vector2 maximum = DisplayScaleFootprint;
+                if (_visualMode != ResourceVisualMode.GroundDecal || _groundPatchSizes == null)
+                {
+                    return maximum;
+                }
+
+                for (int i = 0; i < _groundPatchSizes.Length; i++)
+                {
+                    Vector2 size = SanitizeFootprint(_groundPatchSizes[i]);
+                    maximum = new Vector2(Mathf.Max(maximum.x, size.x), Mathf.Max(maximum.y, size.y));
+                }
+
+                return maximum;
+            }
         }
 
         /// <summary>
@@ -132,12 +164,13 @@ namespace PlanetSurvival.Gathering.Definitions
         }
 
         /// <summary>
-        /// Configures the possible X/Z tile counts for one ground patch. Duplicate entries provide simple,
-        /// inspectable weighting without introducing a second set of probability data.
+        /// Configures possible physical X/Z sizes in world units. Duplicate entries provide simple,
+        /// inspectable weighting without introducing separate probability data.
         /// </summary>
-        public void ConfigureGroundPatchFootprints(params Vector2Int[] footprints)
+        public void ConfigureGroundPatchSizes(params Vector2[] sizes)
         {
-            _groundPatchFootprints = footprints ?? Array.Empty<Vector2Int>();
+            _groundPatchSizes = sizes ?? Array.Empty<Vector2>();
+            _legacyGroundPatchFootprints = Array.Empty<Vector2Int>();
         }
 
         /// <summary>
@@ -147,6 +180,43 @@ namespace PlanetSurvival.Gathering.Definitions
         public void SetWorldSprites(params Sprite[] worldSprites)
         {
             _worldSprites = worldSprites ?? Array.Empty<Sprite>();
+        }
+
+        private Vector2 DisplayScaleFootprint => SanitizeFootprint(new Vector2(_displayScale.x, _displayScale.z));
+
+        private void OnEnable()
+        {
+            UpgradeLegacyGroundPatchFootprints();
+        }
+
+        private void OnValidate()
+        {
+            UpgradeLegacyGroundPatchFootprints();
+        }
+
+        private void UpgradeLegacyGroundPatchFootprints()
+        {
+            if (_legacyGroundPatchFootprints == null || _legacyGroundPatchFootprints.Length == 0)
+            {
+                return;
+            }
+
+            _groundPatchSizes = new Vector2[_legacyGroundPatchFootprints.Length];
+            Vector2 unitSize = DisplayScaleFootprint;
+            for (int i = 0; i < _legacyGroundPatchFootprints.Length; i++)
+            {
+                Vector2Int footprint = _legacyGroundPatchFootprints[i];
+                _groundPatchSizes[i] = new Vector2(
+                    Mathf.Max(1, footprint.x) * unitSize.x,
+                    Mathf.Max(1, footprint.y) * unitSize.y);
+            }
+
+            _legacyGroundPatchFootprints = Array.Empty<Vector2Int>();
+        }
+
+        private static Vector2 SanitizeFootprint(Vector2 footprint)
+        {
+            return new Vector2(Mathf.Max(.1f, footprint.x), Mathf.Max(.1f, footprint.y));
         }
     }
 }

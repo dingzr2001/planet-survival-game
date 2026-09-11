@@ -26,11 +26,12 @@ MonoBehaviour:
   _blocksMovement: 0
   _visualMode: 1
   _suppressBlobShadow: 1
-  _groundPatchFootprints:
-  - {x: 1, y: 1}
-  - {x: 2, y: 2}
-  - {x: 2, y: 2}
-  - {x: 2, y: 2}
-  - {x: 2, y: 3}
-  - {x: 3, y: 2}
-  - {x: 3, y: 3}
+  _groundPatchSizes:
+  - {x: 1.1, y: 1.1}
+  - {x: 2.25, y: 2.1}
+  - {x: 2.25, y: 2.1}
+  - {x: 2.25, y: 2.1}
+  - {x: 2.4, y: 3.35}
+  - {x: 3.45, y: 2.3}
+  - {x: 3.6, y: 3.25}
+  _legacyGroundPatchFootprints: []

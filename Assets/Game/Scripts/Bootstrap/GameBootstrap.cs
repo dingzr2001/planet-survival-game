@@ -1,4 +1,5 @@
 using PlanetSurvival.Building.Definitions;
+using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
@@ -35,7 +36,7 @@ namespace PlanetSurvival.Bootstrap
         private BuildingCatalog _buildingCatalog;
 
         private const string RuntimeRootName = "Gameplay Runtime";
-        private const float SurfaceCameraFieldOfView = 55f;
+        private const float SurfaceCameraOrthographicSize = 9.5f;
 
         public void Configure(TerrainGenerationSettings terrainSettings)
         {
@@ -95,12 +96,12 @@ namespace PlanetSurvival.Bootstrap
 
             var root = new GameObject(RuntimeRootName);
             GameSessionState session = ResolveSession();
-            GridTerrainView terrainView = CreateTerrain(root.transform);
+            ContinuousTerrainView terrainView = CreateTerrain(root.transform);
             GameObject player = CreatePlayer(root.transform, session);
             terrainView.SetTarget(player.transform);
             LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
                 _worldVisuals);
-            CreateResourceStreaming(root.transform, player.transform);
+            CreateResourceStreaming(root.transform, player.transform, session.Buildings.Grid);
             CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player);
@@ -112,16 +113,16 @@ namespace PlanetSurvival.Bootstrap
             BindPlayerDeath(player);
         }
 
-        private GridTerrainView CreateTerrain(Transform parent)
+        private ContinuousTerrainView CreateTerrain(Transform parent)
         {
-            var terrain = new GameObject("Grid Terrain");
+            var terrain = new GameObject("Terrain");
             terrain.transform.SetParent(parent);
-            GridTerrainView terrainView = terrain.AddComponent<GridTerrainView>();
+            ContinuousTerrainView terrainView = terrain.AddComponent<ContinuousTerrainView>();
             terrainView.Build(_terrainSettings, _worldVisuals);
             return terrainView;
         }
 
-        private void CreateResourceStreaming(Transform parent, Transform target)
+        private void CreateResourceStreaming(Transform parent, Transform target, BuildGrid buildGrid)
         {
             if (_resourceSpawnSettings == null)
             {
@@ -133,7 +134,7 @@ namespace PlanetSurvival.Bootstrap
             streaming.transform.SetParent(parent);
             ResourceChunkStreamer streamer = streaming.AddComponent<ResourceChunkStreamer>();
             streamer.Configure(_resourceSpawnSettings, _worldVisuals,
-                _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position);
+                _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position, buildGrid);
             streamer.SetTarget(target);
         }
 
@@ -145,15 +146,10 @@ namespace PlanetSurvival.Bootstrap
 
         private GameObject CreatePlayer(Transform parent, GameSessionState session)
         {
-            int centerX = _terrainSettings.Width / 2;
-            int centerZ = _terrainSettings.Length / 2;
             var player = new GameObject();
             player.name = "Player";
             player.transform.SetParent(parent);
-            player.transform.position = new Vector3(
-                centerX * _terrainSettings.CellSize,
-                0f,
-                centerZ * _terrainSettings.CellSize);
+            player.transform.position = _terrainSettings.StartingAreaCenter;
 
             var controller = player.AddComponent<CharacterController>();
             controller.height = 1.5f;
@@ -207,38 +203,19 @@ namespace PlanetSurvival.Bootstrap
             cameraObject.tag = "MainCamera";
             cameraObject.transform.SetParent(parent);
             var camera = cameraObject.AddComponent<Camera>();
-            camera.orthographic = false;
-            // A conventional lens keeps the distant sky in frame without the strong edge distortion of
-            // the old 90-degree view. FollowCamera moves back to preserve the existing gameplay scale.
-            camera.fieldOfView = SurfaceCameraFieldOfView;
+            camera.orthographic = true;
+            // The surface uses a stable oblique view so cutout art, building footprints and gathering
+            // ranges keep a predictable screen scale without needing distant perspective artwork.
+            camera.orthographicSize = SurfaceCameraOrthographicSize;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(.003f, .006f, .012f);
+            camera.backgroundColor = new Color(.055f, .025f, .018f);
             camera.nearClipPlane = .1f;
             camera.farClipPlane = 1100f;
-            camera.transparencySortMode = TransparencySortMode.Perspective;
+            camera.transparencySortMode = TransparencySortMode.Orthographic;
             cameraObject.AddComponent<AudioListener>();
 
             FollowCamera followCamera = camera.gameObject.AddComponent<FollowCamera>();
             followCamera.SetTarget(target);
-            Sprite horizonSprite = _worldVisuals != null ? _worldVisuals.HorizonSprite : null;
-            if (horizonSprite == null)
-            {
-                horizonSprite = Resources.Load<Sprite>("World/MartianHorizon");
-            }
-
-            if (horizonSprite == null)
-            {
-                Texture2D horizonTexture = Resources.Load<Texture2D>("World/MartianHorizon");
-                if (horizonTexture != null)
-                {
-                    horizonSprite = Sprite.Create(horizonTexture,
-                        new Rect(0f, 0f, horizonTexture.width, horizonTexture.height),
-                        new Vector2(.5f, .5f), 100f);
-                    horizonSprite.name = "Runtime Martian Horizon";
-                }
-            }
-
-            HorizonBackdrop.Create(camera, horizonSprite);
         }
 
         private static Light CreateLighting(Transform parent)

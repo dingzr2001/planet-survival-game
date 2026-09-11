@@ -116,6 +116,7 @@ namespace PlanetSurvival.Tests
         {
             _definition.ConfigurePresentation(ResourceVisualMode.GroundDecal);
             _definition.ConfigureBlobShadow(false);
+            _definition.ConfigureGroundPatchSizes(new Vector2(2.35f, 3.1f));
             var parent = new GameObject("Chunk");
 
             ResourceNode node = ResourceNodeFactory.Create(
@@ -125,6 +126,10 @@ namespace PlanetSurvival.Tests
             Assert.That(view, Is.Not.Null);
             Assert.That(view.transform.localEulerAngles.x, Is.EqualTo(90f).Within(.01f));
             Assert.That(view.Renderer.sortingOrder, Is.EqualTo(GroundDecalView.SortingOrder));
+            Assert.That(node.GetComponent<BoxCollider>().size.x, Is.EqualTo(2.35f).Within(.001f));
+            Assert.That(node.GetComponent<BoxCollider>().size.z, Is.EqualTo(3.1f).Within(.001f));
+            Assert.That(view.Renderer.bounds.size.x, Is.EqualTo(2.35f).Within(.001f));
+            Assert.That(view.Renderer.bounds.size.z, Is.EqualTo(3.1f).Within(.001f));
             Assert.That(node.GetComponentInChildren<WorldSpriteView>(), Is.Null,
                 "A floor surface must not participate in billboard depth sorting.");
             Assert.That(node.transform.Find("Blob Shadow"), Is.Null,

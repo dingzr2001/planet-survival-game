@@ -26,14 +26,15 @@ namespace PlanetSurvival.Tests
         [Test]
         public void TerrainView_BuildsOneGroundPlaneAtZeroHeight()
         {
-            TerrainGenerationSettings settings = CreateSettings(4, 3, 2f);
+            TerrainGenerationSettings settings = CreateSettings(new Vector2(8f, 6f));
             var root = Track(new GameObject("Terrain"));
 
-            root.AddComponent<GridTerrainView>().Build(settings, null);
+            root.AddComponent<ContinuousTerrainView>().Build(settings, null);
 
             Assert.That(root.transform.childCount, Is.EqualTo(1));
             Transform ground = root.transform.GetChild(0);
             Assert.That(ground.name, Is.EqualTo("Flat Ground"));
+            Assert.That(ground.position, Is.EqualTo(new Vector3(4f, 0f, 3f)));
             Assert.That(ground.position.y, Is.EqualTo(0f).Within(.0001f));
             Assert.That(ground.GetComponent<MeshCollider>(), Is.Not.Null);
             Mesh mesh = ground.GetComponent<MeshFilter>().sharedMesh;
@@ -46,20 +47,35 @@ namespace PlanetSurvival.Tests
         [Test]
         public void TerrainView_RecentersDiscAroundDistantPlayer()
         {
-            TerrainGenerationSettings settings = CreateSettings(4, 3, 2f);
+            TerrainGenerationSettings settings = CreateSettings(new Vector2(8f, 6f));
             var root = Track(new GameObject("Terrain"));
-            GridTerrainView terrainView = root.AddComponent<GridTerrainView>();
+            ContinuousTerrainView terrainView = root.AddComponent<ContinuousTerrainView>();
             terrainView.Build(settings, null);
             var target = Track(new GameObject("Target"));
             terrainView.SetTarget(target.transform);
             target.transform.position = new Vector3(100f, 0f, 100f);
 
-            typeof(GridTerrainView)
+            typeof(ContinuousTerrainView)
                 .GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 ?.Invoke(terrainView, null);
 
             Transform ground = root.transform.GetChild(0);
             Assert.That(Vector3.Distance(ground.position, target.transform.position), Is.LessThan(12f));
+        }
+
+        [Test]
+        public void TerrainView_AcceptsFractionalWorldDimensionsWithoutBuildGridCells()
+        {
+            var startingAreaSize = new Vector2(2750.5f, 1800.25f);
+            TerrainGenerationSettings settings = CreateSettings(startingAreaSize);
+            var root = Track(new GameObject("Terrain"));
+
+            root.AddComponent<ContinuousTerrainView>().Build(settings, null);
+
+            Transform ground = root.transform.GetChild(0);
+            Mesh mesh = ground.GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(mesh.bounds.size.x, Is.EqualTo(startingAreaSize.x).Within(.01f));
+            Assert.That(ground.position, Is.EqualTo(settings.StartingAreaCenter));
         }
 
         [Test]
@@ -197,11 +213,12 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void FollowCamera_UsesWeakPerspectiveFramingWithVisibleSky()
+        public void FollowCamera_UsesObliqueOrthographicFraming()
         {
             var camera = Track(new GameObject("Camera"));
             Camera unityCamera = camera.AddComponent<Camera>();
-            unityCamera.fieldOfView = 55f;
+            unityCamera.orthographic = true;
+            unityCamera.orthographicSize = 9.5f;
             var target = Track(new GameObject("Target"));
             FollowCamera follow = camera.AddComponent<FollowCamera>();
 
@@ -209,13 +226,20 @@ namespace PlanetSurvival.Tests
 
             Vector3 horizontalForward = Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up);
             float downwardPitch = Vector3.Angle(horizontalForward, camera.transform.forward);
+            Vector3 directionToTarget = target.transform.position - camera.transform.position;
+            float groundViewingAngle = Vector3.Angle(
+                Vector3.ProjectOnPlane(directionToTarget, Vector3.up), directionToTarget);
+            float targetDistance = Vector3.Distance(camera.transform.position, target.transform.position);
             Vector3 targetViewportPosition = unityCamera.WorldToViewportPoint(target.transform.position);
-            Vector3 horizonViewportPosition = unityCamera.WorldToViewportPoint(
-                camera.transform.position + horizontalForward.normalized * 1000f);
-            Assert.That(downwardPitch, Is.InRange(14f, 17f));
-            Assert.That(targetViewportPosition.y, Is.GreaterThanOrEqualTo(.25f));
-            Assert.That(horizonViewportPosition.y, Is.InRange(.7f, .82f),
-                "The ground/sky boundary should leave a deliberate atmospheric band without crowding gameplay.");
+            Assert.That(groundViewingAngle, Is.InRange(59f, 61f),
+                "The elevated viewpoint should give the terrain clear depth and spatial readability.");
+            Assert.That(downwardPitch, Is.InRange(54f, 56f),
+                "The fixed pitch should produce a readable three-quarter overhead view.");
+            Assert.That(targetDistance, Is.InRange(17f, 17.7f),
+                "The camera distance should preserve a useful amount of surrounding play area.");
+            Assert.That(targetViewportPosition.x, Is.EqualTo(.5f).Within(.01f));
+            Assert.That(targetViewportPosition.y, Is.InRange(.4f, .44f),
+                "The player should sit just below center so more terrain remains visible ahead.");
         }
 
         [Test]
@@ -257,10 +281,10 @@ namespace PlanetSurvival.Tests
             Assert.That(backdrop.GetComponent<SpriteRenderer>().sprite, Is.EqualTo(sprite));
         }
 
-        private TerrainGenerationSettings CreateSettings(int width, int length, float cellSize)
+        private TerrainGenerationSettings CreateSettings(Vector2 startingAreaSize)
         {
             var settings = Track(ScriptableObject.CreateInstance<TerrainGenerationSettings>());
-            settings.Configure(width, length, cellSize, 42);
+            settings.Configure(startingAreaSize, 42);
             return settings;
         }
 

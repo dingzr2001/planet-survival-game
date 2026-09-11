@@ -45,7 +45,7 @@ namespace PlanetSurvival.Core.Flow
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;
 
-        /// <summary>World units per placement cell. One metre keeps structures aligned with the terrain grid.</summary>
+        /// <summary>World units per construction cell. Terrain and natural resources remain continuous.</summary>
         public const float BuildGridCellSize = 1f;
 
         private const double DefaultRealSecondsPerGameDay = 600d;

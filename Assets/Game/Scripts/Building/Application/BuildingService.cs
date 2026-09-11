@@ -186,7 +186,7 @@ namespace PlanetSurvival.Building.Application
             }
         }
 
-        /// <summary>Wipes every site and frees the grid. Used when a session restarts.</summary>
+        /// <summary>Wipes every player-built site. Environment occupants registered on the grid remain.</summary>
         public void Clear()
         {
             for (int i = _sites.Count - 1; i >= 0; i--)
@@ -196,8 +196,6 @@ namespace PlanetSurvival.Building.Application
                 _grid.Release(site);
                 SiteRemoved?.Invoke(site);
             }
-
-            _grid.Clear();
         }
     }
 }
