@@ -6,6 +6,7 @@ using PlanetSurvival.Core.Time;
 using PlanetSurvival.Core.SceneManagement;
 using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Gathering.Runtime;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Player.Movement;
@@ -45,6 +46,13 @@ namespace PlanetSurvival.Tests
             Assert.That(gameCamera.orthographic, Is.True);
             Assert.That(Object.FindFirstObjectByType<PlanarPlayerMotor>(), Is.Not.Null);
             Assert.That(Object.FindObjectsByType<WorldSpriteView>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+            PlayerAnimationController cabinAnimation =
+                Object.FindFirstObjectByType<PlayerAnimationController>();
+            Assert.That(cabinAnimation, Is.Not.Null);
+            Assert.That(cabinAnimation.ModularRig, Is.Null,
+                "The cabin explorer should use its directional frame sequence.");
+            Assert.That(cabinAnimation.Body.Renderer.sprite.texture.name,
+                Is.EqualTo("ExplorerWalkDirectional8"));
             Assert.That(Object.FindFirstObjectByType<FixedInteriorBackdrop>(), Is.Not.Null);
             Assert.That(GameObject.Find("Dining Table"), Is.Not.Null);
             Assert.That(GameObject.Find("Habitat Water Dispenser"), Is.Not.Null);
@@ -127,13 +135,15 @@ namespace PlanetSurvival.Tests
             Assert.That(cargoStorage, Is.Not.Null);
             Assert.That(cargoStorage.gameObject.name, Is.EqualTo("Cargo Storage Racks"));
             Assert.That(cargoStorage.Inventory.TotalSlots, Is.EqualTo(30));
-            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(3));
+            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(4));
             Assert.That(cargoStorage.Inventory.GetQuantity("energy_bar"),
                 Is.EqualTo(GameSessionState.InitialEnergyBarCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("potato"),
                 Is.EqualTo(GameSessionState.InitialPotatoCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("aluminum_alloy"),
                 Is.EqualTo(GameSessionState.InitialAluminumAlloyCount));
+            Assert.That(cargoStorage.Inventory.GetQuantity("pickaxe"),
+                Is.EqualTo(GameSessionState.InitialPickaxeCount));
             ScenePortal airlock = FindPortal(GameSceneNames.Gameplay);
             Assert.That(airlock, Is.Not.Null);
             player = Object.FindFirstObjectByType<PlayerSurvival>().gameObject;
@@ -144,7 +154,8 @@ namespace PlanetSurvival.Tests
             yield return WaitForScene(GameSceneNames.Gameplay);
             yield return null;
 
-            Camera surfaceCamera = Object.FindFirstObjectByType<Camera>();
+            Camera surfaceCamera = Camera.main;
+            Assert.That(surfaceCamera, Is.Not.Null);
             Assert.That(surfaceCamera.orthographic, Is.True);
             Assert.That(surfaceCamera.orthographicSize, Is.EqualTo(9.5f).Within(.01f),
                 "The surface uses a stable oblique scale for cutout art and gameplay footprints.");
@@ -156,6 +167,49 @@ namespace PlanetSurvival.Tests
             Assert.That(Object.FindFirstObjectByType<PlayerOxygenConsumption>().ActiveSupply,
                 Is.SameAs(flowController.Session.SpaceSuit.Oxygen));
             Assert.That(Object.FindFirstObjectByType<PlanetSurvival.UI.HUD.SuitResourceView>(), Is.Not.Null);
+            PlayerAnimationController surfaceAnimation =
+                Object.FindFirstObjectByType<PlayerAnimationController>();
+            Assert.That(surfaceAnimation, Is.Not.Null);
+            Assert.That(surfaceAnimation.ModularRig, Is.Null);
+            Assert.That(surfaceAnimation.Body.Renderer.sprite.texture.name,
+                Is.EqualTo("TrackedRobotDirectional4"),
+                "Outdoor exploration should use the tracked robot frame sequence.");
+            PlanetSurvival.UI.HUD.MinimapView minimap =
+                Object.FindFirstObjectByType<PlanetSurvival.UI.HUD.MinimapView>();
+            Assert.That(minimap, Is.Not.Null);
+            Assert.That(minimap.MapCamera, Is.Not.Null);
+            Assert.That(minimap.MapCamera.enabled, Is.False,
+                "The minimap camera is rendered on demand and must not draw over the game view.");
+            Assert.That(minimap.MapCamera.orthographicSize, Is.GreaterThan(surfaceCamera.orthographicSize));
+            Renderer playerRenderer = Object.FindFirstObjectByType<PlayerSurvival>()
+                .GetComponentInChildren<Renderer>();
+            Assert.That(minimap.MapCamera.cullingMask & (1 << playerRenderer.gameObject.layer), Is.Zero,
+                "The animated explorer is replaced by the minimap's static centre marker.");
+            Assert.That(flowController.Session.Exploration.ExploredCellCount, Is.GreaterThan(0),
+                "Only the player's initial vision should be revealed when the surface map opens.");
+            float compactMapSize = minimap.MapCamera.orthographicSize;
+            minimap.ToggleExpanded();
+            yield return null;
+            Assert.That(minimap.IsExpanded, Is.True);
+            Assert.That(minimap.MapCamera.orthographicSize, Is.GreaterThan(compactMapSize));
+            float defaultExpandedSize = minimap.MapCamera.orthographicSize;
+            minimap.ZoomExpandedMap(-2f);
+            minimap.PanExpandedMap(new Vector2(12f, -7f));
+            yield return null;
+            Assert.That(minimap.MapCamera.orthographicSize, Is.LessThan(defaultExpandedSize));
+            Assert.That(minimap.ExpandedPanOffset, Is.EqualTo(new Vector2(12f, -7f)));
+
+            // The widest allowed zoom is the old failure case: at a fixed camera distance, the lower
+            // viewport ray started below the ground and left a permanent black band.
+            minimap.ZoomExpandedMap(100f);
+            yield return null;
+            var groundPlane = new Plane(Vector3.up, Vector3.zero);
+            Ray lowerMapRay = minimap.MapCamera.ViewportPointToRay(new Vector3(.5f, 0f));
+            Assert.That(groundPlane.Raycast(lowerMapRay, out _), Is.True,
+                "The expanded map camera must cover terrain at the bottom edge instead of showing a black band.");
+            minimap.ToggleExpanded();
+            Assert.That(minimap.ExpandedPanOffset, Is.EqualTo(Vector2.zero),
+                "Closing the map restores the compact player-centred view.");
 
             ResourceNode surfaceResource = Object.FindFirstObjectByType<ResourceNode>();
             Assert.That(surfaceResource, Is.Not.Null, "The streamed surface should contain natural resources.");

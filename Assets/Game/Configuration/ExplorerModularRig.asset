@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 574ac15cc0bf64a9482b6fdbf52ed115, type: 3}
+  m_Name: ExplorerModularRig
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Player.Animation.ModularPlayerRigDefinition
+  _down:
+    _torso: {fileID: 21300000, guid: 95e5e25428523445aa8b25d36cb737bb, type: 3}
+    _upperArm: {fileID: 21300000, guid: 040795080e01b48da92aa22a3dc7f435, type: 3}
+    _forearm: {fileID: 21300000, guid: 19070c2cfa2ae4ba3ae07f6ad77f18da, type: 3}
+    _hand: {fileID: 21300000, guid: 0e060386a48ba47389a563dfb50f51ea, type: 3}
+    _thigh: {fileID: 21300000, guid: ee32ff81a51fb458095aec569d4f1fc8, type: 3}
+    _lowerLeg: {fileID: 21300000, guid: 3eaf4e418680548398aa139eb8d54608, type: 3}
+    _boot: {fileID: 21300000, guid: 18d9f9bb57dad4908b6e40580996aff4, type: 3}
+  _left:
+    _torso: {fileID: 21300000, guid: e317891edf14d4018a60c49bd75f8184, type: 3}
+    _upperArm: {fileID: 21300000, guid: b212d03b75f334dbe958b761532c51cd, type: 3}
+    _forearm: {fileID: 21300000, guid: 7023373af22a1436b9db20be0fd66be8, type: 3}
+    _hand: {fileID: 21300000, guid: e124035f027dc47898613bc4c236d4f2, type: 3}
+    _thigh: {fileID: 21300000, guid: 6811766c254434ebc8fa4b503693ddb0, type: 3}
+    _lowerLeg: {fileID: 21300000, guid: b4c8e7f74b1ce4d458a6df9c32d723e7, type: 3}
+    _boot: {fileID: 21300000, guid: b3defcfa82a3f42a8acbc240372e6393, type: 3}
+  _right:
+    _torso: {fileID: 21300000, guid: ff1a4bd185fd44f5db6eebc70efd6f4b, type: 3}
+    _upperArm: {fileID: 21300000, guid: 4a2adfc9af23041e3a88d8c501e8ac38, type: 3}
+    _forearm: {fileID: 21300000, guid: 3d641e68cfda442d6bec2bcb7fe5657e, type: 3}
+    _hand: {fileID: 21300000, guid: 9206aa09f2e0f4a00b52213b10a67291, type: 3}
+    _thigh: {fileID: 21300000, guid: 08446437e057246378857b954fbcaf21, type: 3}
+    _lowerLeg: {fileID: 21300000, guid: 8f82b7236840946aa8ebd88576fe7516, type: 3}
+    _boot: {fileID: 21300000, guid: 1f26d61d6b6ca41f096b5e5fa11db335, type: 3}
+  _up:
+    _torso: {fileID: 21300000, guid: b4fea4838568249479a247031853903f, type: 3}
+    _upperArm: {fileID: 21300000, guid: 5b31554d5c2764fe3b216891da9e242c, type: 3}
+    _forearm: {fileID: 21300000, guid: c4b304c22ff6541abb574c9daf8f1179, type: 3}
+    _hand: {fileID: 21300000, guid: 29fd1f57c445a4bf5925bae9d9b1a54f, type: 3}
+    _thigh: {fileID: 21300000, guid: 93ed4bc5353244077bd5414b6a8d1264, type: 3}
+    _lowerLeg: {fileID: 21300000, guid: c30bc2b5d94274652b00d76e2e5d4be2, type: 3}
+    _boot: {fileID: 21300000, guid: 70a6fabbf3e8d4eb7bf7e95610e19b3f, type: 3}
+  _hipHeight: 0.37
+  _torsoHeight: 0.63
+  _shoulderHeight: 0.7
+  _upperArmLength: 0.165
+  _forearmLength: 0.15
+  _handHeight: 0.1
+  _thighLength: 0.2
+  _lowerLegLength: 0.18
+  _bootHeight: 0.11

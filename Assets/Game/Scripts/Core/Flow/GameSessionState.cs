@@ -11,6 +11,8 @@ using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Domain;
 using PlanetSurvival.Water.Domain;
+using PlanetSurvival.World.Exploration;
+using PlanetSurvival.World.Ground;
 using UnityEngine;
 
 namespace PlanetSurvival.Core.Flow
@@ -41,6 +43,7 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialEnergyBarCount = 12;
         public const int InitialPotatoCount = 12;
         public const int InitialAluminumAlloyCount = 20;
+        public const int InitialPickaxeCount = 1;
 
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;
@@ -74,6 +77,8 @@ namespace PlanetSurvival.Core.Flow
             Buildings = new BuildingService(PlayerInventory, new BuildGrid(BuildGridCellSize));
             WaterProcessor = new WaterProcessor();
             Hydroponics = new HydroponicsRack(HydroponicsSlotCount);
+            Exploration = new WorldExplorationMap();
+            Terrain = new TerrainTileMap();
         }
 
         public SpaceSuitResources SpaceSuit { get; }
@@ -97,6 +102,16 @@ namespace PlanetSurvival.Core.Flow
 
         /// <summary>The habitat growing trays. They ripen on expedition time, including while outside.</summary>
         public HydroponicsRack Hydroponics { get; }
+
+        /// <summary>Surface cells discovered during this expedition, retained across scene changes.</summary>
+        public WorldExplorationMap Exploration { get; }
+
+        /// <summary>
+        /// The terrain covering the surface and how far the player has dug into it. Generated terrain
+        /// needs no storage, so this only holds the dug tiles — which is what keeps a half-broken rock
+        /// face half broken after a trip inside the landing pod.
+        /// </summary>
+        public TerrainTileMap Terrain { get; }
 
         /// <summary>
         /// Time elapsed in this expedition. Every scene shares it, so walking into the landing pod no
@@ -161,6 +176,8 @@ namespace PlanetSurvival.Core.Flow
             Buildings.Clear();
             WaterProcessor.Clear();
             Hydroponics.Clear();
+            Exploration.Clear();
+            Terrain.Clear();
             // A new expedition starts on day one; the configured day length and rescue day are kept.
             _time = new GameTimeModel(_realSecondsPerGameDay, _rescueDay);
             WaterBottle.Reset(0);

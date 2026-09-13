@@ -2,6 +2,7 @@ using System;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Inventory.Domain;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Interaction;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace PlanetSurvival.Gathering.Runtime
         private GameObject _gatherer;
         private PlayerInventory _inventory;
         private Collider _interactionCollider;
+        private PlayerAnimationController _gatherAnimation;
         private float _remainingTime;
         private bool _depleted;
 
@@ -77,6 +79,7 @@ namespace PlanetSurvival.Gathering.Runtime
             _gatherer = context.Actor;
             _inventory = context.Inventory;
             _remainingTime = _definition.GatherDuration;
+            StartGatheringAnimation();
         }
 
         public void Advance(float elapsedSeconds)
@@ -94,12 +97,21 @@ namespace PlanetSurvival.Gathering.Runtime
 
         public void CancelGathering()
         {
+            StopGatheringAnimation();
             _gatherer = null;
             _inventory = null;
             _remainingTime = 0f;
         }
 
         private void Update() => Advance(Time.deltaTime);
+
+        private void OnDisable()
+        {
+            if (IsGathering)
+            {
+                CancelGathering();
+            }
+        }
 
         private float GetDistanceToGatherer()
         {
@@ -117,6 +129,28 @@ namespace PlanetSurvival.Gathering.Runtime
             for (int i = 0; i < inventory.Inventory.Stacks.Count; i++)
                 if (inventory.Inventory.Stacks[i].Definition.ItemId == toolId) return true;
             return false;
+        }
+
+        private void StartGatheringAnimation()
+        {
+            if (_gatherer == null || string.IsNullOrEmpty(_definition.RequiredToolItemId))
+            {
+                return;
+            }
+
+            _gatherAnimation = _gatherer.GetComponentInChildren<PlayerAnimationController>();
+            _gatherAnimation?.TryPlayToolAction(_definition.RequiredToolItemId);
+        }
+
+        private void StopGatheringAnimation()
+        {
+            if (_gatherAnimation == null || _definition == null)
+            {
+                return;
+            }
+
+            _gatherAnimation.StopToolAction(_definition.RequiredToolItemId);
+            _gatherAnimation = null;
         }
 
         private void CompleteGathering()

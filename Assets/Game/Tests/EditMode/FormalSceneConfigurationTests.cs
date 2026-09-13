@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using PlanetSurvival.Cooking.Definitions;
 using PlanetSurvival.Core.Flow;
@@ -5,7 +6,10 @@ using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Ground;
+using PlanetSurvival.World.Presentation;
 using UnityEditor;
 using UnityEngine;
 
@@ -48,6 +52,20 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.alphaIsTransparency, Is.True);
             Assert.That(importer.mipmapEnabled, Is.False);
             Assert.That(importer.maxTextureSize, Is.EqualTo(256));
+        }
+
+        [Test]
+        public void MinimapFrame_IsAvailableAsTransparentUiTexture()
+        {
+            const string path = "Assets/Game/Resources/UI/MinimapFrame.png";
+            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+            Assert.That(texture, Is.Not.Null);
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.maxTextureSize, Is.EqualTo(1024));
         }
 
         [Test]
@@ -182,6 +200,80 @@ namespace PlanetSurvival.Tests
         }
 
         /// <summary>
+        /// Rock terrain is what makes the surface worth walking across rather than through: three grades
+        /// break down in one, three and five swings, each paying out on every swing.
+        /// </summary>
+        [Test]
+        public void RockTerrain_CoversTheRegolithInThreeDiggableGrades()
+        {
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(patches.Layers.Count, Is.EqualTo(3));
+
+            var digCounts = new List<int>();
+            for (int i = 0; i < patches.Layers.Count; i++)
+            {
+                TerrainSurfaceDefinition surface = patches.Layers[i].Surface;
+                Assert.That(surface, Is.Not.Null);
+                Assert.That(surface.IsValid(out string error), Is.True, error);
+                Assert.That(surface.Texture, Is.Not.Null,
+                    $"Terrain '{surface.TerrainId}' without its texture draws as untextured white ground.");
+                Assert.That(surface.RequiredToolItemId, Is.EqualTo("pickaxe"),
+                    "Rock is what the pickaxe is for.");
+                Assert.That(surface.Yields.Count, Is.EqualTo(1));
+                Assert.That(surface.Yields[0].Item.ItemId, Is.EqualTo("raw_stone"));
+                digCounts.Add(surface.DigCount);
+
+                Assert.That(patches.Layers[i].Threshold, Is.LessThan(1f),
+                    "A layer at the full threshold never generates.");
+            }
+
+            Assert.That(digCounts, Is.EquivalentTo(new[] { 1, 3, 5 }));
+            // Hardest first: the first layer to reach its threshold wins the tile, so a soft patch listed
+            // ahead of a hard one would swallow the hard cores sitting inside it.
+            Assert.That(digCounts[0], Is.GreaterThan(digCounts[^1]));
+        }
+
+        /// <summary>
+        /// Rock artwork is a cutout layer that repeats across tiles rather than being stretched over one,
+        /// so it has to be imported as tiling ground with its transparency intact.
+        /// </summary>
+        [Test]
+        public void RockTerrainTextures_AreImportedAsTilingTransparentGround()
+        {
+            foreach (string textureName in new[] { "Stone1", "Stone2", "Stone3" })
+            {
+                string path = $"Assets/Game/Art/World/Ground/{textureName}.png";
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+                Assert.That(importer, Is.Not.Null, $"'{path}' was not imported.");
+                Assert.That(importer.wrapMode, Is.EqualTo(TextureWrapMode.Repeat),
+                    $"'{textureName}' would show a hard seam at every tile border without repeat wrapping.");
+                Assert.That(importer.mipmapEnabled, Is.True,
+                    $"'{textureName}' would shimmer at distance without mipmaps.");
+                Assert.That(importer.alphaIsTransparency, Is.True,
+                    $"'{textureName}' is a cutout; without this its trimmed edges pick up dark halos.");
+                Assert.That(importer.DoesSourceTextureHaveAlpha(), Is.True,
+                    $"'{textureName}' must keep an alpha channel, or it paints over the regolith it lies on.");
+            }
+        }
+
+        /// <summary>
+        /// The overlay shares the transparent queue with everything else lying on the floor, so its order
+        /// is explicit rather than left to chance.
+        /// </summary>
+        [Test]
+        public void RockTerrainOverlay_DrawsUnderTheThingsRestingOnIt()
+        {
+            Assert.That(TerrainChunkView.SortingOrder, Is.LessThan(GroundDecalView.SortingOrder),
+                "An ice sheet lying on rock has to draw on top of the rock, not under it.");
+            Assert.That(TerrainChunkView.SurfaceHeight, Is.GreaterThan(0f),
+                "The overlay has to clear the base ground disc for the depth test.");
+        }
+
+        /// <summary>
         /// The habitat half of the loop. A harvest that only returned its own seed would leave the
         /// expedition exactly as doomed as it was before hydroponics existed.
         /// </summary>
@@ -239,7 +331,7 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void WorldVisualConfiguration_ConnectsGeneratedCutoutArt()
+        public void WorldVisualConfiguration_UsesFrameAnimationForCabinExplorerAndSurfaceRobot()
         {
             WorldVisualSettings visuals = AssetDatabase.LoadAssetAtPath<WorldVisualSettings>(
                 "Assets/Game/Configuration/DefaultWorldVisuals.asset");
@@ -255,27 +347,87 @@ namespace PlanetSurvival.Tests
             Assert.That(visuals.PlayerFramesPerDirection, Is.EqualTo(8));
             Assert.That(visuals.PlayerFrameRects.Count, Is.EqualTo(32));
             Assert.That(visuals.PlayerFramePivots.Count, Is.EqualTo(32));
+            Assert.That(visuals.ModularPlayerRig, Is.Null,
+                "The experimental cutout rig must not replace either full-frame character.");
+            Assert.That(visuals.SurfaceRobotAnimationSheet, Is.Not.Null);
+            Assert.That(visuals.SurfaceRobotFramesPerDirection, Is.EqualTo(4));
+            Assert.That(visuals.SurfaceRobotFrameRects.Count, Is.EqualTo(16));
+            Assert.That(visuals.SurfaceRobotFramePivots.Count, Is.EqualTo(16));
+            Assert.That(visuals.SurfaceRobotHeight, Is.GreaterThan(0f));
+            Assert.That(visuals.HasSurfaceRobotAnimation, Is.True);
             Assert.That(visuals.LandingPodExteriorSprite, Is.Not.Null);
             Assert.That(visuals.LandingPodExteriorHeight, Is.GreaterThan(0f));
-            int cellWidth = visuals.PlayerAnimationSheet.width / visuals.PlayerFramesPerDirection;
-            int cellHeight = visuals.PlayerAnimationSheet.height / 4;
             for (int row = 0; row < 4; row++)
             {
                 Vector2 directionPivot = visuals.PlayerFramePivots[row * 8];
                 for (int column = 0; column < 8; column++)
                 {
                     int index = row * 8 + column;
+                    int left = visuals.PlayerAnimationSheet.width * column / 8;
+                    int right = visuals.PlayerAnimationSheet.width * (column + 1) / 8;
+                    int bottom = visuals.PlayerAnimationSheet.height * (3 - row) / 4;
+                    int top = visuals.PlayerAnimationSheet.height * (4 - row) / 4;
                     Assert.That(visuals.PlayerFrameRects[index], Is.EqualTo(new Rect(
-                        column * cellWidth,
-                        (3 - row) * cellHeight,
-                        cellWidth,
-                        cellHeight)));
+                        left, bottom, right - left, top - bottom)));
                     Assert.That(visuals.PlayerFramePivots[index], Is.EqualTo(directionPivot),
                         $"Direction row {row} must use one stable pivot across all frames.");
                 }
             }
+
+            for (int row = 0; row < 4; row++)
+            {
+                Vector2 directionPivot = visuals.SurfaceRobotFramePivots[row * 4];
+                for (int column = 0; column < 4; column++)
+                {
+                    int index = row * 4 + column;
+                    int left = visuals.SurfaceRobotAnimationSheet.width * column / 4;
+                    int right = visuals.SurfaceRobotAnimationSheet.width * (column + 1) / 4;
+                    int bottom = visuals.SurfaceRobotAnimationSheet.height * (3 - row) / 4;
+                    int top = visuals.SurfaceRobotAnimationSheet.height * (4 - row) / 4;
+                    Assert.That(visuals.SurfaceRobotFrameRects[index], Is.EqualTo(new Rect(
+                        left, bottom, right - left, top - bottom)));
+                    Assert.That(visuals.SurfaceRobotFramePivots[index], Is.EqualTo(directionPivot),
+                        $"Robot direction row {row} must use one stable ground anchor.");
+                }
+            }
+
+            var robotImporter = AssetImporter.GetAtPath(
+                "Assets/Game/Art/World/Characters/TrackedRobotDirectional4.png") as TextureImporter;
+            Assert.That(robotImporter, Is.Not.Null);
+            Assert.That(robotImporter.textureType, Is.EqualTo(TextureImporterType.Default));
+            Assert.That(robotImporter.alphaIsTransparency, Is.True);
+            Assert.That(robotImporter.mipmapEnabled, Is.False);
             Assert.That(rock, Is.Not.Null);
             Assert.That(rock.WorldSprite, Is.Not.Null);
+        }
+
+        [Test]
+        public void Pickaxe_UsesIndependentToolArtAndIsRequiredForRock()
+        {
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/Pickaxe.asset");
+            ResourceNodeDefinition rock = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(
+                "Assets/Game/Configuration/RockNode.asset");
+            WorldVisualSettings visuals = AssetDatabase.LoadAssetAtPath<WorldVisualSettings>(
+                "Assets/Game/Configuration/DefaultWorldVisuals.asset");
+            PlayerToolAnimationDefinition animation =
+                AssetDatabase.LoadAssetAtPath<PlayerToolAnimationDefinition>(
+                    "Assets/Game/Configuration/PickaxeAnimation.asset");
+            var importer = AssetImporter.GetAtPath(
+                "Assets/Game/Art/World/Equipment/Pickaxe.png") as TextureImporter;
+
+            Assert.That(pickaxe, Is.Not.Null);
+            Assert.That(pickaxe.ItemId, Is.EqualTo("pickaxe"));
+            Assert.That(pickaxe.Icon, Is.Not.Null);
+            Assert.That(pickaxe.MaximumStackSize, Is.EqualTo(1));
+            Assert.That(rock.RequiredToolItemId, Is.EqualTo(pickaxe.ItemId));
+            Assert.That(animation, Is.Not.Null);
+            Assert.That(animation.IsValid(out string error), Is.True, error);
+            Assert.That(visuals.PlayerToolAnimations, Does.Contain(animation));
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
         }
     }
 }

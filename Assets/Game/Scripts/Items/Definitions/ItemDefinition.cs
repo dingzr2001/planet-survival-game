@@ -88,6 +88,11 @@ namespace PlanetSurvival.Items.Definitions
         {
             _description = description ?? string.Empty;
         }
+
+        public void ConfigureIcon(Sprite icon)
+        {
+            _icon = icon;
+        }
     }
 
     [Serializable]

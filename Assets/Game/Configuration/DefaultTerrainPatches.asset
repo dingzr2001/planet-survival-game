@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: facde0929bb11441cb09bcef6949e05e, type: 3}
+  m_Name: DefaultTerrainPatches
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainPatchSettings
+  _seedOffset: 5231
+  _tileSize: 3
+  _chunkSizeInTiles: 8
+  _loadRadiusInChunks: 1
+  _layers:
+  - _surface: {fileID: 11400000, guid: b46f090d862614cddb58923685ad662a, type: 2}
+    _patchSize: 15
+    _threshold: 0.78
+    _seedOffset: 1613
+  - _surface: {fileID: 11400000, guid: 2dd47f1842f764000b30305a730f32e8, type: 2}
+    _patchSize: 20
+    _threshold: 0.73
+    _seedOffset: 7817
+  - _surface: {fileID: 11400000, guid: bf5b3a672b632425f8498a41ea040719, type: 2}
+    _patchSize: 28
+    _threshold: 0.68
+    _seedOffset: 3271

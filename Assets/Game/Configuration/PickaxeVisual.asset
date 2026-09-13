@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ae51f8146185404188ac7d79a4738f6, type: 3}
+  m_Name: PickaxeVisual
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Player.Animation.PlayerEquipmentVisualDefinition
+  _sprite: {fileID: 21300000, guid: e6b2f24711b7d4428ad5d4e33085c046, type: 3}
+  _heightRatio: 0.32
+  _downPose:
+    _normalizedPosition: {x: 0.06, y: 0.5}
+    _rotation: -32
+    _behindBody: 0
+    _secondaryGripOffset: {x: 0, y: 0.1}
+  _leftPose:
+    _normalizedPosition: {x: -0.08, y: 0.5}
+    _rotation: 38
+    _behindBody: 0
+    _secondaryGripOffset: {x: 0, y: 0.1}
+  _rightPose:
+    _normalizedPosition: {x: 0.08, y: 0.5}
+    _rotation: -38
+    _behindBody: 0
+    _secondaryGripOffset: {x: 0, y: 0.1}
+  _upPose:
+    _normalizedPosition: {x: 0.06, y: 0.51}
+    _rotation: 28
+    _behindBody: 1
+    _secondaryGripOffset: {x: 0, y: 0.1}

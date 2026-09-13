@@ -11,9 +11,13 @@ namespace PlanetSurvival.Editor
     {
         private const string ConfigurationDirectory = "Assets/Game/Configuration";
         private const string VisualSettingsPath = ConfigurationDirectory + "/DefaultWorldVisuals.asset";
-        private const string GroundPath = "Assets/Game/Art/World/Ground/MartianRegolith.png";
+        private const string GroundDirectory = "Assets/Game/Art/World/Ground";
+        private const string GroundPath = GroundDirectory + "/MartianRegolith.png";
         private const string PlayerPath = "Assets/Game/Art/World/Characters/Explorer.png";
         private const string PlayerWalkPath = "Assets/Game/Art/World/Characters/ExplorerWalkDirectional8.png";
+        private const string SurfaceRobotWalkPath =
+            "Assets/Game/Art/World/Characters/TrackedRobotDirectional4.png";
+        private const string PickaxePath = "Assets/Game/Art/World/Equipment/Pickaxe.png";
         private const string LandingPodExteriorPath = "Assets/Game/Resources/World/LandingPodExterior.png";
         private const string HorizonPath = "Assets/Game/Resources/World/MartianHorizon.png";
         private const string ResourceDirectory = "Assets/Game/Art/World/Resources";
@@ -25,6 +29,8 @@ namespace PlanetSurvival.Editor
         private static readonly string[] InteriorPropNames = { "HydroponicsRack", "WaterProcessor" };
         private const int PlayerDirectionCount = 4;
         private const int PlayerFramesPerDirection = 8;
+        private const int SurfaceRobotFramesPerDirection = 4;
+        private const float SurfaceRobotHeight = 1.35f;
         private const byte OpaqueAlphaThreshold = 128;
         private static readonly Vector2 LandingPodGroundAnchor = new(.43f, .18f);
 
@@ -76,7 +82,8 @@ namespace PlanetSurvival.Editor
 
         private static void EnsurePlayerAnimationIsConfigured()
         {
-            if (AssetImporter.GetAtPath(PlayerWalkPath) == null)
+            if (AssetImporter.GetAtPath(PlayerWalkPath) == null
+                || AssetImporter.GetAtPath(SurfaceRobotWalkPath) == null)
             {
                 return;
             }
@@ -87,20 +94,31 @@ namespace PlanetSurvival.Editor
                 && AssetDatabase.GetAssetPath(settings.PlayerAnimationSheet) == PlayerWalkPath
                 && settings.PlayerFramesPerDirection == PlayerFramesPerDirection
                 && settings.PlayerFrameRects.Count == PlayerDirectionCount * PlayerFramesPerDirection
-                && settings.PlayerFramePivots.Count == PlayerDirectionCount * PlayerFramesPerDirection)
+                && settings.PlayerFramePivots.Count == PlayerDirectionCount * PlayerFramesPerDirection
+                && settings.SurfaceRobotAnimationSheet != null
+                && AssetDatabase.GetAssetPath(settings.SurfaceRobotAnimationSheet) == SurfaceRobotWalkPath
+                && settings.SurfaceRobotFramesPerDirection == SurfaceRobotFramesPerDirection
+                && settings.SurfaceRobotFrameRects.Count
+                    == PlayerDirectionCount * SurfaceRobotFramesPerDirection
+                && settings.SurfaceRobotFramePivots.Count
+                    == PlayerDirectionCount * SurfaceRobotFramesPerDirection
+                && settings.ModularPlayerRig == null)
             {
                 return;
             }
 
             GetOrCreateWorldVisualSettings();
             AssetDatabase.SaveAssets();
-            Debug.Log("Configured the Explorer four-direction walk animation.");
+            Debug.Log("Configured the cabin explorer and surface robot frame animations.");
         }
 
         public static WorldVisualSettings GetOrCreateWorldVisualSettings()
         {
             Texture2D ground = ImportGround();
             Texture2D playerAnimation = ImportPlayerAnimation(out Rect[] frameRects, out Vector2[] framePivots);
+            Texture2D robotAnimation = ImportDirectionalAnimation(
+                SurfaceRobotWalkPath, SurfaceRobotFramesPerDirection,
+                out Rect[] robotFrameRects, out Vector2[] robotFramePivots);
             Sprite player = ImportSprite(PlayerPath, 2048);
             Sprite landingPodExterior = ImportSprite(
                 LandingPodExteriorPath, 2048, false, TextureImporterCompression.Uncompressed,
@@ -117,18 +135,39 @@ namespace PlanetSurvival.Editor
             settings.Configure(ground, player, horizon);
             settings.ConfigurePlayerAnimation(
                 playerAnimation, PlayerFramesPerDirection, frameRects, framePivots);
+            settings.ConfigureSurfaceRobotAnimation(
+                SurfaceRobotHeight, robotAnimation, SurfaceRobotFramesPerDirection,
+                robotFrameRects, robotFramePivots);
+            // Keep the experimental cutout assets for reference. The active cabin and surface visuals
+            // both use coherent full-frame animation until a production character pipeline replaces them.
+            settings.ConfigureModularPlayerRig(null);
             settings.ConfigureLandingPod(landingPodExterior, 5.4f);
             EditorUtility.SetDirty(settings);
             return settings;
         }
 
+        public static Sprite ImportPickaxeSprite()
+        {
+            // The supplied artwork is centered near the rubber grip, so this pivot makes procedural
+            // swings rotate around the explorer's hands instead of around the pick head.
+            return ImportSprite(PickaxePath, 2048, false,
+                TextureImporterCompression.Uncompressed, new Vector2(.5f, .48f));
+        }
+
         private static Texture2D ImportPlayerAnimation(out Rect[] frameRects, out Vector2[] framePivots)
+        {
+            return ImportDirectionalAnimation(
+                PlayerWalkPath, PlayerFramesPerDirection, out frameRects, out framePivots);
+        }
+
+        private static Texture2D ImportDirectionalAnimation(string path, int framesPerDirection,
+            out Rect[] frameRects, out Vector2[] framePivots)
         {
             frameRects = System.Array.Empty<Rect>();
             framePivots = System.Array.Empty<Vector2>();
-            if (AssetImporter.GetAtPath(PlayerWalkPath) is not TextureImporter importer)
+            if (AssetImporter.GetAtPath(path) is not TextureImporter importer)
             {
-                Debug.LogWarning($"Player animation sheet '{PlayerWalkPath}' was not found.");
+                Debug.LogWarning($"Directional animation sheet '{path}' was not found.");
                 return null;
             }
 
@@ -143,54 +182,61 @@ namespace PlanetSurvival.Editor
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.isReadable = true;
             importer.SaveAndReimport();
-            Texture2D readableTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(PlayerWalkPath);
-            CalculatePlayerFrameLayout(readableTexture, out frameRects, out framePivots);
+            Texture2D readableTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            CalculateDirectionalFrameLayout(
+                readableTexture, framesPerDirection, out frameRects, out framePivots);
 
             importer.isReadable = false;
             importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(PlayerWalkPath);
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
-        private static void CalculatePlayerFrameLayout(Texture2D texture,
+        private static void CalculateDirectionalFrameLayout(Texture2D texture, int framesPerDirection,
             out Rect[] frameRects, out Vector2[] framePivots)
         {
-            int frameCount = PlayerDirectionCount * PlayerFramesPerDirection;
+            int safeFrameCount = Mathf.Max(1, framesPerDirection);
+            int frameCount = PlayerDirectionCount * safeFrameCount;
             frameRects = new Rect[frameCount];
             framePivots = new Vector2[frameCount];
-            if (texture == null
-                || texture.width % PlayerFramesPerDirection != 0
-                || texture.height % PlayerDirectionCount != 0)
+            if (texture == null || texture.width < safeFrameCount || texture.height < PlayerDirectionCount)
             {
                 return;
             }
 
-            int rowHeight = texture.height / PlayerDirectionCount;
-            int cellWidth = texture.width / PlayerFramesPerDirection;
             Color32[] pixels = texture.GetPixels32();
 
             for (int sourceRow = 0; sourceRow < PlayerDirectionCount; sourceRow++)
             {
-                int rowBottom = (PlayerDirectionCount - 1 - sourceRow) * rowHeight;
+                int rowBottom = texture.height * (PlayerDirectionCount - 1 - sourceRow)
+                                / PlayerDirectionCount;
+                int rowTop = texture.height * (PlayerDirectionCount - sourceRow)
+                             / PlayerDirectionCount;
+                int rowHeight = rowTop - rowBottom;
                 float anchorTotal = 0f;
                 float footTotal = 0f;
-                for (int column = 0; column < PlayerFramesPerDirection; column++)
+                for (int column = 0; column < safeFrameCount; column++)
                 {
-                    int cellLeft = column * cellWidth;
+                    int cellLeft = texture.width * column / safeFrameCount;
+                    int cellRight = texture.width * (column + 1) / safeFrameCount;
+                    int cellWidth = cellRight - cellLeft;
                     FrameAnalysis analysis = AnalyzeFrame(
-                        pixels, texture.width, rowBottom, rowHeight, cellLeft, cellLeft + cellWidth);
-                    anchorTotal += analysis.AnchorX - cellLeft;
-                    footTotal += analysis.MinY - rowBottom;
+                        pixels, texture.width, rowBottom, rowHeight, cellLeft, cellRight);
+                    anchorTotal += (analysis.AnchorX - cellLeft) / cellWidth;
+                    footTotal += (analysis.MinY - rowBottom) / (float)rowHeight;
                 }
 
                 // Every frame in one direction shares an anchor. Limb motion must not
                 // move the rendered astronaut relative to its gameplay transform.
                 Vector2 rowPivot = new(
-                    Mathf.Clamp01(anchorTotal / PlayerFramesPerDirection / cellWidth),
-                    Mathf.Clamp01(footTotal / PlayerFramesPerDirection / rowHeight));
-                for (int column = 0; column < PlayerFramesPerDirection; column++)
+                    Mathf.Clamp01(anchorTotal / safeFrameCount),
+                    Mathf.Clamp01(footTotal / safeFrameCount));
+                for (int column = 0; column < safeFrameCount; column++)
                 {
-                    int index = sourceRow * PlayerFramesPerDirection + column;
-                    frameRects[index] = new Rect(column * cellWidth, rowBottom, cellWidth, rowHeight);
+                    int index = sourceRow * safeFrameCount + column;
+                    int cellLeft = texture.width * column / safeFrameCount;
+                    int cellRight = texture.width * (column + 1) / safeFrameCount;
+                    frameRects[index] = new Rect(
+                        cellLeft, rowBottom, cellRight - cellLeft, rowHeight);
                     framePivots[index] = rowPivot;
                 }
             }
@@ -380,24 +426,38 @@ namespace PlanetSurvival.Editor
             return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
-        private static Texture2D ImportGround()
+        private static Texture2D ImportGround() => ImportGroundTexturePath(GroundPath);
+
+        /// <summary>
+        /// Imports a tiling ground texture by file name, for example "Stone1". Terrain textures are
+        /// sampled in world space and have to repeat, which the default import settings do not do.
+        /// </summary>
+        public static Texture2D ImportGroundTexture(string textureName)
         {
-            if (AssetImporter.GetAtPath(GroundPath) is not TextureImporter importer)
+            return ImportGroundTexturePath($"{GroundDirectory}/{textureName}.png");
+        }
+
+        private static Texture2D ImportGroundTexturePath(string path)
+        {
+            if (AssetImporter.GetAtPath(path) is not TextureImporter importer)
             {
-                Debug.LogWarning($"Ground texture '{GroundPath}' was not found.");
+                Debug.LogWarning($"Ground texture '{path}' was not found.");
                 return null;
             }
 
             importer.textureType = TextureImporterType.Default;
             importer.sRGBTexture = true;
             importer.mipmapEnabled = true;
+            // Terrain overlays are cutouts. Without this the importer leaves the colour of fully
+            // transparent pixels undefined, and filtering drags it into the rock edges as a dark halo.
+            importer.alphaIsTransparency = true;
             importer.wrapMode = TextureWrapMode.Repeat;
             importer.filterMode = FilterMode.Trilinear;
             importer.anisoLevel = 16;
             importer.maxTextureSize = 4096;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(GroundPath);
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
     }
 }

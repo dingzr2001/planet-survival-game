@@ -8,6 +8,7 @@ using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.UI.Farming;
 using PlanetSurvival.Player.Interaction;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
@@ -168,23 +169,21 @@ namespace PlanetSurvival.Bootstrap
 
         private void CreatePlayerVisual(Transform player)
         {
-            var visual = new GameObject("Sprite");
-            visual.transform.SetParent(player, false);
-            visual.AddComponent<SpriteRenderer>();
-            WorldSpriteView spriteView = visual.AddComponent<WorldSpriteView>();
             if (_worldVisuals != null)
             {
-                spriteView.ConfigureDirectional(
+                PlayerAnimationController animation = PlayerAnimationController.Create(
+                    player,
                     _worldVisuals.PlayerSprite,
                     InteriorPlayerHeight,
                     _worldVisuals.PlayerAnimationSheet,
                     _worldVisuals.PlayerFramesPerDirection,
                     _worldVisuals.PlayerFrameRects,
                     _worldVisuals.PlayerFramePivots);
+                animation.ConfigureTools(_worldVisuals.PlayerToolAnimations);
             }
             else
             {
-                spriteView.Configure(null, InteriorPlayerHeight);
+                PlayerAnimationController.Create(player, null, InteriorPlayerHeight);
             }
 
             Color shadowColor = _worldVisuals != null ? _worldVisuals.ShadowColor : new Color(0f, 0f, 0f, .4f);

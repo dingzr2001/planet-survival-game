@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 655c8ac038e0544aaae16b1da40fad7c, type: 3}
+  m_Name: PickaxeAnimation
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Player.Animation.PlayerToolAnimationDefinition
+  _itemId: pickaxe
+  _equipmentVisual: {fileID: 11400000, guid: f9d9c6dab864a44cc8c10d7fedd678fd, type: 2}
+  _actionAnimation: {fileID: 11400000, guid: 2a4f21747598544beaa665033b9e0d30, type: 2}

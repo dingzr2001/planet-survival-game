@@ -9,14 +9,6 @@ namespace PlanetSurvival.World.Presentation
     [DisallowMultipleComponent]
     public sealed class WorldSpriteView : MonoBehaviour
     {
-        private enum FacingDirection
-        {
-            Down,
-            Left,
-            Right,
-            Up
-        }
-
         private const float MinimumSpriteSize = .001f;
 
         [SerializeField] private SpriteRenderer _renderer;
@@ -30,26 +22,41 @@ namespace PlanetSurvival.World.Presentation
         private Camera _camera;
         private float _elapsed;
         private bool _isMoving;
-        private FacingDirection _facing = FacingDirection.Down;
+        private SpriteFacingDirection _facing = SpriteFacingDirection.Down;
         private Sprite[] _runtimeSprites = System.Array.Empty<Sprite>();
 
         public SpriteRenderer Renderer => _renderer;
+        public SpriteFacingDirection Facing => _facing;
+        public float DisplayHeight { get; private set; } = 1f;
+
+        /// <summary>
+        /// Assigns the body renderer when it lives below the billboard root. This allows player-only
+        /// motion and equipment layers without complicating ordinary one-sprite world props.
+        /// </summary>
+        public void SetRenderer(SpriteRenderer spriteRenderer)
+        {
+            _renderer = spriteRenderer;
+        }
 
         public void Configure(Sprite sprite, float worldHeight)
         {
+            ResolveRenderer();
+            DisplayHeight = Mathf.Max(.1f, worldHeight);
             if (_renderer == null)
             {
-                _renderer = GetComponent<SpriteRenderer>();
+                Debug.LogError($"{nameof(WorldSpriteView)} on '{name}' requires a {nameof(SpriteRenderer)}.", this);
+                return;
             }
 
+            ReleaseRuntimeSprites();
             _renderer.sprite = sprite;
             Sprite[] fallbackFrames = sprite == null ? System.Array.Empty<Sprite>() : new[] { sprite };
             _downFrames = fallbackFrames;
             _leftFrames = fallbackFrames;
             _rightFrames = fallbackFrames;
             _upFrames = fallbackFrames;
-            FitHeight(worldHeight);
-            transform.localPosition = Vector3.up * Mathf.Max(.1f, worldHeight) * .5f;
+            FitHeight(DisplayHeight);
+            transform.localPosition = Vector3.up * DisplayHeight * .5f;
         }
 
         /// <summary>
@@ -74,21 +81,25 @@ namespace PlanetSurvival.World.Presentation
             System.Collections.Generic.IReadOnlyList<Vector2> framePivots)
         {
             Configure(fallbackSprite, worldHeight);
-            int safeFrameCount = Mathf.Max(1, framesPerDirection);
-            if (animationSheet == null
-                || animationSheet.width % safeFrameCount != 0
-                || animationSheet.height % 4 != 0)
+            if (_renderer == null)
             {
                 return;
             }
 
-            ReleaseRuntimeSprites();
-            int cellWidth = animationSheet.width / safeFrameCount;
-            int cellHeight = animationSheet.height / 4;
+            int safeFrameCount = Mathf.Max(1, framesPerDirection);
             bool hasAnchoredLayout = frameRects != null
                 && framePivots != null
                 && frameRects.Count == safeFrameCount * 4
                 && framePivots.Count == safeFrameCount * 4;
+            if (animationSheet == null
+                || (!hasAnchoredLayout
+                    && (animationSheet.width % safeFrameCount != 0 || animationSheet.height % 4 != 0)))
+            {
+                return;
+            }
+
+            int cellWidth = animationSheet.width / safeFrameCount;
+            int cellHeight = animationSheet.height / 4;
             _runtimeSprites = new Sprite[safeFrameCount * 4];
             Sprite[][] directions = { _downFrames, _rightFrames, _leftFrames, _upFrames };
             for (int sourceRow = 0; sourceRow < 4; sourceRow++)
@@ -135,6 +146,11 @@ namespace PlanetSurvival.World.Presentation
             System.Collections.Generic.IReadOnlyList<Sprite> upFrames)
         {
             Configure(fallbackSprite, worldHeight);
+            if (_renderer == null)
+            {
+                return;
+            }
+
             _downFrames = CopyValidFrames(downFrames, _downFrames);
             _leftFrames = CopyValidFrames(leftFrames, _downFrames);
             _rightFrames = CopyValidFrames(rightFrames, _downFrames);
@@ -161,7 +177,7 @@ namespace PlanetSurvival.World.Presentation
                 return;
             }
 
-            FacingDirection facing = ResolveFacing(cameraRelativeMovement);
+            SpriteFacingDirection facing = ResolveFacing(cameraRelativeMovement);
             if (!wasMoving || facing != _facing)
             {
                 _elapsed = 0f;
@@ -172,10 +188,7 @@ namespace PlanetSurvival.World.Presentation
 
         private void Awake()
         {
-            if (_renderer == null)
-            {
-                _renderer = GetComponent<SpriteRenderer>();
-            }
+            ResolveRenderer();
         }
 
         private void OnDestroy()
@@ -226,28 +239,28 @@ namespace PlanetSurvival.World.Presentation
             ShowFrame(frames[frame]);
         }
 
-        private static FacingDirection ResolveFacing(Vector2 movement)
+        private static SpriteFacingDirection ResolveFacing(Vector2 movement)
         {
             if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
             {
-                return movement.x < 0f ? FacingDirection.Left : FacingDirection.Right;
+                return movement.x < 0f ? SpriteFacingDirection.Left : SpriteFacingDirection.Right;
             }
 
-            return movement.y < 0f ? FacingDirection.Down : FacingDirection.Up;
+            return movement.y < 0f ? SpriteFacingDirection.Down : SpriteFacingDirection.Up;
         }
 
-        private Sprite[] FramesFor(FacingDirection facing)
+        private Sprite[] FramesFor(SpriteFacingDirection facing)
         {
             return facing switch
             {
-                FacingDirection.Left => _leftFrames,
-                FacingDirection.Right => _rightFrames,
-                FacingDirection.Up => _upFrames,
+                SpriteFacingDirection.Left => _leftFrames,
+                SpriteFacingDirection.Right => _rightFrames,
+                SpriteFacingDirection.Up => _upFrames,
                 _ => _downFrames
             };
         }
 
-        private Sprite FirstFrame(FacingDirection facing)
+        private Sprite FirstFrame(SpriteFacingDirection facing)
         {
             Sprite[] frames = FramesFor(facing);
             return frames.Length > 0 ? frames[0] : null;
@@ -325,6 +338,19 @@ namespace PlanetSurvival.World.Presentation
             float spriteHeight = Mathf.Max(MinimumSpriteSize, _renderer.sprite.bounds.size.y);
             float scale = Mathf.Max(.1f, worldHeight) / spriteHeight;
             transform.localScale = Vector3.one * scale;
+        }
+
+        private void ResolveRenderer()
+        {
+            if (_renderer == null)
+            {
+                _renderer = GetComponent<SpriteRenderer>();
+            }
+
+            if (_renderer == null)
+            {
+                _renderer = GetComponentInChildren<SpriteRenderer>(true);
+            }
         }
 
     }

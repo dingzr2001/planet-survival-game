@@ -7,6 +7,7 @@ using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Gathering.Runtime;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
@@ -17,6 +18,7 @@ using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.Water.Runtime;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -26,9 +28,13 @@ namespace PlanetSurvival.Bootstrap
     [DisallowMultipleComponent]
     public sealed class GameBootstrap : MonoBehaviour
     {
+        private const float SurfaceRobotControllerHeight = 1.2f;
+        private const float SurfaceRobotControllerRadius = .55f;
         [SerializeField] private TerrainGenerationSettings _terrainSettings;
         [SerializeField] private PlanetEnvironmentSettings _environmentSettings;
         [SerializeField] private ResourceSpawnSettings _resourceSpawnSettings;
+        [SerializeField, Tooltip("Terrain that covers the base regolith in patches, such as diggable rock. Without it the surface is bare regolith everywhere.")]
+        private TerrainPatchSettings _terrainPatchSettings;
         [SerializeField] private WorldVisualSettings _worldVisuals;
         [SerializeField, Tooltip("Slot artwork for the quick bar and inventory panel. Optional; the HUD falls back to the built-in GUI skin.")]
         private InventorySkin _inventorySkin;
@@ -55,6 +61,11 @@ namespace PlanetSurvival.Bootstrap
             _terrainSettings = terrainSettings;
             _environmentSettings = environmentSettings;
             _resourceSpawnSettings = resourceSpawnSettings;
+        }
+
+        public void ConfigureTerrainPatches(TerrainPatchSettings terrainPatchSettings)
+        {
+            _terrainPatchSettings = terrainPatchSettings;
         }
 
         public void ConfigureUi(InventorySkin inventorySkin)
@@ -99,16 +110,18 @@ namespace PlanetSurvival.Bootstrap
             ContinuousTerrainView terrainView = CreateTerrain(root.transform);
             GameObject player = CreatePlayer(root.transform, session);
             terrainView.SetTarget(player.transform);
+            CreateTerrainPatches(root.transform, player.transform, session);
             LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
                 _worldVisuals);
             CreateResourceStreaming(root.transform, player.transform, session.Buildings.Grid);
-            CreateCamera(root.transform, player.transform);
+            Camera camera = CreateCamera(root.transform, player.transform);
             Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player);
             clock.Bind(session.ConfigureTime(
                 _environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay));
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
             GameObject hud = CreateHud(root.transform, player, clock, _inventorySkin);
+            hud.AddComponent<MinimapView>().Bind(player.transform, camera, session.Exploration);
             CreateBuildingSystem(root.transform, player, hud, session);
             BindPlayerDeath(player);
         }
@@ -120,6 +133,32 @@ namespace PlanetSurvival.Bootstrap
             ContinuousTerrainView terrainView = terrain.AddComponent<ContinuousTerrainView>();
             terrainView.Build(_terrainSettings, _worldVisuals);
             return terrainView;
+        }
+
+        /// <summary>
+        /// Lays the patched terrain over the base ground disc and gives the tiles within reach of the
+        /// player something to dig. The tile map itself belongs to the expedition, so terrain the player
+        /// already broke does not grow back while they are inside the pod.
+        /// </summary>
+        private void CreateTerrainPatches(Transform parent, Transform target, GameSessionState session)
+        {
+            if (_terrainPatchSettings == null)
+            {
+                Debug.LogWarning($"{nameof(GameBootstrap)} on '{name}' has no terrain patch settings; the surface will be bare regolith.", this);
+                return;
+            }
+
+            session.Terrain.Configure(
+                _terrainSettings.Seed + _terrainPatchSettings.SeedOffset, _terrainPatchSettings);
+
+            var terrainPatches = new GameObject("Terrain Patches");
+            terrainPatches.transform.SetParent(parent);
+            TerrainChunkStreamer streamer = terrainPatches.AddComponent<TerrainChunkStreamer>();
+            streamer.Configure(_terrainPatchSettings, session.Terrain);
+            streamer.SetTarget(target);
+            TerrainDigSiteSpawner digSites = terrainPatches.AddComponent<TerrainDigSiteSpawner>();
+            digSites.Configure(session.Terrain);
+            digSites.SetTarget(target);
         }
 
         private void CreateResourceStreaming(Transform parent, Transform target, BuildGrid buildGrid)
@@ -152,9 +191,9 @@ namespace PlanetSurvival.Bootstrap
             player.transform.position = _terrainSettings.StartingAreaCenter;
 
             var controller = player.AddComponent<CharacterController>();
-            controller.height = 1.5f;
-            controller.radius = .32f;
-            controller.center = Vector3.up * .75f;
+            controller.height = SurfaceRobotControllerHeight;
+            controller.radius = SurfaceRobotControllerRadius;
+            controller.center = Vector3.up * (SurfaceRobotControllerHeight * .5f);
 
             PlayerSurvival survival = player.AddComponent<PlayerSurvival>();
             survival.Bind(session.SurvivalStats);
@@ -174,30 +213,46 @@ namespace PlanetSurvival.Bootstrap
 
         private void CreatePlayerVisual(Transform player)
         {
-            var visual = new GameObject("Sprite");
-            visual.transform.SetParent(player, false);
-            visual.AddComponent<SpriteRenderer>();
-            WorldSpriteView spriteView = visual.AddComponent<WorldSpriteView>();
             if (_worldVisuals != null)
             {
-                spriteView.ConfigureDirectional(
-                    _worldVisuals.PlayerSprite,
-                    _worldVisuals.PlayerHeight,
-                    _worldVisuals.PlayerAnimationSheet,
-                    _worldVisuals.PlayerFramesPerDirection,
-                    _worldVisuals.PlayerFrameRects,
-                    _worldVisuals.PlayerFramePivots);
+                PlayerAnimationController animation;
+                if (_worldVisuals.HasSurfaceRobotAnimation)
+                {
+                    animation = PlayerAnimationController.Create(
+                        player,
+                        null,
+                        _worldVisuals.SurfaceRobotHeight,
+                        _worldVisuals.SurfaceRobotAnimationSheet,
+                        _worldVisuals.SurfaceRobotFramesPerDirection,
+                        _worldVisuals.SurfaceRobotFrameRects,
+                        _worldVisuals.SurfaceRobotFramePivots);
+                }
+                else
+                {
+                    Debug.LogWarning("Surface robot animation is incomplete; using the cabin explorer frames.",
+                        _worldVisuals);
+                    animation = PlayerAnimationController.Create(
+                        player,
+                        _worldVisuals.PlayerSprite,
+                        _worldVisuals.PlayerHeight,
+                        _worldVisuals.PlayerAnimationSheet,
+                        _worldVisuals.PlayerFramesPerDirection,
+                        _worldVisuals.PlayerFrameRects,
+                        _worldVisuals.PlayerFramePivots);
+                }
+
+                animation.ConfigureTools(_worldVisuals.PlayerToolAnimations);
             }
             else
             {
-                spriteView.Configure(null, 1.8f);
+                PlayerAnimationController.Create(player, null, 1.8f);
             }
 
             Color shadowColor = _worldVisuals != null ? _worldVisuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
-            BlobShadow.Create(player, new Vector2(.72f, .4f), shadowColor);
+            BlobShadow.Create(player, new Vector2(1.25f, .56f), shadowColor);
         }
 
-        private void CreateCamera(Transform parent, Transform target)
+        private Camera CreateCamera(Transform parent, Transform target)
         {
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
@@ -216,6 +271,7 @@ namespace PlanetSurvival.Bootstrap
 
             FollowCamera followCamera = camera.gameObject.AddComponent<FollowCamera>();
             followCamera.SetTarget(target);
+            return camera;
         }
 
         private static Light CreateLighting(Transform parent)

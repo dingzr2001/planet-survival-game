@@ -16,7 +16,7 @@ MonoBehaviour:
   _displayName: Rock
   _gatherDuration: 2.5
   _gatherDistance: 2.25
-  _requiredToolItemId: 
+  _requiredToolItemId: pickaxe
   _yields:
   - _item: {fileID: 11400000, guid: 20290619ae85e43558b63ab7f3d0bf3b, type: 2}
     _quantity: 2
@@ -24,3 +24,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 240351a27cdc642d6b844aaece76c0c2, type: 3}
   _displayScale: {x: 0.9, y: 1.1, z: 0.72}
   _blocksMovement: 1
+  _visualMode: 0
+  _suppressBlobShadow: 0
+  _groundPatchSizes: []
+  _legacyGroundPatchFootprints: []

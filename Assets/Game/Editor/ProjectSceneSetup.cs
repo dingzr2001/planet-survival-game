@@ -6,11 +6,13 @@ using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.Water.Domain;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Interiors;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -48,6 +50,23 @@ namespace PlanetSurvival.Editor
         private const string BuildingCatalogPath = ConfigurationDirectory + "/DefaultBuildingCatalog.asset";
         private const string IceChunkPath = ConfigurationDirectory + "/IceChunk.asset";
         private const string PotatoCropPath = ConfigurationDirectory + "/PotatoCrop.asset";
+        private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
+        private const string PickaxeVisualPath = ConfigurationDirectory + "/PickaxeVisual.asset";
+        private const string PickaxeSwingPath = ConfigurationDirectory + "/PickaxeSwing.asset";
+        private const string PickaxeAnimationPath = ConfigurationDirectory + "/PickaxeAnimation.asset";
+        private const string TerrainPatchSettingsPath = ConfigurationDirectory + "/DefaultTerrainPatches.asset";
+
+        // Rock terrain. The three grades share the same texture resolution and the same 1 stone per swing,
+        // so their hardness is the only thing that separates them: loose scree gives up at once, the
+        // boulder field takes five swings and pays five times as much. Together they cover about a
+        // quarter of the surface, which TerrainPatchLayerTests pins down.
+        private const int TerrainSeedOffset = 5231;
+        private const float TerrainTileSize = 3f;
+        private const int TerrainChunkSizeInTiles = 8;
+        private const int TerrainLoadRadiusInChunks = 1;
+        private const float TerrainTextureTileSize = 8f;
+        private const float RockDigSeconds = 1.6f;
+        private const int RockStonePerDig = 1;
 
         // The ice-water-food loop. One chunk yields one litre, one planting drinks 1.5 L and returns
         // four potatoes for one seed, so two trays feed one explorer and still leave water to drink.
@@ -92,22 +111,27 @@ namespace PlanetSurvival.Editor
             ItemDefinition energyBar = GetOrCreateEnergyBar();
             ItemDefinition potato = GetOrCreatePotato();
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
+            ItemDefinition pickaxe = GetOrCreatePickaxe();
+            PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
+            worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation);
+            EditorUtility.SetDirty(worldVisuals);
             ItemDefinition iceChunk = GetOrCreateIceChunk();
             CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato);
-            ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(iceChunk);
+            ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(iceChunk, pickaxe);
+            TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe);
             CookingStationDefinition oven = GetOrCreateOven(potato);
             BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven);
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene(energyBar, potato, aluminumAlloy);
+            CreateBootstrapScene(energyBar, potato, aluminumAlloy, pickaxe);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
             CreateLandingPodScene(LandingPodDeck.Cargo, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodCargoScenePath);
-            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, inventorySkin, worldVisuals,
-                buildingCatalog);
+            CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, terrainPatchSettings,
+                inventorySkin, worldVisuals, buildingCatalog);
             ConfigureBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -115,19 +139,23 @@ namespace PlanetSurvival.Editor
             Debug.Log("Planet Survival formal scenes and default configuration are ready.");
         }
 
-        private static ResourceSpawnSettings GetOrCreateResourceSettings(ItemDefinition iceChunk)
+        private static ResourceSpawnSettings GetOrCreateResourceSettings(
+            ItemDefinition iceChunk, ItemDefinition pickaxe)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
 
             ResourceNodeDefinition rock = GetOrCreateNode("RockNode", "rock", "Rock", 2.5f,
+                pickaxe.ItemId,
                 new Vector3(.9f, 1.1f, .72f), new ResourceYield(stone, 2));
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
+                string.Empty,
                 new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
             // Physical sizes are world-space values rather than tile counts. Repeated entries weight the mix:
             // small remnants remain, but most deposits read as substantial connected sheets.
             ResourceNodeDefinition iceDeposit = GetOrCreateNode("IceDepositNode", "ice_deposit", "Ice Deposit",
-                IceGatherSeconds, new Vector3(1.1f, .15f, 1.1f), new ResourceYield(iceChunk, IceChunksPerDeposit));
+                IceGatherSeconds, string.Empty, new Vector3(1.1f, .15f, 1.1f),
+                new ResourceYield(iceChunk, IceChunksPerDeposit));
             // The sheet lies flat on the ground: the explorer walks over it rather than around it.
             iceDeposit.ConfigureCollision(false);
             iceDeposit.ConfigurePresentation(ResourceVisualMode.GroundDecal);
@@ -156,6 +184,67 @@ namespace PlanetSurvival.Editor
             return settings;
         }
 
+        /// <summary>
+        /// Authors the patched terrain: three grades of rock laid over the base regolith. Hardest first,
+        /// because the first layer to reach its threshold wins the tile, and a wide soft-scree patch would
+        /// otherwise swallow the boulder fields sitting inside it. Each layer samples its own field, so
+        /// the grades mix into one another rather than forming concentric rings.
+        /// </summary>
+        private static TerrainPatchSettings GetOrCreateTerrainPatchSettings(ItemDefinition pickaxe)
+        {
+            ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
+
+            // The artwork is a cutout layer of loose rock over the regolith, and how much of the ground it
+            // hides rises with its grade: scattered gravel, then broken slabs, then solid boulders. That
+            // makes a tile's hardness readable before the first swing.
+            TerrainSurfaceDefinition boulderField = GetOrCreateTerrainSurface("BoulderFieldTerrain",
+                "rock_boulder_field", "Boulder Field", "Stone3", 5, pickaxe.ItemId, stone);
+            TerrainSurfaceDefinition brokenRock = GetOrCreateTerrainSurface("BrokenRockTerrain",
+                "rock_broken", "Broken Rock", "Stone2", 3, pickaxe.ItemId, stone);
+            TerrainSurfaceDefinition looseScree = GetOrCreateTerrainSurface("LooseScreeTerrain",
+                "rock_loose_scree", "Loose Scree", "Stone1", 1, pickaxe.ItemId, stone);
+
+            TerrainPatchSettings settings =
+                AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(TerrainPatchSettingsPath);
+            if (settings == null)
+            {
+                settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+                settings.name = "Default Terrain Patches";
+                AssetDatabase.CreateAsset(settings, TerrainPatchSettingsPath);
+            }
+
+            // Patch sizes run from tight boulder fields to broad scree flats, and the thresholds are read
+            // off the field's distribution rather than guessed: see TerrainPatchLayerTests, which fails if
+            // a change to the noise moves the covered fraction out of its band.
+            settings.Configure(TerrainSeedOffset, TerrainTileSize, TerrainChunkSizeInTiles,
+                TerrainLoadRadiusInChunks,
+                new TerrainPatchLayer(boulderField, 15f, .78f, 1613),
+                new TerrainPatchLayer(brokenRock, 20f, .73f, 7817),
+                new TerrainPatchLayer(looseScree, 28f, .68f, 3271));
+            EditorUtility.SetDirty(settings);
+            return settings;
+        }
+
+        private static TerrainSurfaceDefinition GetOrCreateTerrainSurface(string assetName, string terrainId,
+            string displayName, string textureName, int digCount, string requiredToolItemId,
+            ItemDefinition yieldItem)
+        {
+            string path = $"{ConfigurationDirectory}/{assetName}.asset";
+            TerrainSurfaceDefinition surface = AssetDatabase.LoadAssetAtPath<TerrainSurfaceDefinition>(path);
+            if (surface == null)
+            {
+                surface = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+                surface.name = displayName;
+                AssetDatabase.CreateAsset(surface, path);
+            }
+
+            surface.Configure(terrainId, displayName, digCount, RockDigSeconds, requiredToolItemId,
+                new ResourceYield(yieldItem, RockStonePerDig));
+            surface.ConfigureTexture(WorldArtSetup.ImportGroundTexture(textureName), TerrainTextureTileSize);
+            EditorUtility.SetDirty(surface);
+            return surface;
+        }
+
         private static ItemDefinition GetOrCreateItem(string assetName, string itemId, string displayName,
             int capacity, int stackSize)
         {
@@ -171,6 +260,94 @@ namespace PlanetSurvival.Editor
             item.Configure(itemId, displayName, capacity, stackSize, false, true);
             EditorUtility.SetDirty(item);
             return item;
+        }
+
+        private static ItemDefinition GetOrCreatePickaxe()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Pickaxe";
+                AssetDatabase.CreateAsset(item, PickaxePath);
+            }
+
+            Sprite sprite = WorldArtSetup.ImportPickaxeSprite();
+            item.Configure("pickaxe", "Powered Pickaxe", 4, 1, false, true);
+            item.ConfigureDescription("Powered field pickaxe used to break exposed rock deposits.");
+            item.ConfigureIcon(sprite);
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
+        private static PlayerToolAnimationDefinition GetOrCreatePickaxeAnimation(ItemDefinition pickaxe)
+        {
+            PlayerEquipmentVisualDefinition visual =
+                AssetDatabase.LoadAssetAtPath<PlayerEquipmentVisualDefinition>(PickaxeVisualPath);
+            if (visual == null)
+            {
+                visual = ScriptableObject.CreateInstance<PlayerEquipmentVisualDefinition>();
+                visual.name = "Pickaxe Visual";
+                AssetDatabase.CreateAsset(visual, PickaxeVisualPath);
+            }
+
+            Vector2 secondHand = new(0f, .1f);
+            visual.Configure(pickaxe.Icon, .32f,
+                new DirectionalEquipmentPose(new Vector2(.06f, .5f), -32f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(-.08f, .5f), 38f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(.08f, .5f), -38f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(.06f, .51f), 28f, secondHand, true));
+            EditorUtility.SetDirty(visual);
+
+            PlayerActionAnimationDefinition swing =
+                AssetDatabase.LoadAssetAtPath<PlayerActionAnimationDefinition>(PickaxeSwingPath);
+            if (swing == null)
+            {
+                swing = ScriptableObject.CreateInstance<PlayerActionAnimationDefinition>();
+                swing.name = "Pickaxe Swing";
+                AssetDatabase.CreateAsset(swing, PickaxeSwingPath);
+            }
+
+            swing.Configure(.72f, true,
+                Curve(0f, 0f, .38f, -.018f, .58f, .012f, 1f, 0f),
+                Curve(0f, 0f, .38f, -.025f, .58f, .01f, 1f, 0f),
+                Curve(0f, 0f, .38f, -3f, .58f, 2f, 1f, 0f),
+                Curve(0f, 0f, .38f, .025f, .58f, -.01f, 1f, 0f),
+                Curve(0f, 0f, .18f, -.01f, .38f, .04f, .58f, .01f, 1f, 0f),
+                Curve(0f, 0f, .18f, 34f, .42f, -58f, .68f, 14f, 1f, 0f),
+                AnimationCurve.Constant(0f, 1f, 1f));
+            swing.ConfigureRig(
+                Curve(0f, 0f, .18f, 35f, .42f, 15f, .68f, 25f, 1f, 0f),
+                Curve(0f, 0f, .18f, 25f, .42f, 50f, .68f, 20f, 1f, 0f),
+                Curve(0f, 0f, .18f, -10f, .42f, -18f, .68f, -8f, 1f, 0f),
+                Curve(0f, 0f, .18f, -15f, .42f, -40f, .68f, -10f, 1f, 0f),
+                Curve(0f, 0f, .18f, -25f, .42f, -15f, .68f, -25f, 1f, 0f),
+                Curve(0f, 0f, .18f, 10f, .42f, 16f, .68f, 8f, 1f, 0f));
+            EditorUtility.SetDirty(swing);
+
+            PlayerToolAnimationDefinition animation =
+                AssetDatabase.LoadAssetAtPath<PlayerToolAnimationDefinition>(PickaxeAnimationPath);
+            if (animation == null)
+            {
+                animation = ScriptableObject.CreateInstance<PlayerToolAnimationDefinition>();
+                animation.name = "Pickaxe Animation";
+                AssetDatabase.CreateAsset(animation, PickaxeAnimationPath);
+            }
+
+            animation.Configure(pickaxe.ItemId, visual, swing);
+            EditorUtility.SetDirty(animation);
+            return animation;
+        }
+
+        private static AnimationCurve Curve(params float[] timeValuePairs)
+        {
+            var keys = new Keyframe[timeValuePairs.Length / 2];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                keys[i] = new Keyframe(timeValuePairs[i * 2], timeValuePairs[i * 2 + 1]);
+            }
+
+            return new AnimationCurve(keys);
         }
 
         private static ItemDefinition GetOrCreateEnergyBar()
@@ -404,7 +581,8 @@ namespace PlanetSurvival.Editor
         }
 
         private static ResourceNodeDefinition GetOrCreateNode(string assetName, string resourceId,
-            string displayName, float duration, Vector3 scale, params ResourceYield[] yields)
+            string displayName, float duration, string requiredToolItemId,
+            Vector3 scale, params ResourceYield[] yields)
         {
             string path = $"{ConfigurationDirectory}/{assetName}.asset";
             ResourceNodeDefinition node = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(path);
@@ -415,7 +593,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(node, path);
             }
 
-            node.Configure(resourceId, displayName, duration, 2.25f, string.Empty, scale, yields);
+            node.Configure(resourceId, displayName, duration, 2.25f, requiredToolItemId, scale, yields);
             EditorUtility.SetDirty(node);
             return node;
         }
@@ -449,11 +627,12 @@ namespace PlanetSurvival.Editor
         }
 
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
-            ItemDefinition aluminumAlloy)
+            ItemDefinition aluminumAlloy, ItemDefinition pickaxe)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
-            root.AddComponent<GameFlowController>().ConfigureStartingSupplies(energyBar, potato, aluminumAlloy);
+            root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
+                energyBar, potato, aluminumAlloy, pickaxe);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -467,12 +646,14 @@ namespace PlanetSurvival.Editor
 
         private static void CreateGameplayScene(TerrainGenerationSettings settings,
             PlanetEnvironmentSettings environmentSettings, ResourceSpawnSettings resourceSpawnSettings,
-            InventorySkin inventorySkin, WorldVisualSettings worldVisuals, BuildingCatalog buildingCatalog)
+            TerrainPatchSettings terrainPatchSettings, InventorySkin inventorySkin,
+            WorldVisualSettings worldVisuals, BuildingCatalog buildingCatalog)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var gameplay = new GameObject("Gameplay");
             GameBootstrap bootstrap = gameplay.AddComponent<GameBootstrap>();
             bootstrap.Configure(settings, environmentSettings, resourceSpawnSettings);
+            bootstrap.ConfigureTerrainPatches(terrainPatchSettings);
             bootstrap.ConfigureUi(inventorySkin);
             bootstrap.ConfigureVisuals(worldVisuals);
             bootstrap.ConfigureBuilding(buildingCatalog);

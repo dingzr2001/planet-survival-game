@@ -31,12 +31,14 @@ namespace PlanetSurvival.Tests
         {
             var session = new GameSessionState();
             session.ConfigureTime(RealSecondsPerGameDay, RescueDay).Advance(RealSecondsPerGameDay * 5d);
+            session.Exploration.Reveal(UnityEngine.Vector3.zero, 10f);
 
             session.Reset();
 
             Assert.That(session.Time.CurrentDay, Is.EqualTo(1));
             Assert.That(session.Time.RescueDay, Is.EqualTo(RescueDay));
             Assert.That(session.Time.ElapsedDays, Is.Zero);
+            Assert.That(session.Exploration.ExploredCellCount, Is.Zero);
         }
 
         [Test]

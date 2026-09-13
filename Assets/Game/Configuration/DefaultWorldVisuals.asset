@@ -213,6 +213,110 @@ MonoBehaviour:
   - {x: 0.49351087, y: 0.04296875}
   - {x: 0.49351087, y: 0.04296875}
   - {x: 0.49351087, y: 0.04296875}
+  _modularPlayerRig: {fileID: 0}
+  _playerToolAnimations:
+  - {fileID: 11400000, guid: 744fc83446ce24b9487ac8df625b301c, type: 2}
+  _surfaceRobotHeight: 1.35
+  _surfaceRobotAnimationSheet: {fileID: 2800000, guid: 7d3a8400d82e84d62b79e2831362b24d, type: 3}
+  _surfaceRobotFramesPerDirection: 4
+  _surfaceRobotFrameRects:
+  - serializedVersion: 2
+    x: 0
+    y: 940
+    width: 313
+    height: 314
+  - serializedVersion: 2
+    x: 313
+    y: 940
+    width: 314
+    height: 314
+  - serializedVersion: 2
+    x: 627
+    y: 940
+    width: 313
+    height: 314
+  - serializedVersion: 2
+    x: 940
+    y: 940
+    width: 314
+    height: 314
+  - serializedVersion: 2
+    x: 0
+    y: 627
+    width: 313
+    height: 313
+  - serializedVersion: 2
+    x: 313
+    y: 627
+    width: 314
+    height: 313
+  - serializedVersion: 2
+    x: 627
+    y: 627
+    width: 313
+    height: 313
+  - serializedVersion: 2
+    x: 940
+    y: 627
+    width: 314
+    height: 313
+  - serializedVersion: 2
+    x: 0
+    y: 313
+    width: 313
+    height: 314
+  - serializedVersion: 2
+    x: 313
+    y: 313
+    width: 314
+    height: 314
+  - serializedVersion: 2
+    x: 627
+    y: 313
+    width: 313
+    height: 314
+  - serializedVersion: 2
+    x: 940
+    y: 313
+    width: 314
+    height: 314
+  - serializedVersion: 2
+    x: 0
+    y: 0
+    width: 313
+    height: 313
+  - serializedVersion: 2
+    x: 313
+    y: 0
+    width: 314
+    height: 313
+  - serializedVersion: 2
+    x: 627
+    y: 0
+    width: 313
+    height: 313
+  - serializedVersion: 2
+    x: 940
+    y: 0
+    width: 314
+    height: 313
+  _surfaceRobotFramePivots:
+  - {x: 0.5124196, y: 0.049363054}
+  - {x: 0.5124196, y: 0.049363054}
+  - {x: 0.5124196, y: 0.049363054}
+  - {x: 0.5124196, y: 0.049363054}
+  - {x: 0.50109404, y: 0.07907348}
+  - {x: 0.50109404, y: 0.07907348}
+  - {x: 0.50109404, y: 0.07907348}
+  - {x: 0.50109404, y: 0.07907348}
+  - {x: 0.5283763, y: 0}
+  - {x: 0.5283763, y: 0}
+  - {x: 0.5283763, y: 0}
+  - {x: 0.5283763, y: 0}
+  - {x: 0.5008641, y: 0.1773163}
+  - {x: 0.5008641, y: 0.1773163}
+  - {x: 0.5008641, y: 0.1773163}
+  - {x: 0.5008641, y: 0.1773163}
   _landingPodExteriorSprite: {fileID: 21300000, guid: c39e27255dc14434bb80e7b59794db6c, type: 3}
   _landingPodExteriorHeight: 5.4
   _horizonSprite: {fileID: 21300000, guid: c5a30097d888245b08ef614cfcfe7457, type: 3}

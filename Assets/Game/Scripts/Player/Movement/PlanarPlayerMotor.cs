@@ -1,3 +1,4 @@
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
@@ -11,11 +12,13 @@ namespace PlanetSurvival.Player.Movement
 
         private CharacterController _controller;
         private Camera _camera;
+        private PlayerAnimationController _animation;
         private WorldSpriteView _view;
 
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            _animation = GetComponentInChildren<PlayerAnimationController>();
             _view = GetComponentInChildren<WorldSpriteView>();
         }
 
@@ -38,7 +41,11 @@ namespace PlanetSurvival.Player.Movement
             Vector3 movement = forward * input.y + right * input.x;
             _controller.Move(movement * (_moveSpeed * Time.deltaTime));
 
-            if (_view != null)
+            if (_animation != null)
+            {
+                _animation.SetMovement(input);
+            }
+            else if (_view != null)
             {
                 _view.SetMovement(input);
             }

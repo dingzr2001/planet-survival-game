@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PlanetSurvival.Core.SceneManagement;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Inventory.Domain;
@@ -16,6 +17,8 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _potatoDefinition;
         [SerializeField, Tooltip("Structural building material placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _aluminumAlloyDefinition;
+        [SerializeField, Tooltip("Mining tool placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _pickaxeDefinition;
         private GameFlow _flow;
         private readonly GameSessionState _session = new();
 
@@ -39,11 +42,12 @@ namespace PlanetSurvival.Core.Flow
         public GameSessionState Session => _session;
 
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
-            ItemDefinition aluminumAlloyDefinition)
+            ItemDefinition aluminumAlloyDefinition, ItemDefinition pickaxeDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
             _aluminumAlloyDefinition = aluminumAlloyDefinition;
+            _pickaxeDefinition = pickaxeDefinition;
         }
 
         public void Initialize()
@@ -90,12 +94,19 @@ namespace PlanetSurvival.Core.Flow
                 return;
             }
 
-            InventoryOperationResult result = _session.Reset(new[]
+            var startingSupplies = new List<InventoryItemAmount>
             {
                 new InventoryItemAmount(_energyBarDefinition, GameSessionState.InitialEnergyBarCount),
                 new InventoryItemAmount(_potatoDefinition, GameSessionState.InitialPotatoCount),
                 new InventoryItemAmount(_aluminumAlloyDefinition, GameSessionState.InitialAluminumAlloyCount)
-            });
+            };
+            if (_pickaxeDefinition != null)
+            {
+                startingSupplies.Add(new InventoryItemAmount(
+                    _pickaxeDefinition, GameSessionState.InitialPickaxeCount));
+            }
+
+            InventoryOperationResult result = _session.Reset(startingSupplies);
             if (!result.Succeeded)
             {
                 Debug.LogError($"Could not provision starting cargo: {result.Message}", this);

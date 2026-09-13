@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.SceneManagement;
+using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
@@ -190,6 +191,190 @@ namespace PlanetSurvival.Tests
             Assert.That(renderer.sprite.pivot.x, Is.EqualTo(1f).Within(.001f));
             Assert.That(renderer.sprite.pivot.y, Is.Zero.Within(.001f));
             Assert.That(root.transform.localPosition, Is.EqualTo(Vector3.zero));
+        }
+
+        [Test]
+        public void WorldSpriteView_AcceptsAuthoredRectsWhenSheetHasRemainderPixels()
+        {
+            var texture = Track(new Texture2D(16, 18));
+            var rects = new Rect[16];
+            var pivots = new Vector2[16];
+            for (int i = 0; i < rects.Length; i++)
+            {
+                rects[i] = new Rect((i % 4) * 4f, (3 - i / 4) * 4f, 4f, 4f);
+                pivots[i] = new Vector2(.5f, 0f);
+            }
+
+            var root = Track(new GameObject("Sprite"));
+            SpriteRenderer renderer = root.AddComponent<SpriteRenderer>();
+            WorldSpriteView view = root.AddComponent<WorldSpriteView>();
+
+            view.ConfigureDirectional(null, 2f, texture, 4, rects, pivots);
+            view.SetMovement(Vector2.up);
+
+            Assert.That(renderer.sprite, Is.Not.Null);
+            Assert.That(renderer.sprite.rect, Is.EqualTo(rects[12]));
+        }
+
+        [Test]
+        public void PlayerAnimationController_ComposesOneEquipmentSpriteWithDirectionalGripPoses()
+        {
+            var bodyTexture = Track(new Texture2D(8, 16));
+            var bodySprite = Track(Sprite.Create(bodyTexture, new Rect(0f, 0f, 8f, 16f),
+                new Vector2(.5f, 0f), 8f));
+            var equipmentTexture = Track(new Texture2D(4, 8));
+            var equipmentSprite = Track(Sprite.Create(equipmentTexture, new Rect(0f, 0f, 4f, 8f),
+                new Vector2(.5f, .2f), 4f));
+            var root = Track(new GameObject("Player"));
+            PlayerAnimationController animation = PlayerAnimationController.Create(root.transform, bodySprite, 2f);
+            var equipment = Track(ScriptableObject.CreateInstance<PlayerEquipmentVisualDefinition>());
+            equipment.Configure(equipmentSprite, .5f,
+                new DirectionalEquipmentPose(new Vector2(0f, .2f), 0f),
+                new DirectionalEquipmentPose(new Vector2(-.2f, .1f), -25f),
+                new DirectionalEquipmentPose(new Vector2(.2f, .1f), 25f, true),
+                new DirectionalEquipmentPose(new Vector2(0f, .25f), 180f, true));
+
+            Assert.That(animation.Equip(equipment), Is.True);
+            animation.SetMovement(Vector2.right);
+
+            Assert.That(animation.Body.Facing, Is.EqualTo(SpriteFacingDirection.Right));
+            Assert.That(animation.EquipmentRenderer.sprite, Is.EqualTo(equipmentSprite));
+            Assert.That(animation.EquipmentRenderer.enabled, Is.True);
+            Assert.That(animation.EquipmentMotion.localPosition.x, Is.EqualTo(.4f).Within(.001f));
+            Assert.That(animation.EquipmentMotion.localPosition.y, Is.EqualTo(.2f).Within(.001f));
+            Assert.That(animation.EquipmentMotion.localPosition.z, Is.Zero.Within(.001f));
+            Assert.That(animation.EquipmentMotion.localEulerAngles.z, Is.EqualTo(25f).Within(.001f));
+            Assert.That(animation.EquipmentMotion.localScale.x, Is.EqualTo(.5f).Within(.001f));
+            Assert.That(animation.EquipmentRenderer.sortingOrder,
+                Is.EqualTo(animation.Body.Renderer.sortingOrder - 1));
+        }
+
+        [Test]
+        public void PlayerAnimationController_PlaysReusableTransformActionAndReturnsToRest()
+        {
+            var texture = Track(new Texture2D(8, 16));
+            var sprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 8f, 16f),
+                new Vector2(.5f, 0f), 8f));
+            var root = Track(new GameObject("Player"));
+            PlayerAnimationController animation = PlayerAnimationController.Create(root.transform, sprite, 2f);
+            var action = Track(ScriptableObject.CreateInstance<PlayerActionAnimationDefinition>());
+            action.Configure(1f, false,
+                AnimationCurve.Constant(0f, 1f, .1f),
+                AnimationCurve.Constant(0f, 1f, .2f),
+                AnimationCurve.Constant(0f, 1f, 10f),
+                AnimationCurve.Constant(0f, 1f, 0f),
+                AnimationCurve.Constant(0f, 1f, 0f),
+                AnimationCurve.Constant(0f, 1f, 30f),
+                AnimationCurve.Constant(0f, 1f, .8f));
+            action.ConfigureRig(
+                AnimationCurve.Constant(0f, 1f, 12f),
+                AnimationCurve.Constant(0f, 1f, 24f),
+                AnimationCurve.Constant(0f, 1f, 6f),
+                AnimationCurve.Constant(0f, 1f, -18f),
+                AnimationCurve.Constant(0f, 1f, -30f),
+                AnimationCurve.Constant(0f, 1f, -8f));
+            bool completed = false;
+            animation.ActionCompleted += completedAction => completed = completedAction == action;
+
+            Assert.That(animation.PlayAction(action), Is.True);
+            animation.Advance(.5f);
+
+            Assert.That(animation.CharacterMotion.localPosition.x, Is.EqualTo(.2f).Within(.001f));
+            Assert.That(animation.CharacterMotion.localPosition.y, Is.EqualTo(.4f).Within(.001f));
+            Assert.That(animation.CharacterMotion.localEulerAngles.z, Is.EqualTo(10f).Within(.001f));
+            Assert.That(animation.IsPlayingAction, Is.True);
+            PlayerRigActionPose rigPose = action.EvaluateRigPose(.5f);
+            Assert.That(rigPose.FarUpperArm, Is.EqualTo(12f).Within(.001f));
+            Assert.That(rigPose.NearForearm, Is.EqualTo(-30f).Within(.001f));
+
+            animation.Advance(.5f);
+
+            Assert.That(completed, Is.True);
+            Assert.That(animation.IsPlayingAction, Is.False);
+            Assert.That(animation.CharacterMotion.localPosition, Is.EqualTo(Vector3.zero));
+            Assert.That(animation.CharacterMotion.localRotation, Is.EqualTo(Quaternion.identity));
+        }
+
+        [Test]
+        public void PlayerAnimationController_ResolvesToolActionByItemIdAndUnequipsOnStop()
+        {
+            var texture = Track(new Texture2D(8, 16));
+            var bodySprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 8f, 16f),
+                new Vector2(.5f, 0f), 8f));
+            var toolSprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 4f, 8f),
+                new Vector2(.5f, .5f), 8f));
+            var root = Track(new GameObject("Player"));
+            PlayerAnimationController animation = PlayerAnimationController.Create(root.transform, bodySprite, 2f);
+            var visual = Track(ScriptableObject.CreateInstance<PlayerEquipmentVisualDefinition>());
+            visual.Configure(toolSprite, .5f, default, default, default, default);
+            var action = Track(ScriptableObject.CreateInstance<PlayerActionAnimationDefinition>());
+            action.Configure(1f, true, null, null, null, null, null, null, null);
+            var toolAnimation = Track(ScriptableObject.CreateInstance<PlayerToolAnimationDefinition>());
+            toolAnimation.Configure("pickaxe", visual, action);
+            animation.ConfigureTools(new[] { toolAnimation });
+
+            Assert.That(animation.TryPlayToolAction("pickaxe"), Is.True);
+            Assert.That(animation.Equipment, Is.SameAs(visual));
+            Assert.That(animation.CurrentAction, Is.SameAs(action));
+            Assert.That(animation.StopToolAction("another_tool"), Is.False);
+            Assert.That(animation.StopToolAction("pickaxe"), Is.True);
+            Assert.That(animation.Equipment, Is.Null);
+            Assert.That(animation.IsPlayingAction, Is.False);
+        }
+
+        [Test]
+        public void PlayerAnimationController_ModularRigReusesPartsAndSwitchesDirection()
+        {
+            var texture = Track(new Texture2D(16, 16));
+            var fallback = Track(Sprite.Create(texture, new Rect(0f, 0f, 8f, 16f),
+                new Vector2(.5f, 0f), 8f));
+            var downPart = Track(Sprite.Create(texture, new Rect(0f, 0f, 8f, 8f),
+                new Vector2(.5f, 1f), 8f));
+            var rightPart = Track(Sprite.Create(texture, new Rect(8f, 0f, 8f, 8f),
+                new Vector2(.5f, 1f), 8f));
+            var root = Track(new GameObject("Player"));
+            PlayerAnimationController animation = PlayerAnimationController.Create(root.transform, fallback, 2f);
+            var definition = Track(ScriptableObject.CreateInstance<ModularPlayerRigDefinition>());
+            var down = new DirectionalRigSprites(downPart, downPart, downPart, downPart,
+                downPart, downPart, downPart);
+            var right = new DirectionalRigSprites(rightPart, rightPart, rightPart, rightPart,
+                rightPart, rightPart, rightPart);
+            definition.Configure(down, down, right, down);
+
+            Assert.That(animation.ConfigureModularRig(definition), Is.True);
+            animation.SetMovement(Vector2.right);
+
+            Assert.That(animation.Body.Renderer.enabled, Is.False);
+            Assert.That(animation.ModularRig, Is.Not.Null);
+            SpriteRenderer torso = animation.ModularRig.transform.Find("Torso").GetComponent<SpriteRenderer>();
+            Assert.That(torso.sprite, Is.SameAs(rightPart));
+            Assert.That(animation.ModularRig.GetComponentsInChildren<SpriteRenderer>().Length, Is.EqualTo(13),
+                "The torso and four three-part chains should use only authored overlap-ready sprites.");
+            Transform ankle = animation.ModularRig.transform.Find("Far Leg/Middle Joint/End Joint");
+            Vector3 restingAnkle = ankle.position;
+            animation.Advance(.1f);
+            Assert.That(Vector3.Distance(restingAnkle, ankle.position), Is.GreaterThan(.001f),
+                "Movement time should advance the authored cutout gait without baked full-body frames.");
+
+            animation.SetMovement(Vector2.down);
+            animation.Advance(.1f);
+            Transform farAnkle = animation.ModularRig.transform.Find("Far Leg/Middle Joint/End Joint");
+            Transform nearAnkle = animation.ModularRig.transform.Find("Near Leg/Middle Joint/End Joint");
+            Assert.That(farAnkle.position.x, Is.LessThan(nearAnkle.position.x),
+                "Front/back gait must keep each foot on its own side instead of crossing the legs.");
+            Assert.That(animation.ModularRig.transform.Find("Near Arm/Upper")
+                .GetComponent<SpriteRenderer>().flipX, Is.True,
+                "Front/back views must mirror the reused second-side limb artwork.");
+
+            var action = Track(ScriptableObject.CreateInstance<PlayerActionAnimationDefinition>());
+            action.Configure(1f, true, null, null, null, null, null, null, null);
+            action.ConfigureRig(null, null, null,
+                AnimationCurve.Constant(0f, 1f, 35f), null, null);
+            Assert.That(animation.PlayAction(action), Is.True);
+            animation.Advance(.1f);
+            float nearArmAngle = animation.ModularRig.transform.Find("Near Arm").localEulerAngles.z;
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(nearArmAngle, 35f)), Is.LessThan(.001f),
+                "Action assets must drive character symbols, not only the held equipment sprite.");
         }
 
         [Test]
