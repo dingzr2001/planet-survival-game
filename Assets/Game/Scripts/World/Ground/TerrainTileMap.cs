@@ -85,6 +85,42 @@ namespace PlanetSurvival.World.Ground
         }
 
         /// <summary>
+        /// How solidly terrain covers a point, from 1 well inside a patch down to 0 at its rim, falling
+        /// off over <paramref name="featherDistance"/> metres. The drawn outline can only cut on cell
+        /// boundaries, and rocks in the artwork are wider than a cell, so a hard outline slices boulders
+        /// down the middle; fading the rim instead lets them thin out.
+        /// <para>
+        /// The distance is taken to the rim of the covered ground as a whole, not of one grade. Two
+        /// grades meeting are still rock against rock and need no fade — fading there would open a seam
+        /// of bare ground between them. A tile dug away drops to zero outright, so its hole stays crisp.
+        /// </para>
+        /// </summary>
+        public float GetCoverFade(float worldX, float worldZ, float featherDistance)
+        {
+            if (IsClearedByDigging(TerrainTileCoordinate.FromWorld(worldX, worldZ, TileSize)))
+            {
+                return 0f;
+            }
+
+            if (featherDistance <= 0f)
+            {
+                return 1f;
+            }
+
+            float deepest = float.NegativeInfinity;
+            for (int i = 0; i < _layers.Count; i++)
+            {
+                float distance = _layers[i].SignedDistanceToEdge(WorldSeed, worldX, worldZ);
+                if (distance > deepest)
+                {
+                    deepest = distance;
+                }
+            }
+
+            return Mathf.Clamp01(deepest / featherDistance);
+        }
+
+        /// <summary>
         /// The layer to draw at one point, which is asked at a finer resolution than the dig grid. Tiles
         /// are what the player digs, but a patch whose outline followed those tiles would end in straight
         /// three-metre steps that cut boulders in half, so the drawn edge follows the field itself. The

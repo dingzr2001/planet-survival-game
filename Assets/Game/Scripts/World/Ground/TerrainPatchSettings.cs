@@ -19,7 +19,7 @@ namespace PlanetSurvival.World.Ground
         private int _chunkSizeInTiles = 8;
         [SerializeField, Min(0), Tooltip("Blocks kept loaded around the player, beyond the one they stand in.")]
         private int _loadRadiusInChunks = 1;
-        [SerializeField, Tooltip("Hardest terrain first: the first layer that reaches its threshold wins the tile.")]
+        [SerializeField, Tooltip("Highest-priority terrain first: the first matching layer wins. Each layer controls its own approximate coverage and patch size.")]
         private TerrainPatchLayer[] _layers = Array.Empty<TerrainPatchLayer>();
 
         public int SeedOffset => _seedOffset;
@@ -37,6 +37,24 @@ namespace PlanetSurvival.World.Ground
             _chunkSizeInTiles = Mathf.Max(1, chunkSizeInTiles);
             _loadRadiusInChunks = Mathf.Max(0, loadRadiusInChunks);
             _layers = layers ?? Array.Empty<TerrainPatchLayer>();
+        }
+
+        private void OnValidate()
+        {
+            if (_layers == null)
+            {
+                _layers = Array.Empty<TerrainPatchLayer>();
+                return;
+            }
+
+            for (int i = 0; i < _layers.Length; i++)
+            {
+                TerrainPatchLayer layer = _layers[i];
+                if (layer.UpgradeLegacyCoverage())
+                {
+                    _layers[i] = layer;
+                }
+            }
         }
     }
 }

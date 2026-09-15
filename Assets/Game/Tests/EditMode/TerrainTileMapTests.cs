@@ -202,6 +202,55 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void CoverFade_IsSolidDeepInsideAPatchAndZeroOverADugTile()
+        {
+            TerrainTileMap map = CreateCoveringMap(digCount: 1);
+            var tile = new TerrainTileCoordinate(5, 5);
+
+            Assert.That(map.GetCoverFade(tile.CenterX(TileSize), tile.CenterZ(TileSize), .8f),
+                Is.EqualTo(1f).Within(.0001f));
+
+            map.Dig(tile);
+
+            Assert.That(map.GetCoverFade(tile.CenterX(TileSize), tile.CenterZ(TileSize), .8f), Is.Zero,
+                "A dug tile clears outright; its hole is meant to stay crisp.");
+        }
+
+        [Test]
+        public void CoverFade_FallsOffTowardsTheRimOfAPatch()
+        {
+            var surface = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+            surface.Configure("patchy", "Patchy", 1, 1f, string.Empty);
+            _created.Add(surface);
+            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+            settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(surface, 12f, .5f, 5));
+            _created.Add(settings);
+            var map = new TerrainTileMap();
+            map.Configure(31337, settings);
+
+            bool foundPartialFade = false;
+            for (float x = 0f; x < 120f && !foundPartialFade; x += .5f)
+            {
+                for (float z = 0f; z < 120f && !foundPartialFade; z += .5f)
+                {
+                    float fade = map.GetCoverFade(x, z, .8f);
+                    foundPartialFade = fade > .01f && fade < .99f;
+                }
+            }
+
+            Assert.That(foundPartialFade, Is.True,
+                "Nothing ever fades, so patch rims would end on a hard cut through the artwork.");
+        }
+
+        [Test]
+        public void CoverFade_WithoutAFeather_IsAlwaysSolid()
+        {
+            TerrainTileMap map = CreateCoveringMap(digCount: 1);
+
+            Assert.That(map.GetCoverFade(1f, 1f, 0f), Is.EqualTo(1f));
+        }
+
+        [Test]
         public void IsClearedByDigging_IsTrueOnlyAfterTheLastDig()
         {
             TerrainTileMap map = CreateCoveringMap(digCount: 2);
@@ -241,9 +290,9 @@ namespace PlanetSurvival.Tests
 
             var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
             settings.name = "Test Terrain Patches";
-            // Threshold zero: the layer reaches everywhere, which keeps these tests about the tile map
+            // Full coverage: the layer reaches everywhere, which keeps these tests about the tile map
             // rather than about where the noise field happens to put a patch.
-            settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(surface, 20f, 0f, 0));
+            settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(surface, 20f, 1f, 0));
             _created.Add(settings);
             return settings;
         }

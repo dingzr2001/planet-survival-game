@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PlanetSurvival.Bootstrap;
 using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Cooking.Definitions;
@@ -56,17 +57,43 @@ namespace PlanetSurvival.Editor
         private const string PickaxeAnimationPath = ConfigurationDirectory + "/PickaxeAnimation.asset";
         private const string TerrainPatchSettingsPath = ConfigurationDirectory + "/DefaultTerrainPatches.asset";
 
-        // Rock terrain. The three grades share the same texture resolution and the same 1 stone per swing,
-        // so their hardness is the only thing that separates them: loose scree gives up at once, the
-        // boulder field takes five swings and pays five times as much. Together they cover about a
-        // quarter of the surface, which TerrainPatchLayerTests pins down.
+        // Diggable terrain. The three ordinary rock grades pay one stone per swing at the same rate;
+        // iron is both slower and harder, so finding a deposit is a deliberate mining stop rather than a
+        // roadside top-up.
         private const int TerrainSeedOffset = 5231;
         private const float TerrainTileSize = 3f;
         private const int TerrainChunkSizeInTiles = 8;
         private const int TerrainLoadRadiusInChunks = 1;
-        private const float TerrainTextureTileSize = 8f;
+        // World units per repeat of a terrain texture, which sets how big the objects in it are. Loose
+        // rock is low contrast and forgiving, so it uses the wider scale; iron is bright against the dark
+        // regolith and its nodules are large, so at that scale the patch rim cut whole nodules in half and
+        // left them half-transparent. Keeping the ore no larger than the rim fade makes a deposit thin out
+        // at its edge instead of looking chipped.
+        private const float RockTextureTileSize = 8f;
+        private const float IronTextureTileSize = 5f;
         private const float RockDigSeconds = 1.6f;
         private const int RockStonePerDig = 1;
+        private const float IronDigSeconds = 3.2f;
+        private const int IronDigCount = 7;
+        private const int IronOrePerDig = 1;
+
+        // Patch sizes. Coverage alone does not decide whether a grade arrives as a place or as specks:
+        // the rarer a layer is, the wider its patches must be to stay whole. Iron is the extreme case at
+        // one percent — at the rock grades' width its deposits came out around four tiles, ninety seconds
+        // of mining after a long walk, which is not the deliberate stop it is meant to be. At this width
+        // a deposit runs about twenty tiles, so it stays worth returning to across several backpack loads.
+        private const float IronPatchSize = 42f;
+        private const float BoulderFieldPatchSize = 34f;
+        private const float BrokenRockPatchSize = 26f;
+        private const float LooseScreePatchSize = 30f;
+
+        // Approximate share of the surface each grade may cover before overlap priority is applied. These
+        // are the balancing knobs: future ice, soil or gravel terrain can use the same layer type with its
+        // own coverage and patch size, without knowing anything about noise thresholds.
+        private const float BoulderFieldShare = .02f;
+        private const float BrokenRockShare = .04f;
+        private const float LooseScreeShare = .08f;
+        private const float IronShare = .01f;
 
         // The ice-water-food loop. One chunk yields one litre, one planting drinks 1.5 L and returns
         // four potatoes for one seed, so two trays feed one explorer and still leave water to drink.
@@ -139,6 +166,45 @@ namespace PlanetSurvival.Editor
             Debug.Log("Planet Survival formal scenes and default configuration are ready.");
         }
 
+        /// <summary>
+        /// Imports and wires only the iron-vein feature. This narrow setup path is useful when the formal
+        /// scenes already exist: it preserves every scene and every pre-existing terrain layer verbatim.
+        /// </summary>
+        [MenuItem("Planet Survival/Setup Iron")]
+        public static void CreateOrUpdateIron()
+        {
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            TerrainPatchSettings settings =
+                AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(TerrainPatchSettingsPath);
+            if (pickaxe == null || settings == null)
+            {
+                Debug.LogError("Iron vein setup requires the existing Pickaxe and Default Terrain Patches assets.");
+                return;
+            }
+
+            TerrainSurfaceDefinition iron = GetOrCreateIronSurface(pickaxe);
+            var layers = new List<TerrainPatchLayer>
+            {
+                new(iron, IronPatchSize, IronShare, 9151)
+            };
+            for (int i = 0; i < settings.Layers.Count; i++)
+            {
+                TerrainPatchLayer layer = settings.Layers[i];
+                if (layer.Surface == null || layer.Surface.TerrainId != "iron")
+                {
+                    layers.Add(layer);
+                }
+            }
+
+            settings.Configure(settings.SeedOffset, settings.TileSize, settings.ChunkSizeInTiles,
+                settings.LoadRadiusInChunks, layers.ToArray());
+            EditorUtility.SetDirty(settings);
+            UiArtSetup.AssignItemIcons();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Iron vein terrain and item are ready.");
+        }
+
         private static ResourceSpawnSettings GetOrCreateResourceSettings(
             ItemDefinition iceChunk, ItemDefinition pickaxe)
         {
@@ -185,10 +251,9 @@ namespace PlanetSurvival.Editor
         }
 
         /// <summary>
-        /// Authors the patched terrain: three grades of rock laid over the base regolith. Hardest first,
-        /// because the first layer to reach its threshold wins the tile, and a wide soft-scree patch would
-        /// otherwise swallow the boulder fields sitting inside it. Each layer samples its own field, so
-        /// the grades mix into one another rather than forming concentric rings.
+        /// Authors the patched terrain: a rare iron vein and three grades of rock over the base regolith.
+        /// Iron comes first so ordinary rock cannot hide it where their fields overlap. Each layer samples
+        /// its own field, so a deposit may be one tile or a connected run instead of a fixed prefab shape.
         /// </summary>
         private static TerrainPatchSettings GetOrCreateTerrainPatchSettings(ItemDefinition pickaxe)
         {
@@ -197,12 +262,16 @@ namespace PlanetSurvival.Editor
             // The artwork is a cutout layer of loose rock over the regolith, and how much of the ground it
             // hides rises with its grade: scattered gravel, then broken slabs, then solid boulders. That
             // makes a tile's hardness readable before the first swing.
+            TerrainSurfaceDefinition iron = GetOrCreateIronSurface(pickaxe);
             TerrainSurfaceDefinition boulderField = GetOrCreateTerrainSurface("BoulderFieldTerrain",
-                "rock_boulder_field", "Boulder Field", "Stone3", 5, pickaxe.ItemId, stone);
+                "rock_boulder_field", "Boulder Field", "Stone3", 5, RockDigSeconds,
+                pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
             TerrainSurfaceDefinition brokenRock = GetOrCreateTerrainSurface("BrokenRockTerrain",
-                "rock_broken", "Broken Rock", "Stone2", 3, pickaxe.ItemId, stone);
+                "rock_broken", "Broken Rock", "Stone2", 3, RockDigSeconds,
+                pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
             TerrainSurfaceDefinition looseScree = GetOrCreateTerrainSurface("LooseScreeTerrain",
-                "rock_loose_scree", "Loose Scree", "Stone1", 1, pickaxe.ItemId, stone);
+                "rock_loose_scree", "Loose Scree", "Stone1", 1, RockDigSeconds,
+                pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
 
             TerrainPatchSettings settings =
                 AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(TerrainPatchSettingsPath);
@@ -213,21 +282,35 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(settings, TerrainPatchSettingsPath);
             }
 
-            // Patch sizes run from tight boulder fields to broad scree flats, and the thresholds are read
-            // off the field's distribution rather than guessed: see TerrainPatchLayerTests, which fails if
-            // a change to the noise moves the covered fraction out of its band.
             settings.Configure(TerrainSeedOffset, TerrainTileSize, TerrainChunkSizeInTiles,
                 TerrainLoadRadiusInChunks,
-                new TerrainPatchLayer(boulderField, 15f, .78f, 1613),
-                new TerrainPatchLayer(brokenRock, 20f, .73f, 7817),
-                new TerrainPatchLayer(looseScree, 28f, .68f, 3271));
+                new TerrainPatchLayer(iron, IronPatchSize, IronShare, 9151),
+                new TerrainPatchLayer(boulderField, BoulderFieldPatchSize, BoulderFieldShare, 1613),
+                new TerrainPatchLayer(brokenRock, BrokenRockPatchSize, BrokenRockShare, 7817),
+                new TerrainPatchLayer(looseScree, LooseScreePatchSize, LooseScreeShare, 3271));
             EditorUtility.SetDirty(settings);
             return settings;
         }
 
+        private static TerrainSurfaceDefinition GetOrCreateIronSurface(ItemDefinition pickaxe)
+        {
+            ItemDefinition ironOre = GetOrCreateItem("IronOre", "iron_ore", "Iron Ore", 2, 20);
+            ironOre.ConfigureDescription("Dense raw iron ore mined from rare exposed outcrops.");
+            EditorUtility.SetDirty(ironOre);
+            return GetOrCreateTerrainSurface("IronTerrain", "iron", "Iron", "Iron",
+                IronDigCount, IronDigSeconds, pickaxe.ItemId, ironOre, IronOrePerDig, IronTextureTileSize);
+        }
+
+        /// <param name="textureTileSize">
+        /// World units per repeat, which is what sets the physical size of the objects in the artwork.
+        /// It is not free to choose: a patch rim can only be drawn on cell boundaries and is faded out
+        /// over <c>TerrainChunkView.EdgeFeatherDistance</c>, so anything in the texture much larger than
+        /// that fade gets cut and half-ghosted at the rim instead of thinning out. Loose rock tolerates
+        /// it because it is low contrast against the regolith; bright ore does not.
+        /// </param>
         private static TerrainSurfaceDefinition GetOrCreateTerrainSurface(string assetName, string terrainId,
-            string displayName, string textureName, int digCount, string requiredToolItemId,
-            ItemDefinition yieldItem)
+            string displayName, string textureName, int digCount, float digDuration,
+            string requiredToolItemId, ItemDefinition yieldItem, int yieldQuantity, float textureTileSize)
         {
             string path = $"{ConfigurationDirectory}/{assetName}.asset";
             TerrainSurfaceDefinition surface = AssetDatabase.LoadAssetAtPath<TerrainSurfaceDefinition>(path);
@@ -238,9 +321,9 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(surface, path);
             }
 
-            surface.Configure(terrainId, displayName, digCount, RockDigSeconds, requiredToolItemId,
-                new ResourceYield(yieldItem, RockStonePerDig));
-            surface.ConfigureTexture(WorldArtSetup.ImportGroundTexture(textureName), TerrainTextureTileSize);
+            surface.Configure(terrainId, displayName, digCount, digDuration, requiredToolItemId,
+                new ResourceYield(yieldItem, yieldQuantity));
+            surface.ConfigureTexture(WorldArtSetup.ImportGroundTexture(textureName), textureTileSize);
             EditorUtility.SetDirty(surface);
             return surface;
         }

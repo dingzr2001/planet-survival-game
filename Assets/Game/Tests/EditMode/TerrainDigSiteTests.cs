@@ -31,8 +31,8 @@ namespace PlanetSurvival.Tests
             _surface.Configure("test_rock", "Test Rock", 3, 1f, string.Empty,
                 new ResourceYield(_stone, 1));
             _settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            // Threshold zero so the layer covers every tile the test addresses.
-            _settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(_surface, 20f, 0f, 0));
+            // Full coverage so the layer reaches every tile the test addresses.
+            _settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(_surface, 20f, 1f, 0));
             _map = new TerrainTileMap();
             _map.Configure(1234, _settings);
 

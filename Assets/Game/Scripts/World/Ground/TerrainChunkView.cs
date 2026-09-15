@@ -35,12 +35,26 @@ namespace PlanetSurvival.World.Ground
         /// </summary>
         private const int VisualSubdivisions = 4;
 
+        /// <summary>
+        /// Metres over which a patch thins out at its rim. About one boulder wide: enough that the cut
+        /// through a rock stops reading as a cut, short enough that the patch keeps a definite shape.
+        /// </summary>
+        private const float EdgeFeatherDistance = .8f;
+
+        /// <summary>Fade at or above which a cell is solid and can be merged with its neighbours.</summary>
+        private const float SolidFade = .999f;
+
         private readonly List<GameObject> _layerObjects = new();
         private readonly List<Mesh> _meshes = new();
         private readonly List<Material> _materials = new();
         private readonly List<Vector3> _vertices = new();
         private readonly List<Vector2> _uv = new();
+        private readonly List<Color32> _colors = new();
         private readonly List<int> _triangles = new();
+
+        // Cover fade at every cell corner of the block, shared by all of its layer meshes.
+        private float[] _vertexFade = System.Array.Empty<float>();
+        private int _fadeGridSize;
 
         /// <summary>Number of terrain meshes currently drawn, one per terrain present in the block.</summary>
         public int LayerMeshCount => _meshes.Count;
@@ -55,6 +69,7 @@ namespace PlanetSurvival.World.Ground
                 return;
             }
 
+            BuildVertexFade(map, origin, sizeInTiles);
             IReadOnlyList<TerrainPatchLayer> layers = map.Layers;
             for (int layerIndex = 0; layerIndex < layers.Count; layerIndex++)
             {
@@ -77,18 +92,20 @@ namespace PlanetSurvival.World.Ground
             int cellsPerSide = sizeInTiles * VisualSubdivisions;
             _vertices.Clear();
             _uv.Clear();
+            _colors.Clear();
             _triangles.Clear();
 
             for (int z = 0; z < cellsPerSide; z++)
             {
-                // Runs of neighbouring cells become one quad. A solid patch costs about what whole tiles
-                // used to, and only the ragged border pays for the finer outline.
+                // Runs of solid neighbouring cells become one quad, so a patch interior costs about what
+                // whole tiles used to. Only cells on the fading rim, whose corners carry different
+                // alphas, have to be written out one by one.
                 int runStart = -1;
                 for (int x = 0; x <= cellsPerSide; x++)
                 {
                     bool covered = x < cellsPerSide
                                    && IsCellCovered(map, layerIndex, originX, originZ, cellSize, x, z);
-                    if (covered)
+                    if (covered && IsCellSolid(x, z))
                     {
                         if (runStart < 0)
                         {
@@ -103,6 +120,11 @@ namespace PlanetSurvival.World.Ground
                         AppendCellRun(originX, originZ, cellSize, runStart, x, z, uvScale);
                         runStart = -1;
                     }
+
+                    if (covered)
+                    {
+                        AppendCellRun(originX, originZ, cellSize, x, x + 1, z, uvScale);
+                    }
                 }
             }
 
@@ -114,17 +136,19 @@ namespace PlanetSurvival.World.Ground
             var mesh = new Mesh { name = $"Terrain {surface.TerrainId}" };
             mesh.SetVertices(_vertices);
             mesh.SetUVs(0, _uv);
+            mesh.SetColors(_colors);
             mesh.SetTriangles(_triangles, 0);
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             _meshes.Add(mesh);
 
-            // Alpha-blended: the artwork is loose rock on a transparent sheet, and the regolith below has
-            // to keep showing through. An opaque shader would paint the transparent pixels black.
-            Shader shader = Shader.Find("Unlit/Transparent");
+            // Alpha-blended, and vertex-colour aware: the artwork is loose rock on a transparent sheet,
+            // so the regolith has to show through, and the rim fade is carried per vertex. Unlit
+            // shaders ignore vertex colour and would bring back the hard edge.
+            Shader shader = Shader.Find("Sprites/Default");
             if (shader == null)
             {
-                shader = Shader.Find("Sprites/Default");
+                shader = Shader.Find("Unlit/Transparent");
             }
 
             var material = new Material(shader) { name = $"Runtime Terrain {surface.TerrainId}" };
@@ -149,6 +173,43 @@ namespace PlanetSurvival.World.Ground
         {
             return map.GetVisualLayerIndex(
                 originX + (x + .5f) * cellSize, originZ + (z + .5f) * cellSize) == layerIndex;
+        }
+
+        /// <summary>Measures the rim fade once per block, at every cell corner all layers share.</summary>
+        private void BuildVertexFade(TerrainTileMap map, TerrainTileCoordinate origin, int sizeInTiles)
+        {
+            float tileSize = map.TileSize;
+            float cellSize = tileSize / VisualSubdivisions;
+            _fadeGridSize = sizeInTiles * VisualSubdivisions + 1;
+            int required = _fadeGridSize * _fadeGridSize;
+            if (_vertexFade.Length < required)
+            {
+                _vertexFade = new float[required];
+            }
+
+            float originX = origin.MinX(tileSize);
+            float originZ = origin.MinZ(tileSize);
+            for (int z = 0; z < _fadeGridSize; z++)
+            {
+                for (int x = 0; x < _fadeGridSize; x++)
+                {
+                    _vertexFade[z * _fadeGridSize + x] = map.GetCoverFade(
+                        originX + x * cellSize, originZ + z * cellSize, EdgeFeatherDistance);
+                }
+            }
+        }
+
+        private float FadeAt(int x, int z) => _vertexFade[z * _fadeGridSize + x];
+
+        private bool IsCellSolid(int x, int z)
+        {
+            return FadeAt(x, z) >= SolidFade && FadeAt(x + 1, z) >= SolidFade
+                   && FadeAt(x, z + 1) >= SolidFade && FadeAt(x + 1, z + 1) >= SolidFade;
+        }
+
+        private static Color32 FadeColor(float fade)
+        {
+            return new Color32(255, 255, 255, (byte)Mathf.RoundToInt(Mathf.Clamp01(fade) * 255f));
         }
 
         /// <summary>
@@ -178,6 +239,12 @@ namespace PlanetSurvival.World.Ground
             _uv.Add(new Vector2(maxWorldX * uvScale, minWorldZ * uvScale));
             _uv.Add(new Vector2(maxWorldX * uvScale, maxWorldZ * uvScale));
             _uv.Add(new Vector2(minWorldX * uvScale, maxWorldZ * uvScale));
+
+            // A merged run is made only of solid cells, so its ends read back as fully opaque here too.
+            _colors.Add(FadeColor(FadeAt(startX, z)));
+            _colors.Add(FadeColor(FadeAt(endX, z)));
+            _colors.Add(FadeColor(FadeAt(endX, z + 1)));
+            _colors.Add(FadeColor(FadeAt(startX, z + 1)));
 
             // Wound so the quad faces straight up; the camera never sees the surface from below.
             _triangles.Add(baseIndex);

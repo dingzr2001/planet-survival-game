@@ -200,8 +200,8 @@ namespace PlanetSurvival.Tests
         }
 
         /// <summary>
-        /// Rock terrain is what makes the surface worth walking across rather than through: three grades
-        /// break down in one, three and five swings, each paying out on every swing.
+        /// Ordinary rock makes the surface worth walking across rather than through: three grades break
+        /// down in one, three and five swings, each paying out on every swing.
         /// </summary>
         [Test]
         public void RockTerrain_CoversTheRegolithInThreeDiggableGrades()
@@ -210,12 +210,17 @@ namespace PlanetSurvival.Tests
                 "Assets/Game/Configuration/DefaultTerrainPatches.asset");
 
             Assert.That(patches, Is.Not.Null);
-            Assert.That(patches.Layers.Count, Is.EqualTo(3));
+            Assert.That(patches.Layers.Count, Is.EqualTo(4));
 
             var digCounts = new List<int>();
             for (int i = 0; i < patches.Layers.Count; i++)
             {
                 TerrainSurfaceDefinition surface = patches.Layers[i].Surface;
+                if (surface.TerrainId == "iron")
+                {
+                    continue;
+                }
+
                 Assert.That(surface, Is.Not.Null);
                 Assert.That(surface.IsValid(out string error), Is.True, error);
                 Assert.That(surface.Texture, Is.Not.Null,
@@ -226,14 +231,260 @@ namespace PlanetSurvival.Tests
                 Assert.That(surface.Yields[0].Item.ItemId, Is.EqualTo("raw_stone"));
                 digCounts.Add(surface.DigCount);
 
-                Assert.That(patches.Layers[i].Threshold, Is.LessThan(1f),
-                    "A layer at the full threshold never generates.");
+                Assert.That(patches.Layers[i].TargetCoverage, Is.GreaterThan(0f),
+                    "A layer with zero target coverage never generates.");
             }
 
             Assert.That(digCounts, Is.EquivalentTo(new[] { 1, 3, 5 }));
-            // Hardest first: the first layer to reach its threshold wins the tile, so a soft patch listed
+            // Hardest first: the first matching layer wins the tile, so a soft patch listed
             // ahead of a hard one would swallow the hard cores sitting inside it.
             Assert.That(digCounts[0], Is.GreaterThan(digCounts[^1]));
+        }
+
+        /// <summary>
+        /// Rarity alone does not make a deposit worth walking to — patch width decides whether one percent of
+        /// the ground arrives as deposits or as specks. At the rock grades' width iron came out about four
+        /// tiles, ninety seconds of mining at the end of a long walk; this pins the deposits at a size
+        /// that survives several backpack loads.
+        /// </summary>
+        [Test]
+        public void IronDeposits_AreWholeDepositsRatherThanSpecks()
+        {
+            TerrainGenerationSettings terrain = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(
+                "Assets/Game/Configuration/DefaultTerrainSettings.asset");
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+            Assert.That(terrain, Is.Not.Null);
+            Assert.That(patches, Is.Not.Null);
+
+            var map = new TerrainTileMap();
+            map.Configure(terrain.Seed + patches.SeedOffset, patches);
+
+            const int side = 300;
+            var isIron = new bool[side, side];
+            for (int x = 0; x < side; x++)
+            {
+                for (int z = 0; z < side; z++)
+                {
+                    var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
+                    TerrainSurfaceDefinition surface = map.GetSurface(tile);
+                    isIron[x, z] = surface != null && surface.TerrainId == "iron";
+                }
+            }
+
+            List<int> deposits = MeasureDepositSizes(isIron, side);
+            Assert.That(deposits, Is.Not.Empty, "No iron at all within 900 m of the landing site.");
+            deposits.Sort();
+            int median = deposits[deposits.Count / 2];
+            int specks = 0;
+            for (int i = 0; i < deposits.Count; i++)
+            {
+                if (deposits[i] <= 3)
+                {
+                    specks++;
+                }
+            }
+
+            Assert.That(median, Is.GreaterThanOrEqualTo(8),
+                $"The median iron deposit is {median} tiles; that is a detour, not a mining stop.");
+            Assert.That(specks / (float)deposits.Count, Is.LessThan(.2f),
+                "Too many iron deposits are a tile or three — a long walk should not end in a speck.");
+        }
+
+        /// <summary>Sizes of the connected runs of marked tiles, in tiles.</summary>
+        private static List<int> MeasureDepositSizes(bool[,] marked, int side)
+        {
+            var visited = new bool[side, side];
+            var sizes = new List<int>();
+            var frontier = new Stack<Vector2Int>();
+
+            for (int x = 0; x < side; x++)
+            {
+                for (int z = 0; z < side; z++)
+                {
+                    if (!marked[x, z] || visited[x, z])
+                    {
+                        continue;
+                    }
+
+                    int size = 0;
+                    frontier.Push(new Vector2Int(x, z));
+                    visited[x, z] = true;
+                    while (frontier.Count > 0)
+                    {
+                        Vector2Int cell = frontier.Pop();
+                        size++;
+                        foreach (Vector2Int step in NeighbourSteps)
+                        {
+                            int nextX = cell.x + step.x;
+                            int nextZ = cell.y + step.y;
+                            if (nextX < 0 || nextZ < 0 || nextX >= side || nextZ >= side
+                                || visited[nextX, nextZ] || !marked[nextX, nextZ])
+                            {
+                                continue;
+                            }
+
+                            visited[nextX, nextZ] = true;
+                            frontier.Push(new Vector2Int(nextX, nextZ));
+                        }
+                    }
+
+                    sizes.Add(size);
+                }
+            }
+
+            return sizes;
+        }
+
+        private static readonly Vector2Int[] NeighbourSteps =
+        {
+            new(1, 0), new(-1, 0), new(0, 1), new(0, -1)
+        };
+
+        [Test]
+        public void IronTerrain_IsRareSlowAndRequiresThePickaxe()
+        {
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+            ItemDefinition ironOre = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/IronOre.asset");
+
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(ironOre, Is.Not.Null);
+            Assert.That(ironOre.ItemId, Is.EqualTo("iron_ore"));
+            Assert.That(ironOre.Icon, Is.Not.Null);
+
+            TerrainPatchLayer ironLayer = patches.Layers[0];
+            TerrainSurfaceDefinition iron = ironLayer.Surface;
+            Assert.That(iron, Is.Not.Null);
+            Assert.That(iron.TerrainId, Is.EqualTo("iron"),
+                "The rare deposit must win overlaps with ordinary rock.");
+            Assert.That(iron.IsValid(out string error), Is.True, error);
+            Assert.That(iron.Texture, Is.Not.Null);
+            Assert.That(iron.RequiredToolItemId, Is.EqualTo("pickaxe"));
+            Assert.That(iron.DigCount, Is.GreaterThan(5));
+            Assert.That(iron.DigDuration, Is.GreaterThan(1.6f));
+            Assert.That(iron.Yields.Count, Is.EqualTo(1));
+            Assert.That(iron.Yields[0].Item, Is.EqualTo(ironOre));
+            Assert.That(ironLayer.TargetCoverage, Is.EqualTo(.01f).Within(.0001f));
+            Assert.That(ironLayer.TargetCoverage, Is.LessThan(patches.Layers[1].TargetCoverage));
+        }
+
+        /// <summary>
+        /// The share of the surface each grade takes, measured on the world the game actually builds —
+        /// the shipped assets, the seed <c>GameBootstrap</c> derives, and the priority rule. The
+        /// shares are a design decision (see ProjectSceneSetup): rock punctuates the regolith rather than
+        /// replacing it, and each grade is half as common as the one below, so all three contribute about
+        /// the same stone per square metre.
+        /// </summary>
+        [Test]
+        public void RockTerrain_CoversTheDesignedShareOfTheSurface()
+        {
+            TerrainGenerationSettings terrain = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(
+                "Assets/Game/Configuration/DefaultTerrainSettings.asset");
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+            Assert.That(terrain, Is.Not.Null);
+            Assert.That(patches, Is.Not.Null);
+
+            var map = new TerrainTileMap();
+            map.Configure(terrain.Seed + patches.SeedOffset, patches);
+
+            const int side = 300;
+            var counts = new int[patches.Layers.Count];
+            var covered = new bool[side, side];
+            var ironCovered = new bool[side, side];
+            for (int x = 0; x < side; x++)
+            {
+                for (int z = 0; z < side; z++)
+                {
+                    var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
+                    int layerIndex = map.GetLayerIndex(tile);
+                    if (layerIndex != ClusteredTerrainLayout.BaseLayerIndex)
+                    {
+                        counts[layerIndex]++;
+                        string terrainId = patches.Layers[layerIndex].Surface.TerrainId;
+                        covered[x, z] = terrainId.StartsWith("rock_");
+                        ironCovered[x, z] = terrainId == "iron";
+                    }
+                }
+            }
+
+            int total = side * side;
+            var expectedShares = new Dictionary<string, float>
+            {
+                { "iron", .01f },
+                { "rock_boulder_field", .02f },
+                { "rock_broken", .04f },
+                { "rock_loose_scree", .08f }
+            };
+
+            float rockShare = 0f;
+            for (int i = 0; i < patches.Layers.Count; i++)
+            {
+                string terrainId = patches.Layers[i].Surface.TerrainId;
+                Assert.That(expectedShares.ContainsKey(terrainId), Is.True,
+                    $"Terrain '{terrainId}' has no designed share; give it one rather than letting it "
+                    + "take an accidental amount of the world.");
+                float share = counts[i] / (float)total;
+                float expected = expectedShares[terrainId];
+                if (terrainId.StartsWith("rock_"))
+                {
+                    rockShare += share;
+                }
+                Assert.That(patches.Layers[i].TargetCoverage, Is.EqualTo(expected).Within(.0001f),
+                    $"'{terrainId}' should expose its intended rarity directly in the terrain asset.");
+                // A quarter either way: tight enough to catch a noise distribution that drifted off design,
+                // loose enough that the measured window is not doing the deciding.
+                Assert.That(share, Is.InRange(expected * .75f, expected * 1.25f),
+                    $"'{terrainId}' covers {share:P1}; it was designed for {expected:P0}.");
+            }
+
+            Assert.That(rockShare, Is.InRange(.11f, .17f), "Rock should punctuate the regolith, not carpet it.");
+            Assert.That(IsolatedRockFraction(covered, side), Is.LessThan(.05f),
+                "Rock is meant to generate in runs; almost every tile should touch another rock tile.");
+            Assert.That(HasAdjacentCoveredTiles(ironCovered, side), Is.True,
+                "Rare iron still has to support connected multi-tile veins, not only isolated specks.");
+        }
+
+        private static bool HasAdjacentCoveredTiles(bool[,] covered, int side)
+        {
+            for (int x = 1; x < side; x++)
+            {
+                for (int z = 1; z < side; z++)
+                {
+                    if (covered[x, z] && (covered[x - 1, z] || covered[x, z - 1]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static float IsolatedRockFraction(bool[,] covered, int side)
+        {
+            int rock = 0;
+            int isolated = 0;
+            for (int x = 1; x < side - 1; x++)
+            {
+                for (int z = 1; z < side - 1; z++)
+                {
+                    if (!covered[x, z])
+                    {
+                        continue;
+                    }
+
+                    rock++;
+                    if (!covered[x - 1, z] && !covered[x + 1, z] && !covered[x, z - 1] && !covered[x, z + 1])
+                    {
+                        isolated++;
+                    }
+                }
+            }
+
+            return rock == 0 ? 1f : isolated / (float)rock;
         }
 
         /// <summary>
@@ -243,7 +494,7 @@ namespace PlanetSurvival.Tests
         [Test]
         public void RockTerrainTextures_AreImportedAsTilingTransparentGround()
         {
-            foreach (string textureName in new[] { "Stone1", "Stone2", "Stone3" })
+            foreach (string textureName in new[] { "Stone1", "Stone2", "Stone3", "Iron" })
             {
                 string path = $"Assets/Game/Art/World/Ground/{textureName}.png";
                 var importer = AssetImporter.GetAtPath(path) as TextureImporter;

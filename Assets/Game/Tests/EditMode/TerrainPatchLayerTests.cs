@@ -84,9 +84,9 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Layer_WithFullThreshold_CoversNothing()
+        public void Layer_WithZeroCoverage_CoversNothing()
         {
-            var layer = new TerrainPatchLayer(CreateSurface("dust", 1), 20f, 1f, 0);
+            var layer = new TerrainPatchLayer(CreateSurface("dust", 1), 20f, 0f, 0);
             int covered = 0;
 
             for (int x = 0; x < 60; x++)
@@ -104,15 +104,15 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void SelectLayer_PrefersTheFirstLayerThatReachesItsThreshold()
+        public void SelectLayer_PrefersTheFirstLayerThatCoversThePoint()
         {
             TerrainSurfaceDefinition hard = CreateSurface("hard", 5);
             TerrainSurfaceDefinition soft = CreateSurface("soft", 1);
-            // A layer with threshold zero covers everywhere, so ordering alone decides the tile.
+            // A layer with full coverage reaches everywhere, so ordering alone decides the tile.
             var layers = new[]
             {
-                new TerrainPatchLayer(hard, 20f, 0f, 11),
-                new TerrainPatchLayer(soft, 20f, 0f, 22)
+                new TerrainPatchLayer(hard, 20f, 1f, 11),
+                new TerrainPatchLayer(soft, 20f, 1f, 22)
             };
 
             Assert.That(ClusteredTerrainLayout.SelectLayer(layers, WorldSeed, 9f, -21f), Is.Zero);
@@ -121,50 +121,73 @@ namespace PlanetSurvival.Tests
         [Test]
         public void SelectLayer_FallsBackToBaseGroundWhereNoLayerReaches()
         {
-            var layers = new[] { new TerrainPatchLayer(CreateSurface("hard", 5), 20f, 1f, 11) };
+            var layers = new[] { new TerrainPatchLayer(CreateSurface("hard", 5), 20f, 0f, 11) };
 
             Assert.That(ClusteredTerrainLayout.SelectLayer(layers, WorldSeed, 9f, -21f),
                 Is.EqualTo(ClusteredTerrainLayout.BaseLayerIndex));
         }
 
         /// <summary>
-        /// Records what the thresholds shipped in <c>DefaultTerrainPatches</c> actually cover. Thresholds
-        /// are not percentages — the field clusters around its middle — so this is where the numbers used
-        /// by the authoring code are justified, and it fails if a change to the noise moves them.
+        /// The authoring value is an approximate fraction, not a noise implementation detail. This checks
+        /// several useful rarity levels against the field itself so a change to the distribution cannot
+        /// silently invalidate every terrain configuration.
+        /// </summary>
+        [TestCase(.02f)]
+        [TestCase(.08f)]
+        [TestCase(.2f)]
+        public void Layer_TargetCoverage_ApproximatelyMatchesMeasuredGround(float targetCoverage)
+        {
+            TerrainSurfaceDefinition surface = CreateSurface("dust", 1);
+            var layer = new TerrainPatchLayer(surface, 24f, targetCoverage, 99);
+
+            float measuredCoverage = MeasureCoverage(layer);
+
+            Assert.That(layer.TargetCoverage, Is.EqualTo(targetCoverage).Within(.0001f));
+            Assert.That(measuredCoverage, Is.InRange(targetCoverage * .7f, targetCoverage * 1.3f),
+                $"Requested {targetCoverage:P0}, but the reusable field covered {measuredCoverage:P1}.");
+        }
+
+        /// <summary>
+        /// The property the whole approach exists for: whatever the coverage, the covered tiles arrive
+        /// stuck together rather than sprinkled one at a time.
         /// </summary>
         [Test]
-        public void ShippedRockLayers_CoverRoughlyAQuarterOfTheSurfaceInConnectedPatches()
+        public void Layer_CoversGroundInConnectedRunsRatherThanSpeckle()
         {
-            var layers = new[]
-            {
-                new TerrainPatchLayer(CreateSurface("boulder_field", 5), 15f, .78f, 1613),
-                new TerrainPatchLayer(CreateSurface("broken_rock", 3), 20f, .73f, 7817),
-                new TerrainPatchLayer(CreateSurface("loose_scree", 1), 28f, .68f, 3271)
-            };
+            var layer = new TerrainPatchLayer(CreateSurface("dust", 1), 24f, .15f, 99);
             const int side = 160;
             var covered = new bool[side, side];
-            int rockTiles = 0;
 
             for (int x = 0; x < side; x++)
             {
                 for (int z = 0; z < side; z++)
                 {
                     var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
-                    int layerIndex = ClusteredTerrainLayout.SelectLayer(
-                        layers, WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize));
-                    covered[x, z] = layerIndex != ClusteredTerrainLayout.BaseLayerIndex;
-                    if (covered[x, z])
+                    covered[x, z] = layer.Covers(WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize));
+                }
+            }
+
+            Assert.That(IsolatedTileFraction(covered, side), Is.LessThan(.1f),
+                "Most covered tiles should touch another one.");
+        }
+
+        private float MeasureCoverage(TerrainPatchLayer layer)
+        {
+            const int side = 240;
+            int covered = 0;
+            for (int x = 0; x < side; x++)
+            {
+                for (int z = 0; z < side; z++)
+                {
+                    var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
+                    if (layer.Covers(WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize)))
                     {
-                        rockTiles++;
+                        covered++;
                     }
                 }
             }
 
-            float coverage = rockTiles / (float)(side * side);
-            Assert.That(coverage, Is.InRange(.18f, .34f),
-                "Rock should break up the regolith, not replace it.");
-            Assert.That(IsolatedTileFraction(covered, side), Is.LessThan(.2f),
-                "Rock is meant to generate in runs; most tiles should touch another rock tile.");
+            return covered / (float)(side * side);
         }
 
         private static float IsolatedTileFraction(bool[,] covered, int side)

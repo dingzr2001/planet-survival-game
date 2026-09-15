@@ -119,16 +119,7 @@ namespace PlanetSurvival.Tests
         [Test]
         public void Rebuild_DrawsAnOutlineFinerThanTheDigGrid()
         {
-            var surface = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
-            surface.Configure("patchy", "Patchy", 1, 1f, string.Empty);
-            _created.Add(surface);
-            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            settings.Configure(0, TileSize, ChunkSizeInTiles, 1,
-                new TerrainPatchLayer(surface, 12f, .5f, 31));
-            _created.Add(settings);
-            var map = new TerrainTileMap();
-            map.Configure(2024, settings);
-
+            TerrainTileMap map = CreatePatchyMap();
             bool foundPartialTile = false;
             for (int chunkX = 0; chunkX < 12 && !foundPartialTile; chunkX++)
             {
@@ -145,6 +136,71 @@ namespace PlanetSurvival.Tests
 
             Assert.That(foundPartialTile, Is.True,
                 "Every block drew whole tiles only, so patch edges would still be three-metre steps.");
+        }
+
+        /// <summary>
+        /// The drawn outline can only cut on cell boundaries and the rocks in the artwork are wider than
+        /// a cell, so a patch that simply stopped at its outline would slice boulders in half. The rim
+        /// fades out instead, which is carried per vertex.
+        /// </summary>
+        [Test]
+        public void Rebuild_FadesOutTheRimOfAPatchInsteadOfCuttingIt()
+        {
+            TerrainTileMap map = CreatePatchyMap();
+            bool foundFadedRim = false;
+            bool foundSolidInterior = false;
+
+            for (int chunkX = 0; chunkX < 12; chunkX++)
+            {
+                TerrainChunkView view = CreateView();
+                view.Rebuild(map, new TerrainTileCoordinate(chunkX * ChunkSizeInTiles, 0), ChunkSizeInTiles);
+                foreach (MeshFilter filter in view.GetComponentsInChildren<MeshFilter>())
+                {
+                    foreach (Color32 color in filter.sharedMesh.colors32)
+                    {
+                        if (color.a < 250)
+                        {
+                            foundFadedRim = true;
+                        }
+                        else
+                        {
+                            foundSolidInterior = true;
+                        }
+                    }
+                }
+            }
+
+            Assert.That(foundFadedRim, Is.True, "No vertex fades, so patch edges are still hard cuts.");
+            Assert.That(foundSolidInterior, Is.True, "Patch interiors must stay fully opaque.");
+        }
+
+        [Test]
+        public void Rebuild_KeepsPatchInteriorsFullyOpaque()
+        {
+            TerrainTileMap map = CreateMap(out _);
+            TerrainChunkView view = CreateView();
+
+            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
+
+            // This block is covered edge to edge, so nothing in it is near a rim.
+            foreach (Color32 color in view.GetComponentInChildren<MeshFilter>().sharedMesh.colors32)
+            {
+                Assert.That(color.a, Is.EqualTo(255));
+            }
+        }
+
+        private TerrainTileMap CreatePatchyMap()
+        {
+            var surface = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+            surface.Configure("patchy", "Patchy", 1, 1f, string.Empty);
+            _created.Add(surface);
+            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+            settings.Configure(0, TileSize, ChunkSizeInTiles, 1,
+                new TerrainPatchLayer(surface, 12f, .5f, 31));
+            _created.Add(settings);
+            var map = new TerrainTileMap();
+            map.Configure(2024, settings);
+            return map;
         }
 
         /// <summary>Total ground area the block draws, summed over its triangles.</summary>
@@ -175,8 +231,8 @@ namespace PlanetSurvival.Tests
             surface.Configure("unreachable", "Unreachable", 1, 1f, string.Empty);
             _created.Add(surface);
             var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            // Threshold one: the layer never reaches, so the block is bare regolith.
-            settings.Configure(0, TileSize, ChunkSizeInTiles, 1, new TerrainPatchLayer(surface, 20f, 1f, 0));
+            // Zero coverage: the layer never reaches, so the block is bare regolith.
+            settings.Configure(0, TileSize, ChunkSizeInTiles, 1, new TerrainPatchLayer(surface, 20f, 0f, 0));
             _created.Add(settings);
             var map = new TerrainTileMap();
             map.Configure(99, settings);
@@ -204,7 +260,7 @@ namespace PlanetSurvival.Tests
             _created.Add(surface);
 
             var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            settings.Configure(0, TileSize, ChunkSizeInTiles, 1, new TerrainPatchLayer(surface, 20f, 0f, 0));
+            settings.Configure(0, TileSize, ChunkSizeInTiles, 1, new TerrainPatchLayer(surface, 20f, 1f, 0));
             _created.Add(settings);
 
             var map = new TerrainTileMap();

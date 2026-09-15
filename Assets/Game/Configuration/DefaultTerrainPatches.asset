@@ -17,15 +17,27 @@ MonoBehaviour:
   _chunkSizeInTiles: 8
   _loadRadiusInChunks: 1
   _layers:
+  - _surface: {fileID: 11400000, guid: a6b75f24ed4864c63ab00b26efa83145, type: 2}
+    _patchSize: 42
+    _targetCoverage: 0.01
+    _seedOffset: 9151
+    _legacyThreshold: 0
+    _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: b46f090d862614cddb58923685ad662a, type: 2}
-    _patchSize: 15
-    _threshold: 0.78
+    _patchSize: 34
+    _targetCoverage: 0.02
     _seedOffset: 1613
+    _legacyThreshold: 0
+    _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: 2dd47f1842f764000b30305a730f32e8, type: 2}
-    _patchSize: 20
-    _threshold: 0.73
+    _patchSize: 26
+    _targetCoverage: 0.04
     _seedOffset: 7817
+    _legacyThreshold: 0
+    _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: bf5b3a672b632425f8498a41ea040719, type: 2}
-    _patchSize: 28
-    _threshold: 0.68
+    _patchSize: 30
+    _targetCoverage: 0.08
     _seedOffset: 3271
+    _legacyThreshold: 0
+    _usesTargetCoverage: 1

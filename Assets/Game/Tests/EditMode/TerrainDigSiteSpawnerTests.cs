@@ -94,11 +94,11 @@ namespace PlanetSurvival.Tests
             return spawner;
         }
 
-        private TerrainTileMap CreateCoveringMap() => CreateMap(threshold: 0f);
+        private TerrainTileMap CreateCoveringMap() => CreateMap(targetCoverage: 1f);
 
-        private TerrainTileMap CreateBareMap() => CreateMap(threshold: 1f);
+        private TerrainTileMap CreateBareMap() => CreateMap(targetCoverage: 0f);
 
-        private TerrainTileMap CreateMap(float threshold)
+        private TerrainTileMap CreateMap(float targetCoverage)
         {
             var item = ScriptableObject.CreateInstance<ItemDefinition>();
             item.Configure("test_stone", "Test Stone", 1, 20, false, true);
@@ -111,7 +111,7 @@ namespace PlanetSurvival.Tests
             _created.Add(surface);
 
             var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(surface, 20f, threshold, 0));
+            settings.Configure(0, TileSize, 8, 1, new TerrainPatchLayer(surface, 20f, targetCoverage, 0));
             _created.Add(settings);
 
             var map = new TerrainTileMap();
