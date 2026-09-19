@@ -69,10 +69,19 @@ namespace PlanetSurvival.World.Ground
                     byte g1 = 0;
                     byte b1 = 0;
                     byte a1 = 0;
+                    // Gameplay resolves overlapping terrain by priority: the first matching layer owns
+                    // the tile. Keep the render data subject to the same rule. This matters for cutout
+                    // artwork because otherwise transparent pixels in iron would reveal a lower rock
+                    // layer and make one tile look as though it contains both resources.
                     for (int layerIndex = 0; layerIndex < layerCount; layerIndex++)
                     {
                         float distance = layers[layerIndex].SignedDistanceToEdge(
                             map.WorldSeed, worldX, worldZ, map.CoverageMultiplier);
+                        if (distance < 0f)
+                        {
+                            continue;
+                        }
+
                         byte weight = ToByte(SmoothTransition(distance, safeBlendDistance));
                         switch (layerIndex)
                         {
@@ -85,6 +94,8 @@ namespace PlanetSurvival.World.Ground
                             case 6: b1 = weight; break;
                             case 7: a1 = weight; break;
                         }
+
+                        break;
                     }
 
                     control0[pixelIndex] = new Color32(r0, g0, b0, a0);

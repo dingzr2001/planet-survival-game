@@ -221,23 +221,22 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void ControlMap_HigherLayerFadesIntoAStillOpaqueLowerLayer()
+        public void ControlMap_OverlappingLayers_OnlyGiveWeightToTheHighestPriorityLayer()
         {
             TerrainTileMap map = CreateOverlappingMap();
             Color32[] control = BuildFirstControlMap(map, new TerrainTileCoordinate(0, 0));
-            bool foundCrossFade = false;
+            bool foundUpperLayer = false;
             for (int i = 0; i < control.Length; i++)
             {
-                if (control[i].r > 0 && control[i].r < byte.MaxValue
-                    && control[i].g == byte.MaxValue)
+                if (control[i].r > 0)
                 {
-                    foundCrossFade = true;
-                    break;
+                    foundUpperLayer = true;
+                    Assert.That(control[i].g, Is.Zero,
+                        "A lower terrain layer must not render below transparent pixels of the winning layer.");
                 }
             }
 
-            Assert.That(foundCrossFade, Is.True,
-                "A high-priority surface such as ice must fade into rock, not inherit the union's hard edge.");
+            Assert.That(foundUpperLayer, Is.True, "The test area did not reach the upper terrain layer.");
         }
 
         [Test]

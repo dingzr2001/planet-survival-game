@@ -169,14 +169,17 @@ Shader "Planet Survival/Terrain Blend"
                 fixed3 premultiplied = 0;
                 fixed alpha = 0;
 
-                if (_LayerCount > 7.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer7, tileUv), 7.0, tileUv, absoluteTile), control1.a);
-                if (_LayerCount > 6.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer6, tileUv), 6.0, tileUv, absoluteTile), control1.b);
-                if (_LayerCount > 5.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer5, tileUv), 5.0, tileUv, absoluteTile), control1.g);
-                if (_LayerCount > 4.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer4, tileUv), 4.0, tileUv, absoluteTile), control1.r);
-                if (_LayerCount > 3.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer3, tileUv), 3.0, tileUv, absoluteTile), control0.a);
-                if (_LayerCount > 2.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer2, tileUv), 2.0, tileUv, absoluteTile), control0.b);
-                if (_LayerCount > 1.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer1, tileUv), 1.0, tileUv, absoluteTile), control0.g);
-                if (_LayerCount > 0.5) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer0, tileUv), 0.0, tileUv, absoluteTile), control0.r);
+                // Exactly one terrain owns a gameplay tile. Preserve that invariant even at control-map
+                // filtering boundaries: transparent pixels reveal base regolith, never a lower-priority
+                // resource such as rock beneath iron.
+                if (_LayerCount > 0.5 && control0.r > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer0, tileUv), 0.0, tileUv, absoluteTile), control0.r);
+                else if (_LayerCount > 1.5 && control0.g > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer1, tileUv), 1.0, tileUv, absoluteTile), control0.g);
+                else if (_LayerCount > 2.5 && control0.b > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer2, tileUv), 2.0, tileUv, absoluteTile), control0.b);
+                else if (_LayerCount > 3.5 && control0.a > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer3, tileUv), 3.0, tileUv, absoluteTile), control0.a);
+                else if (_LayerCount > 4.5 && control1.r > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer4, tileUv), 4.0, tileUv, absoluteTile), control1.r);
+                else if (_LayerCount > 5.5 && control1.g > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer5, tileUv), 5.0, tileUv, absoluteTile), control1.g);
+                else if (_LayerCount > 6.5 && control1.b > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer6, tileUv), 6.0, tileUv, absoluteTile), control1.b);
+                else if (_LayerCount > 7.5 && control1.a > 0.5h) Composite(premultiplied, alpha, SampleSurfaceVariant(tex2D(_Layer7, tileUv), 7.0, tileUv, absoluteTile), control1.a);
 
                 return fixed4(premultiplied, alpha);
             }
