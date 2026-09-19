@@ -57,7 +57,7 @@ namespace PlanetSurvival.Tests
                 IReadOnlyList<ChunkResourcePlacement> placements = Plan(new ChunkCoordinate(x, x * 2 - 3));
                 for (int i = 0; i < placements.Count; i++)
                 {
-                    // Five is the variant count the ice deposits are authored for.
+                    // Five represents a resource authored with several visual variants.
                     distinctVariants.Add((placements[i].VariantSeed & int.MaxValue) % 5);
                 }
             }
@@ -130,11 +130,11 @@ namespace PlanetSurvival.Tests
         private ResourceNodeDefinition CreateDefinition()
         {
             ItemDefinition item = ScriptableObject.CreateInstance<ItemDefinition>();
-            item.Configure("ice_chunk", "Ice Chunk", 1, 20, false, true);
+            item.Configure("raw_stone", "Raw Stone", 1, 20, false, true);
             _createdAssets.Add(item);
 
             ResourceNodeDefinition definition = ScriptableObject.CreateInstance<ResourceNodeDefinition>();
-            definition.Configure("ice_deposit", "Ice Deposit", 4f, 2.25f, string.Empty,
+            definition.Configure("rock", "Rock", 4f, 2.25f, string.Empty,
                 new Vector3(2.4f, 1.35f, 1.4f), new ResourceYield(item, 3));
             _createdAssets.Add(definition);
             return definition;

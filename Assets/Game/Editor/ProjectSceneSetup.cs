@@ -28,8 +28,8 @@ namespace PlanetSurvival.Editor
         private static readonly Vector2 DefaultStartingAreaSize = new(48f, 48f);
         private const int ResourceSeedOffset = 7919;
 
-        // A 32m chunk carries 0.22 nodes on average, about one node per 4650m². Ice keeps its existing
-        // survival-floor density; optional stone and scrap are rarer so expeditions cannot casually top up.
+        // A 32m chunk carries 0.12 nodes on average, about one node per 8530m². Stone and scrap are
+        // optional finds; ice is represented by the diggable terrain layer instead of a resource node.
         private const float ResourceChunkSize = 32f;
         private const int ResourceLoadRadiusInChunks = 2;
         private const float ResourceMinimumSpacing = 8f;
@@ -122,11 +122,6 @@ namespace PlanetSurvival.Editor
         private const int PotatoPlantingWaterMilliliters = 1500;
         private const int PotatoHarvestQuantity = 4;
 
-        // Ice sits in the open, so it is the one resource a stranded explorer can always work towards.
-        private const float IceGatherSeconds = 4f;
-        private const int IceChunksPerDeposit = 3;
-        private const float IceNodesPerChunk = .1f;
-
         // Starter structures. The costs are deliberately small: the first shelter should be reachable from
         // one gathering trip, so the placement grid is learned long before resources become a constraint.
         private const float StoneWallSeconds = 6f;
@@ -178,7 +173,7 @@ namespace PlanetSurvival.Editor
             EditorUtility.SetDirty(worldVisuals);
             ItemDefinition iceChunk = GetOrCreateIceChunk();
             CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato);
-            ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(iceChunk, pickaxe);
+            ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(pickaxe);
             TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
             ItemDefinition oxygenCandle = GetOrCreateOxygenCandle();
             CraftingRecipe oxygenCandleRecipe = GetOrCreateOxygenCandleRecipe(
@@ -306,7 +301,7 @@ namespace PlanetSurvival.Editor
                 return;
             }
 
-            GetOrCreateResourceSettings(iceChunk, pickaxe);
+            GetOrCreateResourceSettings(pickaxe);
             GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -405,8 +400,7 @@ namespace PlanetSurvival.Editor
             Debug.Log("Sparse connected ice terrain is ready.");
         }
 
-        private static ResourceSpawnSettings GetOrCreateResourceSettings(
-            ItemDefinition iceChunk, ItemDefinition pickaxe)
+        private static ResourceSpawnSettings GetOrCreateResourceSettings(ItemDefinition pickaxe)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
@@ -417,22 +411,6 @@ namespace PlanetSurvival.Editor
             ResourceNodeDefinition debris = GetOrCreateNode("DebrisNode", "debris", "Debris", 3.5f,
                 string.Empty,
                 new Vector3(1f, 1f, .8f), new ResourceYield(scrap, 1));
-            // Physical sizes are world-space values rather than tile counts. Repeated entries weight the mix:
-            // small remnants remain, but most deposits read as substantial connected sheets.
-            ResourceNodeDefinition iceDeposit = GetOrCreateNode("IceDepositNode", "ice_deposit", "Ice Deposit",
-                IceGatherSeconds, string.Empty, new Vector3(1.1f, .15f, 1.1f),
-                new ResourceYield(iceChunk, IceChunksPerDeposit));
-            // The sheet lies flat on the ground: the explorer walks over it rather than around it.
-            iceDeposit.ConfigureCollision(false);
-            iceDeposit.ConfigurePresentation(ResourceVisualMode.GroundDecal);
-            iceDeposit.ConfigureBlobShadow(false);
-            iceDeposit.ConfigureGroundPatchSizes(
-                new Vector2(1.1f, 1.1f),
-                new Vector2(2.25f, 2.1f), new Vector2(2.25f, 2.1f), new Vector2(2.25f, 2.1f),
-                new Vector2(2.4f, 3.35f), new Vector2(3.45f, 2.3f),
-                new Vector2(3.6f, 3.25f));
-            EditorUtility.SetDirty(iceDeposit);
-
             ResourceSpawnSettings settings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(ResourceSpawnSettingsPath);
             if (settings == null)
             {
@@ -444,8 +422,7 @@ namespace PlanetSurvival.Editor
             settings.Configure(ResourceSeedOffset, ResourceChunkSize, ResourceLoadRadiusInChunks,
                 ResourceMinimumSpacing, ResourceSpawnClearanceRadius,
                 new ResourceSpawnEntry(rock, RockNodesPerChunk),
-                new ResourceSpawnEntry(debris, DebrisNodesPerChunk),
-                new ResourceSpawnEntry(iceDeposit, IceNodesPerChunk));
+                new ResourceSpawnEntry(debris, DebrisNodesPerChunk));
             EditorUtility.SetDirty(settings);
             return settings;
         }

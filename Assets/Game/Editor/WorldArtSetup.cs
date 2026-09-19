@@ -330,12 +330,11 @@ namespace PlanetSurvival.Editor
             int assigned = 0;
             assigned += Assign("RockNode", "Rock") ? 1 : 0;
             assigned += Assign("DebrisNode", "Debris") ? 1 : 0;
-            assigned += Assign("IceDepositNode", "IceDeposit") ? 1 : 0;
             return assigned;
         }
 
         /// <summary>
-        /// Connects a resource to every cutout named after it: 'IceDeposit.png', 'IceDeposit2.png' and
+        /// Connects a resource to every cutout named after it: 'Rock.png', 'Rock2.png' and
         /// so on all become variants of one deposit. Files are taken in name order so a node keeps the
         /// same look between runs; inserting a variant that sorts before the existing ones reshuffles
         /// which deposit wears which art, which is harmless but visible.

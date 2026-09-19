@@ -152,56 +152,21 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.maxTextureSize, Is.EqualTo(256));
         }
 
-        /// <summary>
-        /// The surface half of the ice-water-food loop: ice has to be gatherable, and it has to be worth
-        /// nothing until the processor has purified it.
-        /// </summary>
+        /// <summary>The gathered terrain yield is worthless until the processor has purified it.</summary>
         [Test]
-        public void IceChunk_IsGatheredOnTheSurfaceAndCarriesNoNutrition()
+        public void IceChunk_CarriesNoNutrition()
         {
             ItemDefinition ice = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
                 "Assets/Game/Configuration/IceChunk.asset");
-            ResourceNodeDefinition deposit = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(
-                "Assets/Game/Configuration/IceDepositNode.asset");
-            ResourceSpawnSettings spawnSettings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(
-                "Assets/Game/Configuration/DefaultResourceSpawnSettings.asset");
 
             Assert.That(ice, Is.Not.Null);
             Assert.That(ice.ItemId, Is.EqualTo("ice_chunk"));
             Assert.That(ice.Calories, Is.Zero);
             Assert.That(ice.CanUse, Is.False, "Ice is only worth anything once the processor has purified it.");
-
-            Assert.That(deposit, Is.Not.Null);
-            Assert.That(deposit.IsValid(out string depositError), Is.True, depositError);
-            Assert.That(deposit.WorldSprite, Is.Not.Null,
-                "Without its cutout the deposit is drawn as a placeholder block on the surface.");
-            Assert.That(deposit.Yields.Count, Is.EqualTo(1));
-            Assert.That(deposit.Yields[0].Item.ItemId, Is.EqualTo("ice_chunk"));
-            Assert.That(deposit.RequiredToolItemId, Is.Empty,
-                "Water must stay reachable with bare hands until tools exist.");
-            Assert.That(deposit.BlocksMovement, Is.False,
-                "The sheet lies flat on the ground; the explorer walks over it rather than around it.");
-            Assert.That(deposit.VisualMode, Is.EqualTo(ResourceVisualMode.GroundDecal),
-                "Ice is a floor surface and must stay below actors instead of joining billboard depth sorting.");
-            Assert.That(deposit.CastsBlobShadow, Is.False,
-                "A ground-hugging ice slab must not receive a floating-object shadow.");
-
-            Assert.That(spawnSettings, Is.Not.Null);
-            bool spawnsIce = false;
-            for (int i = 0; i < spawnSettings.Entries.Count; i++)
-            {
-                ResourceSpawnEntry entry = spawnSettings.Entries[i];
-                if (entry.Definition == deposit)
-                {
-                    spawnsIce = entry.NodesPerChunk > 0f;
-                }
-            }
-
-            Assert.That(spawnsIce, Is.True, "Ice deposits must be part of the streamed surface layout.");
         }
 
         [Test]
-        public void SurfaceResourceNodes_KeepOptionalMaterialsScarceWithoutReducingIce()
+        public void SurfaceResourceNodes_ContainOnlyRockAndDebris()
         {
             ResourceSpawnSettings spawnSettings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(
                 "Assets/Game/Configuration/DefaultResourceSpawnSettings.asset");
@@ -210,8 +175,7 @@ namespace PlanetSurvival.Tests
             var expectedDensities = new Dictionary<string, float>
             {
                 { "rock", .08f },
-                { "debris", .04f },
-                { "ice_deposit", .1f }
+                { "debris", .04f }
             };
 
             Assert.That(spawnSettings.Entries.Count, Is.EqualTo(expectedDensities.Count));
