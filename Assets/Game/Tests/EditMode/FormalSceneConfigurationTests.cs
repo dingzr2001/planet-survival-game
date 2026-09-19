@@ -608,6 +608,28 @@ namespace PlanetSurvival.Tests
         }
 
         /// <summary>
+        /// Iron variants are ore-only overlays. Keeping the transparent source pixels and original
+        /// non-power-of-two dimensions lets the shared regolith remain continuous between tiles.
+        /// </summary>
+        [Test]
+        public void IronTerrainVariants_AreImportedAsTransparentOverlaysWithoutRescaling()
+        {
+            foreach (string textureName in new[] { "IronVariant1", "IronVariant2", "IronVariant3" })
+            {
+                string path = $"Assets/Game/Art/World/Ground/{textureName}.png";
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+                Assert.That(importer, Is.Not.Null, $"'{path}' was not imported.");
+                Assert.That(importer.alphaIsTransparency, Is.True,
+                    $"'{textureName}' needs transparency dilation to avoid dark fringes around the ore.");
+                Assert.That(importer.DoesSourceTextureHaveAlpha(), Is.True,
+                    $"'{textureName}' must not contain an opaque soil background.");
+                Assert.That(importer.npotScale, Is.EqualTo(TextureImporterNPOTScale.None),
+                    $"'{textureName}' must retain its authored proportions instead of being rescaled during import.");
+            }
+        }
+
+        /// <summary>
         /// The overlay shares the transparent queue with everything else lying on the floor, so its order
         /// is explicit rather than left to chance.
         /// </summary>

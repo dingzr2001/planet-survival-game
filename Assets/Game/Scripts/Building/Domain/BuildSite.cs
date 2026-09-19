@@ -1,6 +1,7 @@
 using System;
 using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Oxygen.Domain;
+using PlanetSurvival.Mining.Domain;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Domain
@@ -33,6 +34,11 @@ namespace PlanetSurvival.Building.Domain
             {
                 OxygenCandle = new OxygenCandleBurn();
             }
+
+            if (definition.MiningDrill != null)
+            {
+                MiningDrill = new MiningDrill(definition.MiningDrill);
+            }
         }
 
         public string SiteId { get; }
@@ -42,6 +48,7 @@ namespace PlanetSurvival.Building.Domain
         public float RemainingSeconds { get; private set; }
         public float TotalSeconds { get; }
         public OxygenCandleBurn OxygenCandle { get; }
+        public MiningDrill MiningDrill { get; }
 
         public float Progress => TotalSeconds <= 0f
             ? 1f

@@ -21,6 +21,8 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _chlorateSaltDefinition;
         [SerializeField, Tooltip("Mining tool placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _pickaxeDefinition;
+        [SerializeField, Tooltip("Portable petroleum fuel placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _petroleumDefinition;
         private GameFlow _flow;
         private readonly GameSessionState _session = new();
 
@@ -45,13 +47,14 @@ namespace PlanetSurvival.Core.Flow
 
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
             ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
-            ItemDefinition pickaxeDefinition = null)
+            ItemDefinition pickaxeDefinition = null, ItemDefinition petroleumDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
             _aluminumAlloyDefinition = aluminumAlloyDefinition;
             _chlorateSaltDefinition = chlorateSaltDefinition;
             _pickaxeDefinition = pickaxeDefinition;
+            _petroleumDefinition = petroleumDefinition;
         }
 
         public void Initialize()
@@ -112,6 +115,12 @@ namespace PlanetSurvival.Core.Flow
             {
                 startingSupplies.Add(new InventoryItemAmount(
                     _pickaxeDefinition, GameSessionState.InitialPickaxeCount));
+            }
+
+            if (_petroleumDefinition != null)
+            {
+                startingSupplies.Add(new InventoryItemAmount(
+                    _petroleumDefinition, GameSessionState.InitialPetroleumCanisterCount));
             }
 
             InventoryOperationResult result = _session.Reset(startingSupplies);

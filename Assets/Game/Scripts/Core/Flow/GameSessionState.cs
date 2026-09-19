@@ -45,6 +45,7 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialAluminumAlloyCount = 20;
         public const int InitialChlorateSaltCount = 1;
         public const int InitialPickaxeCount = 1;
+        public const int InitialPetroleumCanisterCount = 4;
 
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;
@@ -75,11 +76,11 @@ namespace PlanetSurvival.Core.Flow
             PlayerInventory = new InventoryModel(PlayerInventoryCapacity, PlayerInventorySlots);
             RefrigeratorStorage = new InventoryModel(RefrigeratorCapacity, RefrigeratorSlots);
             CargoStorage = new InventoryModel(CargoStorageCapacity, CargoStorageSlots);
-            Buildings = new BuildingService(PlayerInventory, new BuildGrid(BuildGridCellSize));
+            Terrain = new TerrainTileMap();
+            Buildings = new BuildingService(PlayerInventory, new BuildGrid(BuildGridCellSize), Terrain);
             WaterProcessor = new WaterProcessor();
             Hydroponics = new HydroponicsRack(HydroponicsSlotCount);
             Exploration = new WorldExplorationMap();
-            Terrain = new TerrainTileMap();
         }
 
         public SpaceSuitResources SpaceSuit { get; }

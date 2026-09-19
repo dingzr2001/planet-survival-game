@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using PlanetSurvival.Cooking.Definitions;
 using PlanetSurvival.Crafting.Definitions;
+using PlanetSurvival.Mining.Definitions;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Definitions
@@ -37,6 +38,8 @@ namespace PlanetSurvival.Building.Definitions
         private CookingStationDefinition _cookingStation;
         [SerializeField, Tooltip("The finished deployable is a single-use oxygen candle that ignites immediately.")]
         private bool _isOxygenCandle;
+        [SerializeField, Tooltip("Optional: the finished building operates as this mining drill.")]
+        private MiningDrillDefinition _miningDrill;
 
         public string BuildableId => _buildableId;
         public string DisplayName => _displayName;
@@ -49,6 +52,7 @@ namespace PlanetSurvival.Building.Definitions
         public Color BodyColor => _bodyColor;
         public CookingStationDefinition CookingStation => _cookingStation;
         public bool IsOxygenCandle => _isOxygenCandle;
+        public MiningDrillDefinition MiningDrill => _miningDrill;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -107,6 +111,12 @@ namespace PlanetSurvival.Building.Definitions
                 }
             }
 
+            if (_miningDrill != null && !_miningDrill.IsValid(out string miningError))
+            {
+                error = $"Buildable '{_buildableId}' has an invalid mining drill: {miningError}";
+                return false;
+            }
+
             error = string.Empty;
             return true;
         }
@@ -128,6 +138,11 @@ namespace PlanetSurvival.Building.Definitions
             _bodyColor = bodyColor;
         }
 
+        public void ConfigureIcon(Sprite icon)
+        {
+            _icon = icon;
+        }
+
         public void ConfigureDescription(string description)
         {
             _description = description ?? string.Empty;
@@ -141,6 +156,11 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigureOxygenCandle(bool isOxygenCandle)
         {
             _isOxygenCandle = isOxygenCandle;
+        }
+
+        public void ConfigureMiningDrill(MiningDrillDefinition miningDrill)
+        {
+            _miningDrill = miningDrill;
         }
     }
 }

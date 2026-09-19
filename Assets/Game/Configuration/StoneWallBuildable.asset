@@ -26,3 +26,4 @@ MonoBehaviour:
   _bodyColor: {r: 0.58, g: 0.5, b: 0.44, a: 1}
   _cookingStation: {fileID: 0}
   _isOxygenCandle: 0
+  _miningDrill: {fileID: 0}

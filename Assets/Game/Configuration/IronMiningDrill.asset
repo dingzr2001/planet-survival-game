@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76cb2d42c3abd45e7ba2f6adf4c9a7cc, type: 3}
+  m_Name: IronMiningDrill
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Mining.Definitions.MiningDrillDefinition
+  _requiredTerrainId: iron
+  _requiredTerrainDisplayName: iron
+  _outputItem: {fileID: 11400000, guid: 04e25be8e2ff04c669643eb96a49cf7a, type: 2}
+  _productionPerSecond: 0.25
+  _oreCapacity: 20
+  _outputPerSecond: 2
+  _electricityPerOre: 5
+  _electricityCapacity: 25
+  _petroleumItem: {fileID: 11400000, guid: dd68a9242eddb4a4180f9c92a702a17a, type: 2}
+  _petroleumPerItem: 5
+  _petroleumPerOre: 1
+  _petroleumCapacity: 20

@@ -4,6 +4,8 @@ using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Inventory.Domain;
+using PlanetSurvival.World.Ground;
+using UnityEngine;
 
 namespace PlanetSurvival.Building.Application
 {
@@ -18,12 +20,14 @@ namespace PlanetSurvival.Building.Application
     {
         private readonly InventoryModel _inventory;
         private readonly BuildGrid _grid;
+        private readonly TerrainTileMap _terrain;
         private readonly List<BuildSite> _sites = new();
 
-        public BuildingService(InventoryModel inventory, BuildGrid grid)
+        public BuildingService(InventoryModel inventory, BuildGrid grid, TerrainTileMap terrain = null)
         {
             _inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
             _grid = grid ?? throw new ArgumentNullException(nameof(grid));
+            _terrain = terrain;
         }
 
         public BuildGrid Grid => _grid;
@@ -78,6 +82,14 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
             }
 
+            string requiredTerrainId = buildable.MiningDrill?.RequiredTerrainId;
+            if (!string.IsNullOrWhiteSpace(requiredTerrainId) && !IsFootprintOnTerrain(footprint, requiredTerrainId))
+            {
+                return BuildResult.Fail(
+                    BuildFailure.WrongTerrain,
+                    $"'{buildable.DisplayName}' can only be placed on {buildable.MiningDrill.RequiredTerrainDisplayName} terrain.");
+            }
+
             if (!CanAfford(buildable))
             {
                 return BuildResult.Fail(
@@ -86,6 +98,26 @@ namespace PlanetSurvival.Building.Application
             }
 
             return BuildResult.Success();
+        }
+
+        private bool IsFootprintOnTerrain(in BuildFootprint footprint, string terrainId)
+        {
+            if (_terrain == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < footprint.CellCount; i++)
+            {
+                Vector3 center = _grid.CellCenter(footprint.CellAt(i));
+                TerrainSurfaceDefinition surface = _terrain.GetSurface(_terrain.TileAt(center));
+                if (surface == null || !string.Equals(surface.TerrainId, terrainId, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

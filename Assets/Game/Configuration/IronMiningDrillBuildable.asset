@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: IronMiningDrillBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: iron_mining_drill
+  _displayName: Iron Mining Drill
+  _description: Extracts iron ore only when placed on iron terrain. Accepts electricity
+    or petroleum and pauses when its ore bin is full.
+  _icon: {fileID: 21300000, guid: 92e912986b3fc43e5932c46ac6789ea6, type: 3}
+  _footprint: {x: 1, y: 1}
+  _buildSeconds: 15
+  _cost:
+  - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
+    _quantity: 8
+  _worldSprite: {fileID: 21300000, guid: 92e912986b3fc43e5932c46ac6789ea6, type: 3}
+  _worldHeight: 0.98
+  _bodyColor: {r: 0.82, g: 0.58, b: 0.18, a: 1}
+  _cookingStation: {fileID: 0}
+  _isOxygenCandle: 0
+  _miningDrill: {fileID: 11400000, guid: 2ac34b01a5e2843a8b749d82b44d5c8f, type: 2}

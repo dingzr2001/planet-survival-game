@@ -13,6 +13,9 @@ namespace PlanetSurvival.Building.Domain
         /// <summary>Another site, building, or obstacle already covers one of the cells.</summary>
         Blocked,
 
+        /// <summary>The structure requires a terrain type that does not cover its whole footprint.</summary>
+        WrongTerrain,
+
         /// <summary>The chosen spot is out of the player's building reach.</summary>
         OutOfReach,
 

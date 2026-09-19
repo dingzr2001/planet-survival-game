@@ -7,6 +7,7 @@ using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Mining.Definitions;
 using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.UI.Inventory;
@@ -47,6 +48,8 @@ namespace PlanetSurvival.Editor
         private const string AluminumAlloyPath = ConfigurationDirectory + "/AluminumAlloy.asset";
         private const string ChlorateSaltPath = ConfigurationDirectory + "/ChlorateSalt.asset";
         private const string IronOrePath = ConfigurationDirectory + "/IronOre.asset";
+        private const string PetroleumPath = ConfigurationDirectory + "/PetroleumCanister.asset";
+        private const string MiningDrillPath = ConfigurationDirectory + "/IronMiningDrill.asset";
         private const string OxygenCandlePath = ConfigurationDirectory + "/OxygenCandle.asset";
         private const string OxygenCandleRecipePath = ConfigurationDirectory + "/OxygenCandleRecipe.asset";
         private const string RoastPotatoPath = ConfigurationDirectory + "/RoastPotato.asset";
@@ -126,6 +129,15 @@ namespace PlanetSurvival.Editor
         private const float MetalBarricadeSeconds = 8f;
         private const float FieldOvenSeconds = 20f;
         private const float OxygenCandlePlacementSeconds = 1f;
+        private const float IronMiningDrillBuildSeconds = 15f;
+        private const float IronMiningDrillProductionPerSecond = .25f;
+        private const int IronMiningDrillOreCapacity = 20;
+        private const float IronMiningDrillOutputPerSecond = 2f;
+        private const float IronMiningDrillElectricityPerOre = 5f;
+        private const float IronMiningDrillElectricityCapacity = 25f;
+        private const float PetroleumPerCanister = 5f;
+        private const float IronMiningDrillPetroleumPerOre = 1f;
+        private const float IronMiningDrillPetroleumCapacity = 20f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
@@ -155,6 +167,7 @@ namespace PlanetSurvival.Editor
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
             ItemDefinition chlorateSalt = GetOrCreateChlorateSalt();
             ItemDefinition pickaxe = GetOrCreatePickaxe();
+            ItemDefinition petroleum = GetOrCreatePetroleumCanister();
             PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
             worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation);
             EditorUtility.SetDirty(worldVisuals);
@@ -170,7 +183,7 @@ namespace PlanetSurvival.Editor
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
@@ -209,10 +222,38 @@ namespace PlanetSurvival.Editor
                 oxygenCandle, chlorateSalt);
             CookingStationDefinition oven = GetOrCreateOven(potato, oxygenCandleRecipe);
             GetOrCreateBuildingCatalog(oven, oxygenCandle);
-            UpdateBootstrapStartingSupplies(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+            ItemDefinition petroleum = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PetroleumPath);
+            UpdateBootstrapStartingSupplies(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("The craftable and placeable oxygen candle is ready.");
+        }
+
+        [MenuItem("Planet Survival/Setup Iron Mining Drill")]
+        public static void CreateOrUpdateIronMiningDrill()
+        {
+            ItemDefinition energyBar = AssetDatabase.LoadAssetAtPath<ItemDefinition>(EnergyBarPath);
+            ItemDefinition potato = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoPath);
+            ItemDefinition aluminumAlloy = AssetDatabase.LoadAssetAtPath<ItemDefinition>(AluminumAlloyPath);
+            ItemDefinition chlorateSalt = AssetDatabase.LoadAssetAtPath<ItemDefinition>(ChlorateSaltPath);
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            ItemDefinition oxygenCandle = AssetDatabase.LoadAssetAtPath<ItemDefinition>(OxygenCandlePath);
+            CookingStationDefinition oven = AssetDatabase.LoadAssetAtPath<CookingStationDefinition>(OvenStationPath);
+            if (energyBar == null || potato == null || aluminumAlloy == null || chlorateSalt == null ||
+                pickaxe == null || oxygenCandle == null || oven == null)
+            {
+                Debug.LogError("Iron mining drill setup requires the existing formal project configuration.");
+                return;
+            }
+
+            ItemDefinition petroleum = GetOrCreatePetroleumCanister();
+            GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            UpdateBootstrapStartingSupplies(
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
+            UiArtSetup.AssignItemIcons();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("The iron-terrain mining drill, petroleum fuel, and starting supply are ready.");
         }
 
         /// <summary>
@@ -528,6 +569,23 @@ namespace PlanetSurvival.Editor
             return item;
         }
 
+        private static ItemDefinition GetOrCreatePetroleumCanister()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PetroleumPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Petroleum Canister";
+                AssetDatabase.CreateAsset(item, PetroleumPath);
+            }
+
+            item.Configure("petroleum_canister", "Petroleum Canister", 5, 10, false, true);
+            item.ConfigureDescription(
+                $"A sealed field-fuel canister. One canister supplies {PetroleumPerCanister:0.#} units of petroleum to compatible machines.");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
         private static PlayerToolAnimationDefinition GetOrCreatePickaxeAnimation(ItemDefinition pickaxe)
         {
             PlayerEquipmentVisualDefinition visual =
@@ -819,6 +877,7 @@ namespace PlanetSurvival.Editor
                 new CraftingItemAmount(oxygenCandle, 1));
             placedOxygenCandle.ConfigureOxygenCandle(true);
             EditorUtility.SetDirty(placedOxygenCandle);
+            BuildableDefinition ironMiningDrill = GetOrCreateIronMiningDrill(aluminumAlloy: GetOrCreateAluminumAlloy());
 
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
@@ -828,9 +887,43 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(catalog, BuildingCatalogPath);
             }
 
-            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle);
+            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill);
             EditorUtility.SetDirty(catalog);
             return catalog;
+        }
+
+        private static BuildableDefinition GetOrCreateIronMiningDrill(ItemDefinition aluminumAlloy)
+        {
+            ItemDefinition ironOre = AssetDatabase.LoadAssetAtPath<ItemDefinition>(IronOrePath)
+                                     ?? GetOrCreateItem("IronOre", "iron_ore", "Iron Ore", 2, 20);
+            ItemDefinition petroleum = GetOrCreatePetroleumCanister();
+            MiningDrillDefinition definition = AssetDatabase.LoadAssetAtPath<MiningDrillDefinition>(MiningDrillPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<MiningDrillDefinition>();
+                definition.name = "Iron Mining Drill";
+                AssetDatabase.CreateAsset(definition, MiningDrillPath);
+            }
+
+            definition.Configure(
+                "iron", "iron", ironOre,
+                IronMiningDrillProductionPerSecond, IronMiningDrillOreCapacity, IronMiningDrillOutputPerSecond,
+                IronMiningDrillElectricityPerOre, IronMiningDrillElectricityCapacity,
+                petroleum, PetroleumPerCanister, IronMiningDrillPetroleumPerOre,
+                IronMiningDrillPetroleumCapacity);
+            EditorUtility.SetDirty(definition);
+
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("IronMiningDrill");
+            BuildableDefinition buildable = GetOrCreateBuildable(
+                "IronMiningDrillBuildable", "iron_mining_drill", "Iron Mining Drill",
+                Vector2Int.one, IronMiningDrillBuildSeconds, .98f, new Color(.82f, .58f, .18f),
+                "Extracts iron ore only when placed on iron terrain. Accepts electricity or petroleum and pauses when its ore bin is full.",
+                new CraftingItemAmount(aluminumAlloy, 8));
+            buildable.ConfigurePresentation(sprite, .98f, new Color(.82f, .58f, .18f));
+            buildable.ConfigureIcon(sprite);
+            buildable.ConfigureMiningDrill(definition);
+            EditorUtility.SetDirty(buildable);
+            return buildable;
         }
 
         private static BuildableDefinition GetOrCreateBuildable(string assetName, string buildableId,
@@ -939,18 +1032,20 @@ namespace PlanetSurvival.Editor
         }
 
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
-            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe)
+            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
+            ItemDefinition petroleum)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
 
         private static void UpdateBootstrapStartingSupplies(ItemDefinition energyBar, ItemDefinition potato,
-            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe)
+            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
+            ItemDefinition petroleum)
         {
             Scene scene = EditorSceneManager.OpenScene(BootstrapScenePath, OpenSceneMode.Single);
             GameFlowController flowController = Object.FindFirstObjectByType<GameFlowController>();
@@ -961,7 +1056,7 @@ namespace PlanetSurvival.Editor
             }
 
             flowController.ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }

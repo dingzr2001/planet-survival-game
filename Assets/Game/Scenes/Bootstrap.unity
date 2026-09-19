@@ -166,6 +166,7 @@ MonoBehaviour:
   _aluminumAlloyDefinition: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
   _chlorateSaltDefinition: {fileID: 11400000, guid: 08d6e4debc9a84e88bccc25927cafd0a, type: 2}
   _pickaxeDefinition: {fileID: 11400000, guid: fcfb11a0fb63f4da7b6848db7c9d7b26, type: 2}
+  _petroleumDefinition: {fileID: 11400000, guid: dd68a9242eddb4a4180f9c92a702a17a, type: 2}
 --- !u!4 &1558093185
 Transform:
   m_ObjectHideFlags: 0

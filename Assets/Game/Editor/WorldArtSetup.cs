@@ -21,6 +21,7 @@ namespace PlanetSurvival.Editor
         private const string LandingPodExteriorPath = "Assets/Game/Resources/World/LandingPodExterior.png";
         private const string HorizonPath = "Assets/Game/Resources/World/MartianHorizon.png";
         private const string ResourceDirectory = "Assets/Game/Art/World/Resources";
+        private const string BuildingDirectory = "Assets/Game/Art/World/Buildings";
         private const string InteriorPropDirectory = "Assets/Game/Resources/Interiors";
 
         /// <summary>
@@ -152,6 +153,12 @@ namespace PlanetSurvival.Editor
             // swings rotate around the explorer's hands instead of around the pick head.
             return ImportSprite(PickaxePath, 2048, false,
                 TextureImporterCompression.Uncompressed, new Vector2(.5f, .48f));
+        }
+
+        public static Sprite ImportBuildingSprite(string assetName)
+        {
+            return ImportSprite($"{BuildingDirectory}/{assetName}.png", 2048, false,
+                TextureImporterCompression.Uncompressed, new Vector2(.5f, 0f));
         }
 
         private static Texture2D ImportPlayerAnimation(out Rect[] frameRects, out Vector2[] framePivots)

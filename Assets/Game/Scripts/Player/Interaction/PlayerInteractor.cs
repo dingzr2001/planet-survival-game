@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Stats;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace PlanetSurvival.Player.Interaction
         [SerializeField] private LayerMask _interactionLayers = ~0;
 
         private readonly Collider[] _results = new Collider[12];
+        private readonly List<MonoBehaviour> _componentResults = new(8);
         private PlayerSurvival _survival;
         private PlayerInventory _inventory;
         private IInteractable _focusedInteractable;
@@ -64,14 +66,16 @@ namespace PlanetSurvival.Player.Interaction
 
             for (int i = 0; i < count; i++)
             {
-                if (!_results[i].TryGetComponent(out IInteractable candidate) || !candidate.CanInteract(context))
-                {
-                    continue;
-                }
-
                 float distance = (_results[i].ClosestPoint(transform.position) - transform.position).sqrMagnitude;
-                if (distance < closestDistance)
+                _results[i].GetComponents(_componentResults);
+                for (int componentIndex = 0; componentIndex < _componentResults.Count; componentIndex++)
                 {
+                    if (_componentResults[componentIndex] is not IInteractable candidate ||
+                        !candidate.CanInteract(context) || distance >= closestDistance)
+                    {
+                        continue;
+                    }
+
                     closestDistance = distance;
                     closest = candidate;
                 }
