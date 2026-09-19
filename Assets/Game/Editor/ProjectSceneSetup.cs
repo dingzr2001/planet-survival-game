@@ -46,6 +46,8 @@ namespace PlanetSurvival.Editor
         private const string EnergyBarPath = ConfigurationDirectory + "/EnergyBar.asset";
         private const string PotatoPath = ConfigurationDirectory + "/Potato.asset";
         private const string AluminumAlloyPath = ConfigurationDirectory + "/AluminumAlloy.asset";
+        private const string RawStonePath = ConfigurationDirectory + "/RawStone.asset";
+        private const string MetalScrapPath = ConfigurationDirectory + "/MetalScrap.asset";
         private const string ChlorateSaltPath = ConfigurationDirectory + "/ChlorateSalt.asset";
         private const string IronOrePath = ConfigurationDirectory + "/IronOre.asset";
         private const string PetroleumPath = ConfigurationDirectory + "/PetroleumCanister.asset";
@@ -59,6 +61,8 @@ namespace PlanetSurvival.Editor
         private const string IceChunkPath = ConfigurationDirectory + "/IceChunk.asset";
         private const string PotatoCropPath = ConfigurationDirectory + "/PotatoCrop.asset";
         private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
+        private const string PickaxeRecipePath = ConfigurationDirectory + "/PoweredPickaxeRecipe.asset";
+        private const string CraftingCatalogPath = ConfigurationDirectory + "/DefaultCraftingCatalog.asset";
         private const string PickaxeVisualPath = ConfigurationDirectory + "/PickaxeVisual.asset";
         private const string PickaxeSwingPath = ConfigurationDirectory + "/PickaxeSwing.asset";
         private const string PickaxeAnimationPath = ConfigurationDirectory + "/PickaxeAnimation.asset";
@@ -146,6 +150,7 @@ namespace PlanetSurvival.Editor
         private const float OxygenCandleCraftSeconds = 45f;
         private const int ChlorateSaltPerOxygenCandle = 1;
         private const string OvenConditionId = "station.oven";
+        private const string HandheldCraftingConditionId = "crafting.handheld";
         private const string BootstrapScenePath = ScenesDirectory + "/Bootstrap.unity";
         private const string MainMenuScenePath = ScenesDirectory + "/MainMenu.unity";
         private const string GameplayScenePath = ScenesDirectory + "/Gameplay.unity";
@@ -180,6 +185,7 @@ namespace PlanetSurvival.Editor
                 oxygenCandle, chlorateSalt);
             CookingStationDefinition oven = GetOrCreateOven(potato, oxygenCandleRecipe);
             BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            CraftingCatalog craftingCatalog = GetOrCreateCraftingCatalog(pickaxe);
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
@@ -190,7 +196,7 @@ namespace PlanetSurvival.Editor
             CreateLandingPodScene(LandingPodDeck.Cargo, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodCargoScenePath);
             CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, terrainPatchSettings,
-                inventorySkin, worldVisuals, buildingCatalog);
+                inventorySkin, worldVisuals, buildingCatalog, craftingCatalog);
             ConfigureBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -254,6 +260,34 @@ namespace PlanetSurvival.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("The iron-terrain mining drill, petroleum fuel, and starting supply are ready.");
+        }
+
+        /// <summary>Authors handheld recipes and binds their catalog without rebuilding unrelated scenes.</summary>
+        [MenuItem("Planet Survival/Setup Crafting Drawer")]
+        public static void CreateOrUpdateCraftingDrawer()
+        {
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            if (pickaxe == null)
+            {
+                Debug.LogError("Crafting drawer setup requires the existing pickaxe item.");
+                return;
+            }
+
+            CraftingCatalog catalog = GetOrCreateCraftingCatalog(pickaxe);
+            Scene scene = EditorSceneManager.OpenScene(GameplayScenePath, OpenSceneMode.Single);
+            GameBootstrap bootstrap = Object.FindFirstObjectByType<GameBootstrap>();
+            if (bootstrap == null)
+            {
+                Debug.LogError("The gameplay scene has no GameBootstrap.");
+                return;
+            }
+
+            bootstrap.ConfigureCrafting(catalog);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("The left-side crafting and building drawer is configured.");
         }
 
         /// <summary>
@@ -845,6 +879,38 @@ namespace PlanetSurvival.Editor
                 OvenConditionId);
         }
 
+        private static CraftingCatalog GetOrCreateCraftingCatalog(ItemDefinition pickaxe)
+        {
+            ItemDefinition stone = AssetDatabase.LoadAssetAtPath<ItemDefinition>(RawStonePath)
+                                   ?? GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
+            ItemDefinition scrap = AssetDatabase.LoadAssetAtPath<ItemDefinition>(MetalScrapPath)
+                                   ?? GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
+            CraftingRecipe pickaxeRecipe = GetOrCreateRecipe(
+                PickaxeRecipePath,
+                "powered_pickaxe",
+                "Powered Pickaxe",
+                new[]
+                {
+                    new CraftingItemAmount(stone, 3),
+                    new CraftingItemAmount(scrap, 2)
+                },
+                new[] { new CraftingItemAmount(pickaxe, 1) },
+                0f,
+                HandheldCraftingConditionId);
+
+            CraftingCatalog catalog = AssetDatabase.LoadAssetAtPath<CraftingCatalog>(CraftingCatalogPath);
+            if (catalog == null)
+            {
+                catalog = ScriptableObject.CreateInstance<CraftingCatalog>();
+                catalog.name = "Default Crafting Catalog";
+                AssetDatabase.CreateAsset(catalog, CraftingCatalogPath);
+            }
+
+            catalog.Configure(new[] { HandheldCraftingConditionId }, pickaxeRecipe);
+            EditorUtility.SetDirty(catalog);
+            return catalog;
+        }
+
         /// <summary>
         /// The structures the surface build panel offers. They are separate assets so a catalog can be
         /// reshuffled — or a second catalog written for another biome — without touching the buildables.
@@ -1071,7 +1137,7 @@ namespace PlanetSurvival.Editor
         private static void CreateGameplayScene(TerrainGenerationSettings settings,
             PlanetEnvironmentSettings environmentSettings, ResourceSpawnSettings resourceSpawnSettings,
             TerrainPatchSettings terrainPatchSettings, InventorySkin inventorySkin,
-            WorldVisualSettings worldVisuals, BuildingCatalog buildingCatalog)
+            WorldVisualSettings worldVisuals, BuildingCatalog buildingCatalog, CraftingCatalog craftingCatalog)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var gameplay = new GameObject("Gameplay");
@@ -1081,6 +1147,7 @@ namespace PlanetSurvival.Editor
             bootstrap.ConfigureUi(inventorySkin);
             bootstrap.ConfigureVisuals(worldVisuals);
             bootstrap.ConfigureBuilding(buildingCatalog);
+            bootstrap.ConfigureCrafting(craftingCatalog);
             gameplay.AddComponent<PauseMenuView>();
             EditorSceneManager.SaveScene(scene, GameplayScenePath);
         }

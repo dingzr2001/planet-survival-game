@@ -3,6 +3,7 @@ using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
+using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Gathering.Runtime;
 using PlanetSurvival.Inventory.Application;
@@ -11,8 +12,8 @@ using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
-using PlanetSurvival.UI.Building;
 using PlanetSurvival.UI.Cooking;
+using PlanetSurvival.UI.Crafting;
 using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
@@ -41,6 +42,8 @@ namespace PlanetSurvival.Bootstrap
         private InventorySkin _inventorySkin;
         [SerializeField, Tooltip("Structures the build panel offers. Without it the surface has no building.")]
         private BuildingCatalog _buildingCatalog;
+        [SerializeField, Tooltip("Recipes available from the left-side handheld crafting drawer.")]
+        private CraftingCatalog _craftingCatalog;
         [Header("Debug")]
         [SerializeField, Tooltip("Editor and Development Builds only. Set before Play Mode to make terrain deposits and resource nodes easier to inspect.")]
         private bool _abundantSurfaceResourcesInDebugBuild = true;
@@ -92,6 +95,11 @@ namespace PlanetSurvival.Bootstrap
         public void ConfigureBuilding(BuildingCatalog buildingCatalog)
         {
             _buildingCatalog = buildingCatalog;
+        }
+
+        public void ConfigureCrafting(CraftingCatalog craftingCatalog)
+        {
+            _craftingCatalog = craftingCatalog;
         }
 
         private void Start()
@@ -338,9 +346,10 @@ namespace PlanetSurvival.Bootstrap
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
                 hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>());
 
-            hud.AddComponent<BuildMenuView>().Bind(
+            hud.AddComponent<CraftingDrawerView>().Bind(
                 controller,
                 playerInventory,
+                _craftingCatalog,
                 player.GetComponent<PlanarPlayerMotor>(),
                 player.GetComponent<PlayerInteractor>());
         }

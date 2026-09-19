@@ -168,6 +168,7 @@ MonoBehaviour:
   _worldVisuals: {fileID: 11400000, guid: e80c7a19338fd40559a59fc9268cc6ac, type: 2}
   _inventorySkin: {fileID: 11400000, guid: 7fe99bd02031d4e54bdc9d95b1551611, type: 2}
   _buildingCatalog: {fileID: 11400000, guid: ccfd86e863c0c4ddd81f7d555648a461, type: 2}
+  _craftingCatalog: {fileID: 11400000, guid: 3de42ba48cbcd4d858cc416cb8853cce, type: 2}
   _abundantSurfaceResourcesInDebugBuild: 1
   _debugSurfaceResourceMultiplier: 6
 --- !u!4 &1558093185
