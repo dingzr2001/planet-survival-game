@@ -72,7 +72,8 @@ namespace PlanetSurvival.Gathering.Runtime
         /// large resources cannot overlap across a chunk boundary.
         /// </summary>
         public static IReadOnlyList<ChunkResourcePlacement> PlanResources(ChunkCoordinate chunk, int worldSeed,
-            float chunkSize, float minimumSpacing, IReadOnlyList<ResourceSpawnEntry> entries)
+            float chunkSize, float minimumSpacing, IReadOnlyList<ResourceSpawnEntry> entries,
+            float densityMultiplier = 1f)
         {
             if (chunkSize <= 0f)
             {
@@ -88,7 +89,9 @@ namespace PlanetSurvival.Gathering.Runtime
             float clearance = Math.Max(0f, minimumSpacing);
             float inspectionDistance = Math.Max(maximumFootprint.x, maximumFootprint.y) + clearance;
             int neighbourRadius = Math.Max(1, (int)Math.Ceiling(inspectionDistance / chunkSize) + 1);
-            List<Candidate> targetCandidates = CreateCandidates(chunk, worldSeed, chunkSize, entries);
+            float safeDensityMultiplier = Math.Max(0f, densityMultiplier);
+            List<Candidate> targetCandidates = CreateCandidates(
+                chunk, worldSeed, chunkSize, entries, safeDensityMultiplier);
             if (targetCandidates.Count == 0)
             {
                 return Array.Empty<ChunkResourcePlacement>();
@@ -100,7 +103,8 @@ namespace PlanetSurvival.Gathering.Runtime
                 for (int z = chunk.Z - neighbourRadius; z <= chunk.Z + neighbourRadius; z++)
                 {
                     nearbyCandidates.AddRange(CreateCandidates(
-                        new ChunkCoordinate(x, z), worldSeed, chunkSize, entries));
+                        new ChunkCoordinate(x, z), worldSeed, chunkSize, entries,
+                        safeDensityMultiplier));
                 }
             }
 
@@ -146,7 +150,7 @@ namespace PlanetSurvival.Gathering.Runtime
         }
 
         private static List<Candidate> CreateCandidates(ChunkCoordinate chunk, int worldSeed, float chunkSize,
-            IReadOnlyList<ResourceSpawnEntry> entries)
+            IReadOnlyList<ResourceSpawnEntry> entries, float densityMultiplier)
         {
             int chunkSeed = CreateChunkSeed(worldSeed, chunk);
             var random = new System.Random(chunkSeed);
@@ -159,7 +163,8 @@ namespace PlanetSurvival.Gathering.Runtime
             {
                 ResourceSpawnEntry entry = entries[entryIndex];
                 ResourceNodeDefinition definition = entry.Definition;
-                int count = ResolveCount(definition != null ? entry.NodesPerChunk : 0f, random);
+                int count = ResolveCount(
+                    definition != null ? entry.NodesPerChunk * densityMultiplier : 0f, random);
                 for (int node = 0; node < count; node++)
                 {
                     float worldX = originX + (float)random.NextDouble() * chunkSize;

@@ -30,7 +30,7 @@ namespace PlanetSurvival.Editor
         private const int PlayerDirectionCount = 4;
         private const int PlayerFramesPerDirection = 8;
         private const int SurfaceRobotFramesPerDirection = 4;
-        private const float SurfaceRobotHeight = 1.35f;
+        private const float SurfaceRobotHeight = 1.9f;
         private const byte OpaqueAlphaThreshold = 128;
         private static readonly Vector2 LandingPodGroundAnchor = new(.43f, .18f);
 
@@ -455,6 +455,8 @@ namespace PlanetSurvival.Editor
             importer.filterMode = FilterMode.Trilinear;
             importer.anisoLevel = 16;
             importer.maxTextureSize = 4096;
+            // Preserve delivered non-power-of-two terrain art instead of silently resizing it on import.
+            importer.npotScale = TextureImporterNPOTScale.None;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);

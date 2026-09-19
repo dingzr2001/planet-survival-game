@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using PlanetSurvival.Core.Flow;
+using PlanetSurvival.Oxygen.Domain;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Water.Domain;
 using PlanetSurvival.Water.Runtime;
@@ -11,6 +12,19 @@ namespace PlanetSurvival.Tests
 {
     public sealed class LiquidContainerTests
     {
+        [Test]
+        public void GameSession_OxygenBalanceMatchesThirtyDayRescueWindow()
+        {
+            Assert.That(GameSessionState.InitialLandingPodOxygenLiters,
+                Is.EqualTo(PlayerOxygenConsumption.DefaultConsumptionLitersPerGameHour * 24f * 20f));
+            Assert.That(GameSessionState.LandingPodOxygenCapacityLiters,
+                Is.EqualTo(PlayerOxygenConsumption.DefaultConsumptionLitersPerGameHour * 24f * 30f));
+            Assert.That(GameSessionState.SpaceSuitOxygenCapacityLiters,
+                Is.EqualTo(PlayerOxygenConsumption.DefaultConsumptionLitersPerGameHour * 30f));
+            Assert.That(new OxygenCandleBurn().TotalOxygenLiters,
+                Is.EqualTo(PlayerOxygenConsumption.DefaultConsumptionLitersPerGameHour * 24f * 5f));
+        }
+
         [Test]
         public void FillFrom_TransfersOnlyBottleRemainingCapacity()
         {

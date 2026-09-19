@@ -2,6 +2,8 @@ using PlanetSurvival.Building.Application;
 using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Cooking.Runtime;
+using PlanetSurvival.Core.Time;
+using PlanetSurvival.Oxygen.Domain;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
@@ -25,6 +27,8 @@ namespace PlanetSurvival.Building.Runtime
         private SpriteRenderer _patch;
         private BoxCollider _collider;
         private float _cellSize = BuildGrid.DefaultCellSize;
+        private OxygenReservoir _oxygenReservoir;
+        private GameClock _clock;
 
         public BuildSite Site => _site;
 
@@ -38,18 +42,41 @@ namespace PlanetSurvival.Building.Runtime
                 }
 
                 string structure = _site.Definition.DisplayName.ToLowerInvariant();
-                return _site.State == BuildState.UnderConstruction
-                    ? $"cancel the {structure} ({_site.RemainingSeconds:0}s left)"
-                    : string.Empty;
+                if (_site.State == BuildState.UnderConstruction)
+                {
+                    return $"cancel the {structure} ({_site.RemainingSeconds:0}s left)";
+                }
+
+                if (_site.OxygenCandle == null)
+                {
+                    return string.Empty;
+                }
+
+                if (_site.OxygenCandle.IsSpent)
+                {
+                    return "spent oxygen candle";
+                }
+
+                if (_clock == null)
+                {
+                    return "oxygen candle";
+                }
+
+                return $"oxygen candle: {OxygenCandleBurn.OxygenLitersPerInterval:0} L / " +
+                       $"{OxygenCandleBurn.OutputIntervalGameHours:0.#}h · " +
+                       $"{_site.OxygenCandle.RemainingGameHours(_clock.ElapsedDays):0.#}h left";
             }
         }
 
         public void Bind(BuildSite site, BuildingService service, float cellSize,
-            WorldVisualSettings visuals, CookingStationBinding cooking = default)
+            WorldVisualSettings visuals, CookingStationBinding cooking = default,
+            OxygenReservoir oxygenReservoir = null, GameClock clock = null)
         {
             _site = site;
             _service = service;
             _cellSize = Mathf.Max(.05f, cellSize);
+            _oxygenReservoir = oxygenReservoir;
+            _clock = clock;
             BuildableDefinition buildable = site.Definition;
 
             _collider = gameObject.AddComponent<BoxCollider>();
@@ -81,13 +108,18 @@ namespace PlanetSurvival.Building.Runtime
 
         public bool CanInteract(in InteractionContext context)
         {
-            return _site != null && _service != null && context.Inventory != null &&
-                   _site.State == BuildState.UnderConstruction;
+            if (_site == null || _service == null || context.Inventory == null)
+            {
+                return false;
+            }
+
+            return _site.State == BuildState.UnderConstruction ||
+                   (_site.OxygenCandle != null && _clock != null && _oxygenReservoir != null);
         }
 
         public void Interact(in InteractionContext context)
         {
-            if (!CanInteract(context))
+            if (!CanInteract(context) || _site.State != BuildState.UnderConstruction)
             {
                 return;
             }
@@ -107,6 +139,14 @@ namespace PlanetSurvival.Building.Runtime
             if (_site != null)
             {
                 _site.Changed -= Refresh;
+            }
+        }
+
+        private void Update()
+        {
+            if (_site?.OxygenCandle != null && _oxygenReservoir != null && _clock != null)
+            {
+                _site.OxygenCandle.Advance(_clock.ElapsedDays, _oxygenReservoir);
             }
         }
 
@@ -131,6 +171,11 @@ namespace PlanetSurvival.Building.Runtime
                 ? Color.white
                 : _site.Definition.BodyColor);
             _patch.color = new Color(1f, 1f, 1f, .12f);
+            if (_site.OxygenCandle != null && !_site.OxygenCandle.IsIgnited && _clock != null)
+            {
+                _site.OxygenCandle.Ignite(_clock.ElapsedDays);
+            }
+
             if (TryGetComponent(out CookingStation station))
             {
                 station.enabled = true;

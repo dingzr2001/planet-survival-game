@@ -13,12 +13,18 @@ namespace PlanetSurvival.World.Ground
     {
         [SerializeField, Tooltip("Mixed into the world seed so terrain patches do not correlate with resource layouts.")]
         private int _seedOffset = 5231;
-        [SerializeField, Min(.5f), Tooltip("World units across one terrain tile. This is the unit that is dug away, so it also decides how coarse a dug-out hole looks.")]
-        private float _tileSize = 3f;
-        [SerializeField, Min(1), Tooltip("Tiles per side of one streamed block. Every tile of a block shares a mesh, so larger blocks mean fewer draw calls but a more expensive rebuild after each dig.")]
+        [SerializeField, Min(.5f), Tooltip("World units across one terrain tile. One complete terrain illustration is fitted into this square, and digging clears the same square.")]
+        private float _tileSize = 2.75f;
+        [SerializeField, Min(1), Tooltip("Tiles per side of one streamed block. Every block is one quad and one control-map pair; larger blocks reduce streaming objects but make each mask rebuild more expensive.")]
         private int _chunkSizeInTiles = 8;
         [SerializeField, Min(0), Tooltip("Blocks kept loaded around the player, beyond the one they stand in.")]
         private int _loadRadiusInChunks = 1;
+        [SerializeField, Tooltip("Shader that blends the per-chunk terrain control maps. Keep an asset reference so player builds cannot strip it.")]
+        private Shader _blendShader;
+        [SerializeField, Min(16), Tooltip("Control-map samples per chunk edge. Kept dense enough that every gameplay tile centre has a stable terrain sample.")]
+        private int _controlMapResolution = TerrainChunkRenderResources.DefaultControlMapResolution;
+        [SerializeField, Min(.05f), Tooltip("Width of the underlying coverage field. Tile rendering thresholds this field at each tile centre to avoid cropped artwork.")]
+        private float _blendDistance = TerrainChunkRenderResources.DefaultBlendDistance;
         [SerializeField, Tooltip("Highest-priority terrain first: the first matching layer wins. Each layer controls its own approximate coverage and patch size.")]
         private TerrainPatchLayer[] _layers = Array.Empty<TerrainPatchLayer>();
 
@@ -27,6 +33,9 @@ namespace PlanetSurvival.World.Ground
         public int ChunkSizeInTiles => Mathf.Max(1, _chunkSizeInTiles);
         public int LoadRadiusInChunks => Mathf.Max(0, _loadRadiusInChunks);
         public float ChunkSize => TileSize * ChunkSizeInTiles;
+        public Shader BlendShader => _blendShader;
+        public int ControlMapResolution => Mathf.Max(16, _controlMapResolution);
+        public float BlendDistance => Mathf.Max(.05f, _blendDistance);
         public IReadOnlyList<TerrainPatchLayer> Layers => _layers;
 
         public void Configure(int seedOffset, float tileSize, int chunkSizeInTiles, int loadRadiusInChunks,
@@ -37,6 +46,13 @@ namespace PlanetSurvival.World.Ground
             _chunkSizeInTiles = Mathf.Max(1, chunkSizeInTiles);
             _loadRadiusInChunks = Mathf.Max(0, loadRadiusInChunks);
             _layers = layers ?? Array.Empty<TerrainPatchLayer>();
+        }
+
+        public void ConfigureRendering(Shader blendShader, int controlMapResolution, float blendDistance)
+        {
+            _blendShader = blendShader;
+            _controlMapResolution = Mathf.Max(16, controlMapResolution);
+            _blendDistance = Mathf.Max(.05f, blendDistance);
         }
 
         private void OnValidate()

@@ -1,6 +1,7 @@
 using System.Collections;
 using NUnit.Framework;
 using PlanetSurvival.Building.Domain;
+using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Core.SceneManagement;
@@ -135,13 +136,15 @@ namespace PlanetSurvival.Tests
             Assert.That(cargoStorage, Is.Not.Null);
             Assert.That(cargoStorage.gameObject.name, Is.EqualTo("Cargo Storage Racks"));
             Assert.That(cargoStorage.Inventory.TotalSlots, Is.EqualTo(30));
-            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(4));
+            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(5));
             Assert.That(cargoStorage.Inventory.GetQuantity("energy_bar"),
                 Is.EqualTo(GameSessionState.InitialEnergyBarCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("potato"),
                 Is.EqualTo(GameSessionState.InitialPotatoCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("aluminum_alloy"),
                 Is.EqualTo(GameSessionState.InitialAluminumAlloyCount));
+            Assert.That(cargoStorage.Inventory.GetQuantity("chlorate_salt"),
+                Is.EqualTo(GameSessionState.InitialChlorateSaltCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("pickaxe"),
                 Is.EqualTo(GameSessionState.InitialPickaxeCount));
             ScenePortal airlock = FindPortal(GameSceneNames.Gameplay);
@@ -159,6 +162,11 @@ namespace PlanetSurvival.Tests
             Assert.That(surfaceCamera.orthographic, Is.True);
             Assert.That(surfaceCamera.orthographicSize, Is.EqualTo(9.5f).Within(.01f),
                 "The surface uses a stable oblique scale for cutout art and gameplay footprints.");
+            BuildGridOverlay buildGridOverlay = Object.FindFirstObjectByType<BuildGridOverlay>();
+            Assert.That(buildGridOverlay, Is.Not.Null,
+                "The surface bootstrap must expose the construction grid for placement diagnostics.");
+            Assert.That(buildGridOverlay.IsVisible, Is.False,
+                "The construction grid should not obscure normal exploration until the player requests it.");
             HorizonBackdrop backdrop = surfaceCamera.GetComponentInChildren<HorizonBackdrop>();
             Assert.That(backdrop, Is.Null,
                 "The overhead surface view should be filled by terrain rather than a distant horizon.");

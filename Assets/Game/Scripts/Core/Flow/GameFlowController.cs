@@ -17,6 +17,8 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _potatoDefinition;
         [SerializeField, Tooltip("Structural building material placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _aluminumAlloyDefinition;
+        [SerializeField, Tooltip("Emergency oxidizer sufficient to fabricate one oxygen candle.")]
+        private ItemDefinition _chlorateSaltDefinition;
         [SerializeField, Tooltip("Mining tool placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _pickaxeDefinition;
         private GameFlow _flow;
@@ -42,11 +44,13 @@ namespace PlanetSurvival.Core.Flow
         public GameSessionState Session => _session;
 
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
-            ItemDefinition aluminumAlloyDefinition, ItemDefinition pickaxeDefinition = null)
+            ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
+            ItemDefinition pickaxeDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
             _aluminumAlloyDefinition = aluminumAlloyDefinition;
+            _chlorateSaltDefinition = chlorateSaltDefinition;
             _pickaxeDefinition = pickaxeDefinition;
         }
 
@@ -87,10 +91,13 @@ namespace PlanetSurvival.Core.Flow
 
         private void ResetSession()
         {
-            if (_energyBarDefinition == null || _potatoDefinition == null || _aluminumAlloyDefinition == null)
+            if (_energyBarDefinition == null || _potatoDefinition == null || _aluminumAlloyDefinition == null
+                || _chlorateSaltDefinition == null)
             {
                 _session.Reset();
-                Debug.LogError($"{nameof(GameFlowController)} requires energy bar, potato and aluminum alloy definitions for starting cargo.", this);
+                Debug.LogError(
+                    $"{nameof(GameFlowController)} requires energy bar, potato, aluminum alloy and chlorate salt " +
+                    "definitions for starting cargo.", this);
                 return;
             }
 
@@ -98,7 +105,8 @@ namespace PlanetSurvival.Core.Flow
             {
                 new InventoryItemAmount(_energyBarDefinition, GameSessionState.InitialEnergyBarCount),
                 new InventoryItemAmount(_potatoDefinition, GameSessionState.InitialPotatoCount),
-                new InventoryItemAmount(_aluminumAlloyDefinition, GameSessionState.InitialAluminumAlloyCount)
+                new InventoryItemAmount(_aluminumAlloyDefinition, GameSessionState.InitialAluminumAlloyCount),
+                new InventoryItemAmount(_chlorateSaltDefinition, GameSessionState.InitialChlorateSaltCount)
             };
             if (_pickaxeDefinition != null)
             {

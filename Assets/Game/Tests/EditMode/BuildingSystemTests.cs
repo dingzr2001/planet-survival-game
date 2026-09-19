@@ -94,6 +94,28 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void Place_OxygenCandle_ConsumesCraftedItemAndCreatesOneBurnState()
+        {
+            ItemDefinition candleItem = CreateItem("oxygen_candle", "Oxygen Candle");
+            BuildableDefinition candle = CreateBuildable(
+                "oxygen_candle", "Oxygen Candle", Vector2Int.one, 1f,
+                new CraftingItemAmount(candleItem, 1));
+            candle.ConfigureOxygenCandle(true);
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(candleItem, 1);
+            var service = new BuildingService(inventory, new BuildGrid());
+
+            BuildResult result = service.TryPlace(
+                candle, new BuildFootprint(Vector2Int.zero, Vector2Int.one), out BuildSite site);
+
+            Assert.That(result.Succeeded, Is.True, result.Message);
+            Assert.That(inventory.GetQuantity(candleItem.ItemId), Is.Zero);
+            Assert.That(site.OxygenCandle, Is.Not.Null);
+            Assert.That(site.OxygenCandle.IsIgnited, Is.False,
+                "The candle ignites only after its placement timer completes in the world view.");
+        }
+
+        [Test]
         public void Place_RejectsCellsAnotherStructureAlreadyCovers()
         {
             var inventory = new InventoryModel(30, 20);

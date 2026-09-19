@@ -416,11 +416,11 @@ namespace PlanetSurvival.Tests
                 Vector3.ProjectOnPlane(directionToTarget, Vector3.up), directionToTarget);
             float targetDistance = Vector3.Distance(camera.transform.position, target.transform.position);
             Vector3 targetViewportPosition = unityCamera.WorldToViewportPoint(target.transform.position);
-            Assert.That(groundViewingAngle, Is.InRange(59f, 61f),
-                "The elevated viewpoint should give the terrain clear depth and spatial readability.");
-            Assert.That(downwardPitch, Is.InRange(54f, 56f),
-                "The fixed pitch should produce a readable three-quarter overhead view.");
-            Assert.That(targetDistance, Is.InRange(17f, 17.7f),
+            Assert.That(groundViewingAngle, Is.InRange(79f, 81f),
+                "The camera position should stay mostly above the player.");
+            Assert.That(downwardPitch, Is.InRange(74f, 76f),
+                "The steep pitch should keep square ground tiles nearly square on screen.");
+            Assert.That(targetDistance, Is.InRange(17f, 17.5f),
                 "The camera distance should preserve a useful amount of surrounding play area.");
             Assert.That(targetViewportPosition.x, Is.EqualTo(.5f).Within(.01f));
             Assert.That(targetViewportPosition.y, Is.InRange(.4f, .44f),
@@ -442,6 +442,10 @@ namespace PlanetSurvival.Tests
                 "World Z grid lines should project vertically instead of diagonally.");
             Assert.That(groundRight.z, Is.Zero.Within(.0001f),
                 "World X grid lines should project horizontally instead of diagonally.");
+            float projectedRight = Mathf.Abs(Vector3.Dot(camera.transform.right, Vector3.right));
+            float projectedForward = Mathf.Abs(Vector3.Dot(camera.transform.up, Vector3.forward));
+            Assert.That(projectedForward / projectedRight, Is.InRange(.95f, 1.05f),
+                "A square world tile should remain approximately square in the gameplay view.");
         }
 
         [Test]

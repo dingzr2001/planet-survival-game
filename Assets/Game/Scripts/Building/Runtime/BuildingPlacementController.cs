@@ -4,6 +4,7 @@ using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Cooking.Runtime;
 using PlanetSurvival.Core.Flow;
+using PlanetSurvival.Core.Time;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.World.Generation;
@@ -34,6 +35,7 @@ namespace PlanetSurvival.Building.Runtime
         private WorldVisualSettings _visuals;
         private GameSessionState _session;
         private CookingView _cookingView;
+        private GameClock _clock;
         private Transform _player;
         private Camera _camera;
 
@@ -54,7 +56,8 @@ namespace PlanetSurvival.Building.Runtime
         public BuildResult Preview => _preview;
 
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
-            WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null)
+            WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
+            GameClock clock = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -71,6 +74,7 @@ namespace PlanetSurvival.Building.Runtime
             _visuals = visuals;
             _session = session;
             _cookingView = cookingView;
+            _clock = clock;
             _service.SitePlaced += CreateSiteObject;
             _service.SiteRemoved += DestroySiteObject;
 
@@ -274,7 +278,11 @@ namespace PlanetSurvival.Building.Runtime
             siteObject.transform.SetParent(transform, false);
             siteObject.transform.position = _service.Grid.Center(site.Footprint);
             siteObject.AddComponent<BuildSiteView>().Bind(
-                site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site));
+                site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site),
+                site.Definition.IsOxygenCandle && _session != null
+                    ? _session.LandingPodOxygenSupply
+                    : null,
+                _clock);
             _siteObjects.Add(site, siteObject);
         }
 

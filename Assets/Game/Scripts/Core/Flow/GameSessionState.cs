@@ -32,8 +32,8 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialLandingPodWaterMilliliters = 8000;
         public const float SpaceSuitOxygenCapacityLiters = 600f;
         public const float InitialSpaceSuitOxygenLiters = SpaceSuitOxygenCapacityLiters;
-        public const float LandingPodOxygenCapacityLiters = 36000f;
-        public const float InitialLandingPodOxygenLiters = LandingPodOxygenCapacityLiters;
+        public const float LandingPodOxygenCapacityLiters = 14400f;
+        public const float InitialLandingPodOxygenLiters = 9600f;
         public const int PlayerInventorySlots = 20;
         public const int PlayerInventoryCapacity = 30;
         public const int RefrigeratorSlots = 12;
@@ -43,6 +43,7 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialEnergyBarCount = 12;
         public const int InitialPotatoCount = 12;
         public const int InitialAluminumAlloyCount = 20;
+        public const int InitialChlorateSaltCount = 1;
         public const int InitialPickaxeCount = 1;
 
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>

@@ -164,6 +164,7 @@ MonoBehaviour:
   _energyBarDefinition: {fileID: 11400000, guid: b3b76c245b6e441d90c508fa783c141f, type: 2}
   _potatoDefinition: {fileID: 11400000, guid: 093686de6adf64cd68c3c931538a2211, type: 2}
   _aluminumAlloyDefinition: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
+  _chlorateSaltDefinition: {fileID: 11400000, guid: 08d6e4debc9a84e88bccc25927cafd0a, type: 2}
   _pickaxeDefinition: {fileID: 11400000, guid: fcfb11a0fb63f4da7b6848db7c9d7b26, type: 2}
 --- !u!4 &1558093185
 Transform:

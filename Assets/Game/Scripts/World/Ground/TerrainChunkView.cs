@@ -1,294 +1,188 @@
-using System.Collections.Generic;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.World.Ground
 {
     /// <summary>
-    /// Draws the terrain patches of one block of tiles. Terrain artwork is a cutout layer laid over the
-    /// base regolith rather than a replacement for it, so the ground keeps showing through the gaps.
-    /// Every tile of a layer joins one mesh, so a block costs one draw call per terrain it contains
-    /// rather than one per tile, and UVs are taken from world space, which is what lets neighbouring
-    /// tiles of the same terrain meet without a visible seam.
+    /// Draws one terrain chunk as a fixed quad. Two control maps carry up to eight surface weights; the
+    /// shared shader samples each gameplay tile at its centre and fits one complete terrain illustration
+    /// into that tile. This keeps rendering batched without cutting artwork at a continuous patch edge.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class TerrainChunkView : MonoBehaviour
     {
-        /// <summary>
-        /// Height above the base ground disc. The overlay does not write depth, so this only has to lift
-        /// it clear of the disc's own surface for the depth test.
-        /// </summary>
         public const float SurfaceHeight = .006f;
-
-        /// <summary>
-        /// Where the overlay sits among the other transparent things on the floor. Below
-        /// <see cref="GroundDecalView.SortingOrder"/>, so an ice sheet resting on rock still draws on top
-        /// of it; both stay far below the actors, which sort by camera depth around zero.
-        /// </summary>
         public const int SortingOrder = GroundDecalView.SortingOrder - 100;
 
-        /// <summary>
-        /// Cells per tile edge used to draw the patch outline. The dig grid is unchanged — this only
-        /// decides how finely the drawn edge can follow the terrain field. At one cell per tile the
-        /// outline is a staircase of three-metre steps that slices boulders down the middle; four
-        /// subdivisions put the steps below a metre, where the cut reads as rubble instead of a crop.
-        /// </summary>
-        private const int VisualSubdivisions = 4;
+        private static readonly int Control0Id = Shader.PropertyToID("_Control0");
+        private static readonly int Control1Id = Shader.PropertyToID("_Control1");
+        private static readonly int ControlUvId = Shader.PropertyToID("_ControlUv");
+        private static readonly int TilesPerChunkId = Shader.PropertyToID("_TilesPerChunk");
+        private static readonly int TileOriginId = Shader.PropertyToID("_TileOrigin");
+        private static readonly int VariantSeedId = Shader.PropertyToID("_VariantSeed");
 
-        /// <summary>
-        /// Metres over which a patch thins out at its rim. About one boulder wide: enough that the cut
-        /// through a rock stops reading as a cut, short enough that the patch keeps a definite shape.
-        /// </summary>
-        private const float EdgeFeatherDistance = .8f;
+        private TerrainChunkRenderResources _resources;
+        private bool _ownsResources;
+        private MeshFilter _meshFilter;
+        private MeshRenderer _meshRenderer;
+        private Texture2D _control0;
+        private Texture2D _control1;
+        private Color32[] _control0Pixels = System.Array.Empty<Color32>();
+        private Color32[] _control1Pixels = System.Array.Empty<Color32>();
+        private MaterialPropertyBlock _propertyBlock;
 
-        /// <summary>Fade at or above which a cell is solid and can be merged with its neighbours.</summary>
-        private const float SolidFade = .999f;
+        /// <summary>One when this block contains visible terrain, otherwise zero.</summary>
+        public int LayerMeshCount => _meshRenderer != null && _meshRenderer.enabled ? 1 : 0;
 
-        private readonly List<GameObject> _layerObjects = new();
-        private readonly List<Mesh> _meshes = new();
-        private readonly List<Material> _materials = new();
-        private readonly List<Vector3> _vertices = new();
-        private readonly List<Vector2> _uv = new();
-        private readonly List<Color32> _colors = new();
-        private readonly List<int> _triangles = new();
+        public void Configure(TerrainChunkRenderResources resources)
+        {
+            if (_ownsResources)
+            {
+                _resources?.Dispose();
+            }
 
-        // Cover fade at every cell corner of the block, shared by all of its layer meshes.
-        private float[] _vertexFade = System.Array.Empty<float>();
-        private int _fadeGridSize;
+            _resources = resources;
+            _ownsResources = false;
+            BindResources();
+        }
 
-        /// <summary>Number of terrain meshes currently drawn, one per terrain present in the block.</summary>
-        public int LayerMeshCount => _meshes.Count;
-
-        /// <param name="origin">The block's lowest tile, towards negative X and Z.</param>
-        /// <param name="sizeInTiles">Tiles per side of the block.</param>
         public void Rebuild(TerrainTileMap map, TerrainTileCoordinate origin, int sizeInTiles)
         {
-            ReleaseGeneratedObjects();
+            EnsureComponents();
             if (map == null || sizeInTiles <= 0)
             {
+                _meshRenderer.enabled = false;
                 return;
             }
 
-            BuildVertexFade(map, origin, sizeInTiles);
-            IReadOnlyList<TerrainPatchLayer> layers = map.Layers;
-            for (int layerIndex = 0; layerIndex < layers.Count; layerIndex++)
+            EnsureResources(map, sizeInTiles);
+            if (_resources == null || !_resources.IsValid)
             {
-                TerrainSurfaceDefinition surface = layers[layerIndex].Surface;
-                if (surface != null)
+                _meshRenderer.enabled = false;
+                return;
+            }
+
+            EnsureControlTextures(_resources.TextureSize);
+            bool hasCoverage = TerrainControlMapBuilder.Fill(
+                map, origin, sizeInTiles, _resources.ControlMapResolution, _resources.BlendDistance,
+                _control0Pixels, _control1Pixels);
+            _control0.SetPixels32(_control0Pixels);
+            _control1.SetPixels32(_control1Pixels);
+            _control0.Apply(false, false);
+            _control1.Apply(false, false);
+
+            _propertyBlock ??= new MaterialPropertyBlock();
+            _meshRenderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetTexture(Control0Id, _control0);
+            _propertyBlock.SetTexture(Control1Id, _control1);
+            float scale = _resources.ControlMapResolution / (float)_resources.TextureSize;
+            float offset = (TerrainControlMapBuilder.GutterSize + .5f) / _resources.TextureSize;
+            _propertyBlock.SetVector(ControlUvId, new Vector4(scale, scale, offset, offset));
+            _propertyBlock.SetFloat(TilesPerChunkId, sizeInTiles);
+            _propertyBlock.SetVector(TileOriginId, new Vector4(origin.X, origin.Z, 0f, 0f));
+            _propertyBlock.SetFloat(VariantSeedId, map.WorldSeed);
+            _meshRenderer.SetPropertyBlock(_propertyBlock);
+            _meshRenderer.enabled = hasCoverage;
+        }
+
+        private void EnsureResources(TerrainTileMap map, int sizeInTiles)
+        {
+            float chunkSize = map.TileSize * sizeInTiles;
+            if (_resources != null
+                && Mathf.Approximately(_resources.Mesh.bounds.size.x, chunkSize))
+            {
+                BindResources();
+                return;
+            }
+
+            if (_ownsResources)
+            {
+                _resources?.Dispose();
+            }
+
+            _resources = new TerrainChunkRenderResources(map.Layers, chunkSize);
+            _ownsResources = true;
+            BindResources();
+        }
+
+        private void BindResources()
+        {
+            EnsureComponents();
+            _meshFilter.sharedMesh = _resources?.Mesh;
+            _meshRenderer.sharedMaterial = _resources?.Material;
+        }
+
+        private void EnsureComponents()
+        {
+            if (_meshFilter == null)
+            {
+                _meshFilter = GetComponent<MeshFilter>();
+                if (_meshFilter == null)
                 {
-                    BuildLayerMesh(map, origin, sizeInTiles, layerIndex, surface);
+                    _meshFilter = gameObject.AddComponent<MeshFilter>();
                 }
+            }
+
+            if (_meshRenderer == null)
+            {
+                _meshRenderer = GetComponent<MeshRenderer>();
+                if (_meshRenderer == null)
+                {
+                    _meshRenderer = gameObject.AddComponent<MeshRenderer>();
+                }
+
+                _meshRenderer.sortingOrder = SortingOrder;
+                _meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                _meshRenderer.receiveShadows = false;
+                _meshRenderer.enabled = false;
             }
         }
 
-        private void BuildLayerMesh(TerrainTileMap map, TerrainTileCoordinate origin, int sizeInTiles,
-            int layerIndex, TerrainSurfaceDefinition surface)
+        private void EnsureControlTextures(int textureSize)
         {
-            float tileSize = map.TileSize;
-            float originX = origin.MinX(tileSize);
-            float originZ = origin.MinZ(tileSize);
-            float uvScale = 1f / surface.TextureTileSize;
-            float cellSize = tileSize / VisualSubdivisions;
-            int cellsPerSide = sizeInTiles * VisualSubdivisions;
-            _vertices.Clear();
-            _uv.Clear();
-            _colors.Clear();
-            _triangles.Clear();
-
-            for (int z = 0; z < cellsPerSide; z++)
-            {
-                // Runs of solid neighbouring cells become one quad, so a patch interior costs about what
-                // whole tiles used to. Only cells on the fading rim, whose corners carry different
-                // alphas, have to be written out one by one.
-                int runStart = -1;
-                for (int x = 0; x <= cellsPerSide; x++)
-                {
-                    bool covered = x < cellsPerSide
-                                   && IsCellCovered(map, layerIndex, originX, originZ, cellSize, x, z);
-                    if (covered && IsCellSolid(x, z))
-                    {
-                        if (runStart < 0)
-                        {
-                            runStart = x;
-                        }
-
-                        continue;
-                    }
-
-                    if (runStart >= 0)
-                    {
-                        AppendCellRun(originX, originZ, cellSize, runStart, x, z, uvScale);
-                        runStart = -1;
-                    }
-
-                    if (covered)
-                    {
-                        AppendCellRun(originX, originZ, cellSize, x, x + 1, z, uvScale);
-                    }
-                }
-            }
-
-            if (_vertices.Count == 0)
+            if (_control0 != null && _control0.width == textureSize)
             {
                 return;
             }
 
-            var mesh = new Mesh { name = $"Terrain {surface.TerrainId}" };
-            mesh.SetVertices(_vertices);
-            mesh.SetUVs(0, _uv);
-            mesh.SetColors(_colors);
-            mesh.SetTriangles(_triangles, 0);
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-            _meshes.Add(mesh);
+            ReleaseControlTextures();
+            _control0 = CreateControlTexture("Terrain Control 0", textureSize);
+            _control1 = CreateControlTexture("Terrain Control 1", textureSize);
+            int pixelCount = textureSize * textureSize;
+            _control0Pixels = new Color32[pixelCount];
+            _control1Pixels = new Color32[pixelCount];
+        }
 
-            // Alpha-blended, and vertex-colour aware: the artwork is loose rock on a transparent sheet,
-            // so the regolith has to show through, and the rim fade is carried per vertex. Unlit
-            // shaders ignore vertex colour and would bring back the hard edge.
-            Shader shader = Shader.Find("Sprites/Default");
-            if (shader == null)
+        private static Texture2D CreateControlTexture(string textureName, int textureSize)
+        {
+            var texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false, true)
             {
-                shader = Shader.Find("Unlit/Transparent");
-            }
-
-            var material = new Material(shader) { name = $"Runtime Terrain {surface.TerrainId}" };
-            material.mainTexture = surface.Texture;
-            _materials.Add(material);
-
-            var layerObject = new GameObject(surface.DisplayName);
-            _layerObjects.Add(layerObject);
-            layerObject.transform.SetParent(transform, false);
-            layerObject.AddComponent<MeshFilter>().sharedMesh = mesh;
-            MeshRenderer renderer = layerObject.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = material;
-            // Transparent geometry is ordered by sorting order before distance, so without this the
-            // overlay would land at zero and cover the ground decals it is supposed to sit under.
-            renderer.sortingOrder = SortingOrder;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-        }
-
-        private static bool IsCellCovered(TerrainTileMap map, int layerIndex, float originX, float originZ,
-            float cellSize, int x, int z)
-        {
-            return map.GetVisualLayerIndex(
-                originX + (x + .5f) * cellSize, originZ + (z + .5f) * cellSize) == layerIndex;
-        }
-
-        /// <summary>Measures the rim fade once per block, at every cell corner all layers share.</summary>
-        private void BuildVertexFade(TerrainTileMap map, TerrainTileCoordinate origin, int sizeInTiles)
-        {
-            float tileSize = map.TileSize;
-            float cellSize = tileSize / VisualSubdivisions;
-            _fadeGridSize = sizeInTiles * VisualSubdivisions + 1;
-            int required = _fadeGridSize * _fadeGridSize;
-            if (_vertexFade.Length < required)
-            {
-                _vertexFade = new float[required];
-            }
-
-            float originX = origin.MinX(tileSize);
-            float originZ = origin.MinZ(tileSize);
-            for (int z = 0; z < _fadeGridSize; z++)
-            {
-                for (int x = 0; x < _fadeGridSize; x++)
-                {
-                    _vertexFade[z * _fadeGridSize + x] = map.GetCoverFade(
-                        originX + x * cellSize, originZ + z * cellSize, EdgeFeatherDistance);
-                }
-            }
-        }
-
-        private float FadeAt(int x, int z) => _vertexFade[z * _fadeGridSize + x];
-
-        private bool IsCellSolid(int x, int z)
-        {
-            return FadeAt(x, z) >= SolidFade && FadeAt(x + 1, z) >= SolidFade
-                   && FadeAt(x, z + 1) >= SolidFade && FadeAt(x + 1, z + 1) >= SolidFade;
-        }
-
-        private static Color32 FadeColor(float fade)
-        {
-            return new Color32(255, 255, 255, (byte)Mathf.RoundToInt(Mathf.Clamp01(fade) * 255f));
-        }
-
-        /// <summary>
-        /// Adds one quad spanning cells <paramref name="startX"/> up to <paramref name="endX"/> of a row.
-        /// Positions are relative to the block so distant blocks keep their float precision, while UVs
-        /// stay absolute so the texture runs on unbroken across cell and block borders alike.
-        /// </summary>
-        private void AppendCellRun(float originX, float originZ, float cellSize, int startX, int endX,
-            int z, float uvScale)
-        {
-            float minWorldX = originX + startX * cellSize;
-            float maxWorldX = originX + endX * cellSize;
-            float minWorldZ = originZ + z * cellSize;
-            float maxWorldZ = minWorldZ + cellSize;
-            float localMinX = minWorldX - originX;
-            float localMaxX = maxWorldX - originX;
-            float localMinZ = minWorldZ - originZ;
-            float localMaxZ = maxWorldZ - originZ;
-            int baseIndex = _vertices.Count;
-
-            _vertices.Add(new Vector3(localMinX, 0f, localMinZ));
-            _vertices.Add(new Vector3(localMaxX, 0f, localMinZ));
-            _vertices.Add(new Vector3(localMaxX, 0f, localMaxZ));
-            _vertices.Add(new Vector3(localMinX, 0f, localMaxZ));
-
-            _uv.Add(new Vector2(minWorldX * uvScale, minWorldZ * uvScale));
-            _uv.Add(new Vector2(maxWorldX * uvScale, minWorldZ * uvScale));
-            _uv.Add(new Vector2(maxWorldX * uvScale, maxWorldZ * uvScale));
-            _uv.Add(new Vector2(minWorldX * uvScale, maxWorldZ * uvScale));
-
-            // A merged run is made only of solid cells, so its ends read back as fully opaque here too.
-            _colors.Add(FadeColor(FadeAt(startX, z)));
-            _colors.Add(FadeColor(FadeAt(endX, z)));
-            _colors.Add(FadeColor(FadeAt(endX, z + 1)));
-            _colors.Add(FadeColor(FadeAt(startX, z + 1)));
-
-            // Wound so the quad faces straight up; the camera never sees the surface from below.
-            _triangles.Add(baseIndex);
-            _triangles.Add(baseIndex + 2);
-            _triangles.Add(baseIndex + 1);
-            _triangles.Add(baseIndex);
-            _triangles.Add(baseIndex + 3);
-            _triangles.Add(baseIndex + 2);
+                name = textureName,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            return texture;
         }
 
         private void OnDestroy()
         {
-            ReleaseGeneratedObjects();
+            ReleaseControlTextures();
+            if (_ownsResources)
+            {
+                _resources?.Dispose();
+            }
+
+            _resources = null;
         }
 
-        private void ReleaseGeneratedObjects()
+        private void ReleaseControlTextures()
         {
-            for (int i = 0; i < _layerObjects.Count; i++)
-            {
-                GameObject layerObject = _layerObjects[i];
-                if (layerObject == null)
-                {
-                    continue;
-                }
-
-                // Play-mode destruction only lands at the end of the frame. Hiding the object first keeps
-                // the retiring meshes from z-fighting the replacements a rebuild adds in the same frame.
-                layerObject.SetActive(false);
-                DestroyRuntimeObject(layerObject);
-            }
-
-            _layerObjects.Clear();
-            for (int i = 0; i < _meshes.Count; i++)
-            {
-                DestroyRuntimeObject(_meshes[i]);
-            }
-
-            for (int i = 0; i < _materials.Count; i++)
-            {
-                DestroyRuntimeObject(_materials[i]);
-            }
-
-            _meshes.Clear();
-            _materials.Clear();
+            DestroyRuntimeObject(_control0);
+            DestroyRuntimeObject(_control1);
+            _control0 = null;
+            _control1 = null;
+            _control0Pixels = System.Array.Empty<Color32>();
+            _control1Pixels = System.Array.Empty<Color32>();
         }
 
         private static void DestroyRuntimeObject(Object instance)

@@ -7,7 +7,7 @@
 1. 使用 Unity Hub 以 Unity 6000.2.9f1 打开仓库根目录。
 2. 打开 `Assets/Game/Scenes/Bootstrap.unity` 并进入 Play Mode，或从 Build Settings 的第一个场景启动构建。
 3. 在主菜单选择 **Start Game**；Gameplay 场景会根据默认配置生成栅格地形、玩家、相机、光照和游戏时钟。
-4. 使用 WASD 或方向键移动，使用 E 交互；使用 Esc 暂停或继续游戏。
+4. 使用 WASD 或方向键移动，使用 E 交互；B 打开建造菜单，G 显示/隐藏建造栅格，I 打开背包，Esc 暂停或继续游戏。
 
 ## 目录
 

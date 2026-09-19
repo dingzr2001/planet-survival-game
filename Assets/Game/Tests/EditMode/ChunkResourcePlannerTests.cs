@@ -144,6 +144,31 @@ namespace PlanetSurvival.Tests
             UnityEngine.Object.DestroyImmediate(definition);
         }
 
+        [Test]
+        public void PlanResources_DensityMultiplierMakesSparseResourcesEasyToInspect()
+        {
+            var definition = ScriptableObject.CreateInstance<ResourceNodeDefinition>();
+            definition.Configure("debug_resource", "Debug Resource", 1f, 2f, string.Empty,
+                new Vector3(.1f, 1f, .1f));
+            var entries = new[] { new ResourceSpawnEntry(definition, .1f) };
+            int normalCount = 0;
+            int debugCount = 0;
+
+            for (int x = 0; x < 10; x++)
+            for (int z = 0; z < 10; z++)
+            {
+                var chunk = new ChunkCoordinate(x, z);
+                normalCount += ChunkResourcePlanner.PlanResources(
+                    chunk, WorldSeed, ChunkSize, 0f, entries).Count;
+                debugCount += ChunkResourcePlanner.PlanResources(
+                    chunk, WorldSeed, ChunkSize, 0f, entries, 6f).Count;
+            }
+
+            Assert.That(normalCount, Is.GreaterThan(0));
+            Assert.That(debugCount, Is.GreaterThan(normalCount * 3));
+            UnityEngine.Object.DestroyImmediate(definition);
+        }
+
         private static IReadOnlyList<ChunkResourcePlacement> Plan(ChunkCoordinate chunk, float minimumSpacing,
             params float[] densities)
         {

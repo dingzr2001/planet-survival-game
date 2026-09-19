@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: DefaultTerrainPatches
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainPatchSettings
   _seedOffset: 5231
-  _tileSize: 3
+  _tileSize: 2.75
   _chunkSizeInTiles: 8
   _loadRadiusInChunks: 1
+  _blendShader: {fileID: 4800000, guid: 01128324069d54dbf8d005da1398f268, type: 3}
+  _controlMapResolution: 128
+  _blendDistance: 1.2
   _layers:
   - _surface: {fileID: 11400000, guid: a6b75f24ed4864c63ab00b26efa83145, type: 2}
     _patchSize: 42
@@ -23,21 +26,27 @@ MonoBehaviour:
     _seedOffset: 9151
     _legacyThreshold: 0
     _usesTargetCoverage: 1
+  - _surface: {fileID: 11400000, guid: 87d9194d1abbd4adb9ba84e3b96b3e9a, type: 2}
+    _patchSize: 40
+    _targetCoverage: 0.015
+    _seedOffset: 6421
+    _legacyThreshold: 0
+    _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: b46f090d862614cddb58923685ad662a, type: 2}
     _patchSize: 34
-    _targetCoverage: 0.02
+    _targetCoverage: 0.0125
     _seedOffset: 1613
     _legacyThreshold: 0
     _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: 2dd47f1842f764000b30305a730f32e8, type: 2}
     _patchSize: 26
-    _targetCoverage: 0.04
+    _targetCoverage: 0.025
     _seedOffset: 7817
     _legacyThreshold: 0
     _usesTargetCoverage: 1
   - _surface: {fileID: 11400000, guid: bf5b3a672b632425f8498a41ea040719, type: 2}
     _patchSize: 30
-    _targetCoverage: 0.08
+    _targetCoverage: 0.05
     _seedOffset: 3271
     _legacyThreshold: 0
     _usesTargetCoverage: 1

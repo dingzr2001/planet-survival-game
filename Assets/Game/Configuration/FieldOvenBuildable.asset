@@ -27,3 +27,4 @@ MonoBehaviour:
   _worldHeight: 1.6
   _bodyColor: {r: 0.72, g: 0.44, b: 0.26, a: 1}
   _cookingStation: {fileID: 11400000, guid: 45606db405b0472da683b094d08c9bcd, type: 2}
+  _isOxygenCandle: 0

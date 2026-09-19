@@ -35,6 +35,8 @@ namespace PlanetSurvival.Building.Definitions
         [Header("Function")]
         [SerializeField, Tooltip("Optional: the finished building serves as this cooking station.")]
         private CookingStationDefinition _cookingStation;
+        [SerializeField, Tooltip("The finished deployable is a single-use oxygen candle that ignites immediately.")]
+        private bool _isOxygenCandle;
 
         public string BuildableId => _buildableId;
         public string DisplayName => _displayName;
@@ -46,6 +48,7 @@ namespace PlanetSurvival.Building.Definitions
         public float WorldHeight => Mathf.Max(.1f, _worldHeight);
         public Color BodyColor => _bodyColor;
         public CookingStationDefinition CookingStation => _cookingStation;
+        public bool IsOxygenCandle => _isOxygenCandle;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -133,6 +136,11 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigureCookingStation(CookingStationDefinition cookingStation)
         {
             _cookingStation = cookingStation;
+        }
+
+        public void ConfigureOxygenCandle(bool isOxygenCandle)
+        {
+            _isOxygenCandle = isOxygenCandle;
         }
     }
 }

@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainSurfaceDefinition
   _terrainId: iron
   _displayName: Iron
-  _texture: {fileID: 2800000, guid: 43cf6700d0bbd4a16994bf346b78c797, type: 3}
+  _texture: {fileID: 2800000, guid: f21a68c04e3d47e1a889e1536f77c2b0, type: 3}
+  _textureVariants:
+  - {fileID: 2800000, guid: 6c07a1f548b24c948c9336dd3b84d920, type: 3}
+  - {fileID: 2800000, guid: b8e5317c2d1f49f5a623c047098bad6e, type: 3}
   _textureTileSize: 5
   _digCount: 7
   _digDuration: 3.2

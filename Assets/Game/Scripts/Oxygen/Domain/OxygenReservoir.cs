@@ -24,6 +24,7 @@ namespace PlanetSurvival.Oxygen.Domain
 
         public float CapacityLiters { get; }
         public float CurrentLiters { get; private set; }
+        public float RemainingCapacityLiters => CapacityLiters - CurrentLiters;
         public float Normalized => CurrentLiters / CapacityLiters;
 
         public event Action<float, float> Changed;
@@ -39,6 +40,19 @@ namespace PlanetSurvival.Oxygen.Domain
             float consumed = Math.Min(liters, CurrentLiters);
             SetCurrent(CurrentLiters - consumed);
             return consumed;
+        }
+
+        /// <summary>Adds as much of the requested oxygen as fits and returns the accepted amount.</summary>
+        public float Fill(float liters)
+        {
+            if (!IsFinite(liters) || liters <= 0f || CurrentLiters >= CapacityLiters)
+            {
+                return 0f;
+            }
+
+            float accepted = Math.Min(liters, RemainingCapacityLiters);
+            SetCurrent(CurrentLiters + accepted);
+            return accepted;
         }
 
         public void Reset(float liters)

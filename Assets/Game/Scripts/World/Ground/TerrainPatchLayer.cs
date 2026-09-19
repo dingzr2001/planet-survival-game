@@ -65,11 +65,12 @@ namespace PlanetSurvival.World.Ground
         }
 
         /// <summary>Whether this layer reaches the given point. A layer without a surface covers nothing.</summary>
-        public bool Covers(int worldSeed, float worldX, float worldZ)
+        public bool Covers(int worldSeed, float worldX, float worldZ, float coverageMultiplier = 1f)
         {
-            return _surface != null
+            float adjustedCoverage = AdjustedCoverage(coverageMultiplier);
+            return _surface != null && adjustedCoverage > 0f
                    && ClusteredNoiseField.Sample(worldSeed ^ _seedOffset, PatchSize, worldX, worldZ)
-                   >= Threshold;
+                   >= ClusteredNoiseField.ThresholdForCoverage(adjustedCoverage);
         }
 
         /// <summary>
@@ -77,16 +78,19 @@ namespace PlanetSurvival.World.Ground
         /// value alone has no unit, so it is divided by how fast the field is changing there; that turns
         /// "how far above the threshold" into a distance the presentation can feather over a fixed width.
         /// </summary>
-        public float SignedDistanceToEdge(int worldSeed, float worldX, float worldZ)
+        public float SignedDistanceToEdge(int worldSeed, float worldX, float worldZ,
+            float coverageMultiplier = 1f)
         {
-            if (_surface == null)
+            float adjustedCoverage = AdjustedCoverage(coverageMultiplier);
+            if (_surface == null || adjustedCoverage <= 0f)
             {
                 return float.NegativeInfinity;
             }
 
             int seed = worldSeed ^ _seedOffset;
             float patchSize = PatchSize;
-            float depth = ClusteredNoiseField.Sample(seed, patchSize, worldX, worldZ) - Threshold;
+            float threshold = ClusteredNoiseField.ThresholdForCoverage(adjustedCoverage);
+            float depth = ClusteredNoiseField.Sample(seed, patchSize, worldX, worldZ) - threshold;
             float slopeX = ClusteredNoiseField.Sample(seed, patchSize, worldX + GradientStep, worldZ)
                            - ClusteredNoiseField.Sample(seed, patchSize, worldX - GradientStep, worldZ);
             float slopeZ = ClusteredNoiseField.Sample(seed, patchSize, worldX, worldZ + GradientStep)
@@ -99,6 +103,11 @@ namespace PlanetSurvival.World.Ground
             }
 
             return depth / slope;
+        }
+
+        private float AdjustedCoverage(float coverageMultiplier)
+        {
+            return Mathf.Clamp01(TargetCoverage * Mathf.Max(0f, coverageMultiplier));
         }
     }
 }

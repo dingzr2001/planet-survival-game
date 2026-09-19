@@ -40,9 +40,19 @@ namespace PlanetSurvival.Bootstrap
         private InventorySkin _inventorySkin;
         [SerializeField, Tooltip("Structures the build panel offers. Without it the surface has no building.")]
         private BuildingCatalog _buildingCatalog;
+        [Header("Debug")]
+        [SerializeField, Tooltip("Editor and Development Builds only. Set before Play Mode to make terrain deposits and resource nodes easier to inspect.")]
+        private bool _abundantSurfaceResourcesInDebugBuild = true;
+        [SerializeField, Range(1f, 10f), Tooltip("Multiplies both terrain-patch coverage and resource-node density while debug abundance is enabled.")]
+        private float _debugSurfaceResourceMultiplier = 6f;
 
         private const string RuntimeRootName = "Gameplay Runtime";
         private const float SurfaceCameraOrthographicSize = 9.5f;
+
+        private float SurfaceResourceDensityMultiplier =>
+            Debug.isDebugBuild && _abundantSurfaceResourcesInDebugBuild
+                ? Mathf.Max(1f, _debugSurfaceResourceMultiplier)
+                : 1f;
 
         public void Configure(TerrainGenerationSettings terrainSettings)
         {
@@ -106,6 +116,13 @@ namespace PlanetSurvival.Bootstrap
             }
 
             var root = new GameObject(RuntimeRootName);
+            if (SurfaceResourceDensityMultiplier > 1f)
+            {
+                Debug.Log(
+                    $"Debug surface-resource abundance is active at {SurfaceResourceDensityMultiplier:0.#}x. "
+                    + "Release builds still use authored densities.", this);
+            }
+
             GameSessionState session = ResolveSession();
             ContinuousTerrainView terrainView = CreateTerrain(root.transform);
             GameObject player = CreatePlayer(root.transform, session);
@@ -122,7 +139,7 @@ namespace PlanetSurvival.Bootstrap
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
             GameObject hud = CreateHud(root.transform, player, clock, _inventorySkin);
             hud.AddComponent<MinimapView>().Bind(player.transform, camera, session.Exploration);
-            CreateBuildingSystem(root.transform, player, hud, session);
+            CreateBuildingSystem(root.transform, player, camera, hud, session, clock);
             BindPlayerDeath(player);
         }
 
@@ -149,7 +166,8 @@ namespace PlanetSurvival.Bootstrap
             }
 
             session.Terrain.Configure(
-                _terrainSettings.Seed + _terrainPatchSettings.SeedOffset, _terrainPatchSettings);
+                _terrainSettings.Seed + _terrainPatchSettings.SeedOffset, _terrainPatchSettings,
+                SurfaceResourceDensityMultiplier);
 
             var terrainPatches = new GameObject("Terrain Patches");
             terrainPatches.transform.SetParent(parent);
@@ -173,7 +191,8 @@ namespace PlanetSurvival.Bootstrap
             streaming.transform.SetParent(parent);
             ResourceChunkStreamer streamer = streaming.AddComponent<ResourceChunkStreamer>();
             streamer.Configure(_resourceSpawnSettings, _worldVisuals,
-                _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position, buildGrid);
+                _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position, buildGrid,
+                SurfaceResourceDensityMultiplier);
             streamer.SetTarget(target);
         }
 
@@ -249,7 +268,7 @@ namespace PlanetSurvival.Bootstrap
             }
 
             Color shadowColor = _worldVisuals != null ? _worldVisuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
-            BlobShadow.Create(player, new Vector2(1.25f, .56f), shadowColor);
+            BlobShadow.Create(player, new Vector2(1.44f, .64f), shadowColor);
         }
 
         private Camera CreateCamera(Transform parent, Transform target)
@@ -259,8 +278,8 @@ namespace PlanetSurvival.Bootstrap
             cameraObject.transform.SetParent(parent);
             var camera = cameraObject.AddComponent<Camera>();
             camera.orthographic = true;
-            // The surface uses a stable oblique view so cutout art, building footprints and gathering
-            // ranges keep a predictable screen scale without needing distant perspective artwork.
+            // The steep orthographic view keeps square terrain artwork nearly square on screen while
+            // preserving enough depth to read cutout characters, buildings and gathering ranges.
             camera.orthographicSize = SurfaceCameraOrthographicSize;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(.055f, .025f, .018f);
@@ -301,7 +320,8 @@ namespace PlanetSurvival.Bootstrap
         /// Placement lives next to the world rather than on the HUD: the panel only picks a structure, the
         /// controller owns the grid preview and the sites the session carries between scenes.
         /// </summary>
-        private void CreateBuildingSystem(Transform parent, GameObject player, GameObject hud, GameSessionState session)
+        private void CreateBuildingSystem(Transform parent, GameObject player, Camera camera, GameObject hud,
+            GameSessionState session, GameClock clock)
         {
             if (_buildingCatalog == null)
             {
@@ -311,10 +331,11 @@ namespace PlanetSurvival.Bootstrap
 
             var systemObject = new GameObject("Building System");
             systemObject.transform.SetParent(parent);
+            systemObject.AddComponent<BuildGridOverlay>().Bind(session.Buildings.Grid, camera);
             BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
             PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
-                hud.GetComponent<CookingView>());
+                hud.GetComponent<CookingView>(), clock);
 
             hud.AddComponent<BuildMenuView>().Bind(
                 controller,

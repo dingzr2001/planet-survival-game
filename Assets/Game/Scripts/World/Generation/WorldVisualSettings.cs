@@ -29,7 +29,7 @@ namespace PlanetSurvival.World.Generation
 
         [Header("Surface robot")]
         [SerializeField, Min(.1f), Tooltip("Displayed height of the tracked surface robot in world units.")]
-        private float _surfaceRobotHeight = 1.35f;
+        private float _surfaceRobotHeight = 1.9f;
         [SerializeField, Tooltip("Four direction rows: down, right, left, then up.")]
         private Texture2D _surfaceRobotAnimationSheet;
         [SerializeField, Min(1)] private int _surfaceRobotFramesPerDirection = 4;

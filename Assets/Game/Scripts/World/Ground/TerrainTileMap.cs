@@ -19,24 +19,28 @@ namespace PlanetSurvival.World.Ground
 
         public float TileSize { get; private set; } = 1f;
         public int WorldSeed { get; private set; }
+        public float CoverageMultiplier { get; private set; } = 1f;
         public IReadOnlyList<TerrainPatchLayer> Layers => _layers;
         public int DugTileCount => _remainingDigs.Count;
 
         /// <summary>Raised for each tile whose terrain or remaining digs changed.</summary>
         public event Action<TerrainTileCoordinate> TileChanged;
 
-        public void Configure(int worldSeed, TerrainPatchSettings settings)
+        public void Configure(int worldSeed, TerrainPatchSettings settings, float coverageMultiplier = 1f)
         {
             float tileSize = settings != null ? settings.TileSize : 1f;
+            float safeCoverageMultiplier = Mathf.Max(0f, coverageMultiplier);
             // A tile address only means something against one seed and grid, so changing either would
             // leave the recorded holes sitting on unrelated ground. Dropping them is the honest answer.
-            if (worldSeed != WorldSeed || !Mathf.Approximately(tileSize, TileSize))
+            if (worldSeed != WorldSeed || !Mathf.Approximately(tileSize, TileSize)
+                || !Mathf.Approximately(safeCoverageMultiplier, CoverageMultiplier))
             {
                 Clear();
             }
 
             WorldSeed = worldSeed;
             TileSize = tileSize;
+            CoverageMultiplier = safeCoverageMultiplier;
             _layers = settings != null ? settings.Layers : Array.Empty<TerrainPatchLayer>();
         }
 
@@ -54,7 +58,7 @@ namespace PlanetSurvival.World.Ground
             }
 
             return ClusteredTerrainLayout.SelectLayer(
-                _layers, WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize));
+                _layers, WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize), CoverageMultiplier);
         }
 
         /// <summary>The terrain covering a tile, or null where the base regolith shows through.</summary>
@@ -110,7 +114,8 @@ namespace PlanetSurvival.World.Ground
             float deepest = float.NegativeInfinity;
             for (int i = 0; i < _layers.Count; i++)
             {
-                float distance = _layers[i].SignedDistanceToEdge(WorldSeed, worldX, worldZ);
+                float distance = _layers[i].SignedDistanceToEdge(
+                    WorldSeed, worldX, worldZ, CoverageMultiplier);
                 if (distance > deepest)
                 {
                     deepest = distance;
@@ -135,7 +140,8 @@ namespace PlanetSurvival.World.Ground
                 return ClusteredTerrainLayout.BaseLayerIndex;
             }
 
-            return ClusteredTerrainLayout.SelectLayer(_layers, WorldSeed, worldX, worldZ);
+            return ClusteredTerrainLayout.SelectLayer(
+                _layers, WorldSeed, worldX, worldZ, CoverageMultiplier);
         }
 
         /// <summary>

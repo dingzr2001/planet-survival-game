@@ -11,7 +11,7 @@ namespace PlanetSurvival.Player.Stats
     [RequireComponent(typeof(PlayerSpaceSuit))]
     public sealed class PlayerOxygenConsumption : MonoBehaviour
     {
-        public const float DefaultConsumptionLitersPerGameHour = 5f;
+        public const float DefaultConsumptionLitersPerGameHour = 20f;
 
         [SerializeField, Min(0f), Tooltip("Oxygen consumed per game hour, in liters.")]
         private float _consumptionLitersPerGameHour = DefaultConsumptionLitersPerGameHour;

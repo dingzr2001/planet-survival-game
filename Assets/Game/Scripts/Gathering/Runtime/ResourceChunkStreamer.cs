@@ -32,19 +32,21 @@ namespace PlanetSurvival.Gathering.Runtime
         private bool _hasCenter;
         private Vector2 _spawnClearanceCenter;
         private float _squaredSpawnClearance;
+        private float _densityMultiplier = 1f;
 
         /// <param name="spawnClearanceCenter">
         /// Where the player starts. Nodes planned within the configured clearance radius of it are skipped, so the
         /// player never wakes up inside a rock. The point is fixed for the run and does not follow the target.
         /// </param>
         public void Configure(ResourceSpawnSettings settings, WorldVisualSettings visuals, int worldSeed,
-            Vector3 spawnClearanceCenter, BuildGrid buildGrid = null)
+            Vector3 spawnClearanceCenter, BuildGrid buildGrid = null, float densityMultiplier = 1f)
         {
             ReleaseBuildReservations();
             _settings = settings;
             _visuals = visuals;
             _worldSeed = worldSeed;
             _buildGrid = buildGrid;
+            _densityMultiplier = Mathf.Max(0f, densityMultiplier);
             _spawnClearanceCenter = new Vector2(spawnClearanceCenter.x, spawnClearanceCenter.z);
             float clearance = settings != null ? settings.SpawnClearanceRadius : 0f;
             _squaredSpawnClearance = clearance * clearance;
@@ -104,7 +106,8 @@ namespace PlanetSurvival.Gathering.Runtime
         private void Load(ChunkCoordinate chunk)
         {
             IReadOnlyList<ChunkResourcePlacement> placements = ChunkResourcePlanner.PlanResources(
-                chunk, _worldSeed, _settings.ChunkSize, _settings.MinimumSpacing, _settings.Entries);
+                chunk, _worldSeed, _settings.ChunkSize, _settings.MinimumSpacing, _settings.Entries,
+                _densityMultiplier);
 
             var root = new GameObject($"Resource Chunk {chunk}");
             root.transform.SetParent(transform);

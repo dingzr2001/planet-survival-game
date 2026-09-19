@@ -147,6 +147,18 @@ namespace PlanetSurvival.Tests
                 $"Requested {targetCoverage:P0}, but the reusable field covered {measuredCoverage:P1}.");
         }
 
+        [Test]
+        public void Layer_CoverageMultiplierMakesRarePatchesEasyToInspect()
+        {
+            var layer = new TerrainPatchLayer(CreateSurface("rare", 2), 40f, .015f, 6421);
+
+            float normalCoverage = MeasureCoverage(layer);
+            float debugCoverage = MeasureCoverage(layer, 6f);
+
+            Assert.That(normalCoverage, Is.GreaterThan(0f));
+            Assert.That(debugCoverage, Is.GreaterThan(normalCoverage * 3f));
+        }
+
         /// <summary>
         /// The property the whole approach exists for: whatever the coverage, the covered tiles arrive
         /// stuck together rather than sprinkled one at a time.
@@ -171,7 +183,7 @@ namespace PlanetSurvival.Tests
                 "Most covered tiles should touch another one.");
         }
 
-        private float MeasureCoverage(TerrainPatchLayer layer)
+        private float MeasureCoverage(TerrainPatchLayer layer, float coverageMultiplier = 1f)
         {
             const int side = 240;
             int covered = 0;
@@ -180,7 +192,8 @@ namespace PlanetSurvival.Tests
                 for (int z = 0; z < side; z++)
                 {
                     var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
-                    if (layer.Covers(WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize)))
+                    if (layer.Covers(
+                            WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize), coverageMultiplier))
                     {
                         covered++;
                     }

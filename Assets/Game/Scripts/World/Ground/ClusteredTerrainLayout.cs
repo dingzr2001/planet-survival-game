@@ -13,7 +13,7 @@ namespace PlanetSurvival.World.Ground
         public const int BaseLayerIndex = -1;
 
         public static int SelectLayer(IReadOnlyList<TerrainPatchLayer> layers, int worldSeed,
-            float worldX, float worldZ)
+            float worldX, float worldZ, float coverageMultiplier = 1f)
         {
             if (layers == null)
             {
@@ -22,7 +22,7 @@ namespace PlanetSurvival.World.Ground
 
             for (int i = 0; i < layers.Count; i++)
             {
-                if (layers[i].Covers(worldSeed, worldX, worldZ))
+                if (layers[i].Covers(worldSeed, worldX, worldZ, coverageMultiplier))
                 {
                     return i;
                 }

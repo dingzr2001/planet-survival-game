@@ -21,6 +21,7 @@ namespace PlanetSurvival.World.Ground
         private readonly HashSet<ChunkCoordinate> _dirtyChunks = new();
         private readonly List<ChunkCoordinate> _chunkBuffer = new();
         private TerrainTileMap _map;
+        private TerrainChunkRenderResources _renderResources;
         private Transform _target;
         private ChunkCoordinate _center;
         private bool _hasCenter;
@@ -31,8 +32,16 @@ namespace PlanetSurvival.World.Ground
         {
             UnsubscribeFromMap();
             UnloadAll();
+            ReleaseRenderResources();
             _settings = settings;
             _map = map;
+            if (_settings != null && _map != null)
+            {
+                _renderResources = new TerrainChunkRenderResources(
+                    _settings.Layers, _settings.ChunkSize, _settings.BlendShader,
+                    _settings.ControlMapResolution, _settings.BlendDistance);
+            }
+
             if (_map != null)
             {
                 _map.TileChanged += OnTileChanged;
@@ -57,13 +66,35 @@ namespace PlanetSurvival.World.Ground
         private void OnDestroy()
         {
             UnsubscribeFromMap();
+            ReleaseRenderResources();
         }
 
         private void OnTileChanged(TerrainTileCoordinate tile)
         {
-            // Tiles carry their own quads rather than sharing vertices, so a changed tile only ever
-            // invalidates the block it belongs to, even on a block border.
-            _dirtyChunks.Add(ChunkOf(tile));
+            if (_settings == null)
+            {
+                return;
+            }
+
+            ChunkCoordinate chunk = ChunkOf(tile);
+            _dirtyChunks.Add(chunk);
+
+            // Control maps sample a one-pixel gutter beyond the chunk. When a dug tile touches a chunk
+            // boundary, the neighbour owns samples inside that tile and must rebuild as well.
+            int size = _settings.ChunkSizeInTiles;
+            int localX = PositiveModulo(tile.X, size);
+            int localZ = PositiveModulo(tile.Z, size);
+            int minOffsetX = localX == 0 ? -1 : 0;
+            int maxOffsetX = localX == size - 1 ? 1 : 0;
+            int minOffsetZ = localZ == 0 ? -1 : 0;
+            int maxOffsetZ = localZ == size - 1 ? 1 : 0;
+            for (int x = minOffsetX; x <= maxOffsetX; x++)
+            {
+                for (int z = minOffsetZ; z <= maxOffsetZ; z++)
+                {
+                    _dirtyChunks.Add(new ChunkCoordinate(chunk.X + x, chunk.Z + z));
+                }
+            }
         }
 
         private void RefreshAroundTarget(bool force)
@@ -128,6 +159,7 @@ namespace PlanetSurvival.World.Ground
                 TerrainChunkView.SurfaceHeight,
                 chunk.OriginZ(_settings.ChunkSize));
             TerrainChunkView view = root.AddComponent<TerrainChunkView>();
+            view.Configure(_renderResources);
             view.Rebuild(_map, OriginTileOf(chunk), _settings.ChunkSizeInTiles);
             _loadedChunks.Add(chunk, view);
         }
@@ -203,6 +235,18 @@ namespace PlanetSurvival.World.Ground
         {
             int quotient = value / size;
             return value % size < 0 ? quotient - 1 : quotient;
+        }
+
+        private static int PositiveModulo(int value, int size)
+        {
+            int remainder = value % size;
+            return remainder < 0 ? remainder + size : remainder;
+        }
+
+        private void ReleaseRenderResources()
+        {
+            _renderResources?.Dispose();
+            _renderResources = null;
         }
 
         private static void DestroyRuntimeObject(GameObject instance)

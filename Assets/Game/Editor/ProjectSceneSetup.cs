@@ -27,13 +27,13 @@ namespace PlanetSurvival.Editor
         private static readonly Vector2 DefaultStartingAreaSize = new(48f, 48f);
         private const int ResourceSeedOffset = 7919;
 
-        // A 32m chunk carries 0.2875 nodes on average, about one node per 3560m². The surface is meant to
-        // feel genuinely scarce, so expeditions cross several chunks between useful deposits.
+        // A 32m chunk carries 0.22 nodes on average, about one node per 4650m². Ice keeps its existing
+        // survival-floor density; optional stone and scrap are rarer so expeditions cannot casually top up.
         private const float ResourceChunkSize = 32f;
         private const int ResourceLoadRadiusInChunks = 2;
         private const float ResourceMinimumSpacing = 8f;
-        private const float RockNodesPerChunk = .125f;
-        private const float DebrisNodesPerChunk = .0625f;
+        private const float RockNodesPerChunk = .08f;
+        private const float DebrisNodesPerChunk = .04f;
 
         // Wide enough that the largest node plus the player capsule cannot overlap the start position.
         private const float ResourceSpawnClearanceRadius = 3f;
@@ -45,6 +45,10 @@ namespace PlanetSurvival.Editor
         private const string EnergyBarPath = ConfigurationDirectory + "/EnergyBar.asset";
         private const string PotatoPath = ConfigurationDirectory + "/Potato.asset";
         private const string AluminumAlloyPath = ConfigurationDirectory + "/AluminumAlloy.asset";
+        private const string ChlorateSaltPath = ConfigurationDirectory + "/ChlorateSalt.asset";
+        private const string IronOrePath = ConfigurationDirectory + "/IronOre.asset";
+        private const string OxygenCandlePath = ConfigurationDirectory + "/OxygenCandle.asset";
+        private const string OxygenCandleRecipePath = ConfigurationDirectory + "/OxygenCandleRecipe.asset";
         private const string RoastPotatoPath = ConfigurationDirectory + "/RoastPotato.asset";
         private const string RoastPotatoRecipePath = ConfigurationDirectory + "/RoastPotatoRecipe.asset";
         private const string OvenStationPath = ConfigurationDirectory + "/OvenStation.asset";
@@ -56,26 +60,32 @@ namespace PlanetSurvival.Editor
         private const string PickaxeSwingPath = ConfigurationDirectory + "/PickaxeSwing.asset";
         private const string PickaxeAnimationPath = ConfigurationDirectory + "/PickaxeAnimation.asset";
         private const string TerrainPatchSettingsPath = ConfigurationDirectory + "/DefaultTerrainPatches.asset";
+        private const string TerrainBlendShaderPath = "Assets/Game/Shaders/TerrainBlend.shader";
+        private static readonly string[] IceTextureNames = { "IceVariant1", "IceVariant2", "IceVariant3" };
+        private static readonly string[] IronTextureNames = { "IronVariant1", "IronVariant2", "IronVariant3" };
 
         // Diggable terrain. The three ordinary rock grades pay one stone per swing at the same rate;
         // iron is both slower and harder, so finding a deposit is a deliberate mining stop rather than a
         // roadside top-up.
         private const int TerrainSeedOffset = 5231;
-        private const float TerrainTileSize = 3f;
+        private const float TerrainTileSize = 2.75f;
         private const int TerrainChunkSizeInTiles = 8;
         private const int TerrainLoadRadiusInChunks = 1;
-        // World units per repeat of a terrain texture, which sets how big the objects in it are. Loose
-        // rock is low contrast and forgiving, so it uses the wider scale; iron is bright against the dark
-        // regolith and its nodules are large, so at that scale the patch rim cut whole nodules in half and
-        // left them half-transparent. Keeping the ore no larger than the rim fade makes a deposit thin out
-        // at its edge instead of looking chipped.
+        private const int TerrainControlMapResolution = 128;
+        private const float TerrainBlendDistance = 1.2f;
+        // Legacy world-space repeat sizes kept in authored assets for backward compatibility. The current
+        // tile-aligned renderer always fits one complete texture into one gameplay tile.
         private const float RockTextureTileSize = 8f;
         private const float IronTextureTileSize = 5f;
+        private const float IceTextureTileSize = 12f;
         private const float RockDigSeconds = 1.6f;
         private const int RockStonePerDig = 1;
         private const float IronDigSeconds = 3.2f;
         private const int IronDigCount = 7;
         private const int IronOrePerDig = 1;
+        private const float IceDigSeconds = 2.2f;
+        private const int IceDigCount = 2;
+        private const int IceChunksPerDig = 1;
 
         // Patch sizes. Coverage alone does not decide whether a grade arrives as a place or as specks:
         // the rarer a layer is, the wider its patches must be to stay whole. Iron is the extreme case at
@@ -83,6 +93,7 @@ namespace PlanetSurvival.Editor
         // of mining after a long walk, which is not the deliberate stop it is meant to be. At this width
         // a deposit runs about twenty tiles, so it stays worth returning to across several backpack loads.
         private const float IronPatchSize = 42f;
+        private const float IcePatchSize = 40f;
         private const float BoulderFieldPatchSize = 34f;
         private const float BrokenRockPatchSize = 26f;
         private const float LooseScreePatchSize = 30f;
@@ -90,10 +101,11 @@ namespace PlanetSurvival.Editor
         // Approximate share of the surface each grade may cover before overlap priority is applied. These
         // are the balancing knobs: future ice, soil or gravel terrain can use the same layer type with its
         // own coverage and patch size, without knowing anything about noise thresholds.
-        private const float BoulderFieldShare = .02f;
-        private const float BrokenRockShare = .04f;
-        private const float LooseScreeShare = .08f;
+        private const float BoulderFieldShare = .0125f;
+        private const float BrokenRockShare = .025f;
+        private const float LooseScreeShare = .05f;
         private const float IronShare = .01f;
+        private const float IceShare = .015f;
 
         // The ice-water-food loop. One chunk yields one litre, one planting drinks 1.5 L and returns
         // four potatoes for one seed, so two trays feed one explorer and still leave water to drink.
@@ -113,11 +125,14 @@ namespace PlanetSurvival.Editor
         private const float StoneWallSeconds = 6f;
         private const float MetalBarricadeSeconds = 8f;
         private const float FieldOvenSeconds = 20f;
+        private const float OxygenCandlePlacementSeconds = 1f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
         private const float RoastPotatoSeconds = 30f;
         private const int RoastPotatoCalories = 300;
+        private const float OxygenCandleCraftSeconds = 45f;
+        private const int ChlorateSaltPerOxygenCandle = 1;
         private const string OvenConditionId = "station.oven";
         private const string BootstrapScenePath = ScenesDirectory + "/Bootstrap.unity";
         private const string MainMenuScenePath = ScenesDirectory + "/MainMenu.unity";
@@ -138,6 +153,7 @@ namespace PlanetSurvival.Editor
             ItemDefinition energyBar = GetOrCreateEnergyBar();
             ItemDefinition potato = GetOrCreatePotato();
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
+            ItemDefinition chlorateSalt = GetOrCreateChlorateSalt();
             ItemDefinition pickaxe = GetOrCreatePickaxe();
             PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
             worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation);
@@ -145,13 +161,16 @@ namespace PlanetSurvival.Editor
             ItemDefinition iceChunk = GetOrCreateIceChunk();
             CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato);
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(iceChunk, pickaxe);
-            TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe);
-            CookingStationDefinition oven = GetOrCreateOven(potato);
-            BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven);
+            TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
+            ItemDefinition oxygenCandle = GetOrCreateOxygenCandle();
+            CraftingRecipe oxygenCandleRecipe = GetOrCreateOxygenCandleRecipe(
+                oxygenCandle, chlorateSalt);
+            CookingStationDefinition oven = GetOrCreateOven(potato, oxygenCandleRecipe);
+            BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven, oxygenCandle);
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene(energyBar, potato, aluminumAlloy, pickaxe);
+            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
@@ -164,6 +183,59 @@ namespace PlanetSurvival.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("Planet Survival formal scenes and default configuration are ready.");
+        }
+
+        /// <summary>
+        /// Authors the oxygen candle and adds its fabrication recipe to the existing oven without
+        /// rebuilding unrelated terrain, scenes, or world configuration.
+        /// </summary>
+        [MenuItem("Planet Survival/Setup Oxygen Candle")]
+        public static void CreateOrUpdateOxygenCandle()
+        {
+            ItemDefinition energyBar = AssetDatabase.LoadAssetAtPath<ItemDefinition>(EnergyBarPath);
+            ItemDefinition potato = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoPath);
+            ItemDefinition aluminumAlloy = AssetDatabase.LoadAssetAtPath<ItemDefinition>(AluminumAlloyPath);
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            if (energyBar == null || potato == null || aluminumAlloy == null || pickaxe == null)
+            {
+                Debug.LogError(
+                    "Oxygen candle setup requires the existing starting-cargo item assets.");
+                return;
+            }
+
+            ItemDefinition chlorateSalt = GetOrCreateChlorateSalt();
+            ItemDefinition oxygenCandle = GetOrCreateOxygenCandle();
+            CraftingRecipe oxygenCandleRecipe = GetOrCreateOxygenCandleRecipe(
+                oxygenCandle, chlorateSalt);
+            CookingStationDefinition oven = GetOrCreateOven(potato, oxygenCandleRecipe);
+            GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            UpdateBootstrapStartingSupplies(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("The craftable and placeable oxygen candle is ready.");
+        }
+
+        /// <summary>
+        /// Reapplies only the surface-resource balance. This keeps scene authoring and unrelated assets
+        /// untouched while ensuring both existing projects and future full setup runs use the same scarcity.
+        /// </summary>
+        [MenuItem("Planet Survival/Rebalance Sparse Surface Resources")]
+        public static void RebalanceSparseSurfaceResources()
+        {
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(IceChunkPath);
+            if (pickaxe == null || iceChunk == null)
+            {
+                Debug.LogError(
+                    "Surface resource rebalance requires the existing Pickaxe and Ice Chunk assets.");
+                return;
+            }
+
+            GetOrCreateResourceSettings(iceChunk, pickaxe);
+            GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Sparse surface-resource balance is ready.");
         }
 
         /// <summary>
@@ -198,11 +270,64 @@ namespace PlanetSurvival.Editor
 
             settings.Configure(settings.SeedOffset, settings.TileSize, settings.ChunkSizeInTiles,
                 settings.LoadRadiusInChunks, layers.ToArray());
+            ConfigureTerrainRendering(settings);
             EditorUtility.SetDirty(settings);
             UiArtSetup.AssignItemIcons();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("Iron vein terrain and item are ready.");
+        }
+
+        /// <summary>
+        /// Imports and wires only the ice-layer feature. Existing terrain layers keep their authored
+        /// order and values; ice is inserted just below iron so both rare deposits win overlaps with
+        /// ordinary rock without changing iron's established priority.
+        /// </summary>
+        [MenuItem("Planet Survival/Setup Ice Terrain")]
+        public static void CreateOrUpdateIceTerrain()
+        {
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(IceChunkPath);
+            TerrainPatchSettings settings =
+                AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(TerrainPatchSettingsPath);
+            if (pickaxe == null || iceChunk == null || settings == null)
+            {
+                Debug.LogError(
+                    "Ice terrain setup requires the existing Pickaxe, Ice Chunk and Default Terrain Patches assets.");
+                return;
+            }
+
+            TerrainSurfaceDefinition ice = GetOrCreateIceSurface(pickaxe, iceChunk);
+            var layers = new List<TerrainPatchLayer>();
+            bool iceInserted = false;
+            for (int i = 0; i < settings.Layers.Count; i++)
+            {
+                TerrainPatchLayer layer = settings.Layers[i];
+                if (layer.Surface != null && layer.Surface.TerrainId == "ice")
+                {
+                    continue;
+                }
+
+                layers.Add(layer);
+                if (!iceInserted && layer.Surface != null && layer.Surface.TerrainId == "iron")
+                {
+                    layers.Add(new TerrainPatchLayer(ice, IcePatchSize, IceShare, 6421));
+                    iceInserted = true;
+                }
+            }
+
+            if (!iceInserted)
+            {
+                layers.Insert(0, new TerrainPatchLayer(ice, IcePatchSize, IceShare, 6421));
+            }
+
+            settings.Configure(settings.SeedOffset, settings.TileSize, settings.ChunkSizeInTiles,
+                settings.LoadRadiusInChunks, layers.ToArray());
+            ConfigureTerrainRendering(settings);
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Sparse connected ice terrain is ready.");
         }
 
         private static ResourceSpawnSettings GetOrCreateResourceSettings(
@@ -251,11 +376,13 @@ namespace PlanetSurvival.Editor
         }
 
         /// <summary>
-        /// Authors the patched terrain: a rare iron vein and three grades of rock over the base regolith.
-        /// Iron comes first so ordinary rock cannot hide it where their fields overlap. Each layer samples
-        /// its own field, so a deposit may be one tile or a connected run instead of a fixed prefab shape.
+        /// Authors the patched terrain: rare iron and ice deposits plus three grades of rock over the base
+        /// regolith. Rare resources come first so ordinary rock cannot hide them where their fields overlap.
+        /// Each layer samples its own field, so a deposit may be one tile or a connected run instead of a
+        /// fixed prefab shape.
         /// </summary>
-        private static TerrainPatchSettings GetOrCreateTerrainPatchSettings(ItemDefinition pickaxe)
+        private static TerrainPatchSettings GetOrCreateTerrainPatchSettings(
+            ItemDefinition pickaxe, ItemDefinition iceChunk)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
 
@@ -263,6 +390,7 @@ namespace PlanetSurvival.Editor
             // hides rises with its grade: scattered gravel, then broken slabs, then solid boulders. That
             // makes a tile's hardness readable before the first swing.
             TerrainSurfaceDefinition iron = GetOrCreateIronSurface(pickaxe);
+            TerrainSurfaceDefinition ice = GetOrCreateIceSurface(pickaxe, iceChunk);
             TerrainSurfaceDefinition boulderField = GetOrCreateTerrainSurface("BoulderFieldTerrain",
                 "rock_boulder_field", "Boulder Field", "Stone3", 5, RockDigSeconds,
                 pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
@@ -285,11 +413,24 @@ namespace PlanetSurvival.Editor
             settings.Configure(TerrainSeedOffset, TerrainTileSize, TerrainChunkSizeInTiles,
                 TerrainLoadRadiusInChunks,
                 new TerrainPatchLayer(iron, IronPatchSize, IronShare, 9151),
+                new TerrainPatchLayer(ice, IcePatchSize, IceShare, 6421),
                 new TerrainPatchLayer(boulderField, BoulderFieldPatchSize, BoulderFieldShare, 1613),
                 new TerrainPatchLayer(brokenRock, BrokenRockPatchSize, BrokenRockShare, 7817),
                 new TerrainPatchLayer(looseScree, LooseScreePatchSize, LooseScreeShare, 3271));
+            ConfigureTerrainRendering(settings);
             EditorUtility.SetDirty(settings);
             return settings;
+        }
+
+        private static void ConfigureTerrainRendering(TerrainPatchSettings settings)
+        {
+            Shader shader = AssetDatabase.LoadAssetAtPath<Shader>(TerrainBlendShaderPath);
+            if (shader == null)
+            {
+                Debug.LogError($"Terrain blend shader was not found at '{TerrainBlendShaderPath}'.");
+            }
+
+            settings.ConfigureRendering(shader, TerrainControlMapResolution, TerrainBlendDistance);
         }
 
         private static TerrainSurfaceDefinition GetOrCreateIronSurface(ItemDefinition pickaxe)
@@ -297,16 +438,40 @@ namespace PlanetSurvival.Editor
             ItemDefinition ironOre = GetOrCreateItem("IronOre", "iron_ore", "Iron Ore", 2, 20);
             ironOre.ConfigureDescription("Dense raw iron ore mined from rare exposed outcrops.");
             EditorUtility.SetDirty(ironOre);
-            return GetOrCreateTerrainSurface("IronTerrain", "iron", "Iron", "Iron",
+            TerrainSurfaceDefinition surface = GetOrCreateTerrainSurface(
+                "IronTerrain", "iron", "Iron", IronTextureNames[0],
                 IronDigCount, IronDigSeconds, pickaxe.ItemId, ironOre, IronOrePerDig, IronTextureTileSize);
+            var textures = new Texture2D[IronTextureNames.Length];
+            for (int i = 0; i < IronTextureNames.Length; i++)
+            {
+                textures[i] = WorldArtSetup.ImportGroundTexture(IronTextureNames[i]);
+            }
+
+            surface.ConfigureTextureVariants(IronTextureTileSize, textures);
+            EditorUtility.SetDirty(surface);
+            return surface;
+        }
+
+        private static TerrainSurfaceDefinition GetOrCreateIceSurface(
+            ItemDefinition pickaxe, ItemDefinition iceChunk)
+        {
+            TerrainSurfaceDefinition surface = GetOrCreateTerrainSurface(
+                "IceTerrain", "ice", "Ice Layer", IceTextureNames[0],
+                IceDigCount, IceDigSeconds, pickaxe.ItemId, iceChunk, IceChunksPerDig, IceTextureTileSize);
+            var textures = new Texture2D[IceTextureNames.Length];
+            for (int i = 0; i < IceTextureNames.Length; i++)
+            {
+                textures[i] = WorldArtSetup.ImportGroundTexture(IceTextureNames[i]);
+            }
+
+            surface.ConfigureTextureVariants(IceTextureTileSize, textures);
+            EditorUtility.SetDirty(surface);
+            return surface;
         }
 
         /// <param name="textureTileSize">
-        /// World units per repeat, which is what sets the physical size of the objects in the artwork.
-        /// It is not free to choose: a patch rim can only be drawn on cell boundaries and is faded out
-        /// over <c>TerrainChunkView.EdgeFeatherDistance</c>, so anything in the texture much larger than
-        /// that fade gets cut and half-ghosted at the rim instead of thinning out. Loose rock tolerates
-        /// it because it is low contrast against the regolith; bright ore does not.
+        /// Legacy world-space repeat size retained in the surface asset for compatibility. The current
+        /// terrain renderer fits one complete square artwork into each gameplay tile.
         /// </param>
         private static TerrainSurfaceDefinition GetOrCreateTerrainSurface(string assetName, string terrainId,
             string displayName, string textureName, int digCount, float digDuration,
@@ -542,7 +707,9 @@ namespace PlanetSurvival.Editor
         /// The habitat galley range and the dishes it serves. Recipes stay separate assets so a second
         /// station can offer the same dish once more cooking spots exist.
         /// </summary>
-        private static CookingStationDefinition GetOrCreateOven(ItemDefinition potato)
+        private static CookingStationDefinition GetOrCreateOven(
+            ItemDefinition potato,
+            CraftingRecipe oxygenCandleRecipe)
         {
             ItemDefinition roastPotato = GetOrCreateRoastPotato();
             CraftingRecipe roastPotatoRecipe = GetOrCreateRecipe(
@@ -562,16 +729,71 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(oven, OvenStationPath);
             }
 
-            oven.Configure("oven", "Oven", new[] { OvenConditionId }, roastPotatoRecipe);
+            oven.Configure("oven", "Oven", new[] { OvenConditionId },
+                roastPotatoRecipe, oxygenCandleRecipe);
             EditorUtility.SetDirty(oven);
             return oven;
+        }
+
+        private static ItemDefinition GetOrCreateOxygenCandle()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(OxygenCandlePath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Oxygen Candle";
+                AssetDatabase.CreateAsset(item, OxygenCandlePath);
+            }
+
+            item.Configure("oxygen_candle", "Oxygen Candle", 2, 10, false, true);
+            item.ConfigureDescription(
+                "A compact chlorate oxidizer block. Once placed and ignited, it burns for 24 game hours, " +
+                "releasing 100 L of oxygen each game hour (2,400 L total).");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
+        private static ItemDefinition GetOrCreateChlorateSalt()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(ChlorateSaltPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Chlorate Salt";
+                AssetDatabase.CreateAsset(item, ChlorateSaltPath);
+            }
+
+            item.Configure("chlorate_salt", "Chlorate Salt", 2, 10, false, true);
+            item.ConfigureDescription(
+                "A sealed emergency oxidizer charge carried by the landing pod. One charge makes one oxygen candle.");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
+        private static CraftingRecipe GetOrCreateOxygenCandleRecipe(
+            ItemDefinition oxygenCandle,
+            ItemDefinition chlorateSalt)
+        {
+            return GetOrCreateRecipe(
+                OxygenCandleRecipePath,
+                "oxygen_candle",
+                "Oxygen Candle",
+                new[]
+                {
+                    new CraftingItemAmount(chlorateSalt, ChlorateSaltPerOxygenCandle)
+                },
+                new[] { new CraftingItemAmount(oxygenCandle, 1) },
+                OxygenCandleCraftSeconds,
+                OvenConditionId);
         }
 
         /// <summary>
         /// The structures the surface build panel offers. They are separate assets so a catalog can be
         /// reshuffled — or a second catalog written for another biome — without touching the buildables.
         /// </summary>
-        private static BuildingCatalog GetOrCreateBuildingCatalog(CookingStationDefinition oven)
+        private static BuildingCatalog GetOrCreateBuildingCatalog(
+            CookingStationDefinition oven,
+            ItemDefinition oxygenCandle)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
@@ -590,6 +812,13 @@ namespace PlanetSurvival.Editor
                 new CraftingItemAmount(scrap, 6), new CraftingItemAmount(stone, 6));
             fieldOven.ConfigureCookingStation(oven);
             EditorUtility.SetDirty(fieldOven);
+            BuildableDefinition placedOxygenCandle = GetOrCreateBuildable(
+                "OxygenCandleBuildable", "oxygen_candle", "Oxygen Candle",
+                Vector2Int.one, OxygenCandlePlacementSeconds, .8f, new Color(.72f, .78f, .82f),
+                "A single-use chemical oxygen candle. It ignites after placement and feeds the pod reserve.",
+                new CraftingItemAmount(oxygenCandle, 1));
+            placedOxygenCandle.ConfigureOxygenCandle(true);
+            EditorUtility.SetDirty(placedOxygenCandle);
 
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
@@ -599,7 +828,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(catalog, BuildingCatalogPath);
             }
 
-            catalog.Configure(wall, barricade, fieldOven);
+            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
@@ -710,14 +939,31 @@ namespace PlanetSurvival.Editor
         }
 
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
-            ItemDefinition aluminumAlloy, ItemDefinition pickaxe)
+            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, pickaxe);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
+        }
+
+        private static void UpdateBootstrapStartingSupplies(ItemDefinition energyBar, ItemDefinition potato,
+            ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe)
+        {
+            Scene scene = EditorSceneManager.OpenScene(BootstrapScenePath, OpenSceneMode.Single);
+            GameFlowController flowController = Object.FindFirstObjectByType<GameFlowController>();
+            if (flowController == null)
+            {
+                Debug.LogError("The bootstrap scene has no game flow controller to receive starting supplies.");
+                return;
+            }
+
+            flowController.ConfigureStartingSupplies(
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
         }
 
         private static void CreateMainMenuScene()

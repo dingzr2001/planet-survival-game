@@ -1,5 +1,6 @@
 using System;
 using PlanetSurvival.Building.Definitions;
+using PlanetSurvival.Oxygen.Domain;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Domain
@@ -28,6 +29,10 @@ namespace PlanetSurvival.Building.Domain
             TotalSeconds = Mathf.Max(0f, definition.BuildSeconds);
             RemainingSeconds = TotalSeconds;
             State = TotalSeconds <= 0f ? BuildState.Completed : BuildState.UnderConstruction;
+            if (definition.IsOxygenCandle)
+            {
+                OxygenCandle = new OxygenCandleBurn();
+            }
         }
 
         public string SiteId { get; }
@@ -36,6 +41,7 @@ namespace PlanetSurvival.Building.Domain
         public BuildState State { get; private set; }
         public float RemainingSeconds { get; private set; }
         public float TotalSeconds { get; }
+        public OxygenCandleBurn OxygenCandle { get; }
 
         public float Progress => TotalSeconds <= 0f
             ? 1f

@@ -25,3 +25,4 @@ MonoBehaviour:
   _worldHeight: 1.1
   _bodyColor: {r: 0.62, g: 0.66, b: 0.72, a: 1}
   _cookingStation: {fileID: 0}
+  _isOxygenCandle: 0

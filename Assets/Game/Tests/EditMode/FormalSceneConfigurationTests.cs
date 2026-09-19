@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Cooking.Definitions;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Crafting.Definitions;
@@ -199,6 +200,33 @@ namespace PlanetSurvival.Tests
             Assert.That(spawnsIce, Is.True, "Ice deposits must be part of the streamed surface layout.");
         }
 
+        [Test]
+        public void SurfaceResourceNodes_KeepOptionalMaterialsScarceWithoutReducingIce()
+        {
+            ResourceSpawnSettings spawnSettings = AssetDatabase.LoadAssetAtPath<ResourceSpawnSettings>(
+                "Assets/Game/Configuration/DefaultResourceSpawnSettings.asset");
+            Assert.That(spawnSettings, Is.Not.Null);
+
+            var expectedDensities = new Dictionary<string, float>
+            {
+                { "rock", .08f },
+                { "debris", .04f },
+                { "ice_deposit", .1f }
+            };
+
+            Assert.That(spawnSettings.Entries.Count, Is.EqualTo(expectedDensities.Count));
+            for (int i = 0; i < spawnSettings.Entries.Count; i++)
+            {
+                ResourceSpawnEntry entry = spawnSettings.Entries[i];
+                Assert.That(entry.Definition, Is.Not.Null);
+                string resourceId = entry.Definition.ResourceId;
+                Assert.That(expectedDensities.ContainsKey(resourceId), Is.True,
+                    $"Resource '{resourceId}' has no deliberate surface density.");
+                Assert.That(entry.NodesPerChunk,
+                    Is.EqualTo(expectedDensities[resourceId]).Within(.0001f));
+            }
+        }
+
         /// <summary>
         /// Ordinary rock makes the surface worth walking across rather than through: three grades break
         /// down in one, three and five swings, each paying out on every swing.
@@ -210,18 +238,18 @@ namespace PlanetSurvival.Tests
                 "Assets/Game/Configuration/DefaultTerrainPatches.asset");
 
             Assert.That(patches, Is.Not.Null);
-            Assert.That(patches.Layers.Count, Is.EqualTo(4));
+            Assert.That(patches.Layers.Count, Is.EqualTo(5));
 
             var digCounts = new List<int>();
             for (int i = 0; i < patches.Layers.Count; i++)
             {
                 TerrainSurfaceDefinition surface = patches.Layers[i].Surface;
-                if (surface.TerrainId == "iron")
+                Assert.That(surface, Is.Not.Null);
+                if (!surface.TerrainId.StartsWith("rock_"))
                 {
                     continue;
                 }
 
-                Assert.That(surface, Is.Not.Null);
                 Assert.That(surface.IsValid(out string error), Is.True, error);
                 Assert.That(surface.Texture, Is.Not.Null,
                     $"Terrain '{surface.TerrainId}' without its texture draws as untextured white ground.");
@@ -361,6 +389,12 @@ namespace PlanetSurvival.Tests
                 "The rare deposit must win overlaps with ordinary rock.");
             Assert.That(iron.IsValid(out string error), Is.True, error);
             Assert.That(iron.Texture, Is.Not.Null);
+            Assert.That(iron.TextureVariantCount, Is.EqualTo(3));
+            for (int i = 0; i < iron.TextureVariantCount; i++)
+            {
+                Assert.That(AssetDatabase.GetAssetPath(iron.GetTextureVariant(i)),
+                    Is.EqualTo($"Assets/Game/Art/World/Ground/IronVariant{i + 1}.png"));
+            }
             Assert.That(iron.RequiredToolItemId, Is.EqualTo("pickaxe"));
             Assert.That(iron.DigCount, Is.GreaterThan(5));
             Assert.That(iron.DigDuration, Is.GreaterThan(1.6f));
@@ -368,6 +402,63 @@ namespace PlanetSurvival.Tests
             Assert.That(iron.Yields[0].Item, Is.EqualTo(ironOre));
             Assert.That(ironLayer.TargetCoverage, Is.EqualTo(.01f).Within(.0001f));
             Assert.That(ironLayer.TargetCoverage, Is.LessThan(patches.Layers[1].TargetCoverage));
+        }
+
+        [Test]
+        public void IceTerrain_IsRareConnectedAndYieldsIceChunks()
+        {
+            TerrainGenerationSettings terrain = AssetDatabase.LoadAssetAtPath<TerrainGenerationSettings>(
+                "Assets/Game/Configuration/DefaultTerrainSettings.asset");
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/IceChunk.asset");
+            Assert.That(terrain, Is.Not.Null);
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(iceChunk, Is.Not.Null);
+
+            int iceLayerIndex = -1;
+            for (int i = 0; i < patches.Layers.Count; i++)
+            {
+                if (patches.Layers[i].Surface != null && patches.Layers[i].Surface.TerrainId == "ice")
+                {
+                    iceLayerIndex = i;
+                    break;
+                }
+            }
+
+            Assert.That(iceLayerIndex, Is.GreaterThanOrEqualTo(0));
+            TerrainPatchLayer iceLayer = patches.Layers[iceLayerIndex];
+            TerrainSurfaceDefinition ice = iceLayer.Surface;
+            Assert.That(ice.IsValid(out string error), Is.True, error);
+            Assert.That(ice.Texture, Is.Not.Null);
+            Assert.That(ice.TextureVariantCount, Is.EqualTo(3));
+            for (int i = 0; i < ice.TextureVariantCount; i++)
+            {
+                Assert.That(AssetDatabase.GetAssetPath(ice.GetTextureVariant(i)),
+                    Is.EqualTo($"Assets/Game/Art/World/Ground/IceVariant{i + 1}.png"));
+            }
+            Assert.That(ice.RequiredToolItemId, Is.EqualTo("pickaxe"));
+            Assert.That(ice.Yields.Count, Is.EqualTo(1));
+            Assert.That(ice.Yields[0].Item, Is.EqualTo(iceChunk));
+            Assert.That(iceLayer.TargetCoverage, Is.EqualTo(.015f).Within(.0001f));
+
+            var map = new TerrainTileMap();
+            map.Configure(terrain.Seed + patches.SeedOffset, patches);
+            const int side = 300;
+            var iceCovered = new bool[side, side];
+            for (int x = 0; x < side; x++)
+            {
+                for (int z = 0; z < side; z++)
+                {
+                    var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
+                    TerrainSurfaceDefinition surface = map.GetSurface(tile);
+                    iceCovered[x, z] = surface != null && surface.TerrainId == "ice";
+                }
+            }
+
+            Assert.That(HasAdjacentCoveredTiles(iceCovered, side), Is.True,
+                "Rare ice must still form multi-tile sheets rather than only isolated tiles.");
         }
 
         /// <summary>
@@ -394,6 +485,7 @@ namespace PlanetSurvival.Tests
             var counts = new int[patches.Layers.Count];
             var covered = new bool[side, side];
             var ironCovered = new bool[side, side];
+            var iceCovered = new bool[side, side];
             for (int x = 0; x < side; x++)
             {
                 for (int z = 0; z < side; z++)
@@ -406,6 +498,7 @@ namespace PlanetSurvival.Tests
                         string terrainId = patches.Layers[layerIndex].Surface.TerrainId;
                         covered[x, z] = terrainId.StartsWith("rock_");
                         ironCovered[x, z] = terrainId == "iron";
+                        iceCovered[x, z] = terrainId == "ice";
                     }
                 }
             }
@@ -414,9 +507,10 @@ namespace PlanetSurvival.Tests
             var expectedShares = new Dictionary<string, float>
             {
                 { "iron", .01f },
-                { "rock_boulder_field", .02f },
-                { "rock_broken", .04f },
-                { "rock_loose_scree", .08f }
+                { "ice", .015f },
+                { "rock_boulder_field", .0125f },
+                { "rock_broken", .025f },
+                { "rock_loose_scree", .05f }
             };
 
             float rockShare = 0f;
@@ -440,11 +534,13 @@ namespace PlanetSurvival.Tests
                     $"'{terrainId}' covers {share:P1}; it was designed for {expected:P0}.");
             }
 
-            Assert.That(rockShare, Is.InRange(.11f, .17f), "Rock should punctuate the regolith, not carpet it.");
+            Assert.That(rockShare, Is.InRange(.065f, .11f), "Rock should punctuate the regolith, not carpet it.");
             Assert.That(IsolatedRockFraction(covered, side), Is.LessThan(.05f),
                 "Rock is meant to generate in runs; almost every tile should touch another rock tile.");
             Assert.That(HasAdjacentCoveredTiles(ironCovered, side), Is.True,
                 "Rare iron still has to support connected multi-tile veins, not only isolated specks.");
+            Assert.That(HasAdjacentCoveredTiles(iceCovered, side), Is.True,
+                "Rare ice still has to support connected multi-tile sheets, not only isolated specks.");
         }
 
         private static bool HasAdjacentCoveredTiles(bool[,] covered, int side)
@@ -524,6 +620,21 @@ namespace PlanetSurvival.Tests
                 "The overlay has to clear the base ground disc for the depth test.");
         }
 
+        [Test]
+        public void TerrainRendering_HasBuildSafeControlMapConfiguration()
+        {
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(patches.BlendShader, Is.Not.Null,
+                "A serialized shader reference keeps the runtime terrain shader from being stripped in builds.");
+            Assert.That(patches.BlendShader.name, Is.EqualTo(TerrainChunkRenderResources.ShaderName));
+            Assert.That(patches.ControlMapResolution, Is.GreaterThanOrEqualTo(64));
+            Assert.That(patches.BlendDistance, Is.GreaterThan(0f));
+            Assert.That(patches.Layers.Count, Is.LessThanOrEqualTo(TerrainControlMapBuilder.MaximumLayerCount));
+        }
+
         /// <summary>
         /// The habitat half of the loop. A harvest that only returned its own seed would leave the
         /// expedition exactly as doomed as it was before hydroponics existed.
@@ -566,6 +677,52 @@ namespace PlanetSurvival.Tests
             Assert.That(recipe.Inputs[0].Item.ItemId, Is.EqualTo("potato"));
             Assert.That(recipe.Outputs.Count, Is.EqualTo(1));
             Assert.That(recipe.Outputs[0].Item.ItemId, Is.EqualTo("roast_potato"));
+        }
+
+        [Test]
+        public void OxygenCandle_IsCraftableFromEmergencyChlorateSalt()
+        {
+            ItemDefinition chlorateSalt = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/ChlorateSalt.asset");
+            ItemDefinition candle = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/OxygenCandle.asset");
+            CraftingRecipe recipe = AssetDatabase.LoadAssetAtPath<CraftingRecipe>(
+                "Assets/Game/Configuration/OxygenCandleRecipe.asset");
+            CookingStationDefinition oven = AssetDatabase.LoadAssetAtPath<CookingStationDefinition>(
+                "Assets/Game/Configuration/OvenStation.asset");
+            BuildableDefinition placedCandle = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/OxygenCandleBuildable.asset");
+            BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(
+                "Assets/Game/Configuration/DefaultBuildingCatalog.asset");
+
+            Assert.That(chlorateSalt, Is.Not.Null);
+            Assert.That(chlorateSalt.ItemId, Is.EqualTo("chlorate_salt"));
+            Assert.That(candle, Is.Not.Null);
+            Assert.That(candle.ItemId, Is.EqualTo("oxygen_candle"));
+            Assert.That(candle.CanUse, Is.False,
+                "The candle must be placed through the build menu rather than consumed from the quick bar.");
+
+            Assert.That(recipe, Is.Not.Null);
+            Assert.That(recipe.IsValid(out string recipeError), Is.True, recipeError);
+            Assert.That(recipe.Outputs.Count, Is.EqualTo(1));
+            Assert.That(recipe.Outputs[0].Item, Is.SameAs(candle));
+            Assert.That(recipe.Inputs.Count, Is.EqualTo(1));
+            Assert.That(recipe.Inputs[0].Item, Is.SameAs(chlorateSalt));
+            Assert.That(recipe.Inputs[0].Quantity, Is.EqualTo(1));
+
+            Assert.That(oven, Is.Not.Null);
+            Assert.That(oven.Recipes, Does.Contain(recipe));
+            Assert.That(oven.Supports(recipe), Is.True);
+
+            Assert.That(placedCandle, Is.Not.Null);
+            Assert.That(placedCandle.IsValid(out string buildableError), Is.True, buildableError);
+            Assert.That(placedCandle.IsOxygenCandle, Is.True);
+            Assert.That(placedCandle.Cost.Count, Is.EqualTo(1));
+            Assert.That(placedCandle.Cost[0].Item, Is.SameAs(candle),
+                "Placement must consume a candle that was crafted first.");
+            Assert.That(placedCandle.Cost[0].Quantity, Is.EqualTo(1));
+            Assert.That(catalog, Is.Not.Null);
+            Assert.That(catalog.Buildables, Does.Contain(placedCandle));
         }
 
         [Test]

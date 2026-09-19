@@ -36,9 +36,9 @@ namespace PlanetSurvival.Tests
         public void TearDown() => Object.DestroyImmediate(_player);
 
         [Test]
-        public void DefaultRate_IsFiveLitersPerGameHour()
+        public void DefaultRate_IsTwentyLitersPerGameHour()
         {
-            Assert.That(_consumption.ConsumptionLitersPerGameHour, Is.EqualTo(5f));
+            Assert.That(_consumption.ConsumptionLitersPerGameHour, Is.EqualTo(20f));
         }
 
         [Test]

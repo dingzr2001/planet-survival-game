@@ -30,6 +30,29 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void Fill_ClampsAtCapacityAndReportsAcceptedAmount()
+        {
+            var reservoir = new OxygenReservoir(100f, 80f);
+
+            float accepted = reservoir.Fill(35f);
+
+            Assert.That(accepted, Is.EqualTo(20f));
+            Assert.That(reservoir.CurrentLiters, Is.EqualTo(100f));
+            Assert.That(reservoir.RemainingCapacityLiters, Is.Zero);
+        }
+
+        [Test]
+        public void Fill_RejectsInvalidAmountsWithoutChangingState()
+        {
+            var reservoir = new OxygenReservoir(100f, 20f);
+
+            Assert.That(reservoir.Fill(0f), Is.Zero);
+            Assert.That(reservoir.Fill(-5f), Is.Zero);
+            Assert.That(reservoir.Fill(float.NaN), Is.Zero);
+            Assert.That(reservoir.CurrentLiters, Is.EqualTo(20f));
+        }
+
+        [Test]
         public void Constructor_RejectsInvalidCapacityAndInitialState()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => new OxygenReservoir(0f));

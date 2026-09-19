@@ -18,3 +18,4 @@ MonoBehaviour:
   - station.oven
   _recipes:
   - {fileID: 11400000, guid: c6d3cb1de53e493e8a1e2d2c9e9f68fe, type: 2}
+  - {fileID: 11400000, guid: 801af4ed21b874469a2e2a40c929c2f7, type: 2}
