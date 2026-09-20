@@ -136,7 +136,7 @@ namespace PlanetSurvival.Tests
             Assert.That(cargoStorage, Is.Not.Null);
             Assert.That(cargoStorage.gameObject.name, Is.EqualTo("Cargo Storage Racks"));
             Assert.That(cargoStorage.Inventory.TotalSlots, Is.EqualTo(30));
-            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(6));
+            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(7));
             Assert.That(cargoStorage.Inventory.GetQuantity("energy_bar"),
                 Is.EqualTo(GameSessionState.InitialEnergyBarCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("potato"),
@@ -147,6 +147,8 @@ namespace PlanetSurvival.Tests
                 Is.EqualTo(GameSessionState.InitialChlorateSaltCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("pickaxe"),
                 Is.EqualTo(GameSessionState.InitialPickaxeCount));
+            Assert.That(cargoStorage.Inventory.GetQuantity("shovel"),
+                Is.EqualTo(GameSessionState.InitialShovelCount));
             Assert.That(cargoStorage.Inventory.GetQuantity("petroleum_canister"),
                 Is.EqualTo(GameSessionState.InitialPetroleumCanisterCount));
             ScenePortal airlock = FindPortal(GameSceneNames.Gameplay);

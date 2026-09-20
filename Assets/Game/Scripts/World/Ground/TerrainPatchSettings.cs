@@ -27,6 +27,8 @@ namespace PlanetSurvival.World.Ground
         private float _blendDistance = TerrainChunkRenderResources.DefaultBlendDistance;
         [SerializeField, Tooltip("Highest-priority terrain first: the first matching layer wins. Each layer controls its own approximate coverage and patch size.")]
         private TerrainPatchLayer[] _layers = Array.Empty<TerrainPatchLayer>();
+        [SerializeField, Tooltip("Optional diggable material available where no terrain patch covers the base ground.")]
+        private TerrainSurfaceDefinition _baseSurface;
 
         public int SeedOffset => _seedOffset;
         public float TileSize => Mathf.Max(.5f, _tileSize);
@@ -37,14 +39,22 @@ namespace PlanetSurvival.World.Ground
         public int ControlMapResolution => Mathf.Max(16, _controlMapResolution);
         public float BlendDistance => Mathf.Max(.05f, _blendDistance);
         public IReadOnlyList<TerrainPatchLayer> Layers => _layers;
+        public TerrainSurfaceDefinition BaseSurface => _baseSurface;
 
         public void Configure(int seedOffset, float tileSize, int chunkSizeInTiles, int loadRadiusInChunks,
             params TerrainPatchLayer[] layers)
+        {
+            Configure(seedOffset, tileSize, chunkSizeInTiles, loadRadiusInChunks, null, layers);
+        }
+
+        public void Configure(int seedOffset, float tileSize, int chunkSizeInTiles, int loadRadiusInChunks,
+            TerrainSurfaceDefinition baseSurface, params TerrainPatchLayer[] layers)
         {
             _seedOffset = seedOffset;
             _tileSize = Mathf.Max(.5f, tileSize);
             _chunkSizeInTiles = Mathf.Max(1, chunkSizeInTiles);
             _loadRadiusInChunks = Mathf.Max(0, loadRadiusInChunks);
+            _baseSurface = baseSurface;
             _layers = layers ?? Array.Empty<TerrainPatchLayer>();
         }
 

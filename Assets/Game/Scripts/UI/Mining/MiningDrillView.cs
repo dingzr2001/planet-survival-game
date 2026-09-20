@@ -41,7 +41,7 @@ namespace PlanetSurvival.UI.Mining
             Close();
             _drill = drill;
             _playerInventory = playerInventory;
-            _feedback = "Load petroleum fuel or collect finished iron ore.";
+            _feedback = $"Load petroleum fuel or collect finished {_drill.OutputItem.DisplayName.ToLowerInvariant()}.";
             CaptureAndLockControls(playerMotor, playerInteractor);
             IsOpen = true;
         }
@@ -74,8 +74,8 @@ namespace PlanetSurvival.UI.Mining
 
             int collected = _drill.CollectOre(requestedItems, _playerInventory.Inventory);
             _feedback = collected > 0
-                ? $"Collected {collected} iron ore."
-                : "No ore was collected; check the machine and backpack capacity.";
+                ? $"Collected {collected} {_drill.OutputItem.DisplayName.ToLowerInvariant()}."
+                : "No output was collected; check the machine and backpack capacity.";
             if (collected > 0)
             {
                 _playerInventory.RefreshQuickBarAssignments();
@@ -125,7 +125,7 @@ namespace PlanetSurvival.UI.Mining
 
             GUILayout.BeginArea(new Rect(panel.x + 18f, panel.y + 14f, panel.width - 36f, panel.height - 28f));
             GUILayout.BeginHorizontal();
-            GUILayout.Label("IRON MINING DRILL", _headerStyle);
+            GUILayout.Label(_drill.Definition.DisplayName.ToUpperInvariant(), _headerStyle);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("CLOSE", GUILayout.Width(76f), GUILayout.Height(26f)))
             {
@@ -139,7 +139,7 @@ namespace PlanetSurvival.UI.Mining
 
             GUILayout.Label("MACHINE", _sectionStyle);
             GUILayout.Label(StateDescription(), _detailStyle);
-            DrawMeter("ORE STORAGE", _drill.StoredOre, _drill.Definition.OreCapacity, new Color(.72f, .28f, .12f));
+            DrawMeter("OUTPUT STORAGE", _drill.StoredOre, _drill.Definition.OreCapacity, new Color(.72f, .28f, .12f));
             DrawMeter("PETROLEUM", _drill.StoredPetroleum, _drill.Definition.PetroleumCapacity, new Color(.78f, .58f, .16f));
             DrawMeter("ELECTRIC BUFFER", _drill.StoredElectricity, _drill.Definition.ElectricityCapacity,
                 new Color(.3f, .7f, 1f));
@@ -152,8 +152,8 @@ namespace PlanetSurvival.UI.Mining
             if (GUILayout.Button("LOAD 1", GUILayout.Height(34f))) LoadPetroleum(1);
             if (GUILayout.Button("LOAD ALL", GUILayout.Height(34f))) LoadPetroleum(petroleumInBackpack);
             GUI.enabled = _drill.StoredOre > 0;
-            if (GUILayout.Button("TAKE 1 ORE", GUILayout.Height(34f))) CollectOre(1);
-            if (GUILayout.Button("TAKE ALL ORE", GUILayout.Height(34f))) CollectOre(_drill.StoredOre);
+            if (GUILayout.Button("TAKE 1", GUILayout.Height(34f))) CollectOre(1);
+            if (GUILayout.Button("TAKE ALL", GUILayout.Height(34f))) CollectOre(_drill.StoredOre);
             GUI.enabled = true;
             GUILayout.EndHorizontal();
             GUILayout.Space(12f);
@@ -165,9 +165,9 @@ namespace PlanetSurvival.UI.Mining
         {
             return _drill.State switch
             {
-                MiningDrillState.StorageFull => "Stopped: ore storage is full.",
+                MiningDrillState.StorageFull => "Stopped: output storage is full.",
                 MiningDrillState.Producing =>
-                    $"Producing {_drill.Definition.ProductionPerSecond:0.##} ore/s. Electricity is used before petroleum.",
+                    $"Producing {_drill.Definition.ProductionPerSecond:0.##} items/s. Electricity is used before petroleum.",
                 _ => "Stopped: connect electricity or load petroleum."
             };
         }

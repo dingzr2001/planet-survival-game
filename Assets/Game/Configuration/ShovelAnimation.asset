@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 655c8ac038e0544aaae16b1da40fad7c, type: 3}
+  m_Name: ShovelAnimation
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Player.Animation.PlayerToolAnimationDefinition
+  _itemId: shovel
+  _equipmentVisual: {fileID: 11400000, guid: f5e90e42a619a44f0a8eb6cf46aa0e1f, type: 2}
+  _actionAnimation: {fileID: 11400000, guid: deb56ab2875c849d5861e88bb88afe91, type: 2}

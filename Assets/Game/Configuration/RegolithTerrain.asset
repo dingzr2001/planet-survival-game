@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a1c83dc859ba4f8bbc779e794e25010, type: 3}
+  m_Name: RegolithTerrain
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainSurfaceDefinition
+  _terrainId: regolith
+  _displayName: Ordinary Regolith
+  _texture: {fileID: 0}
+  _textureVariants: []
+  _textureTileSize: 8
+  _digCount: 1
+  _digDuration: 6
+  _digDistance: 2
+  _requiredToolItemId: shovel
+  _yields:
+  - _item: {fileID: 11400000, guid: 82277aeb90c1d4fa48ea170fac92c9bc, type: 2}
+    _quantity: 1

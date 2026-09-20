@@ -7,6 +7,7 @@ using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Mining.Definitions;
 using PlanetSurvival.Player.Animation;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Ground;
@@ -822,6 +823,42 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
             Assert.That(importer.alphaIsTransparency, Is.True);
             Assert.That(importer.mipmapEnabled, Is.False);
+        }
+
+        [Test]
+        public void Gravel_CanBeShoveledFromRegolithOrProducedByPoweredExtractor()
+        {
+            ItemDefinition gravel = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/Gravel.asset");
+            ItemDefinition shovel = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/Shovel.asset");
+            TerrainSurfaceDefinition regolith = AssetDatabase.LoadAssetAtPath<TerrainSurfaceDefinition>(
+                "Assets/Game/Configuration/RegolithTerrain.asset");
+            MiningDrillDefinition extractor = AssetDatabase.LoadAssetAtPath<MiningDrillDefinition>(
+                "Assets/Game/Configuration/GravelExtractor.asset");
+            BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/GravelExtractorBuildable.asset");
+            WorldVisualSettings visuals = AssetDatabase.LoadAssetAtPath<WorldVisualSettings>(
+                "Assets/Game/Configuration/DefaultWorldVisuals.asset");
+            PlayerToolAnimationDefinition shovelAnimation =
+                AssetDatabase.LoadAssetAtPath<PlayerToolAnimationDefinition>(
+                    "Assets/Game/Configuration/ShovelAnimation.asset");
+
+            Assert.That(gravel, Is.Not.Null);
+            Assert.That(shovel, Is.Not.Null);
+            Assert.That(regolith, Is.Not.Null);
+            Assert.That(regolith.RequiredToolItemId, Is.EqualTo(shovel.ItemId));
+            Assert.That(regolith.DigDuration, Is.EqualTo(6f).Within(.001f));
+            Assert.That(regolith.Yields[0].Item, Is.SameAs(gravel));
+            Assert.That(extractor, Is.Not.Null);
+            Assert.That(extractor.RequiredTerrainId, Is.EqualTo(regolith.TerrainId));
+            Assert.That(extractor.OutputItem, Is.SameAs(gravel));
+            Assert.That(extractor.ProductionPerSecond, Is.EqualTo(.1f).Within(.001f));
+            Assert.That(extractor.ElectricityPerOre, Is.GreaterThan(0f));
+            Assert.That(extractor.PetroleumPerOre, Is.GreaterThan(0f));
+            Assert.That(buildable.MiningDrill, Is.SameAs(extractor));
+            Assert.That(shovelAnimation.IsValid(out string error), Is.True, error);
+            Assert.That(visuals.PlayerToolAnimations, Does.Contain(shovelAnimation));
         }
     }
 }

@@ -21,6 +21,8 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _chlorateSaltDefinition;
         [SerializeField, Tooltip("Mining tool placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _pickaxeDefinition;
+        [SerializeField, Tooltip("Digging tool placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _shovelDefinition;
         [SerializeField, Tooltip("Portable petroleum fuel placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _petroleumDefinition;
         private GameFlow _flow;
@@ -47,7 +49,8 @@ namespace PlanetSurvival.Core.Flow
 
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
             ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
-            ItemDefinition pickaxeDefinition = null, ItemDefinition petroleumDefinition = null)
+            ItemDefinition pickaxeDefinition = null, ItemDefinition petroleumDefinition = null,
+            ItemDefinition shovelDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
@@ -55,6 +58,7 @@ namespace PlanetSurvival.Core.Flow
             _chlorateSaltDefinition = chlorateSaltDefinition;
             _pickaxeDefinition = pickaxeDefinition;
             _petroleumDefinition = petroleumDefinition;
+            _shovelDefinition = shovelDefinition;
         }
 
         public void Initialize()
@@ -121,6 +125,12 @@ namespace PlanetSurvival.Core.Flow
             {
                 startingSupplies.Add(new InventoryItemAmount(
                     _petroleumDefinition, GameSessionState.InitialPetroleumCanisterCount));
+            }
+
+            if (_shovelDefinition != null)
+            {
+                startingSupplies.Add(new InventoryItemAmount(
+                    _shovelDefinition, GameSessionState.InitialShovelCount));
             }
 
             InventoryOperationResult result = _session.Reset(startingSupplies);

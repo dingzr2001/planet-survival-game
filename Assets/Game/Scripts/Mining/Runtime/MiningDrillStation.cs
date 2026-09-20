@@ -30,7 +30,8 @@ namespace PlanetSurvival.Mining.Runtime
                     MiningDrillState.Producing => "running",
                     _ => "needs power or petroleum"
                 };
-                return $"use iron mining drill ({_drill.StoredOre}/{_drill.Definition.OreCapacity} ore · {state})";
+                return $"use {_drill.Definition.DisplayName.ToLowerInvariant()} " +
+                       $"({_drill.StoredOre}/{_drill.Definition.OreCapacity} {_drill.OutputItem.DisplayName.ToLowerInvariant()} · {state})";
             }
         }
 

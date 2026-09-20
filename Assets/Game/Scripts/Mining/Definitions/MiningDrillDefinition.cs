@@ -34,6 +34,7 @@ namespace PlanetSurvival.Mining.Definitions
         private float _petroleumCapacity = 20f;
 
         public string RequiredTerrainId => _requiredTerrainId;
+        public string DisplayName => string.IsNullOrWhiteSpace(name) ? "Mining Drill" : name;
         public string RequiredTerrainDisplayName => string.IsNullOrWhiteSpace(_requiredTerrainDisplayName)
             ? _requiredTerrainId
             : _requiredTerrainDisplayName;

@@ -16,6 +16,7 @@ namespace PlanetSurvival.World.Ground
         private readonly Dictionary<TerrainTileCoordinate, int> _remainingDigs = new();
         private readonly List<TerrainTileCoordinate> _changeBuffer = new();
         private IReadOnlyList<TerrainPatchLayer> _layers = Array.Empty<TerrainPatchLayer>();
+        private TerrainSurfaceDefinition _baseSurface;
 
         public float TileSize { get; private set; } = 1f;
         public int WorldSeed { get; private set; }
@@ -42,6 +43,7 @@ namespace PlanetSurvival.World.Ground
             TileSize = tileSize;
             CoverageMultiplier = safeCoverageMultiplier;
             _layers = settings != null ? settings.Layers : Array.Empty<TerrainPatchLayer>();
+            _baseSurface = settings != null ? settings.BaseSurface : null;
         }
 
         public TerrainTileCoordinate TileAt(Vector3 worldPosition)
@@ -61,11 +63,19 @@ namespace PlanetSurvival.World.Ground
                 _layers, WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize), CoverageMultiplier);
         }
 
-        /// <summary>The terrain covering a tile, or null where the base regolith shows through.</summary>
+        /// <summary>
+        /// The diggable terrain on a tile. An optional base surface represents material that can be
+        /// collected from ordinary ground without changing its rendered appearance.
+        /// </summary>
         public TerrainSurfaceDefinition GetSurface(TerrainTileCoordinate tile)
         {
+            if (_remainingDigs.TryGetValue(tile, out int remaining) && remaining <= 0)
+            {
+                return null;
+            }
+
             int layerIndex = GetLayerIndex(tile);
-            return layerIndex == ClusteredTerrainLayout.BaseLayerIndex ? null : _layers[layerIndex].Surface;
+            return layerIndex == ClusteredTerrainLayout.BaseLayerIndex ? _baseSurface : _layers[layerIndex].Surface;
         }
 
         /// <summary>Digs still needed to clear the tile; zero on ground that cannot be dug any further.</summary>

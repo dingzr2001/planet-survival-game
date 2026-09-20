@@ -216,6 +216,7 @@ MonoBehaviour:
   _modularPlayerRig: {fileID: 0}
   _playerToolAnimations:
   - {fileID: 11400000, guid: 744fc83446ce24b9487ac8df625b301c, type: 2}
+  - {fileID: 11400000, guid: d1e6d2cf22f1a4a3b94599c0c95b3323, type: 2}
   _surfaceRobotHeight: 1.9
   _surfaceRobotAnimationSheet: {fileID: 2800000, guid: 7d3a8400d82e84d62b79e2831362b24d, type: 3}
   _surfaceRobotFramesPerDirection: 4

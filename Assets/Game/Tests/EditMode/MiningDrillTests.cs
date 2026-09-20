@@ -159,6 +159,34 @@ namespace PlanetSurvival.Tests
             Assert.That(result.Failure, Is.EqualTo(BuildFailure.WrongTerrain));
         }
 
+        [Test]
+        public void Placement_AllowsExtractorOnConfiguredBaseSurface()
+        {
+            MiningDrillDefinition drillDefinition = CreateDefinition();
+            drillDefinition.Configure(
+                "regolith", "ordinary regolith", _ore, 1f, 20, 2f,
+                electricityPerOre: 5f, electricityCapacity: 25f,
+                petroleumItem: _petroleum, petroleumPerItem: 5f, petroleumPerOre: 1f,
+                petroleumCapacity: 20f);
+            BuildableDefinition buildable = CreateBuildable(drillDefinition);
+            var regolith = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+            regolith.Configure("regolith", "Ordinary Regolith", 1, 1f, string.Empty);
+            _created.Add(regolith);
+            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+            settings.Configure(0, 1f, 8, 1, regolith);
+            _created.Add(settings);
+            var terrain = new TerrainTileMap();
+            terrain.Configure(123, settings);
+            var inventory = new InventoryModel(30, 10);
+            inventory.Add(_alloy, 8);
+            var service = new BuildingService(inventory, new BuildGrid(), terrain);
+
+            BuildResult result = service.CanPlace(
+                buildable, new BuildFootprint(Vector2Int.zero, Vector2Int.one));
+
+            Assert.That(result.Succeeded, Is.True, result.Message);
+        }
+
         private MiningDrill CreateDrill(float productionPerSecond, int oreCapacity = 20,
             float outputPerSecond = 2f)
         {

@@ -34,6 +34,35 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void ConfiguredBaseSurface_IsDiggableOnceWithoutBecomingAVisiblePatch()
+        {
+            var gravel = ScriptableObject.CreateInstance<PlanetSurvival.Items.Definitions.ItemDefinition>();
+            gravel.Configure("gravel", "Gravel", 1, 20, false, true);
+            _created.Add(gravel);
+            var regolith = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+            regolith.Configure("regolith", "Ordinary Regolith", 1, 1f, "shovel",
+                new PlanetSurvival.Gathering.Definitions.ResourceYield(gravel, 1));
+            _created.Add(regolith);
+            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+            settings.Configure(0, TileSize, 8, 1, regolith);
+            _created.Add(settings);
+            var map = new TerrainTileMap();
+            var tile = new TerrainTileCoordinate(4, -2);
+            map.Configure(WorldSeed, settings);
+
+            Assert.That(map.GetLayerIndex(tile), Is.EqualTo(ClusteredTerrainLayout.BaseLayerIndex));
+            Assert.That(map.GetSurface(tile), Is.SameAs(regolith));
+            Assert.That(map.IsDiggable(tile), Is.True);
+
+            TerrainDigOutcome outcome = map.Dig(tile);
+
+            Assert.That(outcome.ClearedTerrain, Is.True);
+            Assert.That(map.GetLayerIndex(tile), Is.EqualTo(ClusteredTerrainLayout.BaseLayerIndex));
+            Assert.That(map.GetSurface(tile), Is.Null);
+            Assert.That(map.IsDiggable(tile), Is.False);
+        }
+
+        [Test]
         public void CoveredTile_StartsWithTheSurfaceDigCount()
         {
             TerrainTileMap map = CreateCoveringMap(digCount: 3);

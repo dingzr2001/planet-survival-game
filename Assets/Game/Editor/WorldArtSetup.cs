@@ -18,6 +18,7 @@ namespace PlanetSurvival.Editor
         private const string SurfaceRobotWalkPath =
             "Assets/Game/Art/World/Characters/TrackedRobotDirectional4.png";
         private const string PickaxePath = "Assets/Game/Art/World/Equipment/Pickaxe.png";
+        private const string ShovelPath = "Assets/Game/Art/World/Equipment/Shovel.png";
         private const string LandingPodExteriorPath = "Assets/Game/Resources/World/LandingPodExterior.png";
         private const string HorizonPath = "Assets/Game/Resources/World/MartianHorizon.png";
         private const string ResourceDirectory = "Assets/Game/Art/World/Resources";
@@ -153,6 +154,13 @@ namespace PlanetSurvival.Editor
             // swings rotate around the explorer's hands instead of around the pick head.
             return ImportSprite(PickaxePath, 2048, false,
                 TextureImporterCompression.Uncompressed, new Vector2(.5f, .48f));
+        }
+
+        public static Sprite ImportShovelSprite()
+        {
+            // The supplied shovel points diagonally, so the lower shaft is a stable hand pivot.
+            return ImportSprite(ShovelPath, 2048, false,
+                TextureImporterCompression.Uncompressed, new Vector2(.5f, .42f));
         }
 
         public static Sprite ImportBuildingSprite(string assetName)

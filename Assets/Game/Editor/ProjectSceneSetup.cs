@@ -50,8 +50,10 @@ namespace PlanetSurvival.Editor
         private const string MetalScrapPath = ConfigurationDirectory + "/MetalScrap.asset";
         private const string ChlorateSaltPath = ConfigurationDirectory + "/ChlorateSalt.asset";
         private const string IronOrePath = ConfigurationDirectory + "/IronOre.asset";
+        private const string GravelPath = ConfigurationDirectory + "/Gravel.asset";
         private const string PetroleumPath = ConfigurationDirectory + "/PetroleumCanister.asset";
         private const string MiningDrillPath = ConfigurationDirectory + "/IronMiningDrill.asset";
+        private const string GravelExtractorPath = ConfigurationDirectory + "/GravelExtractor.asset";
         private const string OxygenCandlePath = ConfigurationDirectory + "/OxygenCandle.asset";
         private const string OxygenCandleRecipePath = ConfigurationDirectory + "/OxygenCandleRecipe.asset";
         private const string RoastPotatoPath = ConfigurationDirectory + "/RoastPotato.asset";
@@ -61,11 +63,15 @@ namespace PlanetSurvival.Editor
         private const string IceChunkPath = ConfigurationDirectory + "/IceChunk.asset";
         private const string PotatoCropPath = ConfigurationDirectory + "/PotatoCrop.asset";
         private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
+        private const string ShovelPath = ConfigurationDirectory + "/Shovel.asset";
         private const string PickaxeRecipePath = ConfigurationDirectory + "/PoweredPickaxeRecipe.asset";
         private const string CraftingCatalogPath = ConfigurationDirectory + "/DefaultCraftingCatalog.asset";
         private const string PickaxeVisualPath = ConfigurationDirectory + "/PickaxeVisual.asset";
         private const string PickaxeSwingPath = ConfigurationDirectory + "/PickaxeSwing.asset";
         private const string PickaxeAnimationPath = ConfigurationDirectory + "/PickaxeAnimation.asset";
+        private const string ShovelVisualPath = ConfigurationDirectory + "/ShovelVisual.asset";
+        private const string ShovelDigPath = ConfigurationDirectory + "/ShovelDig.asset";
+        private const string ShovelAnimationPath = ConfigurationDirectory + "/ShovelAnimation.asset";
         private const string TerrainPatchSettingsPath = ConfigurationDirectory + "/DefaultTerrainPatches.asset";
         private const string TerrainBlendShaderPath = "Assets/Game/Shaders/TerrainBlend.shader";
         private static readonly string[] IceTextureNames = { "IceVariant1", "IceVariant2", "IceVariant3" };
@@ -93,6 +99,8 @@ namespace PlanetSurvival.Editor
         private const float IceDigSeconds = 2.2f;
         private const int IceDigCount = 2;
         private const int IceChunksPerDig = 1;
+        private const float RegolithDigSeconds = 6f;
+        private const int GravelPerDig = 1;
 
         // Patch sizes. Coverage alone does not decide whether a grade arrives as a place or as specks:
         // the rarer a layer is, the wider its patches must be to stay whole. Iron is the extreme case at
@@ -137,6 +145,14 @@ namespace PlanetSurvival.Editor
         private const float PetroleumPerCanister = 5f;
         private const float IronMiningDrillPetroleumPerOre = 1f;
         private const float IronMiningDrillPetroleumCapacity = 20f;
+        private const float GravelExtractorBuildSeconds = 12f;
+        private const float GravelExtractorProductionPerSecond = .1f;
+        private const int GravelExtractorCapacity = 30;
+        private const float GravelExtractorOutputPerSecond = 3f;
+        private const float GravelExtractorElectricityPerItem = 2f;
+        private const float GravelExtractorElectricityCapacity = 30f;
+        private const float GravelExtractorPetroleumPerItem = .5f;
+        private const float GravelExtractorPetroleumCapacity = 20f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
@@ -167,14 +183,16 @@ namespace PlanetSurvival.Editor
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
             ItemDefinition chlorateSalt = GetOrCreateChlorateSalt();
             ItemDefinition pickaxe = GetOrCreatePickaxe();
+            ItemDefinition shovel = GetOrCreateShovel();
             ItemDefinition petroleum = GetOrCreatePetroleumCanister();
             PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
-            worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation);
+            PlayerToolAnimationDefinition shovelAnimation = GetOrCreateShovelAnimation(shovel);
+            worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation, shovelAnimation);
             EditorUtility.SetDirty(worldVisuals);
             ItemDefinition iceChunk = GetOrCreateIceChunk();
             CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato);
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(pickaxe);
-            TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
+            TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe, shovel, iceChunk);
             ItemDefinition oxygenCandle = GetOrCreateOxygenCandle();
             CraftingRecipe oxygenCandleRecipe = GetOrCreateOxygenCandleRecipe(
                 oxygenCandle, chlorateSalt);
@@ -184,7 +202,7 @@ namespace PlanetSurvival.Editor
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
+            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
@@ -257,6 +275,42 @@ namespace PlanetSurvival.Editor
             Debug.Log("The iron-terrain mining drill, petroleum fuel, and starting supply are ready.");
         }
 
+        [MenuItem("Planet Survival/Setup Gravel Gathering")]
+        public static void CreateOrUpdateGravelGathering()
+        {
+            ItemDefinition shovel = GetOrCreateShovel();
+            ItemDefinition gravel = GetOrCreateGravel();
+            ItemDefinition pickaxe = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PickaxePath);
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(IceChunkPath);
+            ItemDefinition oxygenCandle = AssetDatabase.LoadAssetAtPath<ItemDefinition>(OxygenCandlePath);
+            CookingStationDefinition oven = AssetDatabase.LoadAssetAtPath<CookingStationDefinition>(OvenStationPath);
+            if (pickaxe == null || iceChunk == null || oxygenCandle == null || oven == null)
+            {
+                Debug.LogError("Gravel gathering setup requires the existing formal project configuration.");
+                return;
+            }
+
+            PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
+            PlayerToolAnimationDefinition shovelAnimation = GetOrCreateShovelAnimation(shovel);
+            WorldVisualSettings visuals = WorldArtSetup.GetOrCreateWorldVisualSettings();
+            visuals.ConfigurePlayerToolAnimations(pickaxeAnimation, shovelAnimation);
+            EditorUtility.SetDirty(visuals);
+            GetOrCreateTerrainPatchSettings(pickaxe, shovel, iceChunk);
+            GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            UiArtSetup.AssignItemIcons();
+            UpdateBootstrapStartingSupplies(
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(EnergyBarPath),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoPath),
+                GetOrCreateAluminumAlloy(),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(ChlorateSaltPath),
+                pickaxe,
+                GetOrCreatePetroleumCanister());
+            EditorUtility.SetDirty(gravel);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Gravel, shovel gathering, and the powered gravel extractor are ready.");
+        }
+
         /// <summary>Authors handheld recipes and binds their catalog without rebuilding unrelated scenes.</summary>
         [MenuItem("Planet Survival/Setup Crafting Drawer")]
         public static void CreateOrUpdateCraftingDrawer()
@@ -302,7 +356,14 @@ namespace PlanetSurvival.Editor
             }
 
             GetOrCreateResourceSettings(pickaxe);
-            GetOrCreateTerrainPatchSettings(pickaxe, iceChunk);
+            ItemDefinition shovel = AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath);
+            if (shovel == null)
+            {
+                Debug.LogError("Surface resource rebalance requires the existing Shovel asset.");
+                return;
+            }
+
+            GetOrCreateTerrainPatchSettings(pickaxe, shovel, iceChunk);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("Sparse surface-resource balance is ready.");
@@ -434,9 +495,10 @@ namespace PlanetSurvival.Editor
         /// fixed prefab shape.
         /// </summary>
         private static TerrainPatchSettings GetOrCreateTerrainPatchSettings(
-            ItemDefinition pickaxe, ItemDefinition iceChunk)
+            ItemDefinition pickaxe, ItemDefinition shovel, ItemDefinition iceChunk)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
+            ItemDefinition gravel = GetOrCreateGravel();
 
             // The artwork is a cutout layer of loose rock over the regolith, and how much of the ground it
             // hides rises with its grade: scattered gravel, then broken slabs, then solid boulders. That
@@ -452,6 +514,7 @@ namespace PlanetSurvival.Editor
             TerrainSurfaceDefinition looseScree = GetOrCreateTerrainSurface("LooseScreeTerrain",
                 "rock_loose_scree", "Loose Scree", "Stone1", 1, RockDigSeconds,
                 pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
+            TerrainSurfaceDefinition regolith = GetOrCreateRegolithSurface(shovel, gravel);
 
             TerrainPatchSettings settings =
                 AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(TerrainPatchSettingsPath);
@@ -463,7 +526,7 @@ namespace PlanetSurvival.Editor
             }
 
             settings.Configure(TerrainSeedOffset, TerrainTileSize, TerrainChunkSizeInTiles,
-                TerrainLoadRadiusInChunks,
+                TerrainLoadRadiusInChunks, regolith,
                 new TerrainPatchLayer(iron, IronPatchSize, IronShare, 9151),
                 new TerrainPatchLayer(ice, IcePatchSize, IceShare, 6421),
                 new TerrainPatchLayer(boulderField, BoulderFieldPatchSize, BoulderFieldShare, 1613),
@@ -472,6 +535,27 @@ namespace PlanetSurvival.Editor
             ConfigureTerrainRendering(settings);
             EditorUtility.SetDirty(settings);
             return settings;
+        }
+
+        private static TerrainSurfaceDefinition GetOrCreateRegolithSurface(
+            ItemDefinition shovel, ItemDefinition gravel)
+        {
+            const string path = ConfigurationDirectory + "/RegolithTerrain.asset";
+            TerrainSurfaceDefinition surface = AssetDatabase.LoadAssetAtPath<TerrainSurfaceDefinition>(path);
+            if (surface == null)
+            {
+                surface = ScriptableObject.CreateInstance<TerrainSurfaceDefinition>();
+                surface.name = "Ordinary Regolith";
+                AssetDatabase.CreateAsset(surface, path);
+            }
+
+            surface.Configure("regolith", "Ordinary Regolith", 1, RegolithDigSeconds,
+                shovel.ItemId, new ResourceYield(gravel, GravelPerDig));
+            // Ordinary ground already comes from WorldVisualSettings; this gameplay-only surface must
+            // not introduce a second texture layer merely to make the ground interactable.
+            surface.ConfigureTexture(null, RockTextureTileSize);
+            EditorUtility.SetDirty(surface);
+            return surface;
         }
 
         private static void ConfigureTerrainRendering(TerrainPatchSettings settings)
@@ -580,6 +664,40 @@ namespace PlanetSurvival.Editor
             return item;
         }
 
+        private static ItemDefinition GetOrCreateShovel()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Shovel";
+                AssetDatabase.CreateAsset(item, ShovelPath);
+            }
+
+            Sprite sprite = WorldArtSetup.ImportShovelSprite();
+            item.Configure("shovel", "Shovel", 2, 1, false, true);
+            item.ConfigureDescription("A hand shovel used to collect gravel from ordinary regolith.");
+            item.ConfigureIcon(sprite);
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
+        private static ItemDefinition GetOrCreateGravel()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(GravelPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Gravel";
+                AssetDatabase.CreateAsset(item, GravelPath);
+            }
+
+            item.Configure("gravel", "Gravel", 1, 30, false, true);
+            item.ConfigureDescription("Loose mineral aggregate dug from ordinary regolith by hand or machine.");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
         private static ItemDefinition GetOrCreatePetroleumCanister()
         {
             ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PetroleumPath);
@@ -652,6 +770,65 @@ namespace PlanetSurvival.Editor
             }
 
             animation.Configure(pickaxe.ItemId, visual, swing);
+            EditorUtility.SetDirty(animation);
+            return animation;
+        }
+
+        private static PlayerToolAnimationDefinition GetOrCreateShovelAnimation(ItemDefinition shovel)
+        {
+            PlayerEquipmentVisualDefinition visual =
+                AssetDatabase.LoadAssetAtPath<PlayerEquipmentVisualDefinition>(ShovelVisualPath);
+            if (visual == null)
+            {
+                visual = ScriptableObject.CreateInstance<PlayerEquipmentVisualDefinition>();
+                visual.name = "Shovel Visual";
+                AssetDatabase.CreateAsset(visual, ShovelVisualPath);
+            }
+
+            Vector2 secondHand = new(0f, .11f);
+            visual.Configure(shovel.Icon, .38f,
+                new DirectionalEquipmentPose(new Vector2(.06f, .48f), -28f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(-.08f, .48f), 34f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(.08f, .48f), -34f, secondHand),
+                new DirectionalEquipmentPose(new Vector2(.05f, .49f), 26f, secondHand, true));
+            EditorUtility.SetDirty(visual);
+
+            PlayerActionAnimationDefinition dig =
+                AssetDatabase.LoadAssetAtPath<PlayerActionAnimationDefinition>(ShovelDigPath);
+            if (dig == null)
+            {
+                dig = ScriptableObject.CreateInstance<PlayerActionAnimationDefinition>();
+                dig.name = "Shovel Dig";
+                AssetDatabase.CreateAsset(dig, ShovelDigPath);
+            }
+
+            dig.Configure(.8f, true,
+                Curve(0f, 0f, .45f, .01f, .7f, -.01f, 1f, 0f),
+                Curve(0f, 0f, .45f, -.035f, .7f, .015f, 1f, 0f),
+                Curve(0f, 0f, .45f, -4f, .7f, 2f, 1f, 0f),
+                Curve(0f, 0f, .45f, .02f, .7f, -.01f, 1f, 0f),
+                Curve(0f, 0f, .3f, .02f, .55f, -.035f, .78f, .01f, 1f, 0f),
+                Curve(0f, 0f, .25f, 24f, .55f, -48f, .8f, 12f, 1f, 0f),
+                AnimationCurve.Constant(0f, 1f, 1f));
+            dig.ConfigureRig(
+                Curve(0f, 0f, .25f, 25f, .55f, 12f, .8f, 20f, 1f, 0f),
+                Curve(0f, 0f, .25f, 20f, .55f, 42f, .8f, 15f, 1f, 0f),
+                Curve(0f, 0f, .25f, -8f, .55f, -15f, .8f, -6f, 1f, 0f),
+                Curve(0f, 0f, .25f, -12f, .55f, -32f, .8f, -8f, 1f, 0f),
+                Curve(0f, 0f, .25f, -20f, .55f, -12f, .8f, -20f, 1f, 0f),
+                Curve(0f, 0f, .25f, 8f, .55f, 14f, .8f, 6f, 1f, 0f));
+            EditorUtility.SetDirty(dig);
+
+            PlayerToolAnimationDefinition animation =
+                AssetDatabase.LoadAssetAtPath<PlayerToolAnimationDefinition>(ShovelAnimationPath);
+            if (animation == null)
+            {
+                animation = ScriptableObject.CreateInstance<PlayerToolAnimationDefinition>();
+                animation.name = "Shovel Animation";
+                AssetDatabase.CreateAsset(animation, ShovelAnimationPath);
+            }
+
+            animation.Configure(shovel.ItemId, visual, dig);
             EditorUtility.SetDirty(animation);
             return animation;
         }
@@ -921,6 +1098,7 @@ namespace PlanetSurvival.Editor
             placedOxygenCandle.ConfigureOxygenCandle(true);
             EditorUtility.SetDirty(placedOxygenCandle);
             BuildableDefinition ironMiningDrill = GetOrCreateIronMiningDrill(aluminumAlloy: GetOrCreateAluminumAlloy());
+            BuildableDefinition gravelExtractor = GetOrCreateGravelExtractor(GetOrCreateAluminumAlloy());
 
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
@@ -930,7 +1108,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(catalog, BuildingCatalogPath);
             }
 
-            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill);
+            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
@@ -963,6 +1141,41 @@ namespace PlanetSurvival.Editor
                 "Extracts iron ore only when placed on iron terrain. Accepts electricity or petroleum and pauses when its ore bin is full.",
                 new CraftingItemAmount(aluminumAlloy, 8));
             buildable.ConfigurePresentation(sprite, .98f, new Color(.82f, .58f, .18f));
+            buildable.ConfigureIcon(sprite);
+            buildable.ConfigureMiningDrill(definition);
+            EditorUtility.SetDirty(buildable);
+            return buildable;
+        }
+
+        private static BuildableDefinition GetOrCreateGravelExtractor(ItemDefinition aluminumAlloy)
+        {
+            ItemDefinition gravel = GetOrCreateGravel();
+            ItemDefinition petroleum = GetOrCreatePetroleumCanister();
+            MiningDrillDefinition definition =
+                AssetDatabase.LoadAssetAtPath<MiningDrillDefinition>(GravelExtractorPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<MiningDrillDefinition>();
+                definition.name = "Gravel Extractor";
+                AssetDatabase.CreateAsset(definition, GravelExtractorPath);
+            }
+
+            definition.name = "Gravel Extractor";
+            definition.Configure(
+                "regolith", "ordinary regolith", gravel,
+                GravelExtractorProductionPerSecond, GravelExtractorCapacity, GravelExtractorOutputPerSecond,
+                GravelExtractorElectricityPerItem, GravelExtractorElectricityCapacity,
+                petroleum, PetroleumPerCanister, GravelExtractorPetroleumPerItem,
+                GravelExtractorPetroleumCapacity);
+            EditorUtility.SetDirty(definition);
+
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("GravelExtractor");
+            BuildableDefinition buildable = GetOrCreateBuildable(
+                "GravelExtractorBuildable", "gravel_extractor", "Gravel Extractor",
+                Vector2Int.one, GravelExtractorBuildSeconds, .98f, new Color(.72f, .56f, .22f),
+                "Extracts gravel from ordinary regolith. Accepts electricity or petroleum and pauses when its output bin is full.",
+                new CraftingItemAmount(aluminumAlloy, 6));
+            buildable.ConfigurePresentation(sprite, .98f, new Color(.72f, .56f, .22f));
             buildable.ConfigureIcon(sprite);
             buildable.ConfigureMiningDrill(definition);
             EditorUtility.SetDirty(buildable);
@@ -1076,12 +1289,12 @@ namespace PlanetSurvival.Editor
 
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
             ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
-            ItemDefinition petroleum)
+            ItemDefinition petroleum, ItemDefinition shovel)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -1099,7 +1312,8 @@ namespace PlanetSurvival.Editor
             }
 
             flowController.ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum,
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath));
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
