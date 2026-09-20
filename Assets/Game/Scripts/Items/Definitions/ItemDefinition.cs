@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace PlanetSurvival.Items.Definitions
 {
+    [Flags]
+    public enum ItemMaterialTag
+    {
+        None = 0,
+        MetalPlate = 1 << 0
+    }
+
     [CreateAssetMenu(menuName = "Planet Survival/Items/Item Definition", fileName = "ItemDefinition")]
     public sealed class ItemDefinition : ScriptableObject
     {
@@ -17,6 +24,8 @@ namespace PlanetSurvival.Items.Definitions
         [SerializeField] private bool _canUse;
         [SerializeField] private bool _canDrop = true;
         [SerializeField, Min(0)] private int _calories;
+        [SerializeField, Tooltip("Material groups used by recipes that accept substitutes, such as any metal plate.")]
+        private ItemMaterialTag _materialTags;
         [SerializeField] private VitalEffect[] _effects = Array.Empty<VitalEffect>();
 
         public string ItemId => _itemId;
@@ -29,6 +38,9 @@ namespace PlanetSurvival.Items.Definitions
         public bool CanDrop => _canDrop;
         public int Calories => _calories;
         public IReadOnlyList<VitalEffect> Effects => _effects;
+        public ItemMaterialTag MaterialTags => _materialTags;
+
+        public bool HasMaterialTag(ItemMaterialTag tag) => tag != ItemMaterialTag.None && (_materialTags & tag) == tag;
 
         public bool IsValid(out string error)
         {
@@ -92,6 +104,11 @@ namespace PlanetSurvival.Items.Definitions
         public void ConfigureIcon(Sprite icon)
         {
             _icon = icon;
+        }
+
+        public void ConfigureMaterialTags(ItemMaterialTag materialTags)
+        {
+            _materialTags = materialTags;
         }
     }
 

@@ -18,6 +18,7 @@ using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.UI.Mining;
+using PlanetSurvival.UI.Farming;
 using PlanetSurvival.Water.Runtime;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Ground;
@@ -344,7 +345,8 @@ namespace PlanetSurvival.Bootstrap
             BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
             PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
-                hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>());
+                hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>(),
+                hud.GetComponent<PlanterBoxView>());
 
             hud.AddComponent<CraftingDrawerView>().Bind(
                 controller,
@@ -369,6 +371,7 @@ namespace PlanetSurvival.Bootstrap
             // Built appliances open their menu through this panel, exactly like the ones inside the pod.
             hudObject.AddComponent<CookingView>();
             hudObject.AddComponent<MiningDrillView>();
+            hudObject.AddComponent<PlanterBoxView>();
             hudObject.AddComponent<GameOverView>();
             return hudObject;
         }

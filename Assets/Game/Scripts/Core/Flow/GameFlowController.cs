@@ -25,6 +25,9 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _shovelDefinition;
         [SerializeField, Tooltip("Portable petroleum fuel placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _petroleumDefinition;
+        [SerializeField] private ItemDefinition _soilDefinition;
+        [SerializeField] private ItemDefinition _plasticSheetDefinition;
+        [SerializeField] private ItemDefinition _carbonDioxideCanisterDefinition;
         private GameFlow _flow;
         private readonly GameSessionState _session = new();
 
@@ -50,7 +53,8 @@ namespace PlanetSurvival.Core.Flow
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
             ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
             ItemDefinition pickaxeDefinition = null, ItemDefinition petroleumDefinition = null,
-            ItemDefinition shovelDefinition = null)
+            ItemDefinition shovelDefinition = null, ItemDefinition soilDefinition = null,
+            ItemDefinition plasticSheetDefinition = null, ItemDefinition carbonDioxideCanisterDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
@@ -59,6 +63,9 @@ namespace PlanetSurvival.Core.Flow
             _pickaxeDefinition = pickaxeDefinition;
             _petroleumDefinition = petroleumDefinition;
             _shovelDefinition = shovelDefinition;
+            _soilDefinition = soilDefinition;
+            _plasticSheetDefinition = plasticSheetDefinition;
+            _carbonDioxideCanisterDefinition = carbonDioxideCanisterDefinition;
         }
 
         public void Initialize()
@@ -132,6 +139,14 @@ namespace PlanetSurvival.Core.Flow
                 startingSupplies.Add(new InventoryItemAmount(
                     _shovelDefinition, GameSessionState.InitialShovelCount));
             }
+
+            if (_soilDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_soilDefinition, GameSessionState.InitialSoilCount));
+            if (_plasticSheetDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_plasticSheetDefinition, GameSessionState.InitialPlasticSheetCount));
+            if (_carbonDioxideCanisterDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_carbonDioxideCanisterDefinition,
+                    GameSessionState.InitialCarbonDioxideCanisterCount));
 
             InventoryOperationResult result = _session.Reset(startingSupplies);
             if (!result.Succeeded)

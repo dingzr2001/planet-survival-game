@@ -347,6 +347,16 @@ namespace PlanetSurvival.UI.Building
                 GUILayout.Space(12f);
             }
 
+            IReadOnlyList<TaggedBuildingMaterialAmount> tagged = buildable.TaggedCost;
+            for (int i = 0; i < tagged.Count; i++)
+            {
+                int owned = _controller.Service.CountTaggedItems(tagged[i].MaterialTag);
+                GUILayout.Label($"{tagged[i].MaterialTag}: {owned}/{tagged[i].Quantity}",
+                    owned >= tagged[i].Quantity ? _costStyle : _costShortStyle,
+                    GUILayout.Height(CostIconSize));
+                GUILayout.Space(12f);
+            }
+
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }

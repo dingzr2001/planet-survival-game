@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using PlanetSurvival.Cooking.Definitions;
 using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Mining.Definitions;
+using PlanetSurvival.Farming.Definitions;
+using PlanetSurvival.Items.Definitions;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Definitions
@@ -26,6 +28,8 @@ namespace PlanetSurvival.Building.Definitions
         private float _buildSeconds = 10f;
         [SerializeField, Tooltip("Materials consumed the moment the site is placed. Cancelling refunds them.")]
         private CraftingItemAmount[] _cost = Array.Empty<CraftingItemAmount>();
+        [SerializeField, Tooltip("Materials that may be supplied by any item carrying the requested material tag.")]
+        private TaggedBuildingMaterialAmount[] _taggedCost = Array.Empty<TaggedBuildingMaterialAmount>();
 
         [Header("Presentation")]
         [SerializeField, Tooltip("Optional world artwork. Without it the building is drawn as a tinted block.")]
@@ -40,19 +44,24 @@ namespace PlanetSurvival.Building.Definitions
         private bool _isOxygenCandle;
         [SerializeField, Tooltip("Optional: the finished building operates as this mining drill.")]
         private MiningDrillDefinition _miningDrill;
+        [SerializeField, Tooltip("Optional: the finished building operates as this planter box.")]
+        private PlanterBoxDefinition _planterBox;
 
         public string BuildableId => _buildableId;
         public string DisplayName => _displayName;
         public string Description => _description;
         public Vector2Int Footprint => new(Mathf.Max(1, _footprint.x), Mathf.Max(1, _footprint.y));
         public float BuildSeconds => Mathf.Max(0f, _buildSeconds);
-        public IReadOnlyList<CraftingItemAmount> Cost => _cost;
+        public IReadOnlyList<CraftingItemAmount> Cost => _cost ?? Array.Empty<CraftingItemAmount>();
+        public IReadOnlyList<TaggedBuildingMaterialAmount> TaggedCost =>
+            _taggedCost ?? Array.Empty<TaggedBuildingMaterialAmount>();
         public Sprite WorldSprite => _worldSprite;
         public float WorldHeight => Mathf.Max(.1f, _worldHeight);
         public Color BodyColor => _bodyColor;
         public CookingStationDefinition CookingStation => _cookingStation;
         public bool IsOxygenCandle => _isOxygenCandle;
         public MiningDrillDefinition MiningDrill => _miningDrill;
+        public PlanterBoxDefinition PlanterBox => _planterBox;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -64,7 +73,7 @@ namespace PlanetSurvival.Building.Definitions
                     return _icon;
                 }
 
-                return _cost.Length > 0 && _cost[0].Item != null ? _cost[0].Item.Icon : null;
+                return Cost.Count > 0 && Cost[0].Item != null ? Cost[0].Item.Icon : null;
             }
         }
 
@@ -82,16 +91,27 @@ namespace PlanetSurvival.Building.Definitions
                 return false;
             }
 
-            if (_cost == null || _cost.Length == 0)
+            if ((_cost == null || _cost.Length == 0) && (_taggedCost == null || _taggedCost.Length == 0))
             {
                 error = $"Buildable '{_buildableId}' must cost at least one material.";
                 return false;
             }
 
-            var uniqueItems = new HashSet<string>(StringComparer.Ordinal);
-            for (int i = 0; i < _cost.Length; i++)
+            IReadOnlyList<TaggedBuildingMaterialAmount> taggedCost = TaggedCost;
+            for (int i = 0; i < taggedCost.Count; i++)
             {
-                CraftingItemAmount amount = _cost[i];
+                if (taggedCost[i].MaterialTag == ItemMaterialTag.None || taggedCost[i].Quantity <= 0)
+                {
+                    error = $"Buildable '{_buildableId}' has an invalid substitute material cost.";
+                    return false;
+                }
+            }
+
+            var uniqueItems = new HashSet<string>(StringComparer.Ordinal);
+            IReadOnlyList<CraftingItemAmount> cost = Cost;
+            for (int i = 0; i < cost.Count; i++)
+            {
+                CraftingItemAmount amount = cost[i];
                 if (amount.Item == null)
                 {
                     error = $"Buildable '{_buildableId}' lists a missing material.";
@@ -114,6 +134,13 @@ namespace PlanetSurvival.Building.Definitions
             if (_miningDrill != null && !_miningDrill.IsValid(out string miningError))
             {
                 error = $"Buildable '{_buildableId}' has an invalid mining drill: {miningError}";
+                return false;
+            }
+
+
+            if (_planterBox != null && !_planterBox.IsValid(out string planterError))
+            {
+                error = $"Buildable '{_buildableId}' has an invalid planter box: {planterError}";
                 return false;
             }
 
@@ -161,6 +188,16 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigureMiningDrill(MiningDrillDefinition miningDrill)
         {
             _miningDrill = miningDrill;
+        }
+
+        public void ConfigureTaggedCost(params TaggedBuildingMaterialAmount[] taggedCost)
+        {
+            _taggedCost = taggedCost ?? Array.Empty<TaggedBuildingMaterialAmount>();
+        }
+
+        public void ConfigurePlanterBox(PlanterBoxDefinition planterBox)
+        {
+            _planterBox = planterBox;
         }
     }
 }

@@ -62,6 +62,10 @@ namespace PlanetSurvival.Editor
         private const string BuildingCatalogPath = ConfigurationDirectory + "/DefaultBuildingCatalog.asset";
         private const string IceChunkPath = ConfigurationDirectory + "/IceChunk.asset";
         private const string PotatoCropPath = ConfigurationDirectory + "/PotatoCrop.asset";
+        private const string SoilPath = ConfigurationDirectory + "/Soil.asset";
+        private const string PlasticSheetPath = ConfigurationDirectory + "/PlasticSheet.asset";
+        private const string CarbonDioxideCanisterPath = ConfigurationDirectory + "/CarbonDioxideCanister.asset";
+        private const string PlanterBoxDefinitionPath = ConfigurationDirectory + "/PlanterBox.asset";
         private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
         private const string ShovelPath = ConfigurationDirectory + "/Shovel.asset";
         private const string PickaxeRecipePath = ConfigurationDirectory + "/PoweredPickaxeRecipe.asset";
@@ -153,6 +157,7 @@ namespace PlanetSurvival.Editor
         private const float GravelExtractorElectricityCapacity = 30f;
         private const float GravelExtractorPetroleumPerItem = .5f;
         private const float GravelExtractorPetroleumCapacity = 20f;
+        private const float PlanterBoxBuildSeconds = 10f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
@@ -185,6 +190,9 @@ namespace PlanetSurvival.Editor
             ItemDefinition pickaxe = GetOrCreatePickaxe();
             ItemDefinition shovel = GetOrCreateShovel();
             ItemDefinition petroleum = GetOrCreatePetroleumCanister();
+            ItemDefinition soil = GetOrCreateItem("Soil", "soil", "Soil", 1, 20);
+            ItemDefinition plasticSheet = GetOrCreateItem("PlasticSheet", "plastic_sheet", "Plastic Sheet", 1, 20);
+            ItemDefinition carbonDioxide = GetOrCreateItem("CarbonDioxideCanister", "carbon_dioxide_canister", "CO₂ Canister", 2, 10);
             PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
             PlayerToolAnimationDefinition shovelAnimation = GetOrCreateShovelAnimation(shovel);
             worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation, shovelAnimation);
@@ -197,12 +205,13 @@ namespace PlanetSurvival.Editor
             CraftingRecipe oxygenCandleRecipe = GetOrCreateOxygenCandleRecipe(
                 oxygenCandle, chlorateSalt);
             CookingStationDefinition oven = GetOrCreateOven(potato, oxygenCandleRecipe);
-            BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            BuildingCatalog buildingCatalog = GetOrCreateBuildingCatalog(oven, oxygenCandle, soil, plasticSheet, carbonDioxide);
             CraftingCatalog craftingCatalog = GetOrCreateCraftingCatalog(pickaxe);
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
-            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel);
+            CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
+                soil, plasticSheet, carbonDioxide);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
@@ -309,6 +318,32 @@ namespace PlanetSurvival.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("Gravel, shovel gathering, and the powered gravel extractor are ready.");
+        }
+
+        [MenuItem("Planet Survival/Setup Planter Box Art")]
+        public static void CreateOrUpdatePlanterBoxArt()
+        {
+            AssetDatabase.Refresh();
+            BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                ConfigurationDirectory + "/PlanterBoxBuildable.asset");
+            if (buildable == null)
+            {
+                Debug.LogError("Planter box art setup requires the planter box configuration asset.");
+                return;
+            }
+
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("PlanterBox");
+            if (sprite == null)
+            {
+                Debug.LogError("Planter box artwork was not found in the world building art directory.");
+                return;
+            }
+
+            buildable.ConfigurePresentation(sprite, 1f, new Color(.36f, .55f, .28f));
+            buildable.ConfigureIcon(sprite);
+            EditorUtility.SetDirty(buildable);
+            AssetDatabase.SaveAssets();
+            Debug.Log("Planter box world sprite and build-menu icon are ready.");
         }
 
         /// <summary>Authors handheld recipes and binds their catalog without rebuilding unrelated scenes.</summary>
@@ -944,6 +979,7 @@ namespace PlanetSurvival.Editor
 
             item.Configure("aluminum_alloy", "Aluminum Alloy", 1, GameSessionState.InitialAluminumAlloyCount,
                 false, true);
+            item.ConfigureMaterialTags(ItemMaterialTag.MetalPlate);
             item.ConfigureDescription("A light structural alloy sheet salvaged from the pod hull.");
             EditorUtility.SetDirty(item);
             return item;
@@ -1071,10 +1107,19 @@ namespace PlanetSurvival.Editor
         /// </summary>
         private static BuildingCatalog GetOrCreateBuildingCatalog(
             CookingStationDefinition oven,
-            ItemDefinition oxygenCandle)
+            ItemDefinition oxygenCandle,
+            ItemDefinition soil = null,
+            ItemDefinition plasticSheet = null,
+            ItemDefinition carbonDioxideCanister = null)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
+            scrap.ConfigureMaterialTags(ItemMaterialTag.MetalPlate);
+            EditorUtility.SetDirty(scrap);
+            soil ??= GetOrCreateItem("Soil", "soil", "Soil", 1, 20);
+            plasticSheet ??= GetOrCreateItem("PlasticSheet", "plastic_sheet", "Plastic Sheet", 1, 20);
+            carbonDioxideCanister ??= GetOrCreateItem(
+                "CarbonDioxideCanister", "carbon_dioxide_canister", "CO₂ Canister", 2, 10);
 
             BuildableDefinition wall = GetOrCreateBuildable("StoneWallBuildable", "stone_wall", "Stone Wall",
                 Vector2Int.one, StoneWallSeconds, 1.5f, new Color(.58f, .5f, .44f),
@@ -1099,6 +1144,27 @@ namespace PlanetSurvival.Editor
             EditorUtility.SetDirty(placedOxygenCandle);
             BuildableDefinition ironMiningDrill = GetOrCreateIronMiningDrill(aluminumAlloy: GetOrCreateAluminumAlloy());
             BuildableDefinition gravelExtractor = GetOrCreateGravelExtractor(GetOrCreateAluminumAlloy());
+            PlanterBoxDefinition planterDefinition = AssetDatabase.LoadAssetAtPath<PlanterBoxDefinition>(PlanterBoxDefinitionPath);
+            if (planterDefinition == null)
+            {
+                planterDefinition = ScriptableObject.CreateInstance<PlanterBoxDefinition>();
+                planterDefinition.name = "Planter Box";
+                AssetDatabase.CreateAsset(planterDefinition, PlanterBoxDefinitionPath);
+            }
+            planterDefinition.Configure(10000, 1000, 500f, 25f, 500f, 1f, 2f, 1f,
+                carbonDioxideCanister, 50f);
+            EditorUtility.SetDirty(planterDefinition);
+            BuildableDefinition planterBox = GetOrCreateBuildable(
+                "PlanterBoxBuildable", "planter_box", "Planter Box", Vector2Int.one,
+                PlanterBoxBuildSeconds, 1f, new Color(.36f, .55f, .28f),
+                "A one-cell growing system. Water and CO₂ inputs drive an oxygen output buffer.",
+                new CraftingItemAmount(soil, 4), new CraftingItemAmount(plasticSheet, 2));
+            Sprite planterSprite = WorldArtSetup.ImportBuildingSprite("PlanterBox");
+            planterBox.ConfigurePresentation(planterSprite, 1f, new Color(.36f, .55f, .28f));
+            planterBox.ConfigureIcon(planterSprite);
+            planterBox.ConfigureTaggedCost(new TaggedBuildingMaterialAmount(ItemMaterialTag.MetalPlate, 2));
+            planterBox.ConfigurePlanterBox(planterDefinition);
+            EditorUtility.SetDirty(planterBox);
 
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
@@ -1108,7 +1174,8 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(catalog, BuildingCatalogPath);
             }
 
-            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor);
+            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor,
+                planterBox);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
@@ -1289,12 +1356,14 @@ namespace PlanetSurvival.Editor
 
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
             ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
-            ItemDefinition petroleum, ItemDefinition shovel)
+            ItemDefinition petroleum, ItemDefinition shovel, ItemDefinition soil,
+            ItemDefinition plasticSheet, ItemDefinition carbonDioxideCanister)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
-                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel);
+                energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
+                soil, plasticSheet, carbonDioxideCanister);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -1313,7 +1382,10 @@ namespace PlanetSurvival.Editor
 
             flowController.ConfigureStartingSupplies(
                 energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum,
-                AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath));
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(SoilPath),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(PlasticSheetPath),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideCanisterPath));
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }

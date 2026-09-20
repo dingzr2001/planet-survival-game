@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da33e9c1a6e38427d94a3d8ec2bd3250, type: 3}
-  m_Name: MetalScrap
+  m_Name: CarbonDioxideCanister
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
-  _itemId: metal_scrap
-  _displayName: Metal Scrap
+  _itemId: carbon_dioxide_canister
+  _displayName: "CO\u2082 Canister"
   _description: 
   _icon: {fileID: 0}
   _capacityPerItem: 2
@@ -21,5 +21,5 @@ MonoBehaviour:
   _canUse: 0
   _canDrop: 1
   _calories: 0
-  _materialTags: 1
+  _materialTags: 0
   _effects: []

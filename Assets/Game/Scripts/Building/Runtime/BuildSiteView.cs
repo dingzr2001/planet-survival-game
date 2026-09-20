@@ -5,6 +5,7 @@ using PlanetSurvival.Cooking.Runtime;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Oxygen.Domain;
 using PlanetSurvival.Mining.Runtime;
+using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
@@ -72,6 +73,7 @@ namespace PlanetSurvival.Building.Runtime
         public void Bind(BuildSite site, BuildingService service, float cellSize,
             WorldVisualSettings visuals, CookingStationBinding cooking = default,
             MiningDrillBinding mining = default,
+            PlanterBoxBinding planter = default,
             OxygenReservoir oxygenReservoir = null, GameClock clock = null)
         {
             _site = site;
@@ -104,6 +106,13 @@ namespace PlanetSurvival.Building.Runtime
                 MiningDrillStation drill = gameObject.AddComponent<MiningDrillStation>();
                 drill.Bind(mining);
                 drill.enabled = false;
+            }
+
+            if (planter.IsComplete)
+            {
+                PlanterBoxStation planterStation = gameObject.AddComponent<PlanterBoxStation>();
+                planterStation.Bind(planter);
+                planterStation.enabled = false;
             }
 
             Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
@@ -157,6 +166,11 @@ namespace PlanetSurvival.Building.Runtime
             {
                 _site.OxygenCandle.Advance(_clock.ElapsedDays, _oxygenReservoir);
             }
+
+            if (_site?.State == BuildState.Completed && _site.PlanterBox != null)
+            {
+                _site.PlanterBox.Advance(Time.deltaTime);
+            }
         }
 
         private void Refresh()
@@ -193,6 +207,10 @@ namespace PlanetSurvival.Building.Runtime
             if (TryGetComponent(out MiningDrillStation drill))
             {
                 drill.enabled = true;
+            }
+            if (TryGetComponent(out PlanterBoxStation planter))
+            {
+                planter.enabled = true;
             }
         }
     }

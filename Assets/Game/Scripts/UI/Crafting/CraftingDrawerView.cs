@@ -364,7 +364,7 @@ namespace PlanetSurvival.UI.Crafting
             {
                 GUILayout.Label(buildable.Description, _descriptionStyle, GUILayout.MaxWidth(238f));
             }
-            DrawMaterials(buildable.Cost);
+            DrawMaterials(buildable);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
@@ -391,6 +391,31 @@ namespace PlanetSurvival.UI.Crafting
                 int owned = inventory.GetQuantity(material.Item.ItemId);
                 Rect icon = ReserveIcon(MaterialIconSize);
                 GUI.Label(icon, new GUIContent(string.Empty, material.Item.DisplayName));
+                Color previousColor = GUI.color;
+                GUI.color = owned >= material.Quantity ? Color.white : new Color(1f, 1f, 1f, .42f);
+                SpriteIcon.Draw(icon, material.Item.Icon);
+                GUI.color = previousColor;
+                GUILayout.Space(3f);
+                GUILayout.Label($"{owned}/{material.Quantity}",
+                    owned >= material.Quantity ? _materialStyle : _materialMissingStyle,
+                    GUILayout.Height(MaterialIconSize));
+                GUILayout.Space(10f);
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawMaterials(BuildableDefinition buildable)
+        {
+            InventoryModel inventory = _playerInventory.Inventory;
+            GUILayout.BeginHorizontal(GUILayout.Height(MaterialIconSize + 4f));
+            IReadOnlyList<CraftingItemAmount> materials = buildable.Cost;
+            for (int i = 0; i < materials.Count; i++)
+            {
+                CraftingItemAmount material = materials[i];
+                int owned = inventory.GetQuantity(material.Item.ItemId);
+                Rect icon = ReserveIcon(MaterialIconSize);
+                GUI.Label(icon, new GUIContent(string.Empty, material.Item.DisplayName));
 
                 Color previousColor = GUI.color;
                 GUI.color = owned >= material.Quantity ? Color.white : new Color(1f, 1f, 1f, .42f);
@@ -400,6 +425,16 @@ namespace PlanetSurvival.UI.Crafting
                 GUILayout.Space(3f);
                 GUILayout.Label($"{owned}/{material.Quantity}",
                     owned >= material.Quantity ? _materialStyle : _materialMissingStyle,
+                    GUILayout.Height(MaterialIconSize));
+                GUILayout.Space(10f);
+            }
+
+            IReadOnlyList<TaggedBuildingMaterialAmount> tagged = buildable.TaggedCost;
+            for (int i = 0; i < tagged.Count; i++)
+            {
+                int owned = _buildingController.Service.CountTaggedItems(tagged[i].MaterialTag);
+                GUILayout.Label($"{tagged[i].MaterialTag} {owned}/{tagged[i].Quantity}",
+                    owned >= tagged[i].Quantity ? _materialStyle : _materialMissingStyle,
                     GUILayout.Height(MaterialIconSize));
                 GUILayout.Space(10f);
             }

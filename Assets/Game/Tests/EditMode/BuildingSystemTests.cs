@@ -150,6 +150,33 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void Place_TaggedCost_AcceptsAndRefundsAnyMatchingMetalPlate()
+        {
+            ItemDefinition aluminum = CreateItem("aluminum", "Aluminum Plate");
+            aluminum.ConfigureMaterialTags(ItemMaterialTag.MetalPlate);
+            ItemDefinition iron = CreateItem("iron", "Iron Plate");
+            iron.ConfigureMaterialTags(ItemMaterialTag.MetalPlate);
+            BuildableDefinition planter = CreateBuildable("planter", "Planter", Vector2Int.one, 5f,
+                new CraftingItemAmount(_stone, 1));
+            planter.ConfigureTaggedCost(new TaggedBuildingMaterialAmount(ItemMaterialTag.MetalPlate, 2));
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(_stone, 1);
+            inventory.Add(aluminum, 1);
+            inventory.Add(iron, 1);
+            var service = new BuildingService(inventory, new BuildGrid());
+
+            BuildResult placed = service.TryPlace(planter,
+                new BuildFootprint(Vector2Int.zero, Vector2Int.one), out BuildSite site);
+
+            Assert.That(placed.Succeeded, Is.True, placed.Message);
+            Assert.That(inventory.GetQuantity(aluminum.ItemId), Is.Zero);
+            Assert.That(inventory.GetQuantity(iron.ItemId), Is.Zero);
+            Assert.That(service.Cancel(site).Succeeded, Is.True);
+            Assert.That(inventory.GetQuantity(aluminum.ItemId), Is.EqualTo(1));
+            Assert.That(inventory.GetQuantity(iron.ItemId), Is.EqualTo(1));
+        }
+
+        [Test]
         public void Advance_FinishesTheSiteWhenTheTimerRunsOut()
         {
             var inventory = new InventoryModel(30, 20);

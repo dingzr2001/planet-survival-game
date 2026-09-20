@@ -168,6 +168,9 @@ MonoBehaviour:
   _pickaxeDefinition: {fileID: 11400000, guid: fcfb11a0fb63f4da7b6848db7c9d7b26, type: 2}
   _shovelDefinition: {fileID: 11400000, guid: 59d463701f50f48c58d9cff2445cc3aa, type: 2}
   _petroleumDefinition: {fileID: 11400000, guid: dd68a9242eddb4a4180f9c92a702a17a, type: 2}
+  _soilDefinition: {fileID: 11400000, guid: 83413950307574e0aaa7680208f03450, type: 2}
+  _plasticSheetDefinition: {fileID: 11400000, guid: 699b0e271555d490dafbd12ef8a0c34f, type: 2}
+  _carbonDioxideCanisterDefinition: {fileID: 11400000, guid: 92553f112a1394ad0b38ebc4f2cd0b0b, type: 2}
 --- !u!4 &1558093185
 Transform:
   m_ObjectHideFlags: 0

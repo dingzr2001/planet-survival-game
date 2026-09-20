@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: PlanterBoxBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: planter_box
+  _displayName: Planter Box
+  _description: "A one-cell growing system. Water and CO\u2082 inputs drive an oxygen
+    output buffer."
+  _icon: {fileID: 21300000, guid: e4f73a0922f71404195871d236a289bb, type: 3}
+  _footprint: {x: 1, y: 1}
+  _buildSeconds: 10
+  _cost:
+  - _item: {fileID: 11400000, guid: 83413950307574e0aaa7680208f03450, type: 2}
+    _quantity: 4
+  - _item: {fileID: 11400000, guid: 699b0e271555d490dafbd12ef8a0c34f, type: 2}
+    _quantity: 2
+  _taggedCost:
+  - _materialTag: 1
+    _quantity: 2
+  _worldSprite: {fileID: 21300000, guid: e4f73a0922f71404195871d236a289bb, type: 3}
+  _worldHeight: 1
+  _bodyColor: {r: 0.36, g: 0.55, b: 0.28, a: 1}
+  _cookingStation: {fileID: 0}
+  _isOxygenCandle: 0
+  _miningDrill: {fileID: 0}
+  _planterBox: {fileID: 11400000, guid: 9109868b143e049ffb03fdd82571648d, type: 2}

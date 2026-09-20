@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da33e9c1a6e38427d94a3d8ec2bd3250, type: 3}
-  m_Name: MetalScrap
+  m_Name: PlasticSheet
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
-  _itemId: metal_scrap
-  _displayName: Metal Scrap
+  _itemId: plastic_sheet
+  _displayName: Plastic Sheet
   _description: 
   _icon: {fileID: 0}
-  _capacityPerItem: 2
-  _maximumStackSize: 10
+  _capacityPerItem: 1
+  _maximumStackSize: 20
   _canUse: 0
   _canDrop: 1
   _calories: 0
-  _materialTags: 1
+  _materialTags: 0
   _effects: []

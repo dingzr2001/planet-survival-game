@@ -5,6 +5,7 @@ using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.World.Ground;
+using PlanetSurvival.Items.Definitions;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Application
@@ -54,7 +55,16 @@ namespace PlanetSurvival.Building.Application
                 }
             }
 
-            return cost.Count > 0;
+            IReadOnlyList<TaggedBuildingMaterialAmount> taggedCost = buildable.TaggedCost;
+            for (int i = 0; i < taggedCost.Count; i++)
+            {
+                if (CountTaggedItems(taggedCost[i].MaterialTag) < taggedCost[i].Quantity)
+                {
+                    return false;
+                }
+            }
+
+            return cost.Count > 0 || taggedCost.Count > 0;
         }
 
         /// <summary>Checks a spot without changing anything, so the preview can be tinted before the click.</summary>
@@ -133,18 +143,18 @@ namespace PlanetSurvival.Building.Application
                 return validation;
             }
 
-            InventoryOperationResult paid = _inventory.ApplyTransaction(
-                CraftingItemAmount.ToInventoryAmounts(buildable.Cost), null);
+            List<InventoryItemAmount> paidMaterials = ResolvePayment(buildable);
+            InventoryOperationResult paid = _inventory.ApplyTransaction(paidMaterials, null);
             if (!paid.Succeeded)
             {
                 return BuildResult.Fail(BuildFailure.MissingResources, paid.Message);
             }
 
-            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, footprint);
+            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, footprint, paidMaterials);
             if (!_grid.TryOccupy(footprint, placed))
             {
                 // Unreachable while CanPlace holds, but refunding keeps a future caller from losing materials.
-                _inventory.ApplyTransaction(null, CraftingItemAmount.ToInventoryAmounts(buildable.Cost));
+                _inventory.ApplyTransaction(null, paidMaterials);
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
             }
 
@@ -179,7 +189,7 @@ namespace PlanetSurvival.Building.Application
             }
 
             InventoryOperationResult refunded = _inventory.ApplyTransaction(
-                null, CraftingItemAmount.ToInventoryAmounts(site.Definition.Cost));
+                null, site.PaidMaterials);
             if (!refunded.Succeeded)
             {
                 return BuildResult.Fail(BuildFailure.InventoryFull, refunded.Message);
@@ -228,6 +238,55 @@ namespace PlanetSurvival.Building.Application
                 _grid.Release(site);
                 SiteRemoved?.Invoke(site);
             }
+        }
+
+        public int CountTaggedItems(ItemMaterialTag materialTag)
+        {
+            int quantity = 0;
+            IReadOnlyList<ItemStack> stacks = _inventory.Stacks;
+            for (int i = 0; i < stacks.Count; i++)
+            {
+                if (stacks[i].Definition.HasMaterialTag(materialTag))
+                {
+                    quantity += stacks[i].Quantity;
+                }
+            }
+
+            return quantity;
+        }
+
+        private List<InventoryItemAmount> ResolvePayment(BuildableDefinition buildable)
+        {
+            List<InventoryItemAmount> payment = CraftingItemAmount.ToInventoryAmounts(buildable.Cost);
+            IReadOnlyList<TaggedBuildingMaterialAmount> taggedCost = buildable.TaggedCost;
+            for (int requirementIndex = 0; requirementIndex < taggedCost.Count; requirementIndex++)
+            {
+                TaggedBuildingMaterialAmount requirement = taggedCost[requirementIndex];
+                int remaining = requirement.Quantity;
+                IReadOnlyList<ItemStack> stacks = _inventory.Stacks;
+                for (int stackIndex = 0; stackIndex < stacks.Count && remaining > 0; stackIndex++)
+                {
+                    ItemStack stack = stacks[stackIndex];
+                    if (!stack.Definition.HasMaterialTag(requirement.MaterialTag)) continue;
+                    int taken = Math.Min(remaining, stack.Quantity);
+                    AddOrMerge(payment, stack.Definition, taken);
+                    remaining -= taken;
+                }
+            }
+
+            return payment;
+        }
+
+        private static void AddOrMerge(List<InventoryItemAmount> amounts, ItemDefinition item, int quantity)
+        {
+            for (int i = 0; i < amounts.Count; i++)
+            {
+                if (amounts[i].Definition.ItemId != item.ItemId) continue;
+                amounts[i] = new InventoryItemAmount(item, amounts[i].Quantity + quantity);
+                return;
+            }
+
+            amounts.Add(new InventoryItemAmount(item, quantity));
         }
     }
 }

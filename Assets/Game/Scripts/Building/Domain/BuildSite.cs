@@ -2,6 +2,9 @@ using System;
 using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Oxygen.Domain;
 using PlanetSurvival.Mining.Domain;
+using PlanetSurvival.Farming.Domain;
+using PlanetSurvival.Inventory.Domain;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Domain
@@ -22,7 +25,8 @@ namespace PlanetSurvival.Building.Domain
     /// </summary>
     public sealed class BuildSite
     {
-        internal BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint)
+        internal BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint,
+            IReadOnlyList<InventoryItemAmount> paidMaterials)
         {
             SiteId = siteId;
             Definition = definition;
@@ -39,6 +43,13 @@ namespace PlanetSurvival.Building.Domain
             {
                 MiningDrill = new MiningDrill(definition.MiningDrill);
             }
+
+            if (definition.PlanterBox != null)
+            {
+                PlanterBox = new PlanterBox(definition.PlanterBox);
+            }
+
+            PaidMaterials = paidMaterials ?? System.Array.Empty<InventoryItemAmount>();
         }
 
         public string SiteId { get; }
@@ -49,6 +60,8 @@ namespace PlanetSurvival.Building.Domain
         public float TotalSeconds { get; }
         public OxygenCandleBurn OxygenCandle { get; }
         public MiningDrill MiningDrill { get; }
+        public PlanterBox PlanterBox { get; }
+        public IReadOnlyList<InventoryItemAmount> PaidMaterials { get; }
 
         public float Progress => TotalSeconds <= 0f
             ? 1f

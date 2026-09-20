@@ -9,6 +9,8 @@ using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Mining.Runtime;
 using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.Mining;
+using PlanetSurvival.Farming.Runtime;
+using PlanetSurvival.UI.Farming;
 using PlanetSurvival.World.Generation;
 using UnityEngine;
 
@@ -38,6 +40,7 @@ namespace PlanetSurvival.Building.Runtime
         private GameSessionState _session;
         private CookingView _cookingView;
         private MiningDrillView _miningDrillView;
+        private PlanterBoxView _planterBoxView;
         private GameClock _clock;
         private Transform _player;
         private Camera _camera;
@@ -60,7 +63,8 @@ namespace PlanetSurvival.Building.Runtime
 
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
-            GameClock clock = null, MiningDrillView miningDrillView = null)
+            GameClock clock = null, MiningDrillView miningDrillView = null,
+            PlanterBoxView planterBoxView = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -78,6 +82,7 @@ namespace PlanetSurvival.Building.Runtime
             _session = session;
             _cookingView = cookingView;
             _miningDrillView = miningDrillView;
+            _planterBoxView = planterBoxView;
             _clock = clock;
             _service.SitePlaced += CreateSiteObject;
             _service.SiteRemoved += DestroySiteObject;
@@ -284,6 +289,7 @@ namespace PlanetSurvival.Building.Runtime
             siteObject.AddComponent<BuildSiteView>().Bind(
                 site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site),
                 CreateMiningBinding(site),
+                CreatePlanterBinding(site),
                 site.Definition.IsOxygenCandle && _session != null
                     ? _session.LandingPodOxygenSupply
                     : null,
@@ -325,6 +331,12 @@ namespace PlanetSurvival.Building.Runtime
         {
             return site.MiningDrill != null && _miningDrillView != null
                 ? new MiningDrillBinding(site.MiningDrill, _miningDrillView)
+                : default;
+        }
+        private PlanterBoxBinding CreatePlanterBinding(BuildSite site)
+        {
+            return site.PlanterBox != null && _planterBoxView != null
+                ? new PlanterBoxBinding(site.PlanterBox, _planterBoxView)
                 : default;
         }
     }

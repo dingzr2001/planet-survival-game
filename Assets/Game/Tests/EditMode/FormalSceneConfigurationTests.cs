@@ -860,5 +860,34 @@ namespace PlanetSurvival.Tests
             Assert.That(shovelAnimation.IsValid(out string error), Is.True, error);
             Assert.That(visuals.PlayerToolAnimations, Does.Contain(shovelAnimation));
         }
+
+        [Test]
+        public void PlanterBox_IsOneCellAndUsesSoilPlasticAndAnyMetalPlate()
+        {
+            BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/PlanterBoxBuildable.asset");
+            BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(
+                "Assets/Game/Configuration/DefaultBuildingCatalog.asset");
+
+            Assert.That(buildable, Is.Not.Null);
+            Assert.That(buildable.IsValid(out string error), Is.True, error);
+            Assert.That(buildable.Footprint, Is.EqualTo(Vector2Int.one));
+            Assert.That(buildable.Cost.Count, Is.EqualTo(2));
+            Assert.That(buildable.Cost[0].Item.ItemId, Is.EqualTo("soil"));
+            Assert.That(buildable.Cost[1].Item.ItemId, Is.EqualTo("plastic_sheet"));
+            Assert.That(buildable.TaggedCost.Count, Is.EqualTo(1));
+            Assert.That(buildable.TaggedCost[0].MaterialTag, Is.EqualTo(ItemMaterialTag.MetalPlate));
+            Assert.That(buildable.PlanterBox, Is.Not.Null);
+            Assert.That(buildable.WorldSprite, Is.Not.Null);
+            Assert.That(buildable.MenuIcon, Is.SameAs(buildable.WorldSprite));
+            Assert.That(catalog.Buildables, Does.Contain(buildable));
+
+            var importer = AssetImporter.GetAtPath(
+                "Assets/Game/Art/World/Buildings/PlanterBox.png") as TextureImporter;
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+        }
     }
 }
