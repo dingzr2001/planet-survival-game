@@ -36,6 +36,8 @@ namespace PlanetSurvival.Core.Flow
         public const float InitialLandingPodOxygenLiters = 9600f;
         public const int PlayerInventorySlots = 20;
         public const int PlayerInventoryCapacity = 30;
+        public const int TestInventoryCapacity = 100000;
+        public const int TestItemQuantity = 999;
         public const int RefrigeratorSlots = 12;
         public const int RefrigeratorCapacity = 60;
         public const int CargoStorageSlots = 30;
@@ -54,8 +56,11 @@ namespace PlanetSurvival.Core.Flow
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;
 
-        /// <summary>World units per construction cell. Terrain and natural resources remain continuous.</summary>
-        public const float BuildGridCellSize = 1f;
+        /// <summary>
+        /// World units per construction cell. It matches the terrain tile so a structure lands on exactly
+        /// one square of ground artwork instead of floating inside it.
+        /// </summary>
+        public const float BuildGridCellSize = TerrainPatchSettings.DefaultTileSize;
 
         private const double DefaultRealSecondsPerGameDay = 600d;
         private const int DefaultRescueDay = 30;
@@ -65,7 +70,7 @@ namespace PlanetSurvival.Core.Flow
         private int _rescueDay = DefaultRescueDay;
         private GameTimeModel _time;
 
-        public GameSessionState()
+        public GameSessionState(bool useTestInventory = false)
         {
             SpaceSuit = new SpaceSuitResources(
                 new OxygenReservoir(SpaceSuitOxygenCapacityLiters, InitialSpaceSuitOxygenLiters),
@@ -77,7 +82,9 @@ namespace PlanetSurvival.Core.Flow
                 LandingPodOxygenCapacityLiters,
                 InitialLandingPodOxygenLiters);
             SurvivalStats = new SurvivalStats();
-            PlayerInventory = new InventoryModel(PlayerInventoryCapacity, PlayerInventorySlots);
+            PlayerInventory = useTestInventory
+                ? new InventoryModel(TestInventoryCapacity, PlayerInventorySlots, TestItemQuantity)
+                : new InventoryModel(PlayerInventoryCapacity, PlayerInventorySlots);
             RefrigeratorStorage = new InventoryModel(RefrigeratorCapacity, RefrigeratorSlots);
             CargoStorage = new InventoryModel(CargoStorageCapacity, CargoStorageSlots);
             Terrain = new TerrainTileMap();
@@ -205,6 +212,12 @@ namespace PlanetSurvival.Core.Flow
         {
             Reset();
             return CargoStorage.ApplyTransaction(null, startingCargo);
+        }
+
+        public InventoryOperationResult ResetPlayerInventory(IReadOnlyList<InventoryItemAmount> startingItems)
+        {
+            Reset();
+            return PlayerInventory.ApplyTransaction(null, startingItems);
         }
     }
 }

@@ -136,21 +136,20 @@ namespace PlanetSurvival.Tests
             Assert.That(cargoStorage, Is.Not.Null);
             Assert.That(cargoStorage.gameObject.name, Is.EqualTo("Cargo Storage Racks"));
             Assert.That(cargoStorage.Inventory.TotalSlots, Is.EqualTo(30));
-            Assert.That(cargoStorage.Inventory.Stacks, Has.Count.EqualTo(7));
-            Assert.That(cargoStorage.Inventory.GetQuantity("energy_bar"),
-                Is.EqualTo(GameSessionState.InitialEnergyBarCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("potato"),
-                Is.EqualTo(GameSessionState.InitialPotatoCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("aluminum_alloy"),
-                Is.EqualTo(GameSessionState.InitialAluminumAlloyCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("chlorate_salt"),
-                Is.EqualTo(GameSessionState.InitialChlorateSaltCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("pickaxe"),
-                Is.EqualTo(GameSessionState.InitialPickaxeCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("shovel"),
-                Is.EqualTo(GameSessionState.InitialShovelCount));
-            Assert.That(cargoStorage.Inventory.GetQuantity("petroleum_canister"),
-                Is.EqualTo(GameSessionState.InitialPetroleumCanisterCount));
+            Assert.That(cargoStorage.Inventory.Stacks, Is.Empty,
+                "Test-mode supplies belong in the player's backpack instead of cargo storage.");
+            var backpack = Object.FindFirstObjectByType<PlanetSurvival.Inventory.Application.PlayerInventory>()
+                .Inventory;
+            string[] testItemIds =
+            {
+                "energy_bar", "potato", "aluminum_alloy", "chlorate_salt", "pickaxe",
+                "petroleum_canister", "shovel", "soil", "plastic_sheet", "carbon_dioxide_canister"
+            };
+            foreach (string itemId in testItemIds)
+            {
+                Assert.That(backpack.GetQuantity(itemId), Is.EqualTo(GameSessionState.TestItemQuantity),
+                    $"Test mode should provision 999 x '{itemId}' in the backpack.");
+            }
             ScenePortal airlock = FindPortal(GameSceneNames.Gameplay);
             Assert.That(airlock, Is.Not.Null);
             player = Object.FindFirstObjectByType<PlayerSurvival>().gameObject;

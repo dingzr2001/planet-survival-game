@@ -21,6 +21,7 @@ namespace PlanetSurvival.Building.Runtime
         /// <summary>
         /// Builds the visible body under <paramref name="parent"/>. The returned transform is scaled, not
         /// the sprite itself, so callers can grow a building out of the ground while it is under construction.
+        /// Artwork is fitted to the footprint, so a one-cell structure covers exactly one cell of ground.
         /// </summary>
         public static Transform CreateBody(Transform parent, BuildableDefinition buildable, float cellSize)
         {
@@ -32,23 +33,44 @@ namespace PlanetSurvival.Building.Runtime
             visual.AddComponent<SpriteRenderer>();
             WorldSpriteView view = visual.AddComponent<WorldSpriteView>();
 
+            // The footprint decides how large a structure reads in the world: one cell of art per cell of
+            // ground. Authored world height only sets how tall a sprite-less placeholder block stands.
+            float footprintWidth = buildable.Footprint.x * cellSize;
             if (buildable.WorldSprite != null)
             {
-                view.ConfigureGrounded(buildable.WorldSprite, buildable.WorldHeight);
+                view.ConfigureGroundedWidth(buildable.WorldSprite, footprintWidth);
             }
             else
             {
-                // The placeholder block is as wide as the footprint so the silhouette still reads as a 2×2 oven.
-                float width = Mathf.Max(buildable.Footprint.x, buildable.Footprint.y) * cellSize;
-                view.Configure(BlockSprite(), buildable.WorldHeight);
+                float blockHeight = Mathf.Max(buildable.WorldHeight, footprintWidth * .75f);
+                view.Configure(BlockSprite(), blockHeight);
                 visual.transform.localScale = new Vector3(
-                    width / Mathf.Max(.01f, buildable.WorldHeight) * visual.transform.localScale.x,
+                    footprintWidth / blockHeight * visual.transform.localScale.x,
                     visual.transform.localScale.y,
                     visual.transform.localScale.z);
                 view.Renderer.color = buildable.BodyColor;
             }
 
+            // A standing cutout touches the ground along its front edge and rises away from the camera
+            // from there, so anchoring it at the centre of the footprint draws the whole structure half a
+            // footprint behind the cells it occupies. Contact belongs on the near edge of those cells.
+            body.transform.localPosition = new Vector3(0f, 0f, buildable.Footprint.y * cellSize * -.5f);
             return body.transform;
+        }
+
+        /// <summary>
+        /// How tall the body built by <see cref="CreateBody"/> ended up, which depends on the artwork's
+        /// aspect ratio. Callers size colliders from it so the solid volume matches what is drawn.
+        /// </summary>
+        public static float BodyHeight(Transform body, float fallbackHeight)
+        {
+            if (body == null)
+            {
+                return fallbackHeight;
+            }
+
+            WorldSpriteView view = body.GetComponentInChildren<WorldSpriteView>(true);
+            return view != null ? view.DisplayHeight : fallbackHeight;
         }
 
         /// <summary>The translucent patch that shows which cells a footprint covers.</summary>

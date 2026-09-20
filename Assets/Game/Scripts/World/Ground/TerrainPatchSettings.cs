@@ -11,10 +11,16 @@ namespace PlanetSurvival.World.Ground
     [CreateAssetMenu(menuName = "Planet Survival/World/Terrain Patch Settings", fileName = "TerrainPatchSettings")]
     public sealed class TerrainPatchSettings : ScriptableObject
     {
+        /// <summary>
+        /// World units across one terrain tile. Construction cells use the same size, so one structure
+        /// covers exactly one square of ground artwork.
+        /// </summary>
+        public const float DefaultTileSize = 2.75f;
+
         [SerializeField, Tooltip("Mixed into the world seed so terrain patches do not correlate with resource layouts.")]
         private int _seedOffset = 5231;
         [SerializeField, Min(.5f), Tooltip("World units across one terrain tile. One complete terrain illustration is fitted into this square, and digging clears the same square.")]
-        private float _tileSize = 2.75f;
+        private float _tileSize = DefaultTileSize;
         [SerializeField, Min(1), Tooltip("Tiles per side of one streamed block. Every block is one quad and one control-map pair; larger blocks reduce streaming objects but make each mask rebuild more expensive.")]
         private int _chunkSizeInTiles = 8;
         [SerializeField, Min(0), Tooltip("Blocks kept loaded around the player, beyond the one they stand in.")]

@@ -193,6 +193,21 @@ namespace PlanetSurvival.Tests
         }
 
         /// <summary>
+        /// A structure reads as sitting on the ground only when it covers the square of ground artwork it
+        /// stands on, so a construction cell has to be exactly one terrain tile wide.
+        /// </summary>
+        [Test]
+        public void BuildCells_AreOneTerrainTileWide()
+        {
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(GameSessionState.BuildGridCellSize, Is.EqualTo(patches.TileSize).Within(.0001f),
+                "A build cell smaller than a terrain tile leaves every building floating inside its tile.");
+        }
+
+        /// <summary>
         /// Ordinary rock makes the surface worth walking across rather than through: three grades break
         /// down in one, three and five swings, each paying out on every swing.
         /// </summary>

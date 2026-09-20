@@ -200,6 +200,30 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void GameSessionReset_TestInventory_ProvisionsLargeStacksInBackpackOnly()
+        {
+            var potato = ScriptableObject.CreateInstance<ItemDefinition>();
+            potato.Configure("potato", "Potato", 1, 20, false, true);
+            var session = new GameSessionState(true);
+
+            InventoryOperationResult result = session.ResetPlayerInventory(new[]
+            {
+                new InventoryItemAmount(_water, GameSessionState.TestItemQuantity),
+                new InventoryItemAmount(potato, GameSessionState.TestItemQuantity)
+            });
+
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(session.PlayerInventory.Stacks, Has.Count.EqualTo(2));
+            Assert.That(session.PlayerInventory.GetQuantity("water_bag"),
+                Is.EqualTo(GameSessionState.TestItemQuantity));
+            Assert.That(session.PlayerInventory.GetQuantity("potato"),
+                Is.EqualTo(GameSessionState.TestItemQuantity));
+            Assert.That(session.RefrigeratorStorage.Stacks, Is.Empty);
+            Assert.That(session.CargoStorage.Stacks, Is.Empty);
+            Object.DestroyImmediate(potato);
+        }
+
+        [Test]
         public void PlayerInventory_FirstPickup_WhenQuickBarIsEmpty_AssignsFirstSlot()
         {
             var player = new GameObject("Inventory Test Player");

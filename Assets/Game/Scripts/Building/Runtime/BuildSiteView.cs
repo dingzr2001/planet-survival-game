@@ -83,14 +83,15 @@ namespace PlanetSurvival.Building.Runtime
             _clock = clock;
             BuildableDefinition buildable = site.Definition;
 
+            _body = BuildingVisuals.CreateBody(transform, buildable, _cellSize);
+
             _collider = gameObject.AddComponent<BoxCollider>();
             _collider.size = new Vector3(
                 buildable.Footprint.x * _cellSize,
-                buildable.WorldHeight,
+                BuildingVisuals.BodyHeight(_body, buildable.WorldHeight),
                 buildable.Footprint.y * _cellSize);
             _collider.center = Vector3.up * (_collider.size.y * .5f);
 
-            _body = BuildingVisuals.CreateBody(transform, buildable, _cellSize);
             _patch = BuildingVisuals.CreateFootprintPatch(transform, buildable.Footprint, _cellSize);
 
             if (cooking.IsComplete)
@@ -185,6 +186,7 @@ namespace PlanetSurvival.Building.Runtime
                 // The scaffold rises out of the ground as the timer runs, so progress is readable at a glance.
                 _body.localScale = new Vector3(1f, Mathf.Lerp(.15f, 1f, _site.Progress), 1f);
                 BuildingVisuals.Tint(_body, ScaffoldTint);
+                _patch.enabled = true;
                 _patch.color = new Color(.45f, .85f, 1f, .5f);
                 return;
             }
@@ -193,7 +195,10 @@ namespace PlanetSurvival.Building.Runtime
             BuildingVisuals.Tint(_body, _site.Definition.WorldSprite != null
                 ? Color.white
                 : _site.Definition.BodyColor);
-            _patch.color = new Color(1f, 1f, 1f, .12f);
+
+            // The outlined patch marks cells that are spoken for while the site is still a promise. Once the
+            // structure stands it is the structure that shows where it is, so the outline only frames it.
+            _patch.enabled = false;
             if (_site.OxygenCandle != null && !_site.OxygenCandle.IsIgnited && _clock != null)
             {
                 _site.OxygenCandle.Ignite(_clock.ElapsedDays);

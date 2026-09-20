@@ -7,8 +7,9 @@ namespace PlanetSurvival.Inventory.Domain
     public sealed class Inventory
     {
         private readonly List<ItemStack> _stacks = new();
+        private readonly int _stackSizeFloor;
 
-        public Inventory(int totalCapacity, int totalSlots = int.MaxValue)
+        public Inventory(int totalCapacity, int totalSlots = int.MaxValue, int stackSizeFloor = 0)
         {
             if (totalCapacity < 0)
             {
@@ -20,8 +21,14 @@ namespace PlanetSurvival.Inventory.Domain
                 throw new ArgumentOutOfRangeException(nameof(totalSlots));
             }
 
+            if (stackSizeFloor < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(stackSizeFloor));
+            }
+
             TotalCapacity = totalCapacity;
             TotalSlots = totalSlots;
+            _stackSizeFloor = stackSizeFloor;
         }
 
         public int TotalCapacity { get; }
@@ -73,19 +80,20 @@ namespace PlanetSurvival.Inventory.Domain
             for (int i = 0; i < _stacks.Count && remaining > 0; i++)
             {
                 ItemStack stack = _stacks[i];
-                if (stack.Definition.ItemId != definition.ItemId || stack.Quantity >= definition.MaximumStackSize)
+                int maximumStackSize = GetMaximumStackSize(definition);
+                if (stack.Definition.ItemId != definition.ItemId || stack.Quantity >= maximumStackSize)
                 {
                     continue;
                 }
 
-                int added = Math.Min(remaining, definition.MaximumStackSize - stack.Quantity);
+                int added = Math.Min(remaining, maximumStackSize - stack.Quantity);
                 stack.Add(added);
                 remaining -= added;
             }
 
             while (remaining > 0)
             {
-                int stackQuantity = Math.Min(remaining, definition.MaximumStackSize);
+                int stackQuantity = Math.Min(remaining, GetMaximumStackSize(definition));
                 _stacks.Add(new ItemStack(Guid.NewGuid().ToString("N"), definition, stackQuantity));
                 remaining -= stackQuantity;
             }
@@ -236,13 +244,19 @@ namespace PlanetSurvival.Inventory.Domain
                 ItemStack stack = _stacks[i];
                 if (stack.Definition.ItemId == definition.ItemId)
                 {
-                    remaining -= Math.Min(remaining, definition.MaximumStackSize - stack.Quantity);
+                    remaining -= Math.Min(remaining, GetMaximumStackSize(definition) - stack.Quantity);
                 }
             }
 
+            int maximumStackSize = GetMaximumStackSize(definition);
             return remaining <= 0
                 ? 0
-                : (int)(((long)remaining + definition.MaximumStackSize - 1) / definition.MaximumStackSize);
+                : (int)(((long)remaining + maximumStackSize - 1) / maximumStackSize);
+        }
+
+        private int GetMaximumStackSize(ItemDefinition definition)
+        {
+            return Math.Max(definition.MaximumStackSize, _stackSizeFloor);
         }
 
         private static InventoryOperationResult ValidateDefinitionAndQuantity(ItemDefinition definition, int quantity)
@@ -320,24 +334,25 @@ namespace PlanetSurvival.Inventory.Domain
                 for (int amountIndex = 0; amountIndex < additions.Count; amountIndex++)
                 {
                     InventoryItemAmount addition = additions[amountIndex];
+                    int maximumStackSize = GetMaximumStackSize(addition.Definition);
                     int remaining = addition.Quantity;
                     for (int stackIndex = 0; stackIndex < stagedStacks.Count && remaining > 0; stackIndex++)
                     {
                         StagedStack staged = stagedStacks[stackIndex];
                         if (staged.Definition.ItemId != addition.Definition.ItemId ||
-                            staged.Quantity == 0 || staged.Quantity >= addition.Definition.MaximumStackSize)
+                            staged.Quantity == 0 || staged.Quantity >= maximumStackSize)
                         {
                             continue;
                         }
 
-                        int added = Math.Min(remaining, addition.Definition.MaximumStackSize - staged.Quantity);
+                        int added = Math.Min(remaining, maximumStackSize - staged.Quantity);
                         staged.Quantity += added;
                         remaining -= added;
                     }
 
                     while (remaining > 0)
                     {
-                        int stackQuantity = Math.Min(remaining, addition.Definition.MaximumStackSize);
+                        int stackQuantity = Math.Min(remaining, maximumStackSize);
                         stagedStacks.Add(new StagedStack(null, addition.Definition, stackQuantity));
                         remaining -= stackQuantity;
                     }

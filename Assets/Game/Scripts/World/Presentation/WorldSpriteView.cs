@@ -68,6 +68,16 @@ namespace PlanetSurvival.World.Presentation
             transform.localPosition = Vector3.zero;
         }
 
+        /// <summary>
+        /// Places a grounded sprite scaled so its artwork spans <paramref name="worldWidth"/>, keeping the
+        /// aspect ratio of the source art. Used where a footprint, not an authored height, decides the size.
+        /// </summary>
+        public void ConfigureGroundedWidth(Sprite sprite, float worldWidth)
+        {
+            ConfigureGrounded(sprite, 1f);
+            FitWidth(worldWidth);
+        }
+
         public void ConfigureDirectional(Sprite fallbackSprite, float worldHeight,
             Texture2D animationSheet)
         {
@@ -326,6 +336,19 @@ namespace PlanetSurvival.World.Presentation
 
             float depth = Vector3.Dot(_camera.transform.forward, transform.position - _camera.transform.position);
             _renderer.sortingOrder = -Mathf.RoundToInt(depth * 100f);
+        }
+
+        private void FitWidth(float worldWidth)
+        {
+            if (_renderer == null || _renderer.sprite == null)
+            {
+                return;
+            }
+
+            Vector3 spriteSize = _renderer.sprite.bounds.size;
+            float scale = Mathf.Max(.01f, worldWidth) / Mathf.Max(MinimumSpriteSize, spriteSize.x);
+            transform.localScale = Vector3.one * scale;
+            DisplayHeight = Mathf.Max(.1f, spriteSize.y * scale);
         }
 
         private void FitHeight(float worldHeight)

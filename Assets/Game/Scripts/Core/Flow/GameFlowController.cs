@@ -28,8 +28,12 @@ namespace PlanetSurvival.Core.Flow
         [SerializeField] private ItemDefinition _soilDefinition;
         [SerializeField] private ItemDefinition _plasticSheetDefinition;
         [SerializeField] private ItemDefinition _carbonDioxideCanisterDefinition;
+        [Header("Debug")]
+        [SerializeField, Tooltip(
+            "Editor and Development Builds only. Starts every configured supply at 999 in the player's backpack.")]
+        private bool _giveTestStartingItems = true;
         private GameFlow _flow;
-        private readonly GameSessionState _session = new();
+        private GameSessionState _session;
 
         public event System.Action<GameFlowState> StateChanged
         {
@@ -48,7 +52,9 @@ namespace PlanetSurvival.Core.Flow
         }
 
         public GameFlowState State => _flow?.State ?? GameFlowState.Booting;
-        public GameSessionState Session => _session;
+        public GameSessionState Session => _session ??= new GameSessionState(IsTestMode);
+
+        private bool IsTestMode => Debug.isDebugBuild && _giveTestStartingItems;
 
         public void ConfigureStartingSupplies(ItemDefinition energyBarDefinition, ItemDefinition potatoDefinition,
             ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
@@ -108,50 +114,56 @@ namespace PlanetSurvival.Core.Flow
             if (_energyBarDefinition == null || _potatoDefinition == null || _aluminumAlloyDefinition == null
                 || _chlorateSaltDefinition == null)
             {
-                _session.Reset();
+                Session.Reset();
                 Debug.LogError(
                     $"{nameof(GameFlowController)} requires energy bar, potato, aluminum alloy and chlorate salt " +
                     "definitions for starting cargo.", this);
                 return;
             }
 
+            int Quantity(int normalQuantity) => IsTestMode ? GameSessionState.TestItemQuantity : normalQuantity;
+
             var startingSupplies = new List<InventoryItemAmount>
             {
-                new InventoryItemAmount(_energyBarDefinition, GameSessionState.InitialEnergyBarCount),
-                new InventoryItemAmount(_potatoDefinition, GameSessionState.InitialPotatoCount),
-                new InventoryItemAmount(_aluminumAlloyDefinition, GameSessionState.InitialAluminumAlloyCount),
-                new InventoryItemAmount(_chlorateSaltDefinition, GameSessionState.InitialChlorateSaltCount)
+                new InventoryItemAmount(_energyBarDefinition, Quantity(GameSessionState.InitialEnergyBarCount)),
+                new InventoryItemAmount(_potatoDefinition, Quantity(GameSessionState.InitialPotatoCount)),
+                new InventoryItemAmount(_aluminumAlloyDefinition, Quantity(GameSessionState.InitialAluminumAlloyCount)),
+                new InventoryItemAmount(_chlorateSaltDefinition, Quantity(GameSessionState.InitialChlorateSaltCount))
             };
             if (_pickaxeDefinition != null)
             {
                 startingSupplies.Add(new InventoryItemAmount(
-                    _pickaxeDefinition, GameSessionState.InitialPickaxeCount));
+                    _pickaxeDefinition, Quantity(GameSessionState.InitialPickaxeCount)));
             }
 
             if (_petroleumDefinition != null)
             {
                 startingSupplies.Add(new InventoryItemAmount(
-                    _petroleumDefinition, GameSessionState.InitialPetroleumCanisterCount));
+                    _petroleumDefinition, Quantity(GameSessionState.InitialPetroleumCanisterCount)));
             }
 
             if (_shovelDefinition != null)
             {
                 startingSupplies.Add(new InventoryItemAmount(
-                    _shovelDefinition, GameSessionState.InitialShovelCount));
+                    _shovelDefinition, Quantity(GameSessionState.InitialShovelCount)));
             }
 
             if (_soilDefinition != null)
-                startingSupplies.Add(new InventoryItemAmount(_soilDefinition, GameSessionState.InitialSoilCount));
+                startingSupplies.Add(new InventoryItemAmount(
+                    _soilDefinition, Quantity(GameSessionState.InitialSoilCount)));
             if (_plasticSheetDefinition != null)
-                startingSupplies.Add(new InventoryItemAmount(_plasticSheetDefinition, GameSessionState.InitialPlasticSheetCount));
+                startingSupplies.Add(new InventoryItemAmount(
+                    _plasticSheetDefinition, Quantity(GameSessionState.InitialPlasticSheetCount)));
             if (_carbonDioxideCanisterDefinition != null)
                 startingSupplies.Add(new InventoryItemAmount(_carbonDioxideCanisterDefinition,
-                    GameSessionState.InitialCarbonDioxideCanisterCount));
+                    Quantity(GameSessionState.InitialCarbonDioxideCanisterCount)));
 
-            InventoryOperationResult result = _session.Reset(startingSupplies);
+            InventoryOperationResult result = IsTestMode
+                ? Session.ResetPlayerInventory(startingSupplies)
+                : Session.Reset(startingSupplies);
             if (!result.Succeeded)
             {
-                Debug.LogError($"Could not provision starting cargo: {result.Message}", this);
+                Debug.LogError($"Could not provision starting supplies: {result.Message}", this);
             }
         }
 
@@ -164,6 +176,7 @@ namespace PlanetSurvival.Core.Flow
             }
 
             _instance = this;
+            _session ??= new GameSessionState(IsTestMode);
             Initialize();
             DontDestroyOnLoad(gameObject);
         }
