@@ -2,6 +2,7 @@ using System;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.Oxygen.Domain;
+using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Water.Domain;
 using UnityEngine;
 
@@ -110,6 +111,30 @@ namespace PlanetSurvival.Farming.Domain
                 new[] { new InventoryItemAmount(Definition.CarbonDioxideCanister, accepted) }, null);
             if (!consumed.Succeeded) return 0;
             ReceiveCarbonDioxide(accepted * Definition.CarbonDioxideLitersPerCanister);
+            return accepted;
+        }
+
+        public int AcceptableInputItems(ItemDefinition item, int maximumQuantity)
+        {
+            if (item == null || maximumQuantity <= 0 || item.ItemId != Definition.CarbonDioxideCanister.ItemId)
+            {
+                return 0;
+            }
+
+            int room = Mathf.FloorToInt((RemainingCarbonDioxideCapacity + Epsilon) /
+                                        Definition.CarbonDioxideLitersPerCanister);
+            return Math.Min(maximumQuantity, room);
+        }
+
+        /// <summary>Automation input for CO₂ canisters already removed from an upstream buffer.</summary>
+        public int InsertInputItems(ItemDefinition item, int quantity)
+        {
+            int accepted = AcceptableInputItems(item, quantity);
+            if (accepted > 0)
+            {
+                ReceiveCarbonDioxide(accepted * Definition.CarbonDioxideLitersPerCanister);
+            }
+
             return accepted;
         }
 

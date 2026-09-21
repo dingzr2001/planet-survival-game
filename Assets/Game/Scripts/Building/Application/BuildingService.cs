@@ -23,6 +23,7 @@ namespace PlanetSurvival.Building.Application
         private readonly BuildGrid _grid;
         private readonly TerrainTileMap _terrain;
         private readonly List<BuildSite> _sites = new();
+        private int _nextTransferPostNumber = 1;
 
         public BuildingService(InventoryModel inventory, BuildGrid grid, TerrainTileMap terrain = null)
         {
@@ -80,6 +81,12 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.InvalidBuildable, error);
             }
 
+            if (buildable.IsItemTransferPost)
+            {
+                return BuildResult.Fail(BuildFailure.InvalidBuildable,
+                    "Transfer posts must be placed on the half-cell grid.");
+            }
+
             if (footprint.Size != buildable.Footprint)
             {
                 return BuildResult.Fail(
@@ -104,6 +111,32 @@ namespace PlanetSurvival.Building.Application
             {
                 return BuildResult.Fail(
                     BuildFailure.MissingResources,
+                    $"Your backpack lacks the materials for '{buildable.DisplayName}'.");
+            }
+
+            return BuildResult.Success();
+        }
+
+        public BuildResult CanPlaceTransferPost(BuildableDefinition buildable, Vector2Int quarterCell)
+        {
+            if (buildable == null || !buildable.IsItemTransferPost)
+            {
+                return BuildResult.Fail(BuildFailure.InvalidBuildable, "Only an item transfer post uses half-cell placement.");
+            }
+
+            if (!buildable.IsValid(out string error))
+            {
+                return BuildResult.Fail(BuildFailure.InvalidBuildable, error);
+            }
+
+            if (!_grid.IsQuarterCellFree(quarterCell))
+            {
+                return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
+            }
+
+            if (!CanAfford(buildable))
+            {
+                return BuildResult.Fail(BuildFailure.MissingResources,
                     $"Your backpack lacks the materials for '{buildable.DisplayName}'.");
             }
 
@@ -158,18 +191,40 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
             }
 
-            _sites.Add(placed);
             site = placed;
-            SitePlaced?.Invoke(placed);
-            if (placed.State == BuildState.Completed)
+            RegisterPlacedSite(placed);
+
+            return BuildResult.Success();
+        }
+
+        public BuildResult TryPlaceTransferPost(BuildableDefinition buildable, Vector2Int quarterCell,
+            out BuildSite site)
+        {
+            site = null;
+            BuildResult validation = CanPlaceTransferPost(buildable, quarterCell);
+            if (!validation.Succeeded)
             {
-                SiteCompleted?.Invoke(placed);
-            }
-            else
-            {
-                placed.Completed += () => SiteCompleted?.Invoke(placed);
+                return validation;
             }
 
+            List<InventoryItemAmount> paidMaterials = ResolvePayment(buildable);
+            InventoryOperationResult paid = _inventory.ApplyTransaction(paidMaterials, null);
+            if (!paid.Succeeded)
+            {
+                return BuildResult.Fail(BuildFailure.MissingResources, paid.Message);
+            }
+
+            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, quarterCell, paidMaterials,
+                _nextTransferPostNumber);
+            if (!_grid.TryOccupyQuarterCell(quarterCell, placed))
+            {
+                _inventory.ApplyTransaction(null, paidMaterials);
+                return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
+            }
+
+            RegisterPlacedSite(placed);
+            _nextTransferPostNumber++;
+            site = placed;
             return BuildResult.Success();
         }
 
@@ -226,6 +281,69 @@ namespace PlanetSurvival.Building.Application
                     _sites[i].Advance(elapsedSeconds);
                 }
             }
+
+            AdvanceSolarPanels(elapsedSeconds);
+        }
+
+        /// <summary>
+        /// Solar panels share their output between completed mining drills placed directly beside them.
+        /// This deliberately keeps the first power loop local and readable: no invisible global grid is
+        /// required, and the panel's finite output cannot be duplicated across several machines.
+        /// </summary>
+        private void AdvanceSolarPanels(float elapsedSeconds)
+        {
+            for (int panelIndex = 0; panelIndex < _sites.Count; panelIndex++)
+            {
+                BuildSite panel = _sites[panelIndex];
+                if (panel.State != BuildState.Completed || !panel.Definition.IsSolarPanel)
+                {
+                    continue;
+                }
+
+                float remainingEnergy = panel.Definition.SolarElectricityPerSecond * elapsedSeconds;
+                int remainingDrills = CountAdjacentCompletedDrills(panel);
+                if (remainingDrills == 0)
+                {
+                    continue;
+                }
+
+                for (int drillIndex = 0; drillIndex < _sites.Count && remainingEnergy > 0f; drillIndex++)
+                {
+                    BuildSite drill = _sites[drillIndex];
+                    if (drill.State != BuildState.Completed || drill.MiningDrill == null ||
+                        !AreAdjacent(panel.Footprint, drill.Footprint))
+                    {
+                        continue;
+                    }
+
+                    float offered = remainingEnergy / remainingDrills;
+                    remainingEnergy -= drill.MiningDrill.ReceiveElectricity(offered);
+                    remainingDrills--;
+                }
+            }
+        }
+
+        private int CountAdjacentCompletedDrills(BuildSite panel)
+        {
+            int count = 0;
+            for (int i = 0; i < _sites.Count; i++)
+            {
+                BuildSite candidate = _sites[i];
+                if (candidate.State == BuildState.Completed && candidate.MiningDrill != null &&
+                    AreAdjacent(panel.Footprint, candidate.Footprint))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static bool AreAdjacent(in BuildFootprint first, in BuildFootprint second)
+        {
+            int xGap = Mathf.Max(0, Mathf.Max(first.Origin.x - second.Max.x - 1, second.Origin.x - first.Max.x - 1));
+            int yGap = Mathf.Max(0, Mathf.Max(first.Origin.y - second.Max.y - 1, second.Origin.y - first.Max.y - 1));
+            return xGap == 0 && yGap == 0;
         }
 
         /// <summary>Wipes every player-built site. Environment occupants registered on the grid remain.</summary>
@@ -275,6 +393,20 @@ namespace PlanetSurvival.Building.Application
             }
 
             return payment;
+        }
+
+        private void RegisterPlacedSite(BuildSite placed)
+        {
+            _sites.Add(placed);
+            SitePlaced?.Invoke(placed);
+            if (placed.State == BuildState.Completed)
+            {
+                SiteCompleted?.Invoke(placed);
+            }
+            else
+            {
+                placed.Completed += () => SiteCompleted?.Invoke(placed);
+            }
         }
 
         private static void AddOrMerge(List<InventoryItemAmount> amounts, ItemDefinition item, int quantity)

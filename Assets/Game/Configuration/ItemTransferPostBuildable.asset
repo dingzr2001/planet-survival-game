@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: ItemTransferPostBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: item_transfer_post
+  _displayName: Transfer Post
+  _description: A half-cell logistics endpoint. Right-click it to choose one adjacent or remote input and output.
+  _icon: {fileID: 21300000, guid: c187a0d37c2c4ee1b6eacdb94064a1d8, type: 3}
+  _footprint: {x: 1, y: 1}
+  _buildSeconds: 4
+  _cost:
+  - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
+    _quantity: 2
+  - _item: {fileID: 11400000, guid: 699b0e271555d490dafbd12ef8a0c34f, type: 2}
+    _quantity: 1
+  - _item: {fileID: 11400000, guid: 7cd4cb91d31d48cbad12928b28da83b2, type: 2}
+    _quantity: 1
+  _taggedCost: []
+  _worldSprite: {fileID: 21300000, guid: c187a0d37c2c4ee1b6eacdb94064a1d8, type: 3}
+  _transferColorMask: {fileID: 21300000, guid: 341b238f59f1549dfac06958b9c3af16, type: 3}
+  _worldHeight: 0.65
+  _bodyColor: {r: 0.22, g: 0.28, b: 0.34, a: 1}
+  _cookingStation: {fileID: 0}
+  _isOxygenCandle: 0
+  _miningDrill: {fileID: 0}
+  _planterBox: {fileID: 0}
+  _isItemTransferPost: 1

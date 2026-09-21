@@ -47,7 +47,8 @@ namespace PlanetSurvival.Editor
         private const string PotatoPath = ConfigurationDirectory + "/Potato.asset";
         private const string AluminumAlloyPath = ConfigurationDirectory + "/AluminumAlloy.asset";
         private const string RawStonePath = ConfigurationDirectory + "/RawStone.asset";
-        private const string MetalScrapPath = ConfigurationDirectory + "/MetalScrap.asset";
+        private const string EntanglementRelayCorePath =
+            ConfigurationDirectory + "/EntanglementRelayCore.asset";
         private const string ChlorateSaltPath = ConfigurationDirectory + "/ChlorateSalt.asset";
         private const string IronOrePath = ConfigurationDirectory + "/IronOre.asset";
         private const string GravelPath = ConfigurationDirectory + "/Gravel.asset";
@@ -65,6 +66,8 @@ namespace PlanetSurvival.Editor
         private const string SoilPath = ConfigurationDirectory + "/Soil.asset";
         private const string PlasticSheetPath = ConfigurationDirectory + "/PlasticSheet.asset";
         private const string CarbonDioxideCanisterPath = ConfigurationDirectory + "/CarbonDioxideCanister.asset";
+        private const string CarbonDioxideFilterCartridgePath =
+            ConfigurationDirectory + "/CarbonDioxideFilterCartridge.asset";
         private const string PlanterBoxDefinitionPath = ConfigurationDirectory + "/PlanterBox.asset";
         private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
         private const string ShovelPath = ConfigurationDirectory + "/Shovel.asset";
@@ -158,6 +161,9 @@ namespace PlanetSurvival.Editor
         private const float GravelExtractorPetroleumPerItem = .5f;
         private const float GravelExtractorPetroleumCapacity = 20f;
         private const float PlanterBoxBuildSeconds = 10f;
+        private const float ItemTransferPostBuildSeconds = 4f;
+        private const float SolarPanelBuildSeconds = 8f;
+        private const float SolarPanelElectricityPerSecond = 2f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
@@ -193,6 +199,13 @@ namespace PlanetSurvival.Editor
             ItemDefinition soil = GetOrCreateItem("Soil", "soil", "Soil", 1, 20);
             ItemDefinition plasticSheet = GetOrCreateItem("PlasticSheet", "plastic_sheet", "Plastic Sheet", 1, 20);
             ItemDefinition carbonDioxide = GetOrCreateItem("CarbonDioxideCanister", "carbon_dioxide_canister", "CO₂ Canister", 2, 10);
+            ItemDefinition carbonDioxideFilter = GetOrCreateItem(
+                "CarbonDioxideFilterCartridge", "carbon_dioxide_filter_cartridge", "CO₂ Filter Cartridge", 1, 10);
+            plasticSheet.ConfigureDescription("Rigid transparent plastic board for lightweight surface construction.");
+            carbonDioxideFilter.ConfigureDescription("Replaceable cartridge for future carbon-dioxide filtration equipment.");
+            EditorUtility.SetDirty(plasticSheet);
+            EditorUtility.SetDirty(carbonDioxideFilter);
+            ItemDefinition entanglementRelayCore = GetOrCreateEntanglementRelayCore();
             PlayerToolAnimationDefinition pickaxeAnimation = GetOrCreatePickaxeAnimation(pickaxe);
             PlayerToolAnimationDefinition shovelAnimation = GetOrCreateShovelAnimation(shovel);
             worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation, shovelAnimation);
@@ -211,7 +224,7 @@ namespace PlanetSurvival.Editor
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
             CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
-                soil, plasticSheet, carbonDioxide);
+                soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
@@ -224,6 +237,56 @@ namespace PlanetSurvival.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("Planet Survival formal scenes and default configuration are ready.");
+        }
+
+        /// <summary>
+        /// Imports the supplied plastic-board and CO₂-filter artwork, creates their item definitions, and
+        /// appends the solar panel to the existing building catalog without regenerating any scene.
+        /// </summary>
+        [MenuItem("Planet Survival/Setup Solar Content")]
+        public static void SetupSolarContent()
+        {
+            EnsureDirectory("Assets/Game", "Configuration");
+            ItemDefinition plasticSheet = GetOrCreateItem(
+                "PlasticSheet", "plastic_sheet", "Plastic Sheet", 1, 20);
+            ItemDefinition carbonDioxideFilter = GetOrCreateItem(
+                "CarbonDioxideFilterCartridge", "carbon_dioxide_filter_cartridge", "CO₂ Filter Cartridge", 1, 10);
+            plasticSheet.ConfigureDescription("Rigid transparent plastic board for lightweight surface construction.");
+            carbonDioxideFilter.ConfigureDescription("Replaceable cartridge for future carbon-dioxide filtration equipment.");
+            EditorUtility.SetDirty(plasticSheet);
+            EditorUtility.SetDirty(carbonDioxideFilter);
+            UiArtSetup.AssignItemIcons();
+
+            BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
+            if (catalog == null)
+            {
+                Debug.LogError("Solar content setup requires the default building catalog. Run Setup Formal Scenes first.");
+                return;
+            }
+
+            ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
+            BuildableDefinition solarPanel = GetOrCreateBuildable(
+                "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
+                SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
+                "Generates 2 electricity units per second for adjacent mining drills. Place it beside a drill.",
+                new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("SolarPanel");
+            solarPanel.ConfigurePresentation(sprite, .15f, new Color(.12f, .2f, .34f));
+            solarPanel.ConfigureIcon(sprite);
+            solarPanel.ConfigureSolarPanel(true, SolarPanelElectricityPerSecond);
+            EditorUtility.SetDirty(solarPanel);
+
+            var buildables = new List<BuildableDefinition>(catalog.Buildables);
+            if (!buildables.Contains(solarPanel))
+            {
+                buildables.Add(solarPanel);
+                catalog.Configure(buildables.ToArray());
+                EditorUtility.SetDirty(catalog);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Plastic board, CO₂ filter cartridge, and solar panel are ready.");
         }
 
         /// <summary>
@@ -500,6 +563,11 @@ namespace PlanetSurvival.Editor
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
             ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
+            // Scrap is feedstock for a future furnace, not a construction-ready metal plate.
+            scrap.ConfigureMaterialTags(ItemMaterialTag.None);
+            scrap.ConfigureDescription(
+                "Mixed wreckage recovered from surface debris. It must be smelted before it can be used in construction.");
+            EditorUtility.SetDirty(scrap);
 
             ResourceNodeDefinition rock = GetOrCreateNode("RockNode", "rock", "Rock", 2.5f,
                 pickaxe.ItemId,
@@ -985,6 +1053,24 @@ namespace PlanetSurvival.Editor
             return item;
         }
 
+        private static ItemDefinition GetOrCreateEntanglementRelayCore()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(EntanglementRelayCorePath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Entanglement Relay Core";
+                AssetDatabase.CreateAsset(item, EntanglementRelayCorePath);
+            }
+
+            item.Configure("entanglement_relay_core", "Entanglement Relay Core", 3, 10, false, true);
+            item.ConfigureDescription(
+                "A calibrated field core that preserves a paired transport channel across distance.");
+            item.ConfigureMaterialTags(ItemMaterialTag.None);
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
         /// <summary>
         /// The habitat galley range and the dishes it serves. Recipes stay separate assets so a second
         /// station can offer the same dish once more cooking spots exist.
@@ -1073,8 +1159,7 @@ namespace PlanetSurvival.Editor
         {
             ItemDefinition stone = AssetDatabase.LoadAssetAtPath<ItemDefinition>(RawStonePath)
                                    ?? GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
-            ItemDefinition scrap = AssetDatabase.LoadAssetAtPath<ItemDefinition>(MetalScrapPath)
-                                   ?? GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
+            ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
             CraftingRecipe pickaxeRecipe = GetOrCreateRecipe(
                 PickaxeRecipePath,
                 "powered_pickaxe",
@@ -1082,7 +1167,7 @@ namespace PlanetSurvival.Editor
                 new[]
                 {
                     new CraftingItemAmount(stone, 3),
-                    new CraftingItemAmount(scrap, 2)
+                    new CraftingItemAmount(aluminumAlloy, 2)
                 },
                 new[] { new CraftingItemAmount(pickaxe, 1) },
                 0f,
@@ -1113,9 +1198,8 @@ namespace PlanetSurvival.Editor
             ItemDefinition carbonDioxideCanister = null)
         {
             ItemDefinition stone = GetOrCreateItem("RawStone", "raw_stone", "Raw Stone", 1, 20);
-            ItemDefinition scrap = GetOrCreateItem("MetalScrap", "metal_scrap", "Metal Scrap", 2, 10);
-            scrap.ConfigureMaterialTags(ItemMaterialTag.MetalPlate);
-            EditorUtility.SetDirty(scrap);
+            ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
+            ItemDefinition entanglementCore = GetOrCreateEntanglementRelayCore();
             soil ??= GetOrCreateItem("Soil", "soil", "Soil", 1, 20);
             plasticSheet ??= GetOrCreateItem("PlasticSheet", "plastic_sheet", "Plastic Sheet", 1, 20);
             carbonDioxideCanister ??= GetOrCreateItem(
@@ -1127,12 +1211,12 @@ namespace PlanetSurvival.Editor
                 new CraftingItemAmount(stone, 4));
             BuildableDefinition barricade = GetOrCreateBuildable("MetalBarricadeBuildable", "metal_barricade",
                 "Metal Barricade", new Vector2Int(2, 1), MetalBarricadeSeconds, 1.1f, new Color(.62f, .66f, .72f),
-                "A welded hull panel, two cells wide.",
-                new CraftingItemAmount(scrap, 3));
+                "A braced alloy hull panel, two cells wide.",
+                new CraftingItemAmount(aluminumAlloy, 3));
             BuildableDefinition fieldOven = GetOrCreateBuildable("FieldOvenBuildable", "field_oven", "Field Oven",
                 new Vector2Int(2, 2), FieldOvenSeconds, 1.6f, new Color(.72f, .44f, .26f),
                 "An outdoor range. Cooks the same dishes as the galley oven.",
-                new CraftingItemAmount(scrap, 6), new CraftingItemAmount(stone, 6));
+                new CraftingItemAmount(aluminumAlloy, 4), new CraftingItemAmount(stone, 6));
             fieldOven.ConfigureCookingStation(oven);
             EditorUtility.SetDirty(fieldOven);
             BuildableDefinition placedOxygenCandle = GetOrCreateBuildable(
@@ -1166,6 +1250,32 @@ namespace PlanetSurvival.Editor
             planterBox.ConfigurePlanterBox(planterDefinition);
             EditorUtility.SetDirty(planterBox);
 
+            BuildableDefinition transferPost = GetOrCreateBuildable(
+                "ItemTransferPostBuildable", "item_transfer_post", "Transfer Post", Vector2Int.one,
+                ItemTransferPostBuildSeconds, .65f, new Color(.22f, .28f, .34f),
+                "A half-cell logistics endpoint. Right-click it to choose one adjacent or remote input and output.",
+                new CraftingItemAmount(aluminumAlloy, 2),
+                new CraftingItemAmount(plasticSheet, 1),
+                new CraftingItemAmount(entanglementCore, 1));
+            Sprite transferPostSprite = WorldArtSetup.ImportBuildingSprite("ItemTransferPost");
+            Sprite transferPostColorMask = WorldArtSetup.ImportBuildingSprite("ItemTransferPostColorMask");
+            transferPost.ConfigurePresentation(transferPostSprite, .65f, new Color(.22f, .28f, .34f));
+            transferPost.ConfigureIcon(transferPostSprite);
+            transferPost.ConfigureItemTransferPost(true);
+            transferPost.ConfigureTransferColorMask(transferPostColorMask);
+            EditorUtility.SetDirty(transferPost);
+
+            BuildableDefinition solarPanel = GetOrCreateBuildable(
+                "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
+                SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
+                "Generates 2 electricity units per second for adjacent mining drills. Place it beside a drill.",
+                new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
+            Sprite solarPanelSprite = WorldArtSetup.ImportBuildingSprite("SolarPanel");
+            solarPanel.ConfigurePresentation(solarPanelSprite, .15f, new Color(.12f, .2f, .34f));
+            solarPanel.ConfigureIcon(solarPanelSprite);
+            solarPanel.ConfigureSolarPanel(true, SolarPanelElectricityPerSecond);
+            EditorUtility.SetDirty(solarPanel);
+
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
             {
@@ -1175,7 +1285,7 @@ namespace PlanetSurvival.Editor
             }
 
             catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor,
-                planterBox);
+                planterBox, transferPost, solarPanel);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
@@ -1357,13 +1467,14 @@ namespace PlanetSurvival.Editor
         private static void CreateBootstrapScene(ItemDefinition energyBar, ItemDefinition potato,
             ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
             ItemDefinition petroleum, ItemDefinition shovel, ItemDefinition soil,
-            ItemDefinition plasticSheet, ItemDefinition carbonDioxideCanister)
+            ItemDefinition plasticSheet, ItemDefinition carbonDioxideCanister,
+            ItemDefinition entanglementRelayCore, ItemDefinition carbonDioxideFilterCartridge)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
                 energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
-                soil, plasticSheet, carbonDioxideCanister);
+                soil, plasticSheet, carbonDioxideCanister, entanglementRelayCore, carbonDioxideFilterCartridge);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -1385,7 +1496,9 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(ShovelPath),
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(SoilPath),
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(PlasticSheetPath),
-                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideCanisterPath));
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideCanisterPath),
+                GetOrCreateEntanglementRelayCore(),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideFilterCartridgePath));
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }

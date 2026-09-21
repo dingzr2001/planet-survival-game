@@ -13,7 +13,9 @@ namespace PlanetSurvival.Building.Domain
         public const float DefaultCellSize = 1f;
 
         private readonly Dictionary<Vector2Int, object> _cells = new();
+        private readonly Dictionary<Vector2Int, object> _quarterCells = new();
         private readonly Dictionary<object, BuildFootprint> _occupants = new();
+        private readonly Dictionary<object, Vector2Int> _quarterOccupants = new();
         private readonly float _cellSize;
         private readonly Vector3 _origin;
 
@@ -31,6 +33,7 @@ namespace PlanetSurvival.Building.Domain
         public float CellSize => _cellSize;
         public Vector3 Origin => _origin;
         public int OccupiedCellCount => _cells.Count;
+        public int OccupiedQuarterCellCount => _quarterCells.Count;
 
         public Vector2Int WorldToCell(Vector3 world)
         {
@@ -46,6 +49,24 @@ namespace PlanetSurvival.Building.Domain
                 _origin.x + (cell.x + .5f) * _cellSize,
                 _origin.y,
                 _origin.z + (cell.y + .5f) * _cellSize);
+        }
+
+        /// <summary>Converts a position to one of the four half-size cells inside a normal build cell.</summary>
+        public Vector2Int WorldToQuarterCell(Vector3 world)
+        {
+            float quarterSize = _cellSize * .5f;
+            return new Vector2Int(
+                Mathf.FloorToInt((world.x - _origin.x) / quarterSize),
+                Mathf.FloorToInt((world.z - _origin.z) / quarterSize));
+        }
+
+        public Vector3 QuarterCellCenter(Vector2Int quarterCell)
+        {
+            float quarterSize = _cellSize * .5f;
+            return new Vector3(
+                _origin.x + (quarterCell.x + .5f) * quarterSize,
+                _origin.y,
+                _origin.z + (quarterCell.y + .5f) * quarterSize);
         }
 
         /// <summary>The world position a footprint's object sits at: the centre of the covered rectangle.</summary>
@@ -107,13 +128,55 @@ namespace PlanetSurvival.Building.Domain
         {
             for (int i = 0; i < footprint.CellCount; i++)
             {
-                if (_cells.TryGetValue(footprint.CellAt(i), out object occupant) &&
+                Vector2Int cell = footprint.CellAt(i);
+                if (_cells.TryGetValue(cell, out object occupant) &&
                     !ReferenceEquals(occupant, ignoredOccupant))
                 {
                     return false;
                 }
+
+                Vector2Int firstQuarter = cell * 2;
+                for (int z = 0; z < 2; z++)
+                {
+                    for (int x = 0; x < 2; x++)
+                    {
+                        if (_quarterCells.TryGetValue(firstQuarter + new Vector2Int(x, z), out occupant) &&
+                            !ReferenceEquals(occupant, ignoredOccupant))
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
 
+            return true;
+        }
+
+        public bool IsQuarterCellFree(Vector2Int quarterCell, object ignoredOccupant = null)
+        {
+            if (_quarterCells.TryGetValue(quarterCell, out object quarterOccupant) &&
+                !ReferenceEquals(quarterOccupant, ignoredOccupant))
+            {
+                return false;
+            }
+
+            var containingCell = new Vector2Int(
+                Mathf.FloorToInt(quarterCell.x / 2f),
+                Mathf.FloorToInt(quarterCell.y / 2f));
+            return !_cells.TryGetValue(containingCell, out object occupant) ||
+                   ReferenceEquals(occupant, ignoredOccupant);
+        }
+
+        public bool TryOccupyQuarterCell(Vector2Int quarterCell, object occupant)
+        {
+            if (occupant == null || !IsQuarterCellFree(quarterCell, occupant))
+            {
+                return false;
+            }
+
+            Release(occupant);
+            _quarterCells[quarterCell] = occupant;
+            _quarterOccupants[occupant] = quarterCell;
             return true;
         }
 
@@ -136,7 +199,22 @@ namespace PlanetSurvival.Building.Domain
 
         public void Release(object occupant)
         {
-            if (occupant == null || !_occupants.TryGetValue(occupant, out BuildFootprint footprint))
+            if (occupant == null)
+            {
+                return;
+            }
+
+            if (_quarterOccupants.TryGetValue(occupant, out Vector2Int quarterCell))
+            {
+                if (_quarterCells.TryGetValue(quarterCell, out object current) && ReferenceEquals(current, occupant))
+                {
+                    _quarterCells.Remove(quarterCell);
+                }
+
+                _quarterOccupants.Remove(occupant);
+            }
+
+            if (!_occupants.TryGetValue(occupant, out BuildFootprint footprint))
             {
                 return;
             }
@@ -158,6 +236,22 @@ namespace PlanetSurvival.Building.Domain
             return _cells.TryGetValue(cell, out object occupant) ? occupant : null;
         }
 
+        public object GetQuarterCellOccupant(Vector2Int quarterCell)
+        {
+            return _quarterCells.TryGetValue(quarterCell, out object occupant) ? occupant : null;
+        }
+
+        public bool TryGetQuarterCell(object occupant, out Vector2Int quarterCell)
+        {
+            if (occupant != null)
+            {
+                return _quarterOccupants.TryGetValue(occupant, out quarterCell);
+            }
+
+            quarterCell = default;
+            return false;
+        }
+
         public bool TryGetFootprint(object occupant, out BuildFootprint footprint)
         {
             if (occupant != null)
@@ -173,6 +267,8 @@ namespace PlanetSurvival.Building.Domain
         {
             _cells.Clear();
             _occupants.Clear();
+            _quarterCells.Clear();
+            _quarterOccupants.Clear();
         }
     }
 }

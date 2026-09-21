@@ -11,6 +11,7 @@ using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.Mining;
 using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.UI.Farming;
+using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.World.Generation;
 using UnityEngine;
 
@@ -42,6 +43,7 @@ namespace PlanetSurvival.Building.Runtime
         private MiningDrillView _miningDrillView;
         private PlanterBoxView _planterBoxView;
         private GameClock _clock;
+        private ItemTransferSystem _itemTransferSystem;
         private Transform _player;
         private Camera _camera;
 
@@ -50,13 +52,16 @@ namespace PlanetSurvival.Building.Runtime
         private Transform _ghostBody;
         private SpriteRenderer _ghostPatch;
         private BuildFootprint _footprint;
+        private Vector2Int _quarterCell;
         private BuildResult _preview = BuildResult.Success();
+        private int _lastRightClickCancelFrame = -1;
 
         public BuildingService Service => _service;
         public BuildingCatalog Catalog => _catalog;
         public bool IsPlacing => _selected != null;
         public BuildableDefinition Selected => _selected;
         public BuildFootprint Footprint => _footprint;
+        public bool CancelledPlacementThisFrame => _lastRightClickCancelFrame == Time.frameCount;
 
         /// <summary>Why the current spot is rejected. Succeeded while the preview is green.</summary>
         public BuildResult Preview => _preview;
@@ -64,7 +69,7 @@ namespace PlanetSurvival.Building.Runtime
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
             GameClock clock = null, MiningDrillView miningDrillView = null,
-            PlanterBoxView planterBoxView = null)
+            PlanterBoxView planterBoxView = null, ItemTransferSystem itemTransferSystem = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -84,6 +89,7 @@ namespace PlanetSurvival.Building.Runtime
             _miningDrillView = miningDrillView;
             _planterBoxView = planterBoxView;
             _clock = clock;
+            _itemTransferSystem = itemTransferSystem;
             _service.SitePlaced += CreateSiteObject;
             _service.SiteRemoved += DestroySiteObject;
 
@@ -109,7 +115,7 @@ namespace PlanetSurvival.Building.Runtime
             _ghost.transform.SetParent(transform, false);
             _ghostBody = BuildingVisuals.CreateBody(_ghost.transform, buildable, _service.Grid.CellSize);
             _ghostPatch = BuildingVisuals.CreateFootprintPatch(_ghost.transform, buildable.Footprint,
-                _service.Grid.CellSize);
+                _service.Grid.CellSize, buildable.FootprintScale);
             UpdatePreview();
             return true;
         }
@@ -146,7 +152,9 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             BuildableDefinition buildable = _selected;
-            BuildResult result = _service.TryPlace(buildable, _footprint, out BuildSite _);
+            BuildResult result = buildable.IsItemTransferPost
+                ? _service.TryPlaceTransferPost(buildable, _quarterCell, out BuildSite _)
+                : _service.TryPlace(buildable, _footprint, out _);
             if (!result.Succeeded)
             {
                 return result;
@@ -177,6 +185,7 @@ namespace PlanetSurvival.Building.Runtime
             UpdatePreview();
             if (Input.GetMouseButtonDown(1))
             {
+                _lastRightClickCancelFrame = Time.frameCount;
                 CancelPlacement();
                 return;
             }
@@ -213,16 +222,27 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             BuildGrid grid = _service.Grid;
-            _footprint = grid.CreateFootprint(ground, _selected.Footprint);
-            Vector3 center = grid.Center(_footprint);
-            _preview = _service.CanPlace(_selected, _footprint);
+            Vector3 center;
+            if (_selected.IsItemTransferPost)
+            {
+                _quarterCell = grid.WorldToQuarterCell(ground);
+                center = grid.QuarterCellCenter(_quarterCell);
+                _preview = _service.CanPlaceTransferPost(_selected, _quarterCell);
+            }
+            else
+            {
+                _footprint = grid.CreateFootprint(ground, _selected.Footprint);
+                center = grid.Center(_footprint);
+                _preview = _service.CanPlace(_selected, _footprint);
+            }
             if (_preview.Succeeded && !IsWithinReach(center))
             {
                 _preview = BuildResult.Fail(BuildFailure.OutOfReach, "That spot is out of reach.");
             }
 
             // Building on top of yourself would trap the player inside a solid structure.
-            if (_preview.Succeeded && _player != null && _footprint.Contains(grid.WorldToCell(_player.position)))
+            if (_preview.Succeeded && !_selected.IsItemTransferPost && _player != null &&
+                _footprint.Contains(grid.WorldToCell(_player.position)))
             {
                 _preview = BuildResult.Fail(BuildFailure.Blocked, "You are standing there.");
             }
@@ -285,7 +305,9 @@ namespace PlanetSurvival.Building.Runtime
 
             var siteObject = new GameObject($"Building - {site.Definition.DisplayName}");
             siteObject.transform.SetParent(transform, false);
-            siteObject.transform.position = _service.Grid.Center(site.Footprint);
+            siteObject.transform.position = site.QuarterCell.HasValue
+                ? _service.Grid.QuarterCellCenter(site.QuarterCell.Value)
+                : _service.Grid.Center(site.Footprint);
             siteObject.AddComponent<BuildSiteView>().Bind(
                 site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site),
                 CreateMiningBinding(site),
@@ -294,6 +316,10 @@ namespace PlanetSurvival.Building.Runtime
                     ? _session.LandingPodOxygenSupply
                     : null,
                 _clock);
+            if (site.ItemTransferPost != null)
+            {
+                _itemTransferSystem?.Register(siteObject.GetComponent<ItemTransferPostStation>());
+            }
             _siteObjects.Add(site, siteObject);
         }
 
@@ -305,6 +331,10 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             _siteObjects.Remove(site);
+            if (siteObject != null)
+            {
+                _itemTransferSystem?.Unregister(siteObject.GetComponent<ItemTransferPostStation>());
+            }
             if (siteObject != null)
             {
                 Destroy(siteObject);

@@ -52,6 +52,7 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialSoilCount = 6;
         public const int InitialPlasticSheetCount = 4;
         public const int InitialCarbonDioxideCanisterCount = 4;
+        public const int InitialCarbonDioxideFilterCartridgeCount = 2;
 
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;

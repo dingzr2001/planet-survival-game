@@ -140,6 +140,29 @@ namespace PlanetSurvival.Mining.Domain
             return acceptedItems;
         }
 
+        public int AcceptableInputItems(ItemDefinition item, int maximumQuantity)
+        {
+            if (item == null || maximumQuantity <= 0 || item.ItemId != Definition.PetroleumItem.ItemId)
+            {
+                return 0;
+            }
+
+            int room = Mathf.FloorToInt((RemainingPetroleumCapacity + Epsilon) / Definition.PetroleumPerItem);
+            return Math.Min(maximumQuantity, room);
+        }
+
+        /// <summary>Automation input for petroleum canisters already removed from an upstream buffer.</summary>
+        public int InsertInputItems(ItemDefinition item, int quantity)
+        {
+            int accepted = AcceptableInputItems(item, quantity);
+            if (accepted > 0)
+            {
+                ReceivePetroleum(accepted * Definition.PetroleumPerItem);
+            }
+
+            return accepted;
+        }
+
         /// <summary>Player collection bypasses the automation output throttle but remains inventory-safe.</summary>
         public int CollectOre(int requestedItems, InventoryModel inventory)
         {

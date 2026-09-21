@@ -16,6 +16,7 @@ namespace PlanetSurvival.Storage.Runtime
         private string _displayName;
 
         public string Prompt => $"open {_displayName}";
+        public string DisplayName => _displayName;
         public InventoryModel Inventory => _inventory;
 
         public void Bind(string displayName, InventoryModel inventory, StorageView view)

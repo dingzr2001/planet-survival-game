@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Building.Runtime;
@@ -18,6 +19,8 @@ using PlanetSurvival.World.Interiors;
 using PlanetSurvival.World.Presentation;
 using PlanetSurvival.UI.Water;
 using PlanetSurvival.Water.Runtime;
+using PlanetSurvival.Transport.Runtime;
+using PlanetSurvival.UI.Transport;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -143,7 +146,8 @@ namespace PlanetSurvival.Tests
             string[] testItemIds =
             {
                 "energy_bar", "potato", "aluminum_alloy", "chlorate_salt", "pickaxe",
-                "petroleum_canister", "shovel", "soil", "plastic_sheet", "carbon_dioxide_canister"
+                "petroleum_canister", "shovel", "soil", "plastic_sheet", "carbon_dioxide_canister",
+                "entanglement_relay_core"
             };
             foreach (string itemId in testItemIds)
             {
@@ -170,6 +174,14 @@ namespace PlanetSurvival.Tests
                 "The surface bootstrap must expose the construction grid for placement diagnostics.");
             Assert.That(buildGridOverlay.IsVisible, Is.False,
                 "The construction grid should not obscure normal exploration until the player requests it.");
+            Assert.That(Object.FindFirstObjectByType<ItemTransferSystem>(), Is.Not.Null,
+                "The surface must run the item-transfer network beside the build grid.");
+            Assert.That(Object.FindFirstObjectByType<ItemTransferPostView>(), Is.Not.Null,
+                "Completed transfer posts need a right-click configuration panel.");
+            BuildingPlacementController placement = Object.FindFirstObjectByType<BuildingPlacementController>();
+            Assert.That(placement.Catalog.Buildables.Any(
+                    buildable => buildable != null && buildable.IsItemTransferPost), Is.True,
+                "The formal build catalog must offer the transfer post.");
             HorizonBackdrop backdrop = surfaceCamera.GetComponentInChildren<HorizonBackdrop>();
             Assert.That(backdrop, Is.Null,
                 "The overhead surface view should be filled by terrain rather than a distant horizon.");

@@ -5,6 +5,7 @@ using PlanetSurvival.Mining.Domain;
 using PlanetSurvival.Farming.Domain;
 using PlanetSurvival.Inventory.Domain;
 using System.Collections.Generic;
+using PlanetSurvival.Transport.Domain;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Domain
@@ -27,10 +28,24 @@ namespace PlanetSurvival.Building.Domain
     {
         internal BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint,
             IReadOnlyList<InventoryItemAmount> paidMaterials)
+            : this(siteId, definition, footprint, null, paidMaterials)
+        {
+        }
+
+        internal BuildSite(string siteId, BuildableDefinition definition, Vector2Int quarterCell,
+            IReadOnlyList<InventoryItemAmount> paidMaterials, int transferPostNumber)
+            : this(siteId, definition, default, quarterCell, paidMaterials, transferPostNumber)
+        {
+        }
+
+        private BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint,
+            Vector2Int? quarterCell, IReadOnlyList<InventoryItemAmount> paidMaterials,
+            int transferPostNumber = 0)
         {
             SiteId = siteId;
             Definition = definition;
             Footprint = footprint;
+            QuarterCell = quarterCell;
             TotalSeconds = Mathf.Max(0f, definition.BuildSeconds);
             RemainingSeconds = TotalSeconds;
             State = TotalSeconds <= 0f ? BuildState.Completed : BuildState.UnderConstruction;
@@ -49,18 +64,26 @@ namespace PlanetSurvival.Building.Domain
                 PlanterBox = new PlanterBox(definition.PlanterBox);
             }
 
+            if (definition.IsItemTransferPost)
+            {
+                int postNumber = Mathf.Max(1, transferPostNumber);
+                ItemTransferPost = new ItemTransferPost(postNumber, DefaultTransferColor(postNumber));
+            }
+
             PaidMaterials = paidMaterials ?? System.Array.Empty<InventoryItemAmount>();
         }
 
         public string SiteId { get; }
         public BuildableDefinition Definition { get; }
         public BuildFootprint Footprint { get; }
+        public Vector2Int? QuarterCell { get; }
         public BuildState State { get; private set; }
         public float RemainingSeconds { get; private set; }
         public float TotalSeconds { get; }
         public OxygenCandleBurn OxygenCandle { get; }
         public MiningDrill MiningDrill { get; }
         public PlanterBox PlanterBox { get; }
+        public ItemTransferPost ItemTransferPost { get; }
         public IReadOnlyList<InventoryItemAmount> PaidMaterials { get; }
 
         public float Progress => TotalSeconds <= 0f
@@ -102,6 +125,13 @@ namespace PlanetSurvival.Building.Domain
             State = BuildState.Completed;
             Changed?.Invoke();
             Completed?.Invoke();
+        }
+
+        private static Color DefaultTransferColor(int groupNumber)
+        {
+            Color color = Color.HSVToRGB(Mathf.Repeat(groupNumber * .173f, 1f), .72f, 1f);
+            color.a = 1f;
+            return color;
         }
     }
 }

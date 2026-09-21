@@ -28,6 +28,9 @@ namespace PlanetSurvival.Core.Flow
         [SerializeField] private ItemDefinition _soilDefinition;
         [SerializeField] private ItemDefinition _plasticSheetDefinition;
         [SerializeField] private ItemDefinition _carbonDioxideCanisterDefinition;
+        [SerializeField] private ItemDefinition _carbonDioxideFilterCartridgeDefinition;
+        [SerializeField, Tooltip("Debug-only prototype component used to exercise transfer-post construction before its production chain exists.")]
+        private ItemDefinition _entanglementRelayCoreDefinition;
         [Header("Debug")]
         [SerializeField, Tooltip(
             "Editor and Development Builds only. Starts every configured supply at 999 in the player's backpack.")]
@@ -60,7 +63,9 @@ namespace PlanetSurvival.Core.Flow
             ItemDefinition aluminumAlloyDefinition, ItemDefinition chlorateSaltDefinition,
             ItemDefinition pickaxeDefinition = null, ItemDefinition petroleumDefinition = null,
             ItemDefinition shovelDefinition = null, ItemDefinition soilDefinition = null,
-            ItemDefinition plasticSheetDefinition = null, ItemDefinition carbonDioxideCanisterDefinition = null)
+            ItemDefinition plasticSheetDefinition = null, ItemDefinition carbonDioxideCanisterDefinition = null,
+            ItemDefinition entanglementRelayCoreDefinition = null,
+            ItemDefinition carbonDioxideFilterCartridgeDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
@@ -72,6 +77,8 @@ namespace PlanetSurvival.Core.Flow
             _soilDefinition = soilDefinition;
             _plasticSheetDefinition = plasticSheetDefinition;
             _carbonDioxideCanisterDefinition = carbonDioxideCanisterDefinition;
+            _entanglementRelayCoreDefinition = entanglementRelayCoreDefinition;
+            _carbonDioxideFilterCartridgeDefinition = carbonDioxideFilterCartridgeDefinition;
         }
 
         public void Initialize()
@@ -157,6 +164,12 @@ namespace PlanetSurvival.Core.Flow
             if (_carbonDioxideCanisterDefinition != null)
                 startingSupplies.Add(new InventoryItemAmount(_carbonDioxideCanisterDefinition,
                     Quantity(GameSessionState.InitialCarbonDioxideCanisterCount)));
+            if (_carbonDioxideFilterCartridgeDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_carbonDioxideFilterCartridgeDefinition,
+                    Quantity(GameSessionState.InitialCarbonDioxideFilterCartridgeCount)));
+            if (IsTestMode && _entanglementRelayCoreDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(
+                    _entanglementRelayCoreDefinition, GameSessionState.TestItemQuantity));
 
             InventoryOperationResult result = IsTestMode
                 ? Session.ResetPlayerInventory(startingSupplies)

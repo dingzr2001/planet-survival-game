@@ -9,6 +9,7 @@ using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
+using PlanetSurvival.Transport.Runtime;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -31,6 +32,7 @@ namespace PlanetSurvival.Building.Runtime
         private float _cellSize = BuildGrid.DefaultCellSize;
         private OxygenReservoir _oxygenReservoir;
         private GameClock _clock;
+        private ItemTransferPostStation _itemTransferPostStation;
 
         public BuildSite Site => _site;
 
@@ -87,12 +89,20 @@ namespace PlanetSurvival.Building.Runtime
 
             _collider = gameObject.AddComponent<BoxCollider>();
             _collider.size = new Vector3(
-                buildable.Footprint.x * _cellSize,
+                buildable.Footprint.x * _cellSize * buildable.FootprintScale,
                 BuildingVisuals.BodyHeight(_body, buildable.WorldHeight),
-                buildable.Footprint.y * _cellSize);
+                buildable.Footprint.y * _cellSize * buildable.FootprintScale);
             _collider.center = Vector3.up * (_collider.size.y * .5f);
 
-            _patch = BuildingVisuals.CreateFootprintPatch(transform, buildable.Footprint, _cellSize);
+            _patch = BuildingVisuals.CreateFootprintPatch(
+                transform, buildable.Footprint, _cellSize, buildable.FootprintScale);
+
+            if (site.ItemTransferPost != null)
+            {
+                _itemTransferPostStation = gameObject.AddComponent<ItemTransferPostStation>();
+                _itemTransferPostStation.Bind(site, _body);
+                _itemTransferPostStation.enabled = false;
+            }
 
             if (cooking.IsComplete)
             {
@@ -118,7 +128,8 @@ namespace PlanetSurvival.Building.Runtime
 
             Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
             BlobShadow.Create(transform,
-                new Vector2(buildable.Footprint.x * _cellSize, buildable.Footprint.y * _cellSize * .8f),
+                new Vector2(buildable.Footprint.x * _cellSize * buildable.FootprintScale,
+                    buildable.Footprint.y * _cellSize * buildable.FootprintScale * .8f),
                 shadowColor);
 
             _site.Changed += Refresh;
@@ -199,6 +210,11 @@ namespace PlanetSurvival.Building.Runtime
             // The outlined patch marks cells that are spoken for while the site is still a promise. Once the
             // structure stands it is the structure that shows where it is, so the outline only frames it.
             _patch.enabled = false;
+            if (_itemTransferPostStation != null)
+            {
+                _itemTransferPostStation.enabled = true;
+                _itemTransferPostStation.RefreshPresentation();
+            }
             if (_site.OxygenCandle != null && !_site.OxygenCandle.IsIgnited && _clock != null)
             {
                 _site.OxygenCandle.Ignite(_clock.ElapsedDays);

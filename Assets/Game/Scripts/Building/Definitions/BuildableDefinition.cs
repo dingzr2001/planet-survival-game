@@ -34,6 +34,8 @@ namespace PlanetSurvival.Building.Definitions
         [Header("Presentation")]
         [SerializeField, Tooltip("Optional world artwork. Without it the building is drawn as a tinted block.")]
         private Sprite _worldSprite;
+        [SerializeField, Tooltip("Optional colour mask aligned with the world sprite, used by transfer posts.")]
+        private Sprite _transferColorMask;
         [SerializeField, Min(.1f)] private float _worldHeight = 1.6f;
         [SerializeField] private Color _bodyColor = new(.62f, .6f, .56f);
 
@@ -46,6 +48,12 @@ namespace PlanetSurvival.Building.Definitions
         private MiningDrillDefinition _miningDrill;
         [SerializeField, Tooltip("Optional: the finished building operates as this planter box.")]
         private PlanterBoxDefinition _planterBox;
+        [SerializeField, Tooltip("The finished building is a half-cell item transfer post.")]
+        private bool _isItemTransferPost;
+        [SerializeField, Tooltip("The finished building generates electricity for adjacent mining drills.")]
+        private bool _isSolarPanel;
+        [SerializeField, Min(.01f), Tooltip("Electricity units generated per real-time second.")]
+        private float _solarElectricityPerSecond = 1f;
 
         public string BuildableId => _buildableId;
         public string DisplayName => _displayName;
@@ -56,12 +64,19 @@ namespace PlanetSurvival.Building.Definitions
         public IReadOnlyList<TaggedBuildingMaterialAmount> TaggedCost =>
             _taggedCost ?? Array.Empty<TaggedBuildingMaterialAmount>();
         public Sprite WorldSprite => _worldSprite;
+        public Sprite TransferColorMask => _transferColorMask;
         public float WorldHeight => Mathf.Max(.1f, _worldHeight);
         public Color BodyColor => _bodyColor;
         public CookingStationDefinition CookingStation => _cookingStation;
         public bool IsOxygenCandle => _isOxygenCandle;
         public MiningDrillDefinition MiningDrill => _miningDrill;
         public PlanterBoxDefinition PlanterBox => _planterBox;
+        public bool IsItemTransferPost => _isItemTransferPost;
+        public bool IsSolarPanel => _isSolarPanel;
+        public float SolarElectricityPerSecond => Mathf.Max(.01f, _solarElectricityPerSecond);
+
+        /// <summary>World width/depth occupied by this buildable, in construction-cell units.</summary>
+        public float FootprintScale => _isItemTransferPost ? .5f : 1f;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -88,6 +103,18 @@ namespace PlanetSurvival.Building.Definitions
             if (_footprint.x <= 0 || _footprint.y <= 0)
             {
                 error = $"Buildable '{_buildableId}' needs a footprint of at least one cell per axis.";
+                return false;
+            }
+
+            if (_isItemTransferPost && _footprint != Vector2Int.one)
+            {
+                error = $"Transfer post '{_buildableId}' must use a one-cell authored footprint; it is scaled to a half-cell at runtime.";
+                return false;
+            }
+
+            if (_isSolarPanel && _solarElectricityPerSecond <= 0f)
+            {
+                error = $"Solar panel '{_buildableId}' requires a positive electricity output.";
                 return false;
             }
 
@@ -198,6 +225,22 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigurePlanterBox(PlanterBoxDefinition planterBox)
         {
             _planterBox = planterBox;
+        }
+
+        public void ConfigureItemTransferPost(bool isItemTransferPost)
+        {
+            _isItemTransferPost = isItemTransferPost;
+        }
+
+        public void ConfigureSolarPanel(bool isSolarPanel, float electricityPerSecond)
+        {
+            _isSolarPanel = isSolarPanel;
+            _solarElectricityPerSecond = Mathf.Max(.01f, electricityPerSecond);
+        }
+
+        public void ConfigureTransferColorMask(Sprite colorMask)
+        {
+            _transferColorMask = colorMask;
         }
     }
 }
