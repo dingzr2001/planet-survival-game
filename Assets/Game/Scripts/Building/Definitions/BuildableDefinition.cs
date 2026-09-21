@@ -54,6 +54,14 @@ namespace PlanetSurvival.Building.Definitions
         private bool _isSolarPanel;
         [SerializeField, Min(.01f), Tooltip("Electricity units generated per real-time second.")]
         private float _solarElectricityPerSecond = 1f;
+        [SerializeField, Tooltip("The finished building routes configured electricity inputs to ordered outputs.")]
+        private bool _isPowerPole;
+        [SerializeField, Tooltip("Power-pole artwork when it has no configured or active input.")]
+        private Sprite _powerPoleOfflineSprite;
+        [SerializeField, Tooltip("Power-pole artwork when input cannot satisfy every output.")]
+        private Sprite _powerPoleLimitedSprite;
+        [SerializeField, Tooltip("Power-pole artwork when every configured output receives full power.")]
+        private Sprite _powerPolePoweredSprite;
 
         public string BuildableId => _buildableId;
         public string DisplayName => _displayName;
@@ -74,9 +82,15 @@ namespace PlanetSurvival.Building.Definitions
         public bool IsItemTransferPost => _isItemTransferPost;
         public bool IsSolarPanel => _isSolarPanel;
         public float SolarElectricityPerSecond => Mathf.Max(.01f, _solarElectricityPerSecond);
+        public bool IsPowerPole => _isPowerPole;
+        public Sprite PowerPoleOfflineSprite => _powerPoleOfflineSprite;
+        public Sprite PowerPoleLimitedSprite => _powerPoleLimitedSprite;
+        public Sprite PowerPolePoweredSprite => _powerPolePoweredSprite;
 
         /// <summary>World width/depth occupied by this buildable, in construction-cell units.</summary>
-        public float FootprintScale => _isItemTransferPost ? .5f : 1f;
+        /// <summary>Small utility buildings use one quarter-cell: half the normal building edge length.</summary>
+        public bool UsesQuarterCellPlacement => _isItemTransferPost || _isPowerPole;
+        public float FootprintScale => UsesQuarterCellPlacement ? .5f : 1f;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -106,9 +120,9 @@ namespace PlanetSurvival.Building.Definitions
                 return false;
             }
 
-            if (_isItemTransferPost && _footprint != Vector2Int.one)
+            if (UsesQuarterCellPlacement && _footprint != Vector2Int.one)
             {
-                error = $"Transfer post '{_buildableId}' must use a one-cell authored footprint; it is scaled to a half-cell at runtime.";
+                error = $"Half-cell building '{_buildableId}' must use a one-cell authored footprint; it is scaled to a half-cell at runtime.";
                 return false;
             }
 
@@ -236,6 +250,15 @@ namespace PlanetSurvival.Building.Definitions
         {
             _isSolarPanel = isSolarPanel;
             _solarElectricityPerSecond = Mathf.Max(.01f, electricityPerSecond);
+        }
+
+        public void ConfigurePowerPole(bool isPowerPole, Sprite offlineSprite, Sprite limitedSprite,
+            Sprite poweredSprite)
+        {
+            _isPowerPole = isPowerPole;
+            _powerPoleOfflineSprite = offlineSprite;
+            _powerPoleLimitedSprite = limitedSprite;
+            _powerPolePoweredSprite = poweredSprite;
         }
 
         public void ConfigureTransferColorMask(Sprite colorMask)

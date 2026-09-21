@@ -10,6 +10,7 @@ using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
 using PlanetSurvival.Transport.Runtime;
+using PlanetSurvival.Power.Runtime;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -33,6 +34,7 @@ namespace PlanetSurvival.Building.Runtime
         private OxygenReservoir _oxygenReservoir;
         private GameClock _clock;
         private ItemTransferPostStation _itemTransferPostStation;
+        private PowerPoleStation _powerPoleStation;
 
         public BuildSite Site => _site;
 
@@ -102,6 +104,13 @@ namespace PlanetSurvival.Building.Runtime
                 _itemTransferPostStation = gameObject.AddComponent<ItemTransferPostStation>();
                 _itemTransferPostStation.Bind(site, _body);
                 _itemTransferPostStation.enabled = false;
+            }
+
+            if (site.PowerPole != null)
+            {
+                _powerPoleStation = gameObject.AddComponent<PowerPoleStation>();
+                _powerPoleStation.Bind(site, _body);
+                _powerPoleStation.enabled = false;
             }
 
             if (cooking.IsComplete)
@@ -214,6 +223,11 @@ namespace PlanetSurvival.Building.Runtime
             {
                 _itemTransferPostStation.enabled = true;
                 _itemTransferPostStation.RefreshPresentation();
+            }
+            if (_powerPoleStation != null)
+            {
+                _powerPoleStation.enabled = true;
+                _powerPoleStation.RefreshPresentation();
             }
             if (_site.OxygenCandle != null && !_site.OxygenCandle.IsIgnited && _clock != null)
             {

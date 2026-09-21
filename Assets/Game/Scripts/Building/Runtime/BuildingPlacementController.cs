@@ -12,6 +12,7 @@ using PlanetSurvival.UI.Mining;
 using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.UI.Farming;
 using PlanetSurvival.Transport.Runtime;
+using PlanetSurvival.Power.Runtime;
 using PlanetSurvival.World.Generation;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ namespace PlanetSurvival.Building.Runtime
         private PlanterBoxView _planterBoxView;
         private GameClock _clock;
         private ItemTransferSystem _itemTransferSystem;
+        private PowerPoleSystem _powerPoleSystem;
         private Transform _player;
         private Camera _camera;
 
@@ -69,7 +71,8 @@ namespace PlanetSurvival.Building.Runtime
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
             GameClock clock = null, MiningDrillView miningDrillView = null,
-            PlanterBoxView planterBoxView = null, ItemTransferSystem itemTransferSystem = null)
+            PlanterBoxView planterBoxView = null, ItemTransferSystem itemTransferSystem = null,
+            PowerPoleSystem powerPoleSystem = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -90,6 +93,7 @@ namespace PlanetSurvival.Building.Runtime
             _planterBoxView = planterBoxView;
             _clock = clock;
             _itemTransferSystem = itemTransferSystem;
+            _powerPoleSystem = powerPoleSystem;
             _service.SitePlaced += CreateSiteObject;
             _service.SiteRemoved += DestroySiteObject;
 
@@ -152,7 +156,7 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             BuildableDefinition buildable = _selected;
-            BuildResult result = buildable.IsItemTransferPost
+            BuildResult result = buildable.UsesQuarterCellPlacement
                 ? _service.TryPlaceTransferPost(buildable, _quarterCell, out BuildSite _)
                 : _service.TryPlace(buildable, _footprint, out _);
             if (!result.Succeeded)
@@ -223,7 +227,7 @@ namespace PlanetSurvival.Building.Runtime
 
             BuildGrid grid = _service.Grid;
             Vector3 center;
-            if (_selected.IsItemTransferPost)
+            if (_selected.UsesQuarterCellPlacement)
             {
                 _quarterCell = grid.WorldToQuarterCell(ground);
                 center = grid.QuarterCellCenter(_quarterCell);
@@ -241,7 +245,7 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             // Building on top of yourself would trap the player inside a solid structure.
-            if (_preview.Succeeded && !_selected.IsItemTransferPost && _player != null &&
+            if (_preview.Succeeded && !_selected.UsesQuarterCellPlacement && _player != null &&
                 _footprint.Contains(grid.WorldToCell(_player.position)))
             {
                 _preview = BuildResult.Fail(BuildFailure.Blocked, "You are standing there.");
@@ -320,6 +324,10 @@ namespace PlanetSurvival.Building.Runtime
             {
                 _itemTransferSystem?.Register(siteObject.GetComponent<ItemTransferPostStation>());
             }
+            if (site.PowerPole != null)
+            {
+                _powerPoleSystem?.Register(siteObject.GetComponent<PowerPoleStation>());
+            }
             _siteObjects.Add(site, siteObject);
         }
 
@@ -334,6 +342,7 @@ namespace PlanetSurvival.Building.Runtime
             if (siteObject != null)
             {
                 _itemTransferSystem?.Unregister(siteObject.GetComponent<ItemTransferPostStation>());
+                _powerPoleSystem?.Unregister(siteObject.GetComponent<PowerPoleStation>());
             }
             if (siteObject != null)
             {

@@ -10,33 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
-  m_Name: SolarPanelBuildable
+  m_Name: PowerPoleBuildable
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
-  _buildableId: solar_panel
-  _displayName: Solar Panel
-  _description: Generates 2 electricity units per second when configured as a power-pole
-    input.
-  _icon: {fileID: 21300000, guid: c5ffade89fe8449d0b0983c73130f1b7, type: 3}
+  _buildableId: power_pole
+  _displayName: Power Pole
+  _description: A directional power router. Right-click to attach solar-panel inputs
+    and ordered mining-drill outputs.
+  _icon: {fileID: 21300000, guid: e1094726ab0424cea973c7bf68320879, type: 3}
   _footprint: {x: 1, y: 1}
-  _buildSeconds: 8
+  _buildSeconds: 6
   _cost:
   - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
     _quantity: 3
   - _item: {fileID: 11400000, guid: 699b0e271555d490dafbd12ef8a0c34f, type: 2}
     _quantity: 2
   _taggedCost: []
-  _worldSprite: {fileID: 21300000, guid: c5ffade89fe8449d0b0983c73130f1b7, type: 3}
+  _worldSprite: {fileID: 21300000, guid: e1094726ab0424cea973c7bf68320879, type: 3}
   _transferColorMask: {fileID: 0}
-  _worldHeight: 0.15
-  _bodyColor: {r: 0.12, g: 0.2, b: 0.34, a: 1}
+  _worldHeight: 0.8
+  _bodyColor: {r: 0.3, g: 0.32, b: 0.35, a: 1}
   _cookingStation: {fileID: 0}
   _isOxygenCandle: 0
   _miningDrill: {fileID: 0}
   _planterBox: {fileID: 0}
   _isItemTransferPost: 0
-  _isSolarPanel: 1
-  _solarElectricityPerSecond: 2
-  _isPowerPole: 0
-  _powerPoleOfflineSprite: {fileID: 0}
-  _powerPoleLimitedSprite: {fileID: 0}
-  _powerPolePoweredSprite: {fileID: 0}
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 1
+  _powerPoleOfflineSprite: {fileID: 21300000, guid: e1094726ab0424cea973c7bf68320879, type: 3}
+  _powerPoleLimitedSprite: {fileID: 21300000, guid: 01d1b2463452149c38002c010f0cd4f4, type: 3}
+  _powerPolePoweredSprite: {fileID: 21300000, guid: d7bb1cb9127ea4018958e16253fdb381, type: 3}

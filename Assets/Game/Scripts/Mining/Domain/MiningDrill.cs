@@ -2,6 +2,7 @@ using System;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Mining.Definitions;
+using PlanetSurvival.Power.Domain;
 using UnityEngine;
 
 namespace PlanetSurvival.Mining.Domain
@@ -13,7 +14,7 @@ namespace PlanetSurvival.Mining.Domain
     /// work. Fractional progress and energy stay in the machine, so neither variable frame lengths nor
     /// a scene change can create or discard ore.
     /// </summary>
-    public sealed class MiningDrill : IElectricityInput, IPetroleumInput, IItemOutput
+    public sealed class MiningDrill : IPowerInput, IPetroleumInput, IItemOutput
     {
         private const float Epsilon = .0001f;
 
@@ -97,6 +98,17 @@ namespace PlanetSurvival.Mining.Domain
             StoredElectricity += accepted;
             Changed?.Invoke();
             return accepted;
+        }
+
+        public float RequestedElectricity(float elapsedSeconds)
+        {
+            if (elapsedSeconds <= 0f || StoredOre >= Definition.OreCapacity)
+            {
+                return 0f;
+            }
+
+            float sustainedDemand = Definition.ProductionPerSecond * Definition.ElectricityPerOre * elapsedSeconds;
+            return Mathf.Min(sustainedDemand, RemainingElectricityCapacity);
         }
 
         public float ReceivePetroleum(float volume)

@@ -24,6 +24,7 @@ namespace PlanetSurvival.Building.Application
         private readonly TerrainTileMap _terrain;
         private readonly List<BuildSite> _sites = new();
         private int _nextTransferPostNumber = 1;
+        private int _nextPowerPoleNumber = 1;
 
         public BuildingService(InventoryModel inventory, BuildGrid grid, TerrainTileMap terrain = null)
         {
@@ -81,10 +82,10 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.InvalidBuildable, error);
             }
 
-            if (buildable.IsItemTransferPost)
+            if (buildable.UsesQuarterCellPlacement)
             {
                 return BuildResult.Fail(BuildFailure.InvalidBuildable,
-                    "Transfer posts must be placed on the half-cell grid.");
+                    "This building must be placed on the half-cell grid.");
             }
 
             if (footprint.Size != buildable.Footprint)
@@ -119,9 +120,9 @@ namespace PlanetSurvival.Building.Application
 
         public BuildResult CanPlaceTransferPost(BuildableDefinition buildable, Vector2Int quarterCell)
         {
-            if (buildable == null || !buildable.IsItemTransferPost)
+            if (buildable == null || !buildable.UsesQuarterCellPlacement)
             {
-                return BuildResult.Fail(BuildFailure.InvalidBuildable, "Only an item transfer post uses half-cell placement.");
+                return BuildResult.Fail(BuildFailure.InvalidBuildable, "Only a half-cell building may use half-cell placement.");
             }
 
             if (!buildable.IsValid(out string error))
@@ -214,8 +215,9 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.MissingResources, paid.Message);
             }
 
+            int compactBuildingNumber = buildable.IsPowerPole ? _nextPowerPoleNumber : _nextTransferPostNumber;
             var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, quarterCell, paidMaterials,
-                _nextTransferPostNumber);
+                compactBuildingNumber);
             if (!_grid.TryOccupyQuarterCell(quarterCell, placed))
             {
                 _inventory.ApplyTransaction(null, paidMaterials);
@@ -223,7 +225,14 @@ namespace PlanetSurvival.Building.Application
             }
 
             RegisterPlacedSite(placed);
-            _nextTransferPostNumber++;
+            if (buildable.IsItemTransferPost)
+            {
+                _nextTransferPostNumber++;
+            }
+            else if (buildable.IsPowerPole)
+            {
+                _nextPowerPoleNumber++;
+            }
             site = placed;
             return BuildResult.Success();
         }
@@ -282,7 +291,8 @@ namespace PlanetSurvival.Building.Application
                 }
             }
 
-            AdvanceSolarPanels(elapsedSeconds);
+            // Directional power poles settle solar generation in PowerPoleSystem. BuildingService deliberately
+            // has no adjacency fallback: an unconfigured panel must not power a drill invisibly.
         }
 
         /// <summary>

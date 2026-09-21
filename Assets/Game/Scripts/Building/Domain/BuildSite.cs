@@ -6,6 +6,7 @@ using PlanetSurvival.Farming.Domain;
 using PlanetSurvival.Inventory.Domain;
 using System.Collections.Generic;
 using PlanetSurvival.Transport.Domain;
+using PlanetSurvival.Power.Domain;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Domain
@@ -70,6 +71,11 @@ namespace PlanetSurvival.Building.Domain
                 ItemTransferPost = new ItemTransferPost(postNumber, DefaultTransferColor(postNumber));
             }
 
+            if (definition.IsPowerPole)
+            {
+                PowerPole = new PowerPole(transferPostNumber);
+            }
+
             PaidMaterials = paidMaterials ?? System.Array.Empty<InventoryItemAmount>();
         }
 
@@ -84,6 +90,7 @@ namespace PlanetSurvival.Building.Domain
         public MiningDrill MiningDrill { get; }
         public PlanterBox PlanterBox { get; }
         public ItemTransferPost ItemTransferPost { get; }
+        public PowerPole PowerPole { get; }
         public IReadOnlyList<InventoryItemAmount> PaidMaterials { get; }
 
         public float Progress => TotalSeconds <= 0f

@@ -21,6 +21,8 @@ using PlanetSurvival.UI.Mining;
 using PlanetSurvival.UI.Farming;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.UI.Transport;
+using PlanetSurvival.Power.Runtime;
+using PlanetSurvival.UI.Power;
 using PlanetSurvival.Water.Runtime;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Ground;
@@ -347,12 +349,15 @@ namespace PlanetSurvival.Bootstrap
             gridOverlay.Bind(session.Buildings.Grid, camera);
             BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
             ItemTransferSystem transferSystem = systemObject.AddComponent<ItemTransferSystem>();
+            PowerPoleSystem powerPoleSystem = systemObject.AddComponent<PowerPoleSystem>();
             PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
             transferSystem.Bind(session.Buildings, gridOverlay, hud.GetComponent<ItemTransferPostView>(),
                 player.transform, controller, camera);
+            powerPoleSystem.Bind(session.Buildings, hud.GetComponent<PowerPoleView>(), player.transform,
+                controller, camera);
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
                 hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>(),
-                hud.GetComponent<PlanterBoxView>(), transferSystem);
+                hud.GetComponent<PlanterBoxView>(), transferSystem, powerPoleSystem);
 
             hud.AddComponent<CraftingDrawerView>().Bind(
                 controller,
@@ -379,6 +384,7 @@ namespace PlanetSurvival.Bootstrap
             hudObject.AddComponent<MiningDrillView>();
             hudObject.AddComponent<PlanterBoxView>();
             hudObject.AddComponent<ItemTransferPostView>();
+            hudObject.AddComponent<PowerPoleView>();
             hudObject.AddComponent<GameOverView>();
             return hudObject;
         }

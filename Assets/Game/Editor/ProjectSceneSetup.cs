@@ -164,6 +164,7 @@ namespace PlanetSurvival.Editor
         private const float ItemTransferPostBuildSeconds = 4f;
         private const float SolarPanelBuildSeconds = 8f;
         private const float SolarPanelElectricityPerSecond = 2f;
+        private const float PowerPoleBuildSeconds = 6f;
 
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
@@ -268,7 +269,7 @@ namespace PlanetSurvival.Editor
             BuildableDefinition solarPanel = GetOrCreateBuildable(
                 "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
                 SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
-                "Generates 2 electricity units per second for adjacent mining drills. Place it beside a drill.",
+                "Generates 2 electricity units per second when configured as a power-pole input.",
                 new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
             Sprite sprite = WorldArtSetup.ImportBuildingSprite("SolarPanel");
             solarPanel.ConfigurePresentation(sprite, .15f, new Color(.12f, .2f, .34f));
@@ -276,13 +277,27 @@ namespace PlanetSurvival.Editor
             solarPanel.ConfigureSolarPanel(true, SolarPanelElectricityPerSecond);
             EditorUtility.SetDirty(solarPanel);
 
+            BuildableDefinition powerPole = GetOrCreateBuildable(
+                "PowerPoleBuildable", "power_pole", "Power Pole", Vector2Int.one,
+                PowerPoleBuildSeconds, .8f, new Color(.3f, .32f, .35f),
+                "A directional power router. Right-click to attach solar-panel inputs and ordered mining-drill outputs.",
+                new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
+            Sprite powerPoleOffline = WorldArtSetup.ImportBuildingSprite("PowerPoleOffline");
+            Sprite powerPoleLimited = WorldArtSetup.ImportBuildingSprite("PowerPoleLimited");
+            Sprite powerPolePowered = WorldArtSetup.ImportBuildingSprite("PowerPolePowered");
+            powerPole.ConfigurePresentation(powerPoleOffline, .8f, new Color(.3f, .32f, .35f));
+            powerPole.ConfigureIcon(powerPoleOffline);
+            powerPole.ConfigurePowerPole(true, powerPoleOffline, powerPoleLimited, powerPolePowered);
+            EditorUtility.SetDirty(powerPole);
+
             var buildables = new List<BuildableDefinition>(catalog.Buildables);
             if (!buildables.Contains(solarPanel))
             {
                 buildables.Add(solarPanel);
-                catalog.Configure(buildables.ToArray());
-                EditorUtility.SetDirty(catalog);
             }
+            if (!buildables.Contains(powerPole)) buildables.Add(powerPole);
+            catalog.Configure(buildables.ToArray());
+            EditorUtility.SetDirty(catalog);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -1268,13 +1283,26 @@ namespace PlanetSurvival.Editor
             BuildableDefinition solarPanel = GetOrCreateBuildable(
                 "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
                 SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
-                "Generates 2 electricity units per second for adjacent mining drills. Place it beside a drill.",
+                "Generates 2 electricity units per second when configured as a power-pole input.",
                 new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
             Sprite solarPanelSprite = WorldArtSetup.ImportBuildingSprite("SolarPanel");
             solarPanel.ConfigurePresentation(solarPanelSprite, .15f, new Color(.12f, .2f, .34f));
             solarPanel.ConfigureIcon(solarPanelSprite);
             solarPanel.ConfigureSolarPanel(true, SolarPanelElectricityPerSecond);
             EditorUtility.SetDirty(solarPanel);
+
+            BuildableDefinition powerPole = GetOrCreateBuildable(
+                "PowerPoleBuildable", "power_pole", "Power Pole", Vector2Int.one,
+                PowerPoleBuildSeconds, .8f, new Color(.3f, .32f, .35f),
+                "A directional power router. Right-click to attach solar-panel inputs and ordered mining-drill outputs.",
+                new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
+            Sprite powerPoleOffline = WorldArtSetup.ImportBuildingSprite("PowerPoleOffline");
+            Sprite powerPoleLimited = WorldArtSetup.ImportBuildingSprite("PowerPoleLimited");
+            Sprite powerPolePowered = WorldArtSetup.ImportBuildingSprite("PowerPolePowered");
+            powerPole.ConfigurePresentation(powerPoleOffline, .8f, new Color(.3f, .32f, .35f));
+            powerPole.ConfigureIcon(powerPoleOffline);
+            powerPole.ConfigurePowerPole(true, powerPoleOffline, powerPoleLimited, powerPolePowered);
+            EditorUtility.SetDirty(powerPole);
 
             BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(BuildingCatalogPath);
             if (catalog == null)
@@ -1285,7 +1313,7 @@ namespace PlanetSurvival.Editor
             }
 
             catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor,
-                planterBox, transferPost, solarPanel);
+                planterBox, transferPost, solarPanel, powerPole);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
