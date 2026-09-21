@@ -904,5 +904,55 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.alphaIsTransparency, Is.True);
             Assert.That(importer.mipmapEnabled, Is.False);
         }
+
+        [Test]
+        public void MetalScrap_IsFurnaceFeedstock_NotADirectConstructionOrCraftingIngredient()
+        {
+            ItemDefinition scrap = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/MetalScrap.asset");
+            ResourceNodeDefinition debris = AssetDatabase.LoadAssetAtPath<ResourceNodeDefinition>(
+                "Assets/Game/Configuration/DebrisNode.asset");
+            BuildingCatalog buildings = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(
+                "Assets/Game/Configuration/DefaultBuildingCatalog.asset");
+            CraftingCatalog crafting = AssetDatabase.LoadAssetAtPath<CraftingCatalog>(
+                "Assets/Game/Configuration/DefaultCraftingCatalog.asset");
+            BuildableDefinition transferPost = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/ItemTransferPostBuildable.asset");
+            ItemDefinition relayCore = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/EntanglementRelayCore.asset");
+
+            Assert.That(scrap, Is.Not.Null);
+            Assert.That(scrap.MaterialTags, Is.EqualTo(ItemMaterialTag.None),
+                "Unsmelted scrap must not satisfy a metal-plate requirement.");
+            Assert.That(debris.Yields[0].Item, Is.SameAs(scrap),
+                "Scrap remains a gatherable furnace feedstock.");
+
+            foreach (BuildableDefinition buildable in buildings.Buildables)
+            {
+                foreach (CraftingItemAmount amount in buildable.Cost)
+                {
+                    Assert.That(amount.Item, Is.Not.SameAs(scrap),
+                        $"{buildable.DisplayName} must use processed material instead of raw scrap.");
+                }
+            }
+
+            foreach (CraftingRecipe recipe in crafting.Recipes)
+            {
+                foreach (CraftingItemAmount amount in recipe.Inputs)
+                {
+                    Assert.That(amount.Item, Is.Not.SameAs(scrap),
+                        $"{recipe.DisplayName} must use processed material instead of raw scrap.");
+                }
+            }
+
+            Assert.That(relayCore, Is.Not.Null);
+            Assert.That(transferPost.Cost.Count, Is.EqualTo(3));
+            Assert.That(transferPost.Cost[0].Item.ItemId, Is.EqualTo("aluminum_alloy"));
+            Assert.That(transferPost.Cost[0].Quantity, Is.EqualTo(2));
+            Assert.That(transferPost.Cost[1].Item.ItemId, Is.EqualTo("plastic_sheet"));
+            Assert.That(transferPost.Cost[1].Quantity, Is.EqualTo(1));
+            Assert.That(transferPost.Cost[2].Item, Is.SameAs(relayCore));
+            Assert.That(transferPost.Cost[2].Quantity, Is.EqualTo(1));
+        }
     }
 }

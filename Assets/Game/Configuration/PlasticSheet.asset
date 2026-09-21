@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
   _itemId: plastic_sheet
   _displayName: Plastic Sheet
-  _description: 
-  _icon: {fileID: 0}
+  _description: Rigid transparent plastic board for lightweight surface construction.
+  _icon: {fileID: 21300000, guid: bc2a4cc23914043a09d5f5fd23bfda2a, type: 3}
   _capacityPerItem: 1
   _maximumStackSize: 20
   _canUse: 0

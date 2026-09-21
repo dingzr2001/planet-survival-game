@@ -19,8 +19,8 @@ MonoBehaviour:
   _footprint: {x: 2, y: 2}
   _buildSeconds: 20
   _cost:
-  - _item: {fileID: 11400000, guid: f23bfd6a697a949a4ba7578d9f0e1bed, type: 2}
-    _quantity: 6
+  - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
+    _quantity: 4
   - _item: {fileID: 11400000, guid: 20290619ae85e43558b63ab7f3d0bf3b, type: 2}
     _quantity: 6
   _worldSprite: {fileID: 0}

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
   _buildableId: metal_barricade
   _displayName: Metal Barricade
-  _description: A welded hull panel, two cells wide.
+  _description: A braced alloy hull panel, two cells wide.
   _icon: {fileID: 0}
   _footprint: {x: 2, y: 1}
   _buildSeconds: 8
   _cost:
-  - _item: {fileID: 11400000, guid: f23bfd6a697a949a4ba7578d9f0e1bed, type: 2}
+  - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
     _quantity: 3
   _worldSprite: {fileID: 0}
   _worldHeight: 1.1
