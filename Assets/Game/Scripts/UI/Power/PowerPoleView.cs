@@ -15,6 +15,9 @@ namespace PlanetSurvival.UI.Power
     {
         private const float PanelWidth = 980f;
         private const float PanelHeight = 590f;
+        private const float EndpointTileSize = 56f;
+        private const float EndpointTileGap = 6f;
+        private const int EndpointTileColumns = 4;
         private PowerPoleStation _station;
         private PowerPoleSystem _system;
         private PlanarPlayerMotor _motor;
@@ -27,9 +30,12 @@ namespace PlanetSurvival.UI.Power
         private bool _outputPickerOpen;
         private Vector2 _inputScroll;
         private Vector2 _outputScroll;
+        private Vector2 _inputPickerScroll;
+        private Vector2 _outputPickerScroll;
         private GUIStyle _title;
         private GUIStyle _section;
         private GUIStyle _detail;
+        private GUIStyle _endpointNumber;
 
         public bool IsOpen { get; private set; }
 
@@ -113,7 +119,7 @@ namespace PlanetSurvival.UI.Power
             GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(430f));
             GUILayout.Label("INPUTS", _section);
             GUILayout.Label("Power poles may be remote; generators must be adjacent.", _detail);
-            DrawEndpointRows(_station.Pole.InputEndpointIds, true);
+            DrawEndpointRows(_station.Pole.InputEndpointIds, true, _inputPickerOpen ? 120f : 260f);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(_inputPickerOpen ? "HIDE SOURCES" : "+ ADD INPUT", GUILayout.Height(34f)))
             {
@@ -129,7 +135,7 @@ namespace PlanetSurvival.UI.Power
             GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(430f));
             GUILayout.Label("OUTPUTS · PRIORITY ORDER", _section);
             GUILayout.Label("Poles may be remote; power consumers must be adjacent.", _detail);
-            DrawEndpointRows(_station.Pole.OutputEndpointIds, false);
+            DrawEndpointRows(_station.Pole.OutputEndpointIds, false, _outputPickerOpen ? 120f : 260f);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(_outputPickerOpen ? "HIDE TARGETS" : "+ ADD OUTPUT", GUILayout.Height(34f)))
             {
@@ -140,7 +146,7 @@ namespace PlanetSurvival.UI.Power
             GUILayout.EndVertical();
         }
 
-        private void DrawEndpointRows(IReadOnlyList<string> endpoints, bool input)
+        private void DrawEndpointRows(IReadOnlyList<string> endpoints, bool input, float height)
         {
             if (endpoints.Count == 0)
             {
@@ -148,7 +154,7 @@ namespace PlanetSurvival.UI.Power
                 return;
             }
             Vector2 scroll = input ? _inputScroll : _outputScroll;
-            scroll = GUILayout.BeginScrollView(scroll, GUILayout.Height(260f));
+            scroll = GUILayout.BeginScrollView(scroll, GUILayout.Height(height));
             for (int i = 0; i < endpoints.Count; i++)
             {
                 string endpoint = endpoints[i];
@@ -172,18 +178,39 @@ namespace PlanetSurvival.UI.Power
         private void DrawPicker(IReadOnlyList<PowerEndpointOption> options, bool input)
         {
             GUILayout.Space(6f);
-            foreach (PowerEndpointOption option in options)
+            if (options.Count == 0)
             {
-                GUILayout.BeginHorizontal();
-                Rect iconRect = GUILayoutUtility.GetRect(24f, 24f, GUILayout.Width(24f));
-                SpriteIcon.Draw(iconRect, option.Icon);
-                bool chosen = GUILayout.Button(option.Label, GUILayout.Height(28f));
-                GUILayout.EndHorizontal();
-                if (!chosen) continue;
-                if (input) { _system.AddInput(_station, option.Id); _inputPickerOpen = false; }
-                else { _system.AddOutput(_station, option.Id); _outputPickerOpen = false; }
-                break;
+                GUILayout.Label("No available endpoint.", _detail);
+                return;
             }
+
+            Vector2 pickerScroll = input ? _inputPickerScroll : _outputPickerScroll;
+            pickerScroll = GUILayout.BeginScrollView(pickerScroll, GUILayout.Height(150f));
+            for (int i = 0; i < options.Count; i++)
+            {
+                if (i % EndpointTileColumns == 0) GUILayout.BeginHorizontal();
+
+                PowerEndpointOption option = options[i];
+                Rect tileRect = GUILayoutUtility.GetRect(EndpointTileSize, EndpointTileSize,
+                    GUILayout.Width(EndpointTileSize), GUILayout.Height(EndpointTileSize));
+                bool chosen = GUI.Button(tileRect, GUIContent.none);
+                Rect iconRect = new(tileRect.x + 6f, tileRect.y + 4f, tileRect.width - 12f, tileRect.height - 14f);
+                SpriteIcon.Draw(iconRect, option.Icon);
+                GUI.Label(new Rect(tileRect.x + 3f, tileRect.yMax - 18f, tileRect.width - 6f, 15f),
+                    option.Label, _endpointNumber);
+                GUILayout.Space(EndpointTileGap);
+
+                if (i % EndpointTileColumns == EndpointTileColumns - 1 || i == options.Count - 1)
+                    GUILayout.EndHorizontal();
+
+                if (chosen)
+                {
+                    if (input) { _system.AddInput(_station, option.Id); _inputPickerOpen = false; }
+                    else { _system.AddOutput(_station, option.Id); _outputPickerOpen = false; }
+                }
+            }
+            GUILayout.EndScrollView();
+            if (input) _inputPickerScroll = pickerScroll; else _outputPickerScroll = pickerScroll;
         }
 
         private void DrawCurrent()
@@ -222,6 +249,13 @@ namespace PlanetSurvival.UI.Power
             _section.normal.textColor = new Color(.5f, .84f, 1f);
             _detail = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true };
             _detail.normal.textColor = new Color(.84f, .89f, .94f);
+            _endpointNumber = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 11,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.LowerRight
+            };
+            _endpointNumber.normal.textColor = new Color(.84f, .89f, .94f);
         }
     }
 }
