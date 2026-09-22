@@ -23,6 +23,7 @@ namespace PlanetSurvival.UI.Inventory
         private bool _isPanelOpen;
         private bool _isWaterBottleSelected;
         private string _selectedStackId;
+        private int _selectedQuickSlotIndex = -1;
         private string _waterFeedback = string.Empty;
         private string _interactionPrompt = string.Empty;
         private float _waterFeedbackExpiresAt;
@@ -125,8 +126,9 @@ namespace PlanetSurvival.UI.Inventory
             if (_waterBottle != null)
             {
                 var bottleSlot = new Rect(itemSlotsStart, slotsTop, QuickSlotSize, QuickSlotSize);
-                if (DrawWaterBottleSlot(bottleSlot, "Q", false))
+                if (DrawWaterBottleSlot(bottleSlot, "Q", _isWaterBottleSelected))
                 {
+                    SelectWaterBottle();
                     TryDrinkWater();
                 }
 
@@ -141,8 +143,10 @@ namespace PlanetSurvival.UI.Inventory
                     QuickSlotSize,
                     QuickSlotSize);
                 ItemStack stack = GetQuickStack(i);
-                if (DrawSlot(slot, stack, $"{(i + 1) % 10}", false) && stack != null)
+                bool selected = stack != null && i == _selectedQuickSlotIndex;
+                if (DrawSlot(slot, stack, $"{(i + 1) % 10}", selected) && stack != null)
                 {
+                    SelectQuickSlot(i, stack);
                     _playerInventory.Use(stack.StackId);
                 }
             }
@@ -207,8 +211,7 @@ namespace PlanetSurvival.UI.Inventory
                     {
                         if (DrawWaterBottleSlot(slot, string.Empty, _isWaterBottleSelected))
                         {
-                            _isWaterBottleSelected = true;
-                            _selectedStackId = null;
+                            SelectWaterBottle();
                         }
 
                         GUILayout.Space(SlotSpacing);
@@ -222,6 +225,7 @@ namespace PlanetSurvival.UI.Inventory
                     {
                         _selectedStackId = stack.StackId;
                         _isWaterBottleSelected = false;
+                        _selectedQuickSlotIndex = -1;
                     }
 
                     GUILayout.Space(SlotSpacing);
@@ -496,8 +500,23 @@ namespace PlanetSurvival.UI.Inventory
             ItemStack stack = GetQuickStack(slotIndex);
             if (stack != null)
             {
+                SelectQuickSlot(slotIndex, stack);
                 _playerInventory.Use(stack.StackId);
             }
+        }
+
+        private void SelectQuickSlot(int slotIndex, ItemStack stack)
+        {
+            _selectedQuickSlotIndex = slotIndex;
+            _selectedStackId = stack.StackId;
+            _isWaterBottleSelected = false;
+        }
+
+        private void SelectWaterBottle()
+        {
+            _isWaterBottleSelected = true;
+            _selectedStackId = null;
+            _selectedQuickSlotIndex = -1;
         }
 
         private void AssignFirstAvailableSlot(string stackId)
