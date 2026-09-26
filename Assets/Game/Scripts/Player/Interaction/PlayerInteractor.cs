@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Stats;
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace PlanetSurvival.Player.Interaction
         private string _lastPrompt = string.Empty;
 
         public string CurrentPrompt => _focusedInteractable?.Prompt ?? string.Empty;
+
+        /// <summary>How far the player can reach. Building clicks use the same distance.</summary>
+        public float InteractionRadius => _interactionRadius;
+
         public event Action<string> PromptChanged;
 
         private void Awake()
@@ -67,6 +72,13 @@ namespace PlanetSurvival.Player.Interaction
             for (int i = 0; i < count; i++)
             {
                 float distance = (_results[i].ClosestPoint(transform.position) - transform.position).sqrMagnitude;
+                // Placed structures are operated by clicking them, never by standing near them, so they
+                // must not compete for the E key with the fixture or deposit the player is actually facing.
+                if (_results[i].GetComponentInParent<BuildSiteView>() != null)
+                {
+                    continue;
+                }
+
                 _results[i].GetComponents(_componentResults);
                 for (int componentIndex = 0; componentIndex < _componentResults.Count; componentIndex++)
                 {

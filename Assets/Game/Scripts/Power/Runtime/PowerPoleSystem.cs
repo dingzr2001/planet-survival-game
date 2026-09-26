@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using PlanetSurvival.Building.Application;
 using PlanetSurvival.Building.Domain;
-using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Power.Domain;
 using PlanetSurvival.UI.Power;
 using UnityEngine;
@@ -17,17 +16,13 @@ namespace PlanetSurvival.Power.Runtime
         private const string SolarPrefix = "solar:";
         private const string ConsumerPrefix = "consumer:";
         private const string PolePrefix = "pole:";
-        private const float ScreenSelectionRadius = 52f;
         private readonly List<PowerPoleStation> _stations = new();
         private BuildingService _buildings;
         private PowerPoleView _view;
-        private BuildingPlacementController _placement;
-        private Transform _player;
-        private Camera _camera;
 
-        public void Bind(BuildingService buildings, PowerPoleView view, Transform player, BuildingPlacementController placement, Camera targetCamera)
-        { _buildings = buildings; _view = view; _player = player; _placement = placement; _camera = targetCamera; }
-        public void Register(PowerPoleStation station) { if (station != null && !_stations.Contains(station)) _stations.Add(station); }
+        public void Bind(BuildingService buildings, PowerPoleView view)
+        { _buildings = buildings; _view = view; }
+        public void Register(PowerPoleStation station) { if (station != null && !_stations.Contains(station)) { _stations.Add(station); station.AttachNetwork(this, _view); } }
         public void Unregister(PowerPoleStation station) { if (station == null) return; Disconnect(station); _stations.Remove(station); }
         public IReadOnlyList<PowerEndpointOption> GetAvailableInputs(PowerPoleStation station) => BuildOptions(station, true);
         public IReadOnlyList<PowerEndpointOption> GetAvailableOutputs(PowerPoleStation station) => BuildOptions(station, false);
@@ -65,7 +60,6 @@ namespace PlanetSurvival.Power.Runtime
         {
             if (_buildings == null) return;
             Advance(Time.deltaTime);
-            if (Input.GetMouseButtonDown(1) && (_placement == null || (!_placement.IsPlacing && !_placement.CancelledPlacementThisFrame))) TryOpenAtScreenPosition(Input.mousePosition);
         }
 
         private void Advance(float elapsedSeconds)
@@ -179,7 +173,7 @@ namespace PlanetSurvival.Power.Runtime
             }
             return false;
         }
-        private static bool TryGetPowerInput(BuildSite site, out IPowerInput input) { input = site.MiningDrill as IPowerInput; return input != null; }
+        private static bool TryGetPowerInput(BuildSite site, out IPowerInput input) { input = site.PowerInput; return input != null; }
         private string EndpointNumber(BuildSite site, bool producer)
         {
             int number = 0;
@@ -212,15 +206,6 @@ namespace PlanetSurvival.Power.Runtime
         { foreach (PowerPoleStation station in _stations.Where(IsActive).Where(station => station != owner)) { if (input) station.Pole.RemoveInput(id); else station.Pole.RemoveOutput(id); } }
         private void Disconnect(PowerPoleStation station)
         { foreach (string input in station.Pole.InputEndpointIds.ToArray()) RemoveInput(station, input); foreach (string output in station.Pole.OutputEndpointIds.ToArray()) RemoveOutput(station, output); }
-        private bool TryOpenAtScreenPosition(Vector2 screen)
-        {
-            if (_view == null) return false;
-            if (_camera == null || !_camera.isActiveAndEnabled) _camera = Camera.main;
-            if (_camera == null) return false;
-            PowerPoleStation selected = _stations.Where(IsActive).OrderBy(station => ((Vector2)_camera.WorldToScreenPoint(station.transform.position) - screen).sqrMagnitude).FirstOrDefault();
-            if (selected == null || ((Vector2)_camera.WorldToScreenPoint(selected.transform.position) - screen).sqrMagnitude > ScreenSelectionRadius * ScreenSelectionRadius) return false;
-            _view.Open(selected, this, _player != null ? _player.gameObject : gameObject); return true;
-        }
         private static bool IsActive(PowerPoleStation station) => station != null && station.isActiveAndEnabled && station.Site.State == BuildState.Completed && station.Pole != null;
         private static bool IsSolarEndpoint(string id) => id != null && id.StartsWith(SolarPrefix, StringComparison.Ordinal);
         private static bool IsConsumerEndpoint(string id) => id != null && id.StartsWith(ConsumerPrefix, StringComparison.Ordinal);

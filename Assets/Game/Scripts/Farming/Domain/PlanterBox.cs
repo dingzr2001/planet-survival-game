@@ -1,6 +1,7 @@
 using System;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Inventory.Domain;
+using PlanetSurvival.Mining.Domain;
 using PlanetSurvival.Oxygen.Domain;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Water.Domain;
@@ -14,10 +15,14 @@ namespace PlanetSurvival.Farming.Domain
     /// Session-owned resource system for a planter. Manual controls and future pipe networks use the same
     /// bounded input/output methods, so neither path can overfill a buffer or create resources.
     /// </summary>
-    public sealed class PlanterBox : IWaterInput, ICarbonDioxideInput, IOxygenOutput
+    public sealed class PlanterBox : IWaterInput, ICarbonDioxideInput, IOxygenOutput, IItemInput
     {
         private const float Epsilon = .0001f;
+        private const double GameHoursPerDay = 24d;
         private float _pendingWaterConsumptionMilliliters;
+        private double _lastAdvancedDays;
+        private float _healthyGrowthGameHours;
+        private float _deprivedGameHours;
 
         public PlanterBox(PlanterBoxDefinition definition)
         {
@@ -32,24 +37,46 @@ namespace PlanetSurvival.Farming.Domain
         public int StoredWaterMilliliters { get; private set; }
         public float StoredCarbonDioxideLiters { get; private set; }
         public float StoredOxygenLiters { get; private set; }
+        public CropDefinition Crop { get; private set; }
+        public bool IsPlanted => Crop != null;
+        public bool IsDead { get; private set; }
+        public bool IsMature => IsPlanted && !IsDead && GrowthProgress >= 1f;
+        public float GrowthProgress => !IsPlanted
+            ? 0f
+            : Mathf.Clamp01(_healthyGrowthGameHours / Crop.GrowthGameHours);
+        public float RemainingGrowthGameHours => !IsPlanted
+            ? 0f
+            : Mathf.Max(0f, Crop.GrowthGameHours - _healthyGrowthGameHours);
+        public float RemainingEnvironmentToleranceGameHours => !IsPlanted || IsDead
+            ? 0f
+            : Mathf.Max(0f, Crop.EnvironmentFailureToleranceGameHours - _deprivedGameHours);
         public int RemainingWaterCapacity => Definition.WaterCapacityMilliliters - StoredWaterMilliliters;
         public float RemainingCarbonDioxideCapacity =>
             Definition.CarbonDioxideCapacityLiters - StoredCarbonDioxideLiters;
         public float RemainingOxygenCapacity => Definition.OxygenCapacityLiters - StoredOxygenLiters;
 
-        public PlanterBoxState State => StoredOxygenLiters >= Definition.OxygenCapacityLiters - Epsilon
-            ? PlanterBoxState.OxygenStorageFull
-            : StoredWaterMilliliters < Definition.MinimumWaterMilliliters
+        public PlanterBoxState State => !IsPlanted
+            ? PlanterBoxState.Empty
+            : IsDead
+                ? PlanterBoxState.Dead
+                : IsMature
+                    ? PlanterBoxState.Mature
+                    : StoredWaterMilliliters < Definition.MinimumWaterMilliliters
                 ? PlanterBoxState.NeedsWater
                 : StoredCarbonDioxideLiters < Definition.MinimumCarbonDioxideLiters
                     ? PlanterBoxState.NeedsCarbonDioxide
-                    : PlanterBoxState.Producing;
+                    : StoredOxygenLiters >= Definition.OxygenCapacityLiters - Epsilon
+                        ? PlanterBoxState.OxygenStorageFull
+                        : PlanterBoxState.Growing;
 
         public event Action Changed;
 
         public void Advance(float elapsedSeconds)
         {
-            if (elapsedSeconds <= 0f || State != PlanterBoxState.Producing)
+            if (elapsedSeconds <= 0f ||
+                StoredWaterMilliliters < Definition.MinimumWaterMilliliters ||
+                StoredCarbonDioxideLiters < Definition.MinimumCarbonDioxideLiters ||
+                StoredOxygenLiters >= Definition.OxygenCapacityLiters - Epsilon)
             {
                 return;
             }
@@ -70,6 +97,96 @@ namespace PlanetSurvival.Farming.Domain
             StoredCarbonDioxideLiters = Mathf.Max(0f,
                 StoredCarbonDioxideLiters - oxygen * Definition.CarbonDioxideLitersPerOxygenLiter);
             StoredOxygenLiters = Mathf.Min(Definition.OxygenCapacityLiters, StoredOxygenLiters + oxygen);
+            Changed?.Invoke();
+        }
+
+        /// <summary>Advances crop health on expedition time and resource conversion on real time.</summary>
+        public void Advance(float elapsedSeconds, double nowDays)
+        {
+            if (!IsPlanted || IsDead || double.IsNaN(nowDays) || double.IsInfinity(nowDays)) return;
+
+            double elapsedGameHours = Math.Max(0d, (nowDays - _lastAdvancedDays) * GameHoursPerDay);
+            _lastAdvancedDays = nowDays;
+            if (elapsedGameHours <= 0d || IsMature) return;
+
+            bool hasWater = StoredWaterMilliliters >= Definition.MinimumWaterMilliliters;
+            bool hasCarbonDioxide = StoredCarbonDioxideLiters >= Definition.MinimumCarbonDioxideLiters;
+            if (hasWater && hasCarbonDioxide)
+            {
+                _deprivedGameHours = 0f;
+                _healthyGrowthGameHours = Mathf.Min(Crop.GrowthGameHours,
+                    _healthyGrowthGameHours + (float)elapsedGameHours);
+                Advance(elapsedSeconds);
+            }
+            else
+            {
+                _deprivedGameHours += (float)elapsedGameHours;
+                if (_deprivedGameHours >= Crop.EnvironmentFailureToleranceGameHours)
+                {
+                    IsDead = true;
+                }
+            }
+
+            Changed?.Invoke();
+        }
+
+        public FarmingResult Plant(CropDefinition crop, InventoryModel inventory, double nowDays)
+        {
+            if (inventory == null) throw new ArgumentNullException(nameof(inventory));
+            if (crop == null)
+                return FarmingResult.Fail(FarmingFailure.InvalidCrop, "No crop is selected.");
+            if (!crop.IsValid(out string error))
+                return FarmingResult.Fail(FarmingFailure.InvalidCrop, error);
+            if (!Definition.Supports(crop))
+                return FarmingResult.Fail(FarmingFailure.UnsupportedCrop, $"{crop.DisplayName} cannot grow in this planter.");
+            if (IsPlanted)
+                return FarmingResult.Fail(FarmingFailure.SlotOccupied, "The planter is already occupied.");
+            if (inventory.GetQuantity(crop.SeedItem.ItemId) < crop.SeedQuantity)
+                return FarmingResult.Fail(FarmingFailure.MissingSeed,
+                    $"Planting needs {crop.SeedQuantity} × {crop.SeedItem.DisplayName}.");
+
+            InventoryOperationResult consumed = inventory.ApplyTransaction(
+                new[] { new InventoryItemAmount(crop.SeedItem, crop.SeedQuantity) }, null);
+            if (!consumed.Succeeded) return FarmingResult.Fail(FarmingFailure.MissingSeed, consumed.Message);
+
+            Crop = crop;
+            IsDead = false;
+            _healthyGrowthGameHours = 0f;
+            _deprivedGameHours = 0f;
+            _lastAdvancedDays = nowDays;
+            Changed?.Invoke();
+            return FarmingResult.Success();
+        }
+
+        public FarmingResult Harvest(InventoryModel inventory)
+        {
+            if (inventory == null) throw new ArgumentNullException(nameof(inventory));
+            if (!IsPlanted) return FarmingResult.Fail(FarmingFailure.SlotEmpty, "The planter is empty.");
+            if (IsDead) return FarmingResult.Fail(FarmingFailure.CropDead, "The dead crop must be cleared.");
+            if (!IsMature) return FarmingResult.Fail(FarmingFailure.NotRipe,
+                $"{Crop.DisplayName} needs {RemainingGrowthGameHours:0.0} more game hours.");
+
+            InventoryOperationResult stored = inventory.ApplyTransaction(null,
+                new[] { new InventoryItemAmount(Crop.HarvestItem, Crop.HarvestQuantity) });
+            if (!stored.Succeeded) return FarmingResult.Fail(FarmingFailure.InventoryFull, stored.Message);
+            ClearCrop();
+            return FarmingResult.Success();
+        }
+
+        public bool ClearDeadCrop()
+        {
+            if (!IsDead) return false;
+            ClearCrop();
+            return true;
+        }
+
+        private void ClearCrop()
+        {
+            Crop = null;
+            IsDead = false;
+            _healthyGrowthGameHours = 0f;
+            _deprivedGameHours = 0f;
+            _lastAdvancedDays = 0d;
             Changed?.Invoke();
         }
 

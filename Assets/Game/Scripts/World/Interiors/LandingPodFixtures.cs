@@ -3,7 +3,6 @@ using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.UI.Storage;
 using PlanetSurvival.UI.Water;
 using PlanetSurvival.Water.Domain;
-using PlanetSurvival.Water.Runtime;
 
 namespace PlanetSurvival.World.Interiors
 {
@@ -24,7 +23,6 @@ namespace PlanetSurvival.World.Interiors
             InventoryModel cargoStorage,
             StorageView storageView,
             CookingStationBinding cooking,
-            WaterProcessorBinding processor,
             HydroponicsBinding hydroponics)
         {
             WaterSupply = waterSupply;
@@ -34,7 +32,6 @@ namespace PlanetSurvival.World.Interiors
             CargoStorage = cargoStorage;
             StorageView = storageView;
             Cooking = cooking;
-            Processor = processor;
             Hydroponics = hydroponics;
         }
 
@@ -45,7 +42,6 @@ namespace PlanetSurvival.World.Interiors
         public InventoryModel CargoStorage { get; }
         public StorageView StorageView { get; }
         public CookingStationBinding Cooking { get; }
-        public WaterProcessorBinding Processor { get; }
         public HydroponicsBinding Hydroponics { get; }
     }
 }

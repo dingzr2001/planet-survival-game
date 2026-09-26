@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
   _itemId: entanglement_relay_core
   _displayName: Entanglement Relay Core
-  _description: A calibrated field core that preserves a paired transport channel across distance.
+  _description: A calibrated field core that preserves a paired transport channel
+    across distance.
   _icon: {fileID: 0}
   _capacityPerItem: 3
   _maximumStackSize: 10

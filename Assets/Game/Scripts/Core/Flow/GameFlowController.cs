@@ -15,6 +15,8 @@ namespace PlanetSurvival.Core.Flow
         private ItemDefinition _energyBarDefinition;
         [SerializeField, Tooltip("Raw vegetable ingredient placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _potatoDefinition;
+        [SerializeField, Tooltip("Seed potato cuttings placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _potatoSeedDefinition;
         [SerializeField, Tooltip("Structural building material placed in cargo storage at the start of an expedition.")]
         private ItemDefinition _aluminumAlloyDefinition;
         [SerializeField, Tooltip("Emergency oxidizer sufficient to fabricate one oxygen candle.")]
@@ -65,7 +67,8 @@ namespace PlanetSurvival.Core.Flow
             ItemDefinition shovelDefinition = null, ItemDefinition soilDefinition = null,
             ItemDefinition plasticSheetDefinition = null, ItemDefinition carbonDioxideCanisterDefinition = null,
             ItemDefinition entanglementRelayCoreDefinition = null,
-            ItemDefinition carbonDioxideFilterCartridgeDefinition = null)
+            ItemDefinition carbonDioxideFilterCartridgeDefinition = null,
+            ItemDefinition potatoSeedDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
@@ -79,6 +82,7 @@ namespace PlanetSurvival.Core.Flow
             _carbonDioxideCanisterDefinition = carbonDioxideCanisterDefinition;
             _entanglementRelayCoreDefinition = entanglementRelayCoreDefinition;
             _carbonDioxideFilterCartridgeDefinition = carbonDioxideFilterCartridgeDefinition;
+            _potatoSeedDefinition = potatoSeedDefinition;
         }
 
         public void Initialize()
@@ -137,6 +141,9 @@ namespace PlanetSurvival.Core.Flow
                 new InventoryItemAmount(_aluminumAlloyDefinition, Quantity(GameSessionState.InitialAluminumAlloyCount)),
                 new InventoryItemAmount(_chlorateSaltDefinition, Quantity(GameSessionState.InitialChlorateSaltCount))
             };
+            if (_potatoSeedDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(
+                    _potatoSeedDefinition, Quantity(GameSessionState.InitialPotatoSeedCount)));
             if (_pickaxeDefinition != null)
             {
                 startingSupplies.Add(new InventoryItemAmount(

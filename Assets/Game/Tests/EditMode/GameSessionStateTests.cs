@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using PlanetSurvival.Core.Flow;
 using PlanetSurvival.Core.Time;
-using PlanetSurvival.Water.Domain;
 
 namespace PlanetSurvival.Tests
 {
@@ -62,7 +61,6 @@ namespace PlanetSurvival.Tests
 
             session.Reset();
 
-            Assert.That(session.WaterProcessor.State, Is.EqualTo(WaterProcessorState.Idle));
             Assert.That(session.Hydroponics.Slots.Count, Is.EqualTo(GameSessionState.HydroponicsSlotCount));
             Assert.That(session.Hydroponics.FirstEmptySlot(), Is.SameAs(session.Hydroponics.Slots[0]));
             Assert.That(session.LandingPodWaterSupply.CurrentMilliliters,

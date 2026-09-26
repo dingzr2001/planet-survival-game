@@ -1,5 +1,7 @@
 using PlanetSurvival.Items.Definitions;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 namespace PlanetSurvival.Farming.Definitions
 {
@@ -16,6 +18,10 @@ namespace PlanetSurvival.Farming.Definitions
         [SerializeField, Min(.001f)] private float _carbonDioxideLitersPerOxygenLiter = 1f;
         [SerializeField] private ItemDefinition _carbonDioxideCanister;
         [SerializeField, Min(.1f)] private float _carbonDioxideLitersPerCanister = 50f;
+        [SerializeField, Tooltip("Artwork shown while the planter contains no living crop.")]
+        private Sprite _emptySprite;
+        [SerializeField, Tooltip("Crops this planter can accept. Add definitions here to extend planting choices.")]
+        private CropDefinition[] _supportedCrops = Array.Empty<CropDefinition>();
 
         public int WaterCapacityMilliliters => _waterCapacityMilliliters;
         public int MinimumWaterMilliliters => _minimumWaterMilliliters;
@@ -27,6 +33,8 @@ namespace PlanetSurvival.Farming.Definitions
         public float CarbonDioxideLitersPerOxygenLiter => _carbonDioxideLitersPerOxygenLiter;
         public ItemDefinition CarbonDioxideCanister => _carbonDioxideCanister;
         public float CarbonDioxideLitersPerCanister => _carbonDioxideLitersPerCanister;
+        public Sprite EmptySprite => _emptySprite;
+        public IReadOnlyList<CropDefinition> SupportedCrops => _supportedCrops ?? Array.Empty<CropDefinition>();
 
         public bool IsValid(out string error)
         {
@@ -58,8 +66,51 @@ namespace PlanetSurvival.Farming.Definitions
                 return false;
             }
 
+            var cropIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int i = 0; i < SupportedCrops.Count; i++)
+            {
+                CropDefinition crop = SupportedCrops[i];
+                if (crop == null)
+                {
+                    error = $"Planter contains a missing crop at index {i}.";
+                    return false;
+                }
+
+                if (!crop.IsValid(out string cropError))
+                {
+                    error = $"Planter contains an invalid crop at index {i}: {cropError}";
+                    return false;
+                }
+
+                if (!cropIds.Add(crop.CropId))
+                {
+                    error = $"Planter lists crop '{crop.CropId}' more than once.";
+                    return false;
+                }
+            }
+
             error = string.Empty;
             return true;
+        }
+
+        public void ConfigureCrops(Sprite emptySprite, params CropDefinition[] supportedCrops)
+        {
+            _emptySprite = emptySprite;
+            _supportedCrops = supportedCrops ?? Array.Empty<CropDefinition>();
+        }
+
+        public bool Supports(CropDefinition crop)
+        {
+            if (crop == null) return false;
+            for (int i = 0; i < SupportedCrops.Count; i++)
+            {
+                if (ReferenceEquals(SupportedCrops[i], crop) || SupportedCrops[i].CropId == crop.CropId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Configure(int waterCapacityMilliliters, int minimumWaterMilliliters,

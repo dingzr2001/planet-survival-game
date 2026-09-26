@@ -8,6 +8,7 @@ using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Mining.Definitions;
+using PlanetSurvival.Oxygen.Definitions;
 using PlanetSurvival.Player.Animation;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Ground;
@@ -650,7 +651,7 @@ namespace PlanetSurvival.Tests
             Assert.That(crop, Is.Not.Null);
             Assert.That(crop.IsValid(out string cropError), Is.True, cropError);
             Assert.That(crop.CropId, Is.EqualTo("potato_crop"));
-            Assert.That(crop.SeedItem.ItemId, Is.EqualTo("potato"));
+            Assert.That(crop.SeedItem.ItemId, Is.EqualTo("potato_seed"));
             Assert.That(crop.HarvestItem.ItemId, Is.EqualTo("potato"));
             Assert.That(crop.HarvestQuantity, Is.GreaterThan(crop.SeedQuantity));
             Assert.That(crop.GrowthGameHours, Is.GreaterThan(0f));
@@ -953,6 +954,68 @@ namespace PlanetSurvival.Tests
             Assert.That(transferPost.Cost[1].Quantity, Is.EqualTo(1));
             Assert.That(transferPost.Cost[2].Item, Is.SameAs(relayCore));
             Assert.That(transferPost.Cost[2].Quantity, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Electrolyzer_SplitsMeltedIceIntoBottledOxygenAndVentedHydrogen()
+        {
+            BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/ElectrolyzerBuildable.asset");
+            ElectrolyzerDefinition definition = AssetDatabase.LoadAssetAtPath<ElectrolyzerDefinition>(
+                "Assets/Game/Configuration/Electrolyzer.asset");
+            ItemDefinition oxygen = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/Oxygen.asset");
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/IceChunk.asset");
+            BuildableDefinition solarPanel = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/SolarPanelBuildable.asset");
+            BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(
+                "Assets/Game/Configuration/DefaultBuildingCatalog.asset");
+
+            Assert.That(buildable, Is.Not.Null);
+            Assert.That(buildable.IsValid(out string error), Is.True, error);
+            Assert.That(buildable.Footprint, Is.EqualTo(Vector2Int.one));
+            Assert.That(buildable.Electrolyzer, Is.SameAs(definition));
+            Assert.That(catalog.Buildables, Does.Contain(buildable));
+            Assert.That(buildable.Cost.Count, Is.EqualTo(2));
+            Assert.That(buildable.Cost[0].Item.ItemId, Is.EqualTo("aluminum_alloy"));
+            Assert.That(buildable.Cost[1].Item.ItemId, Is.EqualTo("plastic_sheet"));
+
+            Assert.That(definition.IsValid(out string definitionError), Is.True, definitionError);
+            Assert.That(definition.IceItem, Is.SameAs(iceChunk),
+                "Ice is the only water on the surface, so it has to be what feeds the machine.");
+            Assert.That(definition.OxygenItem, Is.SameAs(oxygen));
+            Assert.That(definition.HydrogenLitersPerOxygenLiter, Is.EqualTo(2f).Within(.001f),
+                "Electrolysis releases twice the volume of hydrogen it does oxygen.");
+            Assert.That(definition.OxygenCapacityLiters,
+                Is.GreaterThanOrEqualTo(GameSessionState.SpaceSuitOxygenCapacityLiters),
+                "The gas buffer must cover a whole suit tank, or a refill needs two batches.");
+            Assert.That(definition.ElectricityPerSecond,
+                Is.EqualTo(solarPanel.SolarElectricityPerSecond).Within(.001f),
+                "One solar panel is meant to drive exactly one electrolyzer at its full rate.");
+
+            Assert.That(oxygen, Is.Not.Null);
+            Assert.That(oxygen.Icon, Is.Not.Null, "Bottled oxygen needs its backpack icon.");
+
+            Assert.That(buildable.WorldSprite, Is.Not.Null);
+            Assert.That(buildable.MenuIcon, Is.SameAs(buildable.WorldSprite));
+            var importer = AssetImporter.GetAtPath(
+                "Assets/Game/Art/World/Buildings/Electrolyzer.png") as TextureImporter;
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+        }
+
+        [Test]
+        public void HydrogenGasIcon_IsImportedForTransparentUiRendering()
+        {
+            const string path = "Assets/Game/Resources/Hydrogen/Hydrogen.png";
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+            Assert.That(importer, Is.Not.Null, $"'{path}' must exist for the electrolyzer panel.");
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(Resources.Load<Texture2D>("Hydrogen/Hydrogen"), Is.Not.Null,
+                "The panel loads the gas icon by resource path at runtime.");
         }
     }
 }

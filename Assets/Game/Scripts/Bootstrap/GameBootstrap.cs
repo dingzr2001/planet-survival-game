@@ -19,6 +19,7 @@ using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.UI.Mining;
 using PlanetSurvival.UI.Farming;
+using PlanetSurvival.UI.Oxygen;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.UI.Transport;
 using PlanetSurvival.Power.Runtime;
@@ -350,14 +351,17 @@ namespace PlanetSurvival.Bootstrap
             BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
             ItemTransferSystem transferSystem = systemObject.AddComponent<ItemTransferSystem>();
             PowerPoleSystem powerPoleSystem = systemObject.AddComponent<PowerPoleSystem>();
+            BuildingInteractionController buildingInteraction =
+                systemObject.AddComponent<BuildingInteractionController>();
             PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
-            transferSystem.Bind(session.Buildings, gridOverlay, hud.GetComponent<ItemTransferPostView>(),
-                player.transform, controller, camera);
-            powerPoleSystem.Bind(session.Buildings, hud.GetComponent<PowerPoleView>(), player.transform,
-                controller, camera);
+            transferSystem.Bind(session.Buildings, gridOverlay, hud.GetComponent<ItemTransferPostView>());
+            powerPoleSystem.Bind(session.Buildings, hud.GetComponent<PowerPoleView>());
+            buildingInteraction.Bind(player, controller, camera);
+            hud.GetComponent<InteractionPromptView>().Bind(buildingInteraction);
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
                 hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>(),
-                hud.GetComponent<PlanterBoxView>(), transferSystem, powerPoleSystem);
+                hud.GetComponent<PlanterBoxView>(), hud.GetComponent<ElectrolyzerView>(),
+                transferSystem, powerPoleSystem);
 
             hud.AddComponent<CraftingDrawerView>().Bind(
                 controller,
@@ -383,6 +387,7 @@ namespace PlanetSurvival.Bootstrap
             hudObject.AddComponent<CookingView>();
             hudObject.AddComponent<MiningDrillView>();
             hudObject.AddComponent<PlanterBoxView>();
+            hudObject.AddComponent<ElectrolyzerView>();
             hudObject.AddComponent<ItemTransferPostView>();
             hudObject.AddComponent<PowerPoleView>();
             hudObject.AddComponent<GameOverView>();

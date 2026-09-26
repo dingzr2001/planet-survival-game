@@ -5,6 +5,8 @@ using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Suit.Runtime;
 using PlanetSurvival.Water.Runtime;
 using UnityEngine;
+using PlanetSurvival.Core.Time;
+using PlanetSurvival.Farming.Definitions;
 
 namespace PlanetSurvival.UI.Farming
 {
@@ -14,12 +16,13 @@ namespace PlanetSurvival.UI.Farming
     {
         private const int WaterTransferMilliliters = 500;
         private const float PanelWidth = 580f;
-        private const float PanelHeight = 470f;
+        private const float PanelHeight = 510f;
 
         private PlanterBox _planter;
         private PlayerInventory _inventory;
         private PlayerWaterBottle _waterBottle;
         private PlayerSpaceSuit _spaceSuit;
+        private GameClock _clock;
         private PlanarPlayerMotor _motor;
         private PlayerInteractor _interactor;
         private bool _restoreMotor;
@@ -30,7 +33,7 @@ namespace PlanetSurvival.UI.Farming
 
         public bool IsOpen { get; private set; }
 
-        public void Open(PlanterBox planter, PlayerInventory inventory, PlayerWaterBottle waterBottle,
+        public void Open(PlanterBox planter, PlayerInventory inventory, GameClock clock, PlayerWaterBottle waterBottle,
             PlayerSpaceSuit spaceSuit, PlanarPlayerMotor motor = null, PlayerInteractor interactor = null)
         {
             if (planter == null || inventory == null)
@@ -42,6 +45,7 @@ namespace PlanetSurvival.UI.Farming
             Close();
             _planter = planter;
             _inventory = inventory;
+            _clock = clock;
             _waterBottle = waterBottle;
             _spaceSuit = spaceSuit;
             _motor = motor;
@@ -50,8 +54,31 @@ namespace PlanetSurvival.UI.Farming
             _restoreInteractor = _interactor != null && _interactor.enabled;
             if (_motor != null) _motor.enabled = false;
             if (_interactor != null) _interactor.enabled = false;
-            _feedback = "Water and CO₂ must both reach their minimum marks before photosynthesis starts.";
+            _feedback = "Water and CO₂ must both reach their minimum marks before growth starts.";
             IsOpen = true;
+        }
+
+        public FarmingResult Plant(CropDefinition crop)
+        {
+            if (_planter == null || _inventory == null || _clock == null)
+                return FarmingResult.Fail(FarmingFailure.InvalidCrop, "The planter panel is closed.");
+            FarmingResult result = _planter.Plant(crop, _inventory.Inventory, _clock.ElapsedDays);
+            _feedback = result.Succeeded ? $"Planted {crop.DisplayName}." : result.Message;
+            if (result.Succeeded) _inventory.RefreshQuickBarAssignments();
+            return result;
+        }
+
+        public FarmingResult Harvest()
+        {
+            if (_planter == null || _inventory == null)
+                return FarmingResult.Fail(FarmingFailure.SlotEmpty, "The planter panel is closed.");
+            CropDefinition crop = _planter.Crop;
+            FarmingResult result = _planter.Harvest(_inventory.Inventory);
+            _feedback = result.Succeeded
+                ? $"Harvested {crop.HarvestQuantity} × {crop.HarvestItem.DisplayName}."
+                : result.Message;
+            if (result.Succeeded) _inventory.RefreshQuickBarAssignments();
+            return result;
         }
 
         public int AddWater(int maximumMilliliters)
@@ -92,6 +119,7 @@ namespace PlanetSurvival.UI.Farming
             _inventory = null;
             _waterBottle = null;
             _spaceSuit = null;
+            _clock = null;
             _motor = null;
             _interactor = null;
         }
@@ -125,6 +153,9 @@ namespace PlanetSurvival.UI.Farming
             GUILayout.EndHorizontal();
             GUILayout.Space(12);
             GUILayout.Label(StateText(), _detail);
+            DrawCropControls();
+            GUILayout.Space(8);
+            GUILayout.Label("ENVIRONMENT", _header);
             DrawMeter("WATER", _planter.StoredWaterMilliliters, _planter.Definition.WaterCapacityMilliliters,
                 _planter.Definition.MinimumWaterMilliliters, new Color(.2f, .55f, .9f));
             DrawMeter("CARBON DIOXIDE", _planter.StoredCarbonDioxideLiters,
@@ -152,12 +183,88 @@ namespace PlanetSurvival.UI.Farming
             GUILayout.EndArea();
         }
 
+        private void DrawCropControls()
+        {
+            GUILayout.Space(6);
+            if (!_planter.IsPlanted)
+            {
+                for (int i = 0; i < _planter.Definition.SupportedCrops.Count; i++)
+                {
+                    CropDefinition crop = _planter.Definition.SupportedCrops[i];
+                    int seeds = _inventory.Inventory.GetQuantity(crop.SeedItem.ItemId);
+                    GUI.enabled = seeds >= crop.SeedQuantity;
+                    if (GUILayout.Button($"PLANT {crop.DisplayName.ToUpperInvariant()} ({seeds} seeds)",
+                            GUILayout.Height(32)))
+                    {
+                        Plant(crop);
+                    }
+                    GUI.enabled = true;
+                }
+                return;
+            }
+
+            if (_planter.IsDead)
+            {
+                if (GUILayout.Button("CLEAR DEAD CROP", GUILayout.Height(32)))
+                {
+                    _planter.ClearDeadCrop();
+                    _feedback = "Dead crop cleared; no seed or produce was recovered.";
+                }
+                return;
+            }
+
+            GUILayout.Label($"{_planter.Crop.DisplayName}: {_planter.GrowthProgress:P0} grown", _detail);
+            GUILayout.Label(HarvestEstimateText(), _detail);
+            GUILayout.Label($"Harvest yield: {_planter.Crop.HarvestQuantity} × {_planter.Crop.HarvestItem.DisplayName}",
+                _detail);
+            GUI.enabled = _planter.IsMature;
+            if (GUILayout.Button(_planter.IsMature ? "HARVEST" : "NOT READY TO HARVEST", GUILayout.Height(32)))
+            {
+                Harvest();
+            }
+            GUI.enabled = true;
+        }
+
+        private string HarvestEstimateText()
+        {
+            if (_planter.IsMature)
+            {
+                return "Expected harvest: ready now.";
+            }
+
+            float remainingHours = _planter.RemainingGrowthGameHours;
+            bool environmentSupportsGrowth =
+                _planter.StoredWaterMilliliters >= _planter.Definition.MinimumWaterMilliliters &&
+                _planter.StoredCarbonDioxideLiters >= _planter.Definition.MinimumCarbonDioxideLiters;
+            if (!environmentSupportsGrowth)
+            {
+                return $"Expected harvest: unavailable while growth is paused ({remainingHours:0.0} game h remain).";
+            }
+
+            if (_clock == null)
+            {
+                return $"Expected harvest: in {remainingHours:0.0} game hours.";
+            }
+
+            double completionDays = _clock.ElapsedDays + remainingHours / 24d;
+            int day = Mathf.FloorToInt((float)completionDays) + 1;
+            int totalMinutes = Mathf.FloorToInt((float)(completionDays * 24d * 60d));
+            int hour = (totalMinutes / 60) % 24;
+            int minute = totalMinutes % 60;
+            return $"Expected harvest: D{day} {hour:00}:{minute:00} · {remainingHours:0.0} game h remaining.";
+        }
+
         private string StateText() => _planter.State switch
         {
-            PlanterBoxState.NeedsWater => "Stopped: water is below the required minimum.",
-            PlanterBoxState.NeedsCarbonDioxide => "Stopped: carbon dioxide is below the required minimum.",
-            PlanterBoxState.OxygenStorageFull => "Stopped: oxygen output storage is full.",
-            _ => $"Producing {_planter.Definition.OxygenLitersPerSecond:0.##} L oxygen/s."
+            PlanterBoxState.Empty => "Empty: choose a crop to plant.",
+            PlanterBoxState.NeedsWater =>
+                $"Growth paused: add water within {_planter.RemainingEnvironmentToleranceGameHours:0.0} game hours.",
+            PlanterBoxState.NeedsCarbonDioxide =>
+                $"Growth paused: add CO₂ within {_planter.RemainingEnvironmentToleranceGameHours:0.0} game hours.",
+            PlanterBoxState.OxygenStorageFull => "Oxygen storage is full; the crop continues growing.",
+            PlanterBoxState.Mature => "Crop mature: ready to harvest.",
+            PlanterBoxState.Dead => "Crop died after its environment remained unsuitable.",
+            _ => $"Crop growing · producing {_planter.Definition.OxygenLitersPerSecond:0.##} L oxygen/s."
         };
 
         private static void DrawMeter(string label, float value, float capacity, float minimum, Color color)

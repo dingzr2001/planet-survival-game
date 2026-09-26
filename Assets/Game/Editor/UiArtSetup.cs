@@ -21,6 +21,18 @@ namespace PlanetSurvival.Editor
 
         private const int IconMaxSize = 256;
 
+        /// <summary>
+        /// Gas and liquid readouts the HUD and the machine panels load through
+        /// <c>Resources.Load&lt;Texture2D&gt;</c>. Left at Unity's default import they keep mipmaps and
+        /// lose <c>alphaIsTransparency</c>, which fringes the trimmed bubbles with dark halos.
+        /// </summary>
+        private static readonly string[] ResourceTexturePaths =
+        {
+            "Assets/Game/Resources/Oxygen/Oxygen.png",
+            "Assets/Game/Resources/Hydrogen/Hydrogen.png",
+            "Assets/Game/Resources/Water/WaterDrop.png"
+        };
+
         // The frame is scaled to the slot, so it only needs to cover the widest slot (88 px).
         // Mipmaps are off, so importing much larger would undersample the fine detail instead.
         private const int SlotBackgroundMaxSize = 128;
@@ -31,9 +43,11 @@ namespace PlanetSurvival.Editor
         {
             InventorySkin skin = GetOrCreateInventorySkin();
             int assigned = AssignItemIcons();
+            int readouts = ConfigureResourceTextures();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"UI art ready: inventory skin at '{AssetDatabase.GetAssetPath(skin)}', {assigned} item icon(s) assigned.");
+            Debug.Log($"UI art ready: inventory skin at '{AssetDatabase.GetAssetPath(skin)}', {assigned} item icon(s) " +
+                      $"assigned, {readouts} resource readout texture(s) imported.");
         }
 
         public static InventorySkin GetOrCreateInventorySkin()
@@ -89,6 +103,21 @@ namespace PlanetSurvival.Editor
             }
 
             return assigned;
+        }
+
+        /// <summary>Applies the transparent-UI import the resource readouts depend on.</summary>
+        public static int ConfigureResourceTextures()
+        {
+            int configured = 0;
+            for (int i = 0; i < ResourceTexturePaths.Length; i++)
+            {
+                if (ConfigureTextureImport(ResourceTexturePaths[i], TextureImporterType.Default, IconMaxSize, true))
+                {
+                    configured++;
+                }
+            }
+
+            return configured;
         }
 
         private static Texture2D ImportSlotBackground()

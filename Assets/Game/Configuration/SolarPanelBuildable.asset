@@ -33,6 +33,7 @@ MonoBehaviour:
   _isOxygenCandle: 0
   _miningDrill: {fileID: 0}
   _planterBox: {fileID: 0}
+  _electrolyzer: {fileID: 0}
   _isItemTransferPost: 0
   _isSolarPanel: 1
   _solarElectricityPerSecond: 2

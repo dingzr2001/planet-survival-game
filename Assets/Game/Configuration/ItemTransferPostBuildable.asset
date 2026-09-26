@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
   _buildableId: item_transfer_post
   _displayName: Transfer Post
-  _description: A half-cell logistics endpoint. Right-click it to choose one adjacent or remote input and output.
+  _description: A half-cell logistics endpoint. Right-click it to choose one adjacent
+    or remote input and output.
   _icon: {fileID: 21300000, guid: c187a0d37c2c4ee1b6eacdb94064a1d8, type: 3}
   _footprint: {x: 1, y: 1}
   _buildSeconds: 4
@@ -34,4 +35,11 @@ MonoBehaviour:
   _isOxygenCandle: 0
   _miningDrill: {fileID: 0}
   _planterBox: {fileID: 0}
+  _electrolyzer: {fileID: 0}
   _isItemTransferPost: 1
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 0
+  _powerPoleOfflineSprite: {fileID: 0}
+  _powerPoleLimitedSprite: {fileID: 0}
+  _powerPolePoweredSprite: {fileID: 0}

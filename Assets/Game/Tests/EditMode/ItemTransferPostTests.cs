@@ -2,7 +2,10 @@ using NUnit.Framework;
 using PlanetSurvival.Building.Application;
 using PlanetSurvival.Building.Definitions;
 using PlanetSurvival.Building.Domain;
+using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Crafting.Definitions;
+using PlanetSurvival.Inventory.Application;
+using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Transport.Domain;
 using PlanetSurvival.Transport.Runtime;
@@ -133,8 +136,9 @@ namespace PlanetSurvival.Tests
             Assert.That(post.GroupColor.a, Is.EqualTo(1f));
         }
 
-        [Test]
-        public void RightClickSelectionFallback_OpensPanelForSmallPostWithoutColliderHit()
+        [TestCase(true, true, TestName = "RightClick_OpensThePostUnderThePointer")]
+        [TestCase(false, false, TestName = "RightClick_IgnoresAPostThePointerDoesNotHit")]
+        public void RightClick_OpensOnlyTheStructureUnderThePointer(bool colliderEnabled, bool expectedOpen)
         {
             var inventory = new InventoryModel(30, 20);
             inventory.Add(_alloy, 2);
@@ -153,9 +157,11 @@ namespace PlanetSurvival.Tests
                 postObject.transform.position = service.Grid.QuarterCellCenter(Vector2Int.zero);
                 bodyObject.transform.SetParent(postObject.transform, false);
                 postObject.AddComponent<BoxCollider>();
+                // The pointer only ever picks placed structures, which is what this component marks.
+                postObject.AddComponent<BuildSiteView>();
                 ItemTransferPostStation station = postObject.AddComponent<ItemTransferPostStation>();
                 station.Bind(site, bodyObject.transform);
-                postObject.GetComponent<Collider>().enabled = false;
+                postObject.GetComponent<Collider>().enabled = colliderEnabled;
 
                 Camera camera = cameraObject.AddComponent<Camera>();
                 camera.orthographic = true;
@@ -165,12 +171,78 @@ namespace PlanetSurvival.Tests
 
                 ItemTransferPostView view = viewObject.AddComponent<ItemTransferPostView>();
                 ItemTransferSystem system = systemObject.AddComponent<ItemTransferSystem>();
-                system.Bind(service, null, view, playerObject.transform, null, camera);
+                system.Bind(service, null, view);
                 system.Register(station);
 
+                playerObject.transform.position = postObject.transform.position;
+                playerObject.AddComponent<PlayerInteractor>();
+                playerObject.AddComponent<PlayerInventory>().Bind(inventory);
+                BuildingInteractionController interaction =
+                    systemObject.AddComponent<BuildingInteractionController>();
+                interaction.Bind(playerObject, null, camera);
+
                 Vector3 screenPosition = camera.WorldToScreenPoint(postObject.transform.position);
-                Assert.That(system.TryOpenPostAtScreenPosition(screenPosition), Is.True);
-                Assert.That(view.IsOpen, Is.True);
+                Assert.That(interaction.TryInteractAt(screenPosition), Is.EqualTo(expectedOpen));
+                Assert.That(view.IsOpen, Is.EqualTo(expectedOpen),
+                    "A panel may only open for the structure the ray actually hit.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(systemObject);
+                Object.DestroyImmediate(viewObject);
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(playerObject);
+                Object.DestroyImmediate(postObject);
+            }
+        }
+
+        [Test]
+        public void RightClick_IgnoresAStructureOutOfThePlayersReach()
+        {
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(_alloy, 2);
+            var service = new BuildingService(inventory, new BuildGrid());
+            Assert.That(service.TryPlaceTransferPost(
+                _postDefinition, Vector2Int.zero, out BuildSite site).Succeeded, Is.True);
+
+            var postObject = new GameObject("Transfer Post");
+            var bodyObject = new GameObject("Body");
+            var cameraObject = new GameObject("Camera");
+            var viewObject = new GameObject("Transfer UI");
+            var systemObject = new GameObject("Transfer System");
+            var playerObject = new GameObject("Player");
+            try
+            {
+                postObject.transform.position = service.Grid.QuarterCellCenter(Vector2Int.zero);
+                bodyObject.transform.SetParent(postObject.transform, false);
+                postObject.AddComponent<BoxCollider>();
+                postObject.AddComponent<BuildSiteView>();
+                ItemTransferPostStation station = postObject.AddComponent<ItemTransferPostStation>();
+                station.Bind(site, bodyObject.transform);
+
+                Camera camera = cameraObject.AddComponent<Camera>();
+                camera.orthographic = true;
+                camera.transform.position = new Vector3(postObject.transform.position.x, 10f,
+                    postObject.transform.position.z);
+                camera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+
+                ItemTransferPostView view = viewObject.AddComponent<ItemTransferPostView>();
+                ItemTransferSystem system = systemObject.AddComponent<ItemTransferSystem>();
+                system.Bind(service, null, view);
+                system.Register(station);
+
+                PlayerInteractor interactor = playerObject.AddComponent<PlayerInteractor>();
+                playerObject.transform.position = postObject.transform.position +
+                    new Vector3(interactor.InteractionRadius + 5f, 0f, 0f);
+                playerObject.AddComponent<PlayerInventory>().Bind(inventory);
+                BuildingInteractionController interaction =
+                    systemObject.AddComponent<BuildingInteractionController>();
+                interaction.Bind(playerObject, null, camera);
+
+                Vector3 screenPosition = camera.WorldToScreenPoint(postObject.transform.position);
+                Assert.That(interaction.TryInteractAt(screenPosition), Is.False,
+                    "Clicking a structure still requires standing within reach of it.");
+                Assert.That(view.IsOpen, Is.False);
             }
             finally
             {

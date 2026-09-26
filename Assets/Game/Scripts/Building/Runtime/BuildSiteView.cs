@@ -4,6 +4,7 @@ using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Cooking.Runtime;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Oxygen.Domain;
+using PlanetSurvival.Oxygen.Runtime;
 using PlanetSurvival.Mining.Runtime;
 using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.Player.Interaction;
@@ -78,6 +79,7 @@ namespace PlanetSurvival.Building.Runtime
             WorldVisualSettings visuals, CookingStationBinding cooking = default,
             MiningDrillBinding mining = default,
             PlanterBoxBinding planter = default,
+            ElectrolyzerBinding electrolyzer = default,
             OxygenReservoir oxygenReservoir = null, GameClock clock = null)
         {
             _site = site;
@@ -131,8 +133,15 @@ namespace PlanetSurvival.Building.Runtime
             if (planter.IsComplete)
             {
                 PlanterBoxStation planterStation = gameObject.AddComponent<PlanterBoxStation>();
-                planterStation.Bind(planter);
+                planterStation.Bind(planter, _body);
                 planterStation.enabled = false;
+            }
+
+            if (electrolyzer.IsComplete)
+            {
+                ElectrolyzerStation electrolyzerStation = gameObject.AddComponent<ElectrolyzerStation>();
+                electrolyzerStation.Bind(electrolyzer);
+                electrolyzerStation.enabled = false;
             }
 
             Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
@@ -190,7 +199,7 @@ namespace PlanetSurvival.Building.Runtime
 
             if (_site?.State == BuildState.Completed && _site.PlanterBox != null)
             {
-                _site.PlanterBox.Advance(Time.deltaTime);
+                _site.PlanterBox.Advance(Time.deltaTime, _clock != null ? _clock.ElapsedDays : 0d);
             }
         }
 
@@ -246,6 +255,10 @@ namespace PlanetSurvival.Building.Runtime
             if (TryGetComponent(out PlanterBoxStation planter))
             {
                 planter.enabled = true;
+            }
+            if (TryGetComponent(out ElectrolyzerStation electrolyzer))
+            {
+                electrolyzer.enabled = true;
             }
         }
     }

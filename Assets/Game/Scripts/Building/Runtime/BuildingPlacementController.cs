@@ -11,6 +11,8 @@ using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.Mining;
 using PlanetSurvival.Farming.Runtime;
 using PlanetSurvival.UI.Farming;
+using PlanetSurvival.Oxygen.Runtime;
+using PlanetSurvival.UI.Oxygen;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.Power.Runtime;
 using PlanetSurvival.World.Generation;
@@ -43,6 +45,7 @@ namespace PlanetSurvival.Building.Runtime
         private CookingView _cookingView;
         private MiningDrillView _miningDrillView;
         private PlanterBoxView _planterBoxView;
+        private ElectrolyzerView _electrolyzerView;
         private GameClock _clock;
         private ItemTransferSystem _itemTransferSystem;
         private PowerPoleSystem _powerPoleSystem;
@@ -71,8 +74,8 @@ namespace PlanetSurvival.Building.Runtime
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
             GameClock clock = null, MiningDrillView miningDrillView = null,
-            PlanterBoxView planterBoxView = null, ItemTransferSystem itemTransferSystem = null,
-            PowerPoleSystem powerPoleSystem = null)
+            PlanterBoxView planterBoxView = null, ElectrolyzerView electrolyzerView = null,
+            ItemTransferSystem itemTransferSystem = null, PowerPoleSystem powerPoleSystem = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -91,6 +94,7 @@ namespace PlanetSurvival.Building.Runtime
             _cookingView = cookingView;
             _miningDrillView = miningDrillView;
             _planterBoxView = planterBoxView;
+            _electrolyzerView = electrolyzerView;
             _clock = clock;
             _itemTransferSystem = itemTransferSystem;
             _powerPoleSystem = powerPoleSystem;
@@ -316,6 +320,7 @@ namespace PlanetSurvival.Building.Runtime
                 site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site),
                 CreateMiningBinding(site),
                 CreatePlanterBinding(site),
+                CreateElectrolyzerBinding(site),
                 site.Definition.IsOxygenCandle && _session != null
                     ? _session.LandingPodOxygenSupply
                     : null,
@@ -375,7 +380,14 @@ namespace PlanetSurvival.Building.Runtime
         private PlanterBoxBinding CreatePlanterBinding(BuildSite site)
         {
             return site.PlanterBox != null && _planterBoxView != null
-                ? new PlanterBoxBinding(site.PlanterBox, _planterBoxView)
+                ? new PlanterBoxBinding(site.PlanterBox, _planterBoxView, _clock)
+                : default;
+        }
+
+        private ElectrolyzerBinding CreateElectrolyzerBinding(BuildSite site)
+        {
+            return site.Electrolyzer != null && _electrolyzerView != null
+                ? new ElectrolyzerBinding(site.Electrolyzer, _electrolyzerView)
                 : default;
         }
     }

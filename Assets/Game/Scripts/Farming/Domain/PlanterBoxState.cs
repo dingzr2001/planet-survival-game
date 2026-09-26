@@ -2,9 +2,13 @@ namespace PlanetSurvival.Farming.Domain
 {
     public enum PlanterBoxState
     {
+        Empty,
         NeedsWater,
         NeedsCarbonDioxide,
-        Producing,
-        OxygenStorageFull
+        Growing,
+        Mature,
+        Dead,
+        OxygenStorageFull,
+        Producing = Growing
     }
 }

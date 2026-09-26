@@ -1,5 +1,7 @@
 using PlanetSurvival.Building.Domain;
+using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Transport.Domain;
+using PlanetSurvival.UI.Transport;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
@@ -8,9 +10,11 @@ namespace PlanetSurvival.Transport.Runtime
     /// <summary>World presentation for a transfer post, including its colour insert and group number.</summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Collider))]
-    public sealed class ItemTransferPostStation : MonoBehaviour
+    public sealed class ItemTransferPostStation : MonoBehaviour, IInteractable
     {
         private BuildSite _site;
+        private ItemTransferSystem _system;
+        private ItemTransferPostView _view;
         private SpriteRenderer _colorLayer;
         private SpriteRenderer _bodyRenderer;
         private TextMesh _groupLabel;
@@ -18,6 +22,29 @@ namespace PlanetSurvival.Transport.Runtime
         public BuildSite Site => _site;
         public ItemTransferPost Post => _site?.ItemTransferPost;
         public string EndpointId => _site == null ? string.Empty : ItemTransferSystem.PostEndpointId(_site.SiteId);
+
+        public string Prompt => Post == null
+            ? "configure transfer post"
+            : $"configure transfer post {Post.PostNumber:00}";
+
+        /// <summary>The network hands the station its panel, so a click needs no lookup of its own.</summary>
+        public void AttachNetwork(ItemTransferSystem system, ItemTransferPostView view)
+        {
+            _system = system;
+            _view = view;
+        }
+
+        public bool CanInteract(in InteractionContext context) =>
+            isActiveAndEnabled && Post != null && _system != null && _view != null &&
+            _site.State == BuildState.Completed;
+
+        public void Interact(in InteractionContext context)
+        {
+            if (CanInteract(context))
+            {
+                _view.Open(this, _system, context.Actor);
+            }
+        }
 
         public void Bind(BuildSite site, Transform body)
         {

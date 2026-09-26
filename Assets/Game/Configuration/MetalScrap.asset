@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Items.Definitions.ItemDefinition
   _itemId: metal_scrap
   _displayName: Metal Scrap
-  _description: Mixed wreckage recovered from surface debris. It must be smelted before it can be used in construction.
+  _description: Mixed wreckage recovered from surface debris. It must be smelted
+    before it can be used in construction.
   _icon: {fileID: 0}
   _capacityPerItem: 2
   _maximumStackSize: 10

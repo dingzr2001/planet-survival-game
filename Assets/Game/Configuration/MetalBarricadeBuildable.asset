@@ -21,9 +21,20 @@ MonoBehaviour:
   _cost:
   - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
     _quantity: 3
+  _taggedCost: []
   _worldSprite: {fileID: 0}
+  _transferColorMask: {fileID: 0}
   _worldHeight: 1.1
   _bodyColor: {r: 0.62, g: 0.66, b: 0.72, a: 1}
   _cookingStation: {fileID: 0}
   _isOxygenCandle: 0
   _miningDrill: {fileID: 0}
+  _planterBox: {fileID: 0}
+  _electrolyzer: {fileID: 0}
+  _isItemTransferPost: 0
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 0
+  _powerPoleOfflineSprite: {fileID: 0}
+  _powerPoleLimitedSprite: {fileID: 0}
+  _powerPolePoweredSprite: {fileID: 0}

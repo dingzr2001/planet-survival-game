@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db4ed57a04b7483d854be783015de1f, type: 3}
+  m_Name: Electrolyzer
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Oxygen.Definitions.ElectrolyzerDefinition
+  _waterCapacityMilliliters: 20000
+  _iceItem: {fileID: 11400000, guid: 14b91185ac96747488479e5bb8d289cd, type: 2}
+  _waterMillilitersPerIceChunk: 1000
+  _waterMillilitersPerOxygenLiter: 5
+  _electricityCapacity: 40
+  _electricityPerOxygenLiter: 0.2
+  _oxygenLitersPerSecond: 10
+  _oxygenCapacityLiters: 600
+  _hydrogenLitersPerOxygenLiter: 2
+  _hydrogenCapacityLiters: 1200
+  _oxygenItem: {fileID: 11400000, guid: a23a29a4333d748539a50b6a52b5778a, type: 2}
+  _oxygenLitersPerItem: 100
+  _oxygenItemCapacity: 10
+  _outputPerSecond: 1

@@ -6,7 +6,6 @@ using PlanetSurvival.Building.Runtime;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Mining.Domain;
-using PlanetSurvival.Farming.Domain;
 using PlanetSurvival.Storage.Runtime;
 using PlanetSurvival.Transport.Domain;
 using PlanetSurvival.UI.Transport;
@@ -17,8 +16,9 @@ namespace PlanetSurvival.Transport.Runtime
     using InventoryModel = PlanetSurvival.Inventory.Domain.Inventory;
 
     /// <summary>
-    /// Resolves configured endpoints, advances item movement, opens posts on right click, and draws their
-    /// coloured directional links only while the construction grid is visible.
+    /// Resolves configured endpoints, advances item movement, and draws the posts' coloured directional
+    /// links only while the construction grid is visible. Posts are opened by clicking them, which the
+    /// building pointer handles.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ItemTransferSystem : MonoBehaviour
@@ -26,7 +26,6 @@ namespace PlanetSurvival.Transport.Runtime
         private const string PostPrefix = "post:";
         private const string BuildingPrefix = "building:";
         private const string StoragePrefix = "storage:";
-        private const float ScreenSelectionRadius = 52f;
         private const float LinkWidth = .055f;
         private const float LinkHeight = .045f;
 
@@ -39,24 +38,17 @@ namespace PlanetSurvival.Transport.Runtime
         private BuildingService _buildings;
         private BuildGridOverlay _gridOverlay;
         private ItemTransferPostView _view;
-        private BuildingPlacementController _placement;
-        private Transform _player;
-        private Camera _camera;
         private Mesh _linkMesh;
         private MeshRenderer _linkRenderer;
         private Material _linkMaterial;
 
         public static string PostEndpointId(string siteId) => PostPrefix + siteId;
 
-        public void Bind(BuildingService buildings, BuildGridOverlay gridOverlay, ItemTransferPostView view,
-            Transform player, BuildingPlacementController placement, Camera targetCamera)
+        public void Bind(BuildingService buildings, BuildGridOverlay gridOverlay, ItemTransferPostView view)
         {
             _buildings = buildings;
             _gridOverlay = gridOverlay;
             _view = view;
-            _player = player;
-            _placement = placement;
-            _camera = targetCamera;
             EnsureLinkPresentation();
         }
 
@@ -66,6 +58,7 @@ namespace PlanetSurvival.Transport.Runtime
             {
                 _stations.Add(station);
                 _outputAllowances.TryAdd(station.Post, 0f);
+                station.AttachNetwork(this, _view);
             }
         }
 
@@ -169,78 +162,6 @@ namespace PlanetSurvival.Transport.Runtime
                 : $"Output blocked: {GetEndpointLabel(post.OutputEndpointId)} cannot accept {post.BufferedItem.DisplayName}.";
         }
 
-        /// <summary>Opens the completed post nearest the pointer. Collider hits win; screen proximity is the fallback.</summary>
-        public bool TryOpenPostAtScreenPosition(Vector2 screenPosition)
-        {
-            if (_view == null)
-            {
-                return false;
-            }
-
-            if (_camera == null || !_camera.isActiveAndEnabled)
-            {
-                _camera = Camera.main;
-            }
-
-            if (_camera == null)
-            {
-                return false;
-            }
-
-            Ray ray = _camera.ScreenPointToRay(screenPosition);
-            RaycastHit[] hits = Physics.RaycastAll(ray, _camera.farClipPlane, ~0,
-                QueryTriggerInteraction.Collide);
-            ItemTransferPostStation selected = null;
-            float nearestHit = float.MaxValue;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                ItemTransferPostStation candidate = hits[i].collider.GetComponentInParent<ItemTransferPostStation>();
-                if (!CanOpen(candidate) || hits[i].distance >= nearestHit)
-                {
-                    continue;
-                }
-
-                selected = candidate;
-                nearestHit = hits[i].distance;
-            }
-
-            if (selected == null)
-            {
-                float nearestScreenDistance = ScreenSelectionRadius * ScreenSelectionRadius;
-                for (int i = 0; i < _stations.Count; i++)
-                {
-                    ItemTransferPostStation candidate = _stations[i];
-                    if (!CanOpen(candidate))
-                    {
-                        continue;
-                    }
-
-                    Vector3 projected = _camera.WorldToScreenPoint(candidate.transform.position);
-                    if (projected.z <= 0f)
-                    {
-                        continue;
-                    }
-
-                    float distance = ((Vector2)projected - screenPosition).sqrMagnitude;
-                    if (distance >= nearestScreenDistance)
-                    {
-                        continue;
-                    }
-
-                    selected = candidate;
-                    nearestScreenDistance = distance;
-                }
-            }
-
-            if (selected == null)
-            {
-                return false;
-            }
-
-            _view.Open(selected, this, _player != null ? _player.gameObject : gameObject);
-            return true;
-        }
-
         public void SetInput(ItemTransferPostStation station, string endpointId)
         {
             if (station?.Post == null)
@@ -309,11 +230,6 @@ namespace PlanetSurvival.Transport.Runtime
             }
 
             AdvanceTransfers(Time.deltaTime);
-            if (Input.GetMouseButtonDown(1) && (_placement == null ||
-                (!_placement.IsPlacing && !_placement.CancelledPlacementThisFrame)))
-            {
-                TryOpenPostAtScreenPosition(Input.mousePosition);
-            }
         }
 
         private void LateUpdate()
@@ -425,29 +341,14 @@ namespace PlanetSurvival.Transport.Runtime
                     $"Transfer post {other.Post.PostNumber:00}", true));
             }
 
-            if (forInput)
+            for (int i = 0; i < _buildings.Sites.Count; i++)
             {
-                for (int i = 0; i < _buildings.Sites.Count; i++)
+                BuildSite site = _buildings.Sites[i];
+                bool connectable = forInput ? site.ItemOutput != null : site.ItemInput != null;
+                if (site.State == BuildState.Completed && connectable && IsAdjacent(station.Site, site))
                 {
-                    BuildSite site = _buildings.Sites[i];
-                    if (site.State == BuildState.Completed && site.MiningDrill != null && IsAdjacent(station.Site, site))
-                    {
-                        options.Add(new TransferEndpointOption(BuildingPrefix + site.SiteId,
-                            $"Adjacent {site.Definition.DisplayName}", false));
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < _buildings.Sites.Count; i++)
-                {
-                    BuildSite site = _buildings.Sites[i];
-                    if (site.State == BuildState.Completed &&
-                        (site.MiningDrill != null || site.PlanterBox != null) && IsAdjacent(station.Site, site))
-                    {
-                        options.Add(new TransferEndpointOption(BuildingPrefix + site.SiteId,
-                            $"Adjacent {site.Definition.DisplayName}", false));
-                    }
+                    options.Add(new TransferEndpointOption(BuildingPrefix + site.SiteId,
+                        $"Adjacent {site.Definition.DisplayName}", false));
                 }
             }
 
@@ -490,12 +391,6 @@ namespace PlanetSurvival.Transport.Runtime
             return false;
         }
 
-        private static bool CanOpen(ItemTransferPostStation station)
-        {
-            return station != null && station.Post != null && station.Site.State == BuildState.Completed &&
-                   station.isActiveAndEnabled;
-        }
-
         private bool TryResolveSource(string endpointId, out ITransferSource source)
         {
             if (TryGetPost(endpointId, out ItemTransferPostStation postStation))
@@ -504,9 +399,9 @@ namespace PlanetSurvival.Transport.Runtime
                 return true;
             }
 
-            if (TryGetBuilding(endpointId, out BuildSite site) && site.MiningDrill != null)
+            if (TryGetBuilding(endpointId, out BuildSite site) && site.ItemOutput != null)
             {
-                source = new MiningEndpoint(site.MiningDrill);
+                source = new BuildingOutputEndpoint(site.ItemOutput);
                 return true;
             }
 
@@ -534,10 +429,9 @@ namespace PlanetSurvival.Transport.Runtime
                 return true;
             }
 
-            if (TryGetBuilding(endpointId, out BuildSite site) &&
-                (site.MiningDrill != null || site.PlanterBox != null))
+            if (TryGetBuilding(endpointId, out BuildSite site) && site.ItemInput != null)
             {
-                sink = new BuildingInputEndpoint(site.MiningDrill, site.PlanterBox);
+                sink = new BuildingInputEndpoint(site.ItemInput);
                 return true;
             }
 
@@ -795,10 +689,10 @@ namespace PlanetSurvival.Transport.Runtime
             public int Insert(ItemDefinition item, int quantity) => _post.Insert(item, quantity);
         }
 
-        private sealed class MiningEndpoint : ITransferSource
+        private sealed class BuildingOutputEndpoint : ITransferSource
         {
             private readonly IItemOutput _output;
-            public MiningEndpoint(IItemOutput output) => _output = output;
+            public BuildingOutputEndpoint(IItemOutput output) => _output = output;
             public ItemDefinition OutputItem => _output.OutputItem;
             public int Extract(int maximumQuantity, float elapsedSeconds) =>
                 _output.Extract(maximumQuantity, elapsedSeconds);
@@ -831,34 +725,11 @@ namespace PlanetSurvival.Transport.Runtime
 
         private sealed class BuildingInputEndpoint : ITransferSink
         {
-            private readonly MiningDrill _miningDrill;
-            private readonly PlanterBox _planterBox;
-
-            public BuildingInputEndpoint(MiningDrill miningDrill, PlanterBox planterBox)
-            {
-                _miningDrill = miningDrill;
-                _planterBox = planterBox;
-            }
-
-            public int AcceptableQuantity(ItemDefinition item, int maximumQuantity)
-            {
-                if (_miningDrill != null)
-                {
-                    return _miningDrill.AcceptableInputItems(item, maximumQuantity);
-                }
-
-                return _planterBox != null ? _planterBox.AcceptableInputItems(item, maximumQuantity) : 0;
-            }
-
-            public int Insert(ItemDefinition item, int quantity)
-            {
-                if (_miningDrill != null)
-                {
-                    return _miningDrill.InsertInputItems(item, quantity);
-                }
-
-                return _planterBox != null ? _planterBox.InsertInputItems(item, quantity) : 0;
-            }
+            private readonly IItemInput _input;
+            public BuildingInputEndpoint(IItemInput input) => _input = input;
+            public int AcceptableQuantity(ItemDefinition item, int maximumQuantity) =>
+                _input.AcceptableInputItems(item, maximumQuantity);
+            public int Insert(ItemDefinition item, int quantity) => _input.InsertInputItems(item, quantity);
         }
     }
 

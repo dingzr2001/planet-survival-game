@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b104720cda2f4a40818f93cee99f13f, type: 3}
+  m_Name: ElectrolyzerBuildable
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
+  _buildableId: electrolyzer
+  _displayName: Electrolyzer
+  _description: Splits melted ice into breathable oxygen and hydrogen using pole-routed
+    electricity. Fills a suit directly, bottles the surplus, and stalls once its
+    hydrogen vent tank is full.
+  _icon: {fileID: 21300000, guid: b2db633735a66412faae3236365f503f, type: 3}
+  _footprint: {x: 1, y: 1}
+  _buildSeconds: 18
+  _cost:
+  - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}
+    _quantity: 6
+  - _item: {fileID: 11400000, guid: 699b0e271555d490dafbd12ef8a0c34f, type: 2}
+    _quantity: 2
+  _taggedCost: []
+  _worldSprite: {fileID: 21300000, guid: b2db633735a66412faae3236365f503f, type: 3}
+  _transferColorMask: {fileID: 0}
+  _worldHeight: 1.4
+  _bodyColor: {r: 0.62, g: 0.68, b: 0.74, a: 1}
+  _cookingStation: {fileID: 0}
+  _isOxygenCandle: 0
+  _miningDrill: {fileID: 0}
+  _planterBox: {fileID: 0}
+  _electrolyzer: {fileID: 11400000, guid: 33431c56923074356a14f86bfed2ce32, type: 2}
+  _isItemTransferPost: 0
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 0
+  _powerPoleOfflineSprite: {fileID: 0}
+  _powerPoleLimitedSprite: {fileID: 0}
+  _powerPolePoweredSprite: {fileID: 0}

@@ -22,6 +22,7 @@ MonoBehaviour:
   _canUse: 1
   _canDrop: 1
   _calories: 300
+  _materialTags: 0
   _effects:
   - _vitalType: 1
     _amount: 4

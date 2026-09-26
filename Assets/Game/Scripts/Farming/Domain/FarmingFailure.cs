@@ -15,6 +15,8 @@ namespace PlanetSurvival.Farming.Domain
 
         /// <summary>The crop is planted but has not finished growing.</summary>
         NotRipe,
-        InventoryFull
+        InventoryFull,
+        UnsupportedCrop,
+        CropDead
     }
 }

@@ -128,11 +128,6 @@ namespace PlanetSurvival.Tests
             GameClock cargoClock = Object.FindFirstObjectByType<GameClock>();
             Assert.That(cargoClock.ElapsedDays, Is.EqualTo(elapsedBeforeDeckChange).Within(.05d),
                 "A deck change must not rewind the expedition clock or the rescue countdown.");
-            WaterProcessorStation processor = Object.FindFirstObjectByType<WaterProcessorStation>();
-            Assert.That(processor, Is.Not.Null, "The cargo deck makes the water half of the loop.");
-            Assert.That(processor.Processor, Is.SameAs(flowController.Session.WaterProcessor));
-            Assert.That(Object.FindFirstObjectByType<WaterProcessorView>(), Is.Not.Null);
-            AssertPropUsesItsArtwork(processor.gameObject);
             Assert.That(Object.FindFirstObjectByType<FixedInteriorBackdrop>(), Is.Not.Null);
             Assert.That(GameObject.Find("Dining Table"), Is.Null);
             StorageContainer cargoStorage = Object.FindFirstObjectByType<StorageContainer>();
@@ -145,7 +140,7 @@ namespace PlanetSurvival.Tests
                 .Inventory;
             string[] testItemIds =
             {
-                "energy_bar", "potato", "aluminum_alloy", "chlorate_salt", "pickaxe",
+                "energy_bar", "potato", "potato_seed", "aluminum_alloy", "chlorate_salt", "pickaxe",
                 "petroleum_canister", "shovel", "soil", "plastic_sheet", "carbon_dioxide_canister",
                 "entanglement_relay_core"
             };

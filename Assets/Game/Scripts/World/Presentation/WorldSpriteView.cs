@@ -78,6 +78,20 @@ namespace PlanetSurvival.World.Presentation
             FitWidth(worldWidth);
         }
 
+        /// <summary>Replaces static artwork without changing its authored world-space fit.</summary>
+        public void SetStaticSprite(Sprite sprite)
+        {
+            ResolveRenderer();
+            if (_renderer == null || sprite == null) return;
+            ReleaseRuntimeSprites();
+            _renderer.sprite = sprite;
+            Sprite[] frame = { sprite };
+            _downFrames = frame;
+            _leftFrames = frame;
+            _rightFrames = frame;
+            _upFrames = frame;
+        }
+
         public void ConfigureDirectional(Sprite fallbackSprite, float worldHeight,
             Texture2D animationSheet)
         {

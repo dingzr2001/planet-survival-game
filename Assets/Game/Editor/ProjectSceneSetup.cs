@@ -8,11 +8,11 @@ using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.Items.Definitions;
 using PlanetSurvival.Mining.Definitions;
+using PlanetSurvival.Oxygen.Definitions;
 using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
-using PlanetSurvival.Water.Domain;
 using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Interiors;
@@ -45,6 +45,7 @@ namespace PlanetSurvival.Editor
         private const string ResourceSpawnSettingsPath = ConfigurationDirectory + "/DefaultResourceSpawnSettings.asset";
         private const string EnergyBarPath = ConfigurationDirectory + "/EnergyBar.asset";
         private const string PotatoPath = ConfigurationDirectory + "/Potato.asset";
+        private const string PotatoSeedPath = ConfigurationDirectory + "/PotatoSeed.asset";
         private const string AluminumAlloyPath = ConfigurationDirectory + "/AluminumAlloy.asset";
         private const string RawStonePath = ConfigurationDirectory + "/RawStone.asset";
         private const string EntanglementRelayCorePath =
@@ -69,6 +70,8 @@ namespace PlanetSurvival.Editor
         private const string CarbonDioxideFilterCartridgePath =
             ConfigurationDirectory + "/CarbonDioxideFilterCartridge.asset";
         private const string PlanterBoxDefinitionPath = ConfigurationDirectory + "/PlanterBox.asset";
+        private const string ElectrolyzerDefinitionPath = ConfigurationDirectory + "/Electrolyzer.asset";
+        private const string OxygenItemPath = ConfigurationDirectory + "/Oxygen.asset";
         private const string PickaxePath = ConfigurationDirectory + "/Pickaxe.asset";
         private const string ShovelPath = ConfigurationDirectory + "/Shovel.asset";
         private const string PickaxeRecipePath = ConfigurationDirectory + "/PoweredPickaxeRecipe.asset";
@@ -166,6 +169,25 @@ namespace PlanetSurvival.Editor
         private const float SolarPanelElectricityPerSecond = 2f;
         private const float PowerPoleBuildSeconds = 6f;
 
+        // Electrolysis. The numbers are picked so one solar panel drives exactly one machine at its full
+        // rate (10 L/s × 0.2 = 2 units/s), and so one ice chunk is worth a readable amount of air: 1 L of
+        // melt water at 5 mL per litre of oxygen is 200 L, which covers ten game hours of breathing. The
+        // gas buffer holds one suit tank so a refill never has to wait for a second batch, and anything
+        // past that is bottled. Hydrogen leaves at twice the oxygen volume, as the reaction demands.
+        private const float ElectrolyzerBuildSeconds = 18f;
+        private const int ElectrolyzerWaterCapacity = 20000;
+        private const int ElectrolyzerWaterPerIceChunk = 1000;
+        private const float ElectrolyzerWaterPerOxygenLiter = 5f;
+        private const float ElectrolyzerElectricityCapacity = 40f;
+        private const float ElectrolyzerElectricityPerOxygenLiter = .2f;
+        private const float ElectrolyzerOxygenPerSecond = 10f;
+        private const float ElectrolyzerOxygenCapacity = 600f;
+        private const float ElectrolyzerHydrogenPerOxygenLiter = 2f;
+        private const float ElectrolyzerHydrogenCapacity = 1200f;
+        private const float ElectrolyzerOxygenPerItem = 100f;
+        private const int ElectrolyzerOxygenItemCapacity = 10;
+        private const float ElectrolyzerOutputPerSecond = 1f;
+
         // Roasting one potato takes a bit over an in-game hour at the default day length: long enough
         // that the player leaves the oven and does something else, short enough to stay a routine chore.
         private const float RoastPotatoSeconds = 30f;
@@ -192,6 +214,7 @@ namespace PlanetSurvival.Editor
             WorldVisualSettings worldVisuals = WorldArtSetup.GetOrCreateWorldVisualSettings();
             ItemDefinition energyBar = GetOrCreateEnergyBar();
             ItemDefinition potato = GetOrCreatePotato();
+            ItemDefinition potatoSeed = GetOrCreatePotatoSeed();
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
             ItemDefinition chlorateSalt = GetOrCreateChlorateSalt();
             ItemDefinition pickaxe = GetOrCreatePickaxe();
@@ -212,7 +235,7 @@ namespace PlanetSurvival.Editor
             worldVisuals.ConfigurePlayerToolAnimations(pickaxeAnimation, shovelAnimation);
             EditorUtility.SetDirty(worldVisuals);
             ItemDefinition iceChunk = GetOrCreateIceChunk();
-            CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato);
+            CropDefinition potatoCrop = GetOrCreatePotatoCrop(potato, potatoSeed);
             ResourceSpawnSettings resourceSpawnSettings = GetOrCreateResourceSettings(pickaxe);
             TerrainPatchSettings terrainPatchSettings = GetOrCreateTerrainPatchSettings(pickaxe, shovel, iceChunk);
             ItemDefinition oxygenCandle = GetOrCreateOxygenCandle();
@@ -224,13 +247,14 @@ namespace PlanetSurvival.Editor
             WorldArtSetup.AssignResourceSprites();
             WorldArtSetup.ConfigureInteriorPropSprites();
             UiArtSetup.AssignItemIcons();
+            UiArtSetup.ConfigureResourceTextures();
             CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
-                soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter);
+                soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter, potatoSeed);
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
-                oven, potatoCrop, iceChunk, LandingPodHabitatScenePath);
+                oven, potatoCrop, LandingPodHabitatScenePath);
             CreateLandingPodScene(LandingPodDeck.Cargo, environmentSettings, inventorySkin, worldVisuals,
-                oven, potatoCrop, iceChunk, LandingPodCargoScenePath);
+                oven, potatoCrop, LandingPodCargoScenePath);
             CreateGameplayScene(settings, environmentSettings, resourceSpawnSettings, terrainPatchSettings,
                 inventorySkin, worldVisuals, buildingCatalog, craftingCatalog);
             ConfigureBuildSettings();
@@ -988,7 +1012,7 @@ namespace PlanetSurvival.Editor
 
         /// <summary>
         /// Surface ice, the only renewable source of water. It carries no nutrition on purpose: ground
-        /// ice is not drinkable, so a haul is worth nothing until the cargo-deck processor has run it.
+        /// ice is not drinkable, so a haul is worth nothing until an electrolyzer has melted it down.
         /// </summary>
         private static ItemDefinition GetOrCreateIceChunk()
         {
@@ -1002,8 +1026,8 @@ namespace PlanetSurvival.Editor
 
             item.Configure("ice_chunk", "Ice Chunk", 1, 20, false, true);
             item.ConfigureDescription(
-                "Water ice cut from a surface deposit, laced with perchlorate salts and dust. The cargo-deck " +
-                $"processor filters one chunk into {WaterProcessor.MillilitersPerIceChunk} mL of drinking water.");
+                "Water ice cut from a surface deposit, laced with perchlorate salts and dust. An electrolyzer " +
+                $"melts one chunk down to {ElectrolyzerWaterPerIceChunk} mL of feed water.");
             EditorUtility.SetDirty(item);
             return item;
         }
@@ -1012,7 +1036,7 @@ namespace PlanetSurvival.Editor
         /// The one crop the habitat rack grows. A planting returns more potatoes than it sows, which is
         /// what turns a finite landing stock into an expedition that can last to the rescue day.
         /// </summary>
-        private static CropDefinition GetOrCreatePotatoCrop(ItemDefinition potato)
+        private static CropDefinition GetOrCreatePotatoCrop(ItemDefinition potato, ItemDefinition potatoSeed)
         {
             CropDefinition crop = AssetDatabase.LoadAssetAtPath<CropDefinition>(PotatoCropPath);
             if (crop == null)
@@ -1022,10 +1046,30 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(crop, PotatoCropPath);
             }
 
-            crop.Configure("potato_crop", "Potato", potato, 1, potato, PotatoHarvestQuantity,
+            crop.Configure("potato_crop", "Potato", potatoSeed, 1, potato, PotatoHarvestQuantity,
                 PotatoGrowthGameHours, PotatoPlantingWaterMilliliters);
+            crop.ConfigurePlanterGrowth(4f,
+                WorldArtSetup.ImportBuildingSprite("PlanterBoxPlanted"),
+                WorldArtSetup.ImportBuildingSprite("PlanterBoxSprouted"),
+                WorldArtSetup.ImportBuildingSprite("PlanterBoxGrowing"),
+                WorldArtSetup.ImportBuildingSprite("PlanterBoxMature"));
             EditorUtility.SetDirty(crop);
             return crop;
+        }
+
+        private static ItemDefinition GetOrCreatePotatoSeed()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoSeedPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Potato Seed";
+                AssetDatabase.CreateAsset(item, PotatoSeedPath);
+            }
+            item.Configure("potato_seed", "Seed Potato Cuttings", 1, 20, false, true);
+            item.ConfigureDescription("Cut seed potatoes prepared for planting.");
+            EditorUtility.SetDirty(item);
+            return item;
         }
 
         private static ItemDefinition GetOrCreatePotato()
@@ -1252,18 +1296,22 @@ namespace PlanetSurvival.Editor
             }
             planterDefinition.Configure(10000, 1000, 500f, 25f, 500f, 1f, 2f, 1f,
                 carbonDioxideCanister, 50f);
+            planterDefinition.ConfigureCrops(WorldArtSetup.ImportBuildingSprite("PlanterBoxEmpty"),
+                AssetDatabase.LoadAssetAtPath<CropDefinition>(PotatoCropPath));
             EditorUtility.SetDirty(planterDefinition);
             BuildableDefinition planterBox = GetOrCreateBuildable(
                 "PlanterBoxBuildable", "planter_box", "Planter Box", Vector2Int.one,
                 PlanterBoxBuildSeconds, 1f, new Color(.36f, .55f, .28f),
                 "A one-cell growing system. Water and CO₂ inputs drive an oxygen output buffer.",
                 new CraftingItemAmount(soil, 4), new CraftingItemAmount(plasticSheet, 2));
-            Sprite planterSprite = WorldArtSetup.ImportBuildingSprite("PlanterBox");
+            Sprite planterSprite = WorldArtSetup.ImportBuildingSprite("PlanterBoxEmpty");
             planterBox.ConfigurePresentation(planterSprite, 1f, new Color(.36f, .55f, .28f));
             planterBox.ConfigureIcon(planterSprite);
             planterBox.ConfigureTaggedCost(new TaggedBuildingMaterialAmount(ItemMaterialTag.MetalPlate, 2));
             planterBox.ConfigurePlanterBox(planterDefinition);
             EditorUtility.SetDirty(planterBox);
+
+            BuildableDefinition electrolyzer = GetOrCreateElectrolyzer(aluminumAlloy, plasticSheet);
 
             BuildableDefinition transferPost = GetOrCreateBuildable(
                 "ItemTransferPostBuildable", "item_transfer_post", "Transfer Post", Vector2Int.one,
@@ -1313,9 +1361,69 @@ namespace PlanetSurvival.Editor
             }
 
             catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor,
-                planterBox, transferPost, solarPanel, powerPole);
+                planterBox, electrolyzer, transferPost, solarPanel, powerPole);
             EditorUtility.SetDirty(catalog);
             return catalog;
+        }
+
+        /// <summary>
+        /// The surface oxygen plant: it melts hauled ice, splits the water with pole-routed electricity,
+        /// and holds the oxygen as gas until it is breathed, bottled or piped away. The hydrogen has no
+        /// consumer yet, so the machine only holds it — a full vent tank is what stops electrolysis.
+        /// </summary>
+        private static BuildableDefinition GetOrCreateElectrolyzer(ItemDefinition aluminumAlloy,
+            ItemDefinition plasticSheet)
+        {
+            ItemDefinition iceChunk = GetOrCreateIceChunk();
+            ItemDefinition oxygen = GetOrCreateOxygenItem();
+            ElectrolyzerDefinition definition =
+                AssetDatabase.LoadAssetAtPath<ElectrolyzerDefinition>(ElectrolyzerDefinitionPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<ElectrolyzerDefinition>();
+                definition.name = "Electrolyzer";
+                AssetDatabase.CreateAsset(definition, ElectrolyzerDefinitionPath);
+            }
+
+            definition.Configure(iceChunk, oxygen,
+                ElectrolyzerWaterCapacity, ElectrolyzerWaterPerIceChunk, ElectrolyzerWaterPerOxygenLiter,
+                ElectrolyzerElectricityCapacity, ElectrolyzerElectricityPerOxygenLiter,
+                ElectrolyzerOxygenPerSecond, ElectrolyzerOxygenCapacity,
+                ElectrolyzerHydrogenPerOxygenLiter, ElectrolyzerHydrogenCapacity,
+                ElectrolyzerOxygenPerItem, ElectrolyzerOxygenItemCapacity, ElectrolyzerOutputPerSecond);
+            EditorUtility.SetDirty(definition);
+
+            BuildableDefinition buildable = GetOrCreateBuildable(
+                "ElectrolyzerBuildable", "electrolyzer", "Electrolyzer", Vector2Int.one,
+                ElectrolyzerBuildSeconds, 1.4f, new Color(.62f, .68f, .74f),
+                "Splits melted ice into breathable oxygen and hydrogen using pole-routed electricity. " +
+                "Fills a suit directly, bottles the surplus, and stalls once its hydrogen vent tank is full.",
+                new CraftingItemAmount(aluminumAlloy, 6), new CraftingItemAmount(plasticSheet, 2));
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("Electrolyzer");
+            buildable.ConfigurePresentation(sprite, 1.4f, new Color(.62f, .68f, .74f));
+            buildable.ConfigureIcon(sprite);
+            buildable.ConfigureElectrolyzer(definition);
+            EditorUtility.SetDirty(buildable);
+            return buildable;
+        }
+
+        /// <summary>Bottled oxygen: what leaves an electrolyzer once its gas buffer is full.</summary>
+        private static ItemDefinition GetOrCreateOxygenItem()
+        {
+            ItemDefinition item = AssetDatabase.LoadAssetAtPath<ItemDefinition>(OxygenItemPath);
+            if (item == null)
+            {
+                item = ScriptableObject.CreateInstance<ItemDefinition>();
+                item.name = "Oxygen";
+                AssetDatabase.CreateAsset(item, OxygenItemPath);
+            }
+
+            item.Configure("oxygen", "Oxygen", 1, 10, false, true);
+            item.ConfigureDescription(
+                $"A {ElectrolyzerOxygenPerItem:0} L bottle of electrolysed oxygen, ready to be stored or " +
+                "carried to another machine.");
+            EditorUtility.SetDirty(item);
+            return item;
         }
 
         private static BuildableDefinition GetOrCreateIronMiningDrill(ItemDefinition aluminumAlloy)
@@ -1496,13 +1604,15 @@ namespace PlanetSurvival.Editor
             ItemDefinition aluminumAlloy, ItemDefinition chlorateSalt, ItemDefinition pickaxe,
             ItemDefinition petroleum, ItemDefinition shovel, ItemDefinition soil,
             ItemDefinition plasticSheet, ItemDefinition carbonDioxideCanister,
-            ItemDefinition entanglementRelayCore, ItemDefinition carbonDioxideFilterCartridge)
+            ItemDefinition entanglementRelayCore, ItemDefinition carbonDioxideFilterCartridge,
+            ItemDefinition potatoSeed)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
                 energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
-                soil, plasticSheet, carbonDioxideCanister, entanglementRelayCore, carbonDioxideFilterCartridge);
+                soil, plasticSheet, carbonDioxideCanister, entanglementRelayCore,
+                carbonDioxideFilterCartridge, potatoSeed);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -1526,7 +1636,8 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(PlasticSheetPath),
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideCanisterPath),
                 GetOrCreateEntanglementRelayCore(),
-                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideFilterCartridgePath));
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideFilterCartridgePath),
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoSeedPath));
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
@@ -1559,7 +1670,7 @@ namespace PlanetSurvival.Editor
         private static void CreateLandingPodScene(LandingPodDeck deck,
             PlanetEnvironmentSettings environmentSettings, InventorySkin inventorySkin,
             WorldVisualSettings worldVisuals, CookingStationDefinition oven, CropDefinition potatoCrop,
-            ItemDefinition iceChunk, string scenePath)
+            string scenePath)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var landingPod = new GameObject(deck == LandingPodDeck.Habitat
@@ -1568,7 +1679,7 @@ namespace PlanetSurvival.Editor
             LandingPodBootstrap bootstrap = landingPod.AddComponent<LandingPodBootstrap>();
             bootstrap.Configure(deck, environmentSettings, worldVisuals, inventorySkin);
             bootstrap.ConfigureCooking(oven);
-            bootstrap.ConfigureLifeSupport(potatoCrop, iceChunk);
+            bootstrap.ConfigureLifeSupport(potatoCrop);
             landingPod.AddComponent<PauseMenuView>();
             EditorSceneManager.SaveScene(scene, scenePath);
         }

@@ -22,4 +22,5 @@ MonoBehaviour:
   _canUse: 0
   _canDrop: 1
   _calories: 0
+  _materialTags: 0
   _effects: []

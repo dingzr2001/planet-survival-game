@@ -16,7 +16,7 @@ MonoBehaviour:
   _displayName: Planter Box
   _description: "A one-cell growing system. Water and CO\u2082 inputs drive an oxygen
     output buffer."
-  _icon: {fileID: 21300000, guid: e4f73a0922f71404195871d236a289bb, type: 3}
+  _icon: {fileID: 21300000, guid: 745fb984b3534730a9e30e524a60a354, type: 3}
   _footprint: {x: 1, y: 1}
   _buildSeconds: 10
   _cost:
@@ -27,10 +27,19 @@ MonoBehaviour:
   _taggedCost:
   - _materialTag: 1
     _quantity: 2
-  _worldSprite: {fileID: 21300000, guid: e4f73a0922f71404195871d236a289bb, type: 3}
+  _worldSprite: {fileID: 21300000, guid: 745fb984b3534730a9e30e524a60a354, type: 3}
+  _transferColorMask: {fileID: 0}
   _worldHeight: 1
   _bodyColor: {r: 0.36, g: 0.55, b: 0.28, a: 1}
   _cookingStation: {fileID: 0}
   _isOxygenCandle: 0
   _miningDrill: {fileID: 0}
   _planterBox: {fileID: 11400000, guid: 9109868b143e049ffb03fdd82571648d, type: 2}
+  _electrolyzer: {fileID: 0}
+  _isItemTransferPost: 0
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 0
+  _powerPoleOfflineSprite: {fileID: 0}
+  _powerPoleLimitedSprite: {fileID: 0}
+  _powerPolePoweredSprite: {fileID: 0}

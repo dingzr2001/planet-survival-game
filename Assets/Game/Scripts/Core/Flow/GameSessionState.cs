@@ -44,6 +44,7 @@ namespace PlanetSurvival.Core.Flow
         public const int CargoStorageCapacity = 300;
         public const int InitialEnergyBarCount = 12;
         public const int InitialPotatoCount = 12;
+        public const int InitialPotatoSeedCount = 6;
         public const int InitialAluminumAlloyCount = 20;
         public const int InitialChlorateSaltCount = 1;
         public const int InitialPickaxeCount = 1;
@@ -90,7 +91,6 @@ namespace PlanetSurvival.Core.Flow
             CargoStorage = new InventoryModel(CargoStorageCapacity, CargoStorageSlots);
             Terrain = new TerrainTileMap();
             Buildings = new BuildingService(PlayerInventory, new BuildGrid(BuildGridCellSize), Terrain);
-            WaterProcessor = new WaterProcessor();
             Hydroponics = new HydroponicsRack(HydroponicsSlotCount);
             Exploration = new WorldExplorationMap();
         }
@@ -110,9 +110,6 @@ namespace PlanetSurvival.Core.Flow
         /// here so a half-finished structure is still standing after a trip inside the landing pod.
         /// </summary>
         public BuildingService Buildings { get; }
-
-        /// <summary>The cargo-deck machine that filters gathered ice into drinkable pod water.</summary>
-        public WaterProcessor WaterProcessor { get; }
 
         /// <summary>The habitat growing trays. They ripen on expedition time, including while outside.</summary>
         public HydroponicsRack Hydroponics { get; }
@@ -188,7 +185,6 @@ namespace PlanetSurvival.Core.Flow
             }
 
             Buildings.Clear();
-            WaterProcessor.Clear();
             Hydroponics.Clear();
             Exploration.Clear();
             Terrain.Clear();

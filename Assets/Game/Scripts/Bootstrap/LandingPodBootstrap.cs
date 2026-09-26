@@ -37,8 +37,6 @@ namespace PlanetSurvival.Bootstrap
         private CookingStationDefinition _ovenStation;
         [SerializeField, Tooltip("Crop the habitat hydroponics rack grows.")]
         private CropDefinition _hydroponicsCrop;
-        [SerializeField, Tooltip("Gathered ice the cargo-deck processor purifies into pod water.")]
-        private ItemDefinition _iceItem;
         private const string RuntimeRootName = "Landing Pod Runtime";
         private const string HabitatBackgroundResource = "Interiors/LandingPodHabitat";
         private const string CargoBackgroundResource = "Interiors/LandingPodCargo";
@@ -61,11 +59,10 @@ namespace PlanetSurvival.Bootstrap
             _ovenStation = ovenStation;
         }
 
-        /// <summary>Wires the two fixtures of the ice-water-food loop to the assets they operate on.</summary>
-        public void ConfigureLifeSupport(CropDefinition hydroponicsCrop, ItemDefinition iceItem)
+        /// <summary>Wires the habitat growing rack to the crop it raises.</summary>
+        public void ConfigureLifeSupport(CropDefinition hydroponicsCrop)
         {
             _hydroponicsCrop = hydroponicsCrop;
-            _iceItem = iceItem;
         }
 
         private void Start()
@@ -242,28 +239,7 @@ namespace PlanetSurvival.Bootstrap
                 session.CargoStorage,
                 hud.GetComponent<StorageView>(),
                 CreateCookingBinding(session, hud.GetComponent<CookingView>()),
-                CreateProcessorBinding(session, hud.GetComponent<WaterProcessorView>(), clock),
                 CreateHydroponicsBinding(session, hud.GetComponent<HydroponicsView>(), clock));
-        }
-
-        private WaterProcessorBinding CreateProcessorBinding(GameSessionState session, WaterProcessorView view,
-            GameClock clock)
-        {
-            if (_deck != LandingPodDeck.Cargo)
-            {
-                return default;
-            }
-
-            if (_iceItem == null)
-            {
-                Debug.LogError(
-                    $"{nameof(LandingPodBootstrap)} on '{name}' has no ice item; the water processor is unavailable.",
-                    this);
-                return default;
-            }
-
-            return new WaterProcessorBinding(
-                session.WaterProcessor, _iceItem, session.LandingPodWaterSupply, view, clock);
         }
 
         private HydroponicsBinding CreateHydroponicsBinding(GameSessionState session, HydroponicsView view,
@@ -301,7 +277,6 @@ namespace PlanetSurvival.Bootstrap
             hudObject.AddComponent<WaterRefillView>();
             hudObject.AddComponent<StorageView>().Bind(_inventorySkin);
             hudObject.AddComponent<CookingView>();
-            hudObject.AddComponent<WaterProcessorView>();
             hudObject.AddComponent<HydroponicsView>();
             hudObject.AddComponent<LandingPodResourceView>().Bind(
                 session.LandingPodOxygenSupply,

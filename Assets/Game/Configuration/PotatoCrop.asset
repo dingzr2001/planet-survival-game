@@ -14,9 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Farming.Definitions.CropDefinition
   _cropId: potato_crop
   _displayName: Potato
-  _seedItem: {fileID: 11400000, guid: 093686de6adf64cd68c3c931538a2211, type: 2}
+  _seedItem: {fileID: 11400000, guid: 6ab7a8e453274c97889dc422e3f3597d, type: 2}
   _seedQuantity: 1
   _harvestItem: {fileID: 11400000, guid: 093686de6adf64cd68c3c931538a2211, type: 2}
   _harvestQuantity: 4
   _growthGameHours: 20
   _waterMilliliters: 1500
+  _environmentFailureToleranceGameHours: 4
+  _growthStageSprites:
+  - {fileID: 21300000, guid: f968ac55e30f46d8956ed1b62dd9ff66, type: 3}
+  - {fileID: 21300000, guid: 86c4efcac9a1489aa713a355122a7317, type: 3}
+  - {fileID: 21300000, guid: eb937998fd9d4923b2c00d2508978dd5, type: 3}
+  - {fileID: 21300000, guid: c38232e35bd446f3b60d641f22533bbc, type: 3}

@@ -14,7 +14,7 @@ namespace PlanetSurvival.Mining.Domain
     /// work. Fractional progress and energy stay in the machine, so neither variable frame lengths nor
     /// a scene change can create or discard ore.
     /// </summary>
-    public sealed class MiningDrill : IPowerInput, IPetroleumInput, IItemOutput
+    public sealed class MiningDrill : IPowerInput, IPetroleumInput, IItemOutput, IItemInput
     {
         private const float Epsilon = .0001f;
 

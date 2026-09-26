@@ -25,14 +25,12 @@ namespace PlanetSurvival.World.Interiors
         /// tinted placeholder behind so a fixture is still visible and usable before its art exists.
         /// </summary>
         private const string HydroponicsRackResource = "Interiors/HydroponicsRack";
-        private const string WaterProcessorResource = "Interiors/WaterProcessor";
 
         /// <summary>
         /// Interior world units are about 1.5× metric — the painted crew and equipment are drawn that
         /// way — so a two-metre machine has to stand roughly three units tall to match the backdrop.
         /// </summary>
         private const float HydroponicsRackHeight = 3.1f;
-        private const float WaterProcessorHeight = 2.9f;
 
         private Transform _root;
 
@@ -65,9 +63,6 @@ namespace PlanetSurvival.World.Interiors
             {
                 CreateStorage("Cargo Storage Racks", "cargo storage", camera, new Vector2(.17f, .58f),
                     new Vector3(4.8f, 2.4f, 2.2f), fixtures.CargoStorage, fixtures.StorageView);
-                // The processor stands between the ladder and the airlock: ice can be dumped on the way
-                // in, before the haul is carried any further.
-                CreateWaterProcessor(camera, new Vector2(.70f, .43f), fixtures.Processor);
                 CreatePortal("Deck Ladder", PortalPosition(camera, new Vector2(.60f, .60f)), new Vector3(2f, 2f, 1.2f),
                     GameSceneNames.LandingPodHabitat, "climb up to habitat deck");
                 CreatePortal("Surface Airlock", PortalPosition(camera, new Vector2(.82f, .55f)), new Vector3(1.8f, 2f, 1.6f),
@@ -118,21 +113,6 @@ namespace PlanetSurvival.World.Interiors
                 viewportPosition, HydroponicsRackHeight, new Vector3(2.2f, HydroponicsRackHeight, 1.5f),
                 new Color(.34f, .56f, .38f));
             fixture.AddComponent<HydroponicsStation>().Bind(binding);
-        }
-
-        private void CreateWaterProcessor(Camera camera, Vector2 viewportPosition,
-            in WaterProcessorBinding binding)
-        {
-            if (!binding.IsComplete)
-            {
-                Debug.LogWarning("The water processor was omitted because its configuration is incomplete.");
-                return;
-            }
-
-            GameObject fixture = CreateFixtureProp("Cargo Water Processor", WaterProcessorResource, camera,
-                viewportPosition, WaterProcessorHeight, new Vector3(1.8f, WaterProcessorHeight, 1.4f),
-                new Color(.42f, .58f, .68f));
-            fixture.AddComponent<WaterProcessorStation>().Bind(binding);
         }
 
         /// <summary>

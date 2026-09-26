@@ -25,6 +25,10 @@ namespace PlanetSurvival.Farming.Definitions
         private float _growthGameHours = 20f;
         [SerializeField, Min(0), Tooltip("Water drawn from the pod reserve the moment the slot is planted.")]
         private int _waterMilliliters = 1500;
+        [SerializeField, Min(.1f), Tooltip("Consecutive game hours without water or CO2 before this crop dies.")]
+        private float _environmentFailureToleranceGameHours = 4f;
+        [SerializeField, Tooltip("Planter artwork for planted, sprouted, growing and mature stages.")]
+        private Sprite[] _growthStageSprites = System.Array.Empty<Sprite>();
 
         public string CropId => _cropId;
         public string DisplayName => _displayName;
@@ -34,6 +38,8 @@ namespace PlanetSurvival.Farming.Definitions
         public int HarvestQuantity => Mathf.Max(1, _harvestQuantity);
         public float GrowthGameHours => Mathf.Max(.1f, _growthGameHours);
         public int WaterMilliliters => Mathf.Max(0, _waterMilliliters);
+        public float EnvironmentFailureToleranceGameHours =>
+            Mathf.Max(.1f, _environmentFailureToleranceGameHours);
 
         public bool IsValid(out string error)
         {
@@ -100,6 +106,28 @@ namespace PlanetSurvival.Farming.Definitions
             _harvestQuantity = Mathf.Max(1, harvestQuantity);
             _growthGameHours = Mathf.Max(.1f, growthGameHours);
             _waterMilliliters = Mathf.Max(0, waterMilliliters);
+        }
+
+        public void ConfigurePlanterGrowth(float environmentFailureToleranceGameHours,
+            params Sprite[] growthStageSprites)
+        {
+            _environmentFailureToleranceGameHours = Mathf.Max(.1f, environmentFailureToleranceGameHours);
+            _growthStageSprites = growthStageSprites ?? System.Array.Empty<Sprite>();
+        }
+
+        public Sprite GrowthStageSprite(float normalizedProgress)
+        {
+            if (_growthStageSprites == null || _growthStageSprites.Length == 0)
+            {
+                return null;
+            }
+
+            float progress = Mathf.Clamp01(normalizedProgress);
+            int stage = progress >= 1f
+                ? _growthStageSprites.Length - 1
+                : Mathf.Min(_growthStageSprites.Length - 1,
+                    Mathf.FloorToInt(progress * (_growthStageSprites.Length - 1)));
+            return _growthStageSprites[stage];
         }
     }
 }

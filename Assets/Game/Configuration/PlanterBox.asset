@@ -22,3 +22,6 @@ MonoBehaviour:
   _carbonDioxideLitersPerOxygenLiter: 1
   _carbonDioxideCanister: {fileID: 11400000, guid: 92553f112a1394ad0b38ebc4f2cd0b0b, type: 2}
   _carbonDioxideLitersPerCanister: 50
+  _emptySprite: {fileID: 21300000, guid: 745fb984b3534730a9e30e524a60a354, type: 3}
+  _supportedCrops:
+  - {fileID: 11400000, guid: ba204aa7cd3af4216a88dda4760e7587, type: 2}

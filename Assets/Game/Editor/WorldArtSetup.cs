@@ -28,7 +28,7 @@ namespace PlanetSurvival.Editor
         /// <summary>
         /// Free-standing interior machines, loaded at runtime through <c>Resources.Load&lt;Sprite&gt;</c>.
         /// </summary>
-        private static readonly string[] InteriorPropNames = { "HydroponicsRack", "WaterProcessor" };
+        private static readonly string[] InteriorPropNames = { "HydroponicsRack" };
         private const int PlayerDirectionCount = 4;
         private const int PlayerFramesPerDirection = 8;
         private const int SurfaceRobotFramesPerDirection = 4;

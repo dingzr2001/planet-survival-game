@@ -1,5 +1,7 @@
 using PlanetSurvival.Building.Domain;
+using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Power.Domain;
+using PlanetSurvival.UI.Power;
 using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
@@ -8,15 +10,40 @@ namespace PlanetSurvival.Power.Runtime
     /// <summary>World presentation for a power pole's three power states.</summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Collider))]
-    public sealed class PowerPoleStation : MonoBehaviour
+    public sealed class PowerPoleStation : MonoBehaviour, IInteractable
     {
         private BuildSite _site;
+        private PowerPoleSystem _system;
+        private PowerPoleView _view;
         private SpriteRenderer _renderer;
         private WorldSpriteView _spriteView;
         private TextMesh _numberLabel;
 
         public BuildSite Site => _site;
         public PowerPole Pole => _site?.PowerPole;
+
+        public string Prompt => Pole == null
+            ? "configure power pole"
+            : $"configure power pole {Pole.PoleNumber:00}";
+
+        /// <summary>The network hands the station its panel, so a click needs no lookup of its own.</summary>
+        public void AttachNetwork(PowerPoleSystem system, PowerPoleView view)
+        {
+            _system = system;
+            _view = view;
+        }
+
+        public bool CanInteract(in InteractionContext context) =>
+            isActiveAndEnabled && Pole != null && _system != null && _view != null &&
+            _site.State == BuildState.Completed;
+
+        public void Interact(in InteractionContext context)
+        {
+            if (CanInteract(context))
+            {
+                _view.Open(this, _system, context.Actor);
+            }
+        }
 
         public void Bind(BuildSite site, Transform body)
         {

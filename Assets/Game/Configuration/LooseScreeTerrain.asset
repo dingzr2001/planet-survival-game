@@ -15,6 +15,7 @@ MonoBehaviour:
   _terrainId: rock_loose_scree
   _displayName: Loose Scree
   _texture: {fileID: 2800000, guid: e2f40ef74ab214e2cb007fbd6c25e866, type: 3}
+  _textureVariants: []
   _textureTileSize: 8
   _digCount: 1
   _digDuration: 1.6

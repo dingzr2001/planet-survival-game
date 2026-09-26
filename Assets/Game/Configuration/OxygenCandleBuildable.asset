@@ -22,9 +22,20 @@ MonoBehaviour:
   _cost:
   - _item: {fileID: 11400000, guid: 48fadaca450024adca3db7fb9c4f9d9e, type: 2}
     _quantity: 1
+  _taggedCost: []
   _worldSprite: {fileID: 21300000, guid: 21c010ffed104dd0979d454bdc862550, type: 3}
+  _transferColorMask: {fileID: 0}
   _worldHeight: 0.8
   _bodyColor: {r: 0.72, g: 0.78, b: 0.82, a: 1}
   _cookingStation: {fileID: 0}
   _isOxygenCandle: 1
   _miningDrill: {fileID: 0}
+  _planterBox: {fileID: 0}
+  _electrolyzer: {fileID: 0}
+  _isItemTransferPost: 0
+  _isSolarPanel: 0
+  _solarElectricityPerSecond: 1
+  _isPowerPole: 0
+  _powerPoleOfflineSprite: {fileID: 0}
+  _powerPoleLimitedSprite: {fileID: 0}
+  _powerPolePoweredSprite: {fileID: 0}

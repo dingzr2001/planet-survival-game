@@ -4,6 +4,7 @@ using PlanetSurvival.Cooking.Definitions;
 using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Mining.Definitions;
 using PlanetSurvival.Farming.Definitions;
+using PlanetSurvival.Oxygen.Definitions;
 using PlanetSurvival.Items.Definitions;
 using UnityEngine;
 
@@ -48,6 +49,8 @@ namespace PlanetSurvival.Building.Definitions
         private MiningDrillDefinition _miningDrill;
         [SerializeField, Tooltip("Optional: the finished building operates as this planter box.")]
         private PlanterBoxDefinition _planterBox;
+        [SerializeField, Tooltip("Optional: the finished building operates as this water electrolyzer.")]
+        private ElectrolyzerDefinition _electrolyzer;
         [SerializeField, Tooltip("The finished building is a half-cell item transfer post.")]
         private bool _isItemTransferPost;
         [SerializeField, Tooltip("The finished building generates electricity for adjacent mining drills.")]
@@ -79,6 +82,7 @@ namespace PlanetSurvival.Building.Definitions
         public bool IsOxygenCandle => _isOxygenCandle;
         public MiningDrillDefinition MiningDrill => _miningDrill;
         public PlanterBoxDefinition PlanterBox => _planterBox;
+        public ElectrolyzerDefinition Electrolyzer => _electrolyzer;
         public bool IsItemTransferPost => _isItemTransferPost;
         public bool IsSolarPanel => _isSolarPanel;
         public float SolarElectricityPerSecond => Mathf.Max(.01f, _solarElectricityPerSecond);
@@ -185,6 +189,12 @@ namespace PlanetSurvival.Building.Definitions
                 return false;
             }
 
+            if (_electrolyzer != null && !_electrolyzer.IsValid(out string electrolyzerError))
+            {
+                error = $"Buildable '{_buildableId}' has an invalid electrolyzer: {electrolyzerError}";
+                return false;
+            }
+
             error = string.Empty;
             return true;
         }
@@ -239,6 +249,11 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigurePlanterBox(PlanterBoxDefinition planterBox)
         {
             _planterBox = planterBox;
+        }
+
+        public void ConfigureElectrolyzer(ElectrolyzerDefinition electrolyzer)
+        {
+            _electrolyzer = electrolyzer;
         }
 
         public void ConfigureItemTransferPost(bool isItemTransferPost)

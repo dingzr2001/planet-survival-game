@@ -16,6 +16,9 @@ namespace PlanetSurvival.Tests
     {
         private readonly List<Object> _assets = new();
         private ItemDefinition _canister;
+        private ItemDefinition _seed;
+        private ItemDefinition _potato;
+        private CropDefinition _crop;
         private PlanterBoxDefinition _definition;
 
         [SetUp]
@@ -23,9 +26,20 @@ namespace PlanetSurvival.Tests
         {
             _canister = ScriptableObject.CreateInstance<ItemDefinition>();
             _canister.Configure("co2", "CO2 Canister", 1, 20, false, true);
+            _seed = ScriptableObject.CreateInstance<ItemDefinition>();
+            _seed.Configure("potato_seed", "Seed Potato", 1, 20, false, true);
+            _potato = ScriptableObject.CreateInstance<ItemDefinition>();
+            _potato.Configure("potato", "Potato", 1, 20, false, true);
+            _crop = ScriptableObject.CreateInstance<CropDefinition>();
+            _crop.Configure("potato_crop", "Potato", _seed, 1, _potato, 4, 20f, 0);
+            _crop.ConfigurePlanterGrowth(4f);
             _definition = ScriptableObject.CreateInstance<PlanterBoxDefinition>();
             _definition.Configure(10000, 1000, 500f, 25f, 500f, 10f, 2f, 1f, _canister, 50f);
+            _definition.ConfigureCrops(null, _crop);
             _assets.Add(_canister);
+            _assets.Add(_seed);
+            _assets.Add(_potato);
+            _assets.Add(_crop);
             _assets.Add(_definition);
         }
 
@@ -42,7 +56,7 @@ namespace PlanetSurvival.Tests
             var planter = new PlanterBox(_definition);
             planter.ReceiveWater(2000);
             planter.Advance(1f);
-            Assert.That(planter.State, Is.EqualTo(PlanterBoxState.NeedsCarbonDioxide));
+            Assert.That(planter.State, Is.EqualTo(PlanterBoxState.Empty));
             Assert.That(planter.StoredOxygenLiters, Is.Zero);
 
             planter.ReceiveCarbonDioxide(50f);
@@ -82,6 +96,40 @@ namespace PlanetSurvival.Tests
             Assert.That(moved, Is.EqualTo(10f).Within(.001f));
             Assert.That(suit.CurrentLiters, Is.EqualTo(100f).Within(.001f));
             Assert.That(planter.StoredOxygenLiters, Is.EqualTo(190f).Within(.001f));
+        }
+
+        [Test]
+        public void Crop_WithoutRequiredEnvironment_DiesAndReturnsNothing()
+        {
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(_seed, 1);
+            var planter = new PlanterBox(_definition);
+            Assert.That(planter.Plant(_crop, inventory, 0d).Succeeded, Is.True);
+
+            planter.Advance(1f, 4d / 24d);
+
+            Assert.That(planter.IsDead, Is.True);
+            Assert.That(planter.Harvest(inventory).Failure, Is.EqualTo(FarmingFailure.CropDead));
+            Assert.That(inventory.GetQuantity(_seed.ItemId), Is.Zero);
+            Assert.That(inventory.GetQuantity(_potato.ItemId), Is.Zero);
+        }
+
+        [Test]
+        public void Crop_GrowsOnlyWithWaterAndCarbonDioxide_ThenHarvestsConfiguredYield()
+        {
+            var inventory = new InventoryModel(30, 20);
+            inventory.Add(_seed, 1);
+            var planter = new PlanterBox(_definition);
+            planter.ReceiveWater(10000);
+            planter.ReceiveCarbonDioxide(500f);
+            planter.Plant(_crop, inventory, 0d);
+
+            planter.Advance(1f, 20d / 24d);
+            FarmingResult result = planter.Harvest(inventory);
+
+            Assert.That(planter.IsMature, Is.False, "Harvest clears a mature crop.");
+            Assert.That(result.Succeeded, Is.True, result.Message);
+            Assert.That(inventory.GetQuantity(_potato.ItemId), Is.EqualTo(4));
         }
     }
 }

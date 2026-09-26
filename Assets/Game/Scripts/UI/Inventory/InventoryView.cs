@@ -26,6 +26,7 @@ namespace PlanetSurvival.UI.Inventory
         private int _selectedQuickSlotIndex = -1;
         private string _waterFeedback = string.Empty;
         private string _interactionPrompt = string.Empty;
+        private string _interactionInput = "E";
         private float _waterFeedbackExpiresAt;
         private Vector2 _scrollPosition;
         private Texture2D _waterBottleTexture;
@@ -42,9 +43,14 @@ namespace PlanetSurvival.UI.Inventory
         /// Shows the current interaction hint on top of the quick bar, so every on-screen
         /// instruction lives in one place instead of floating over the world.
         /// </summary>
-        public void SetInteractionPrompt(string prompt)
+        /// <summary>
+        /// The prompt and the input that triggers it. The verb is passed in rather than assumed because
+        /// structures are clicked while fixtures and deposits are reached with a key.
+        /// </summary>
+        public void SetInteractionPrompt(string prompt, string inputHint = "E")
         {
             _interactionPrompt = prompt ?? string.Empty;
+            _interactionInput = string.IsNullOrWhiteSpace(inputHint) ? "E" : inputHint;
         }
 
         public void Bind(PlayerInventory playerInventory, InventorySkin skin, PlayerWaterBottle waterBottle = null)
@@ -118,7 +124,7 @@ namespace PlanetSurvival.UI.Inventory
             if (hasPrompt)
             {
                 var promptRow = new Rect(area.x + SlotSpacing, area.y + 4f, area.width - SlotSpacing * 2f, PromptRowHeight - 6f);
-                GUI.Label(promptRow, $"Press E to {_interactionPrompt}", _promptStyle);
+                GUI.Label(promptRow, $"Press {_interactionInput} to {_interactionPrompt}", _promptStyle);
             }
 
             float slotsTop = area.y + promptHeight + SlotSpacing;
