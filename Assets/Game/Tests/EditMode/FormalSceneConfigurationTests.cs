@@ -1030,6 +1030,32 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.alphaIsTransparency, Is.True);
         }
 
+        /// <summary>
+        /// The combustion panel falls back to a plain "CH₄"/"CO₂" label when a gas item has no icon,
+        /// so a missing or badly imported canister sprite degrades silently instead of failing.
+        /// </summary>
+        [TestCase("MethaneCanister", "methane_canister",
+            TestName = "MethaneCanister_HasTransparentInventoryIcon")]
+        [TestCase("CarbonDioxideCanister", "carbon_dioxide_canister",
+            TestName = "CarbonDioxideCanister_HasTransparentInventoryIcon")]
+        public void GasCanister_HasTransparentInventoryIcon(string assetName, string expectedItemId)
+        {
+            string itemPath = $"Assets/Game/Configuration/{assetName}.asset";
+            string iconPath = $"Assets/Game/Art/UI/Icons/Items/{assetName}.png";
+            ItemDefinition canister = AssetDatabase.LoadAssetAtPath<ItemDefinition>(itemPath);
+            var importer = AssetImporter.GetAtPath(iconPath) as TextureImporter;
+
+            Assert.That(canister, Is.Not.Null);
+            Assert.That(canister.ItemId, Is.EqualTo(expectedItemId));
+            Assert.That(canister.Icon, Is.Not.Null,
+                $"'{iconPath}' must be bound to the item, or the gas panels fall back to a text label.");
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.maxTextureSize, Is.EqualTo(256));
+        }
+
         [Test]
         public void HydrogenGasIcon_IsImportedForTransparentUiRendering()
         {

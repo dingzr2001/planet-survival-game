@@ -15,7 +15,7 @@ MonoBehaviour:
   _itemId: methane_canister
   _displayName: Methane Canister
   _description: Sealed methane fuel for a combustion generator.
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: dc2d91ea3b52c4b5087dec896df418f5, type: 3}
   _capacityPerItem: 1
   _maximumStackSize: 10
   _canUse: 0
