@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6221dddf824f74e6ca61af2c7864fd06, type: 3}
+  m_Name: CombustionGenerator
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Power.Definitions.CombustionGeneratorDefinition
+  _oxygenItem: {fileID: 11400000, guid: a23a29a4333d748539a50b6a52b5778a, type: 2}
+  _fuelCapacity: 12
+  _oxygenCapacity: 20
+  _byproductCapacity: 20
+  _fuels:
+  - _fuel: {fileID: 11400000, guid: 6c60df498d0354e4783dd3deeb3750da, type: 2}
+    _fuelItems: 2
+    _oxygenItems: 1
+    _burnSeconds: 4
+    _chemicalEnergyPerBurn: 15
+    _conversionEfficiency: 0.4
+    _primaryByproduct: {fileID: 11400000, guid: cd2e50dab436d40538cfecd35f4ac024, type: 2}
+    _primaryQuantity: 2
+    _secondaryByproduct: {fileID: 0}
+    _secondaryQuantity: 0
+  - _fuel: {fileID: 11400000, guid: 478818d8417fc4e27b5a3ef9cba94a9a, type: 2}
+    _fuelItems: 1
+    _oxygenItems: 2
+    _burnSeconds: 6
+    _chemicalEnergyPerBurn: 20
+    _conversionEfficiency: 0.45
+    _primaryByproduct: {fileID: 11400000, guid: cd2e50dab436d40538cfecd35f4ac024, type: 2}
+    _primaryQuantity: 2
+    _secondaryByproduct: {fileID: 11400000, guid: 92553f112a1394ad0b38ebc4f2cd0b0b, type: 2}
+    _secondaryQuantity: 1
+  - _fuel: {fileID: 11400000, guid: dd68a9242eddb4a4180f9c92a702a17a, type: 2}
+    _fuelItems: 1
+    _oxygenItems: 3
+    _burnSeconds: 7
+    _chemicalEnergyPerBurn: 25
+    _conversionEfficiency: 0.32
+    _primaryByproduct: {fileID: 11400000, guid: cd2e50dab436d40538cfecd35f4ac024, type: 2}
+    _primaryQuantity: 2
+    _secondaryByproduct: {fileID: 11400000, guid: 92553f112a1394ad0b38ebc4f2cd0b0b, type: 2}
+    _secondaryQuantity: 2

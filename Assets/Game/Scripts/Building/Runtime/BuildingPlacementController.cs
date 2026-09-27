@@ -15,6 +15,7 @@ using PlanetSurvival.Oxygen.Runtime;
 using PlanetSurvival.UI.Oxygen;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.Power.Runtime;
+using PlanetSurvival.UI.Power;
 using PlanetSurvival.World.Generation;
 using UnityEngine;
 
@@ -46,6 +47,7 @@ namespace PlanetSurvival.Building.Runtime
         private MiningDrillView _miningDrillView;
         private PlanterBoxView _planterBoxView;
         private ElectrolyzerView _electrolyzerView;
+        private CombustionGeneratorView _generatorView;
         private GameClock _clock;
         private ItemTransferSystem _itemTransferSystem;
         private PowerPoleSystem _powerPoleSystem;
@@ -75,7 +77,8 @@ namespace PlanetSurvival.Building.Runtime
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
             GameClock clock = null, MiningDrillView miningDrillView = null,
             PlanterBoxView planterBoxView = null, ElectrolyzerView electrolyzerView = null,
-            ItemTransferSystem itemTransferSystem = null, PowerPoleSystem powerPoleSystem = null)
+            ItemTransferSystem itemTransferSystem = null, PowerPoleSystem powerPoleSystem = null,
+            CombustionGeneratorView generatorView = null)
         {
             if (service == null || playerInventory == null)
             {
@@ -95,6 +98,7 @@ namespace PlanetSurvival.Building.Runtime
             _miningDrillView = miningDrillView;
             _planterBoxView = planterBoxView;
             _electrolyzerView = electrolyzerView;
+            _generatorView = generatorView;
             _clock = clock;
             _itemTransferSystem = itemTransferSystem;
             _powerPoleSystem = powerPoleSystem;
@@ -324,7 +328,7 @@ namespace PlanetSurvival.Building.Runtime
                 site.Definition.IsOxygenCandle && _session != null
                     ? _session.LandingPodOxygenSupply
                     : null,
-                _clock);
+                _clock, _itemTransferSystem, _generatorView);
             if (site.ItemTransferPost != null)
             {
                 _itemTransferSystem?.Register(siteObject.GetComponent<ItemTransferPostStation>());

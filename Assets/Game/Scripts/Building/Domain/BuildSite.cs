@@ -70,6 +70,11 @@ namespace PlanetSurvival.Building.Domain
                 Electrolyzer = new Electrolyzer(definition.Electrolyzer);
             }
 
+            if (definition.CombustionGenerator != null)
+            {
+                CombustionGenerator = new CombustionGenerator(definition.CombustionGenerator);
+            }
+
             if (definition.IsItemTransferPost)
             {
                 int postNumber = Mathf.Max(1, transferPostNumber);
@@ -95,6 +100,7 @@ namespace PlanetSurvival.Building.Domain
         public MiningDrill MiningDrill { get; }
         public PlanterBox PlanterBox { get; }
         public Electrolyzer Electrolyzer { get; }
+        public CombustionGenerator CombustionGenerator { get; }
         public ItemTransferPost ItemTransferPost { get; }
         public PowerPole PowerPole { get; }
         public IReadOnlyList<InventoryItemAmount> PaidMaterials { get; }
@@ -103,8 +109,8 @@ namespace PlanetSurvival.Building.Domain
         /// The machine contracts the transport and power networks connect to, resolved here so adding a
         /// machine does not mean teaching every network about it. Null when this structure offers none.
         /// </summary>
-        public IItemOutput ItemOutput => (IItemOutput)MiningDrill ?? Electrolyzer;
-        public IItemInput ItemInput => (IItemInput)MiningDrill ?? (IItemInput)PlanterBox ?? Electrolyzer;
+        public IItemOutput ItemOutput => (IItemOutput)MiningDrill ?? (IItemOutput)Electrolyzer ?? CombustionGenerator;
+        public IItemInput ItemInput => (IItemInput)MiningDrill ?? (IItemInput)PlanterBox ?? (IItemInput)Electrolyzer ?? CombustionGenerator;
         public IPowerInput PowerInput => (IPowerInput)MiningDrill ?? Electrolyzer;
 
         public float Progress => TotalSeconds <= 0f

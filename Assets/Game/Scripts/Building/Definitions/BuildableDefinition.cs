@@ -6,6 +6,7 @@ using PlanetSurvival.Mining.Definitions;
 using PlanetSurvival.Farming.Definitions;
 using PlanetSurvival.Oxygen.Definitions;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Power.Definitions;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Definitions
@@ -51,6 +52,8 @@ namespace PlanetSurvival.Building.Definitions
         private PlanterBoxDefinition _planterBox;
         [SerializeField, Tooltip("Optional: the finished building operates as this water electrolyzer.")]
         private ElectrolyzerDefinition _electrolyzer;
+        [SerializeField, Tooltip("Optional: fuel and oxygen powered electricity generator.")]
+        private CombustionGeneratorDefinition _combustionGenerator;
         [SerializeField, Tooltip("The finished building is a half-cell item transfer post.")]
         private bool _isItemTransferPost;
         [SerializeField, Tooltip("The finished building generates electricity for adjacent mining drills.")]
@@ -83,6 +86,7 @@ namespace PlanetSurvival.Building.Definitions
         public MiningDrillDefinition MiningDrill => _miningDrill;
         public PlanterBoxDefinition PlanterBox => _planterBox;
         public ElectrolyzerDefinition Electrolyzer => _electrolyzer;
+        public CombustionGeneratorDefinition CombustionGenerator => _combustionGenerator;
         public bool IsItemTransferPost => _isItemTransferPost;
         public bool IsSolarPanel => _isSolarPanel;
         public float SolarElectricityPerSecond => Mathf.Max(.01f, _solarElectricityPerSecond);
@@ -195,6 +199,12 @@ namespace PlanetSurvival.Building.Definitions
                 return false;
             }
 
+            if (_combustionGenerator != null && !_combustionGenerator.IsValid(out string generatorError))
+            {
+                error = $"Buildable '{_buildableId}' has an invalid generator: {generatorError}";
+                return false;
+            }
+
             error = string.Empty;
             return true;
         }
@@ -254,6 +264,11 @@ namespace PlanetSurvival.Building.Definitions
         public void ConfigureElectrolyzer(ElectrolyzerDefinition electrolyzer)
         {
             _electrolyzer = electrolyzer;
+        }
+
+        public void ConfigureCombustionGenerator(CombustionGeneratorDefinition generator)
+        {
+            _combustionGenerator = generator;
         }
 
         public void ConfigureItemTransferPost(bool isItemTransferPost)

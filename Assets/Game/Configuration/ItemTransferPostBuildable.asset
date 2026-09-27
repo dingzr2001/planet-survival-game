@@ -36,6 +36,7 @@ MonoBehaviour:
   _miningDrill: {fileID: 0}
   _planterBox: {fileID: 0}
   _electrolyzer: {fileID: 0}
+  _combustionGenerator: {fileID: 0}
   _isItemTransferPost: 1
   _isSolarPanel: 0
   _solarElectricityPerSecond: 1

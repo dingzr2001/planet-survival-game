@@ -29,6 +29,7 @@ namespace PlanetSurvival.Transport.Domain
 
         public InventoryModel Buffer => _buffer;
         public string InputEndpointId { get; private set; } = string.Empty;
+        public string InputItemId { get; private set; } = string.Empty;
         public string OutputEndpointId { get; private set; } = string.Empty;
         public int PostNumber { get; }
         public int GroupNumber { get; private set; }
@@ -62,6 +63,14 @@ namespace PlanetSurvival.Transport.Domain
             }
 
             OutputEndpointId = normalized;
+            Changed?.Invoke();
+        }
+
+        public void ConfigureInputItem(string itemId)
+        {
+            string normalized = itemId ?? string.Empty;
+            if (InputItemId == normalized) return;
+            InputItemId = normalized;
             Changed?.Invoke();
         }
 
@@ -136,6 +145,7 @@ namespace PlanetSurvival.Transport.Domain
         {
             bool changed = InputEndpointId.Length > 0 || OutputEndpointId.Length > 0;
             InputEndpointId = string.Empty;
+            InputItemId = string.Empty;
             OutputEndpointId = string.Empty;
             if (changed)
             {

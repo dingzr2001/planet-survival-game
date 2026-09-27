@@ -44,6 +44,58 @@ namespace PlanetSurvival.Transport.Runtime
 
         public static string PostEndpointId(string siteId) => PostPrefix + siteId;
 
+        /// <summary>Posts beside a full-size building that may feed its own input selector.</summary>
+        public IReadOnlyList<ItemTransferPostStation> GetAdjacentPosts(BuildSite building)
+        {
+            var result = new List<ItemTransferPostStation>();
+            if (building == null) return result;
+            foreach (ItemTransferPostStation station in _stations)
+            {
+                if (station != null && station.isActiveAndEnabled &&
+                    station.Site.State == BuildState.Completed && IsAdjacent(station.Site, building))
+                    result.Add(station);
+            }
+            return result;
+        }
+
+        public ItemTransferPostStation GetAdjacentPost(BuildSite building, string endpointId)
+        {
+            if (building == null || string.IsNullOrEmpty(endpointId)) return null;
+            foreach (ItemTransferPostStation station in _stations)
+                if (station != null && station.isActiveAndEnabled &&
+                    station.Site.State == BuildState.Completed && station.EndpointId == endpointId &&
+                    IsAdjacent(station.Site, building)) return station;
+            return null;
+        }
+
+        /// <summary>Items a post can supply now. A filled buffer is handled before its upstream source.</summary>
+        public IReadOnlyList<ItemDefinition> GetAvailableOutputItems(ItemTransferPostStation station)
+        {
+            var items = new List<ItemDefinition>();
+            if (station?.Post == null) return items;
+            if (station.Post.BufferedItem != null)
+            {
+                items.Add(station.Post.BufferedItem);
+                return items;
+            }
+            string inputId = station.Post.InputEndpointId;
+            if (TryGetStorage(inputId, out StorageContainer storage))
+            {
+                foreach (ItemStack stack in storage.Inventory.Stacks)
+                    if (!items.Contains(stack.Definition)) items.Add(stack.Definition);
+            }
+            else if (TryGetBuilding(inputId, out BuildSite site) && site.ItemOutput?.OutputItem != null)
+            {
+                items.Add(site.ItemOutput.OutputItem);
+            }
+            else if (TryGetPost(inputId, out ItemTransferPostStation upstream) &&
+                     upstream.Post.BufferedItem != null)
+            {
+                items.Add(upstream.Post.BufferedItem);
+            }
+            return items;
+        }
+
         public void Bind(BuildingService buildings, BuildGridOverlay gridOverlay, ItemTransferPostView view)
         {
             _buildings = buildings;
@@ -105,7 +157,8 @@ namespace PlanetSurvival.Transport.Runtime
                 return post.BufferedItem;
             }
 
-            if (TryResolveSource(post.InputEndpointId, out ITransferSource source) && source.OutputItem != null)
+            if (TryResolveSource(post.InputEndpointId, out ITransferSource source, post.InputItemId) &&
+                source.OutputItem != null)
             {
                 return source.OutputItem;
             }
@@ -117,7 +170,7 @@ namespace PlanetSurvival.Transport.Runtime
         {
             ItemDefinition item = GetRouteItem(station);
             return item != null && station?.Post != null &&
-                   TryResolveSource(station.Post.InputEndpointId, out _) &&
+                   TryResolveSource(station.Post.InputEndpointId, out _, station.Post.InputItemId) &&
                    TryResolveSink(station.Post.OutputEndpointId, out ITransferSink sink) &&
                    sink.AcceptableQuantity(item, 1) > 0;
         }
@@ -129,7 +182,8 @@ namespace PlanetSurvival.Transport.Runtime
                 return "Input is not configured.";
             }
 
-            if (!TryResolveSource(station.Post.InputEndpointId, out ITransferSource source))
+            if (!TryResolveSource(station.Post.InputEndpointId, out ITransferSource source,
+                    station.Post.InputItemId))
             {
                 return "Input unavailable; choose another source.";
             }
@@ -172,12 +226,18 @@ namespace PlanetSurvival.Transport.Runtime
             ItemTransferPost post = station.Post;
             ClearInputInverse(post);
             post.ConfigureInput(endpointId);
+            post.ConfigureInputItem(string.Empty);
             if (TryGetPost(endpointId, out ItemTransferPostStation source))
             {
                 ClearOutputInverse(source.Post);
                 source.Post.ConfigureOutput(station.EndpointId);
                 ApplyGroupToConnectedPosts(post, post.GroupNumber, post.GroupColor);
             }
+        }
+
+        public void SetInputItem(ItemTransferPostStation station, ItemDefinition item)
+        {
+            station?.Post?.ConfigureInputItem(item?.ItemId);
         }
 
         public void SetOutput(ItemTransferPostStation station, string endpointId)
@@ -301,7 +361,8 @@ namespace PlanetSurvival.Transport.Runtime
         private void PullInto(ItemTransferPostStation station, float elapsedSeconds)
         {
             ItemTransferPost post = station.Post;
-            if (!TryResolveSource(post.InputEndpointId, out ITransferSource source) || source.OutputItem == null)
+            if (!TryResolveSource(post.InputEndpointId, out ITransferSource source, post.InputItemId) ||
+                source.OutputItem == null)
             {
                 return;
             }
@@ -391,7 +452,8 @@ namespace PlanetSurvival.Transport.Runtime
             return false;
         }
 
-        private bool TryResolveSource(string endpointId, out ITransferSource source)
+        private bool TryResolveSource(string endpointId, out ITransferSource source,
+            string preferredItemId = null)
         {
             if (TryGetPost(endpointId, out ItemTransferPostStation postStation))
             {
@@ -407,7 +469,7 @@ namespace PlanetSurvival.Transport.Runtime
 
             if (TryGetStorage(endpointId, out StorageContainer storage))
             {
-                source = new InventoryEndpoint(storage.Inventory);
+                source = new InventoryEndpoint(storage.Inventory, preferredItemId);
                 return true;
             }
 
@@ -701,13 +763,30 @@ namespace PlanetSurvival.Transport.Runtime
         private sealed class InventoryEndpoint : ITransferSource, ITransferSink
         {
             private readonly InventoryModel _inventory;
-            public InventoryEndpoint(InventoryModel inventory) => _inventory = inventory;
-            public ItemDefinition OutputItem => _inventory.Stacks.Count > 0 ? _inventory.Stacks[0].Definition : null;
+            private readonly string _preferredItemId;
+            public InventoryEndpoint(InventoryModel inventory, string preferredItemId = null)
+            {
+                _inventory = inventory;
+                _preferredItemId = preferredItemId;
+            }
+            public ItemDefinition OutputItem => OutputStack?.Definition;
+
+            private ItemStack OutputStack
+            {
+                get
+                {
+                    foreach (ItemStack stack in _inventory.Stacks)
+                        if (string.IsNullOrEmpty(_preferredItemId) || stack.Definition.ItemId == _preferredItemId)
+                            return stack;
+                    return null;
+                }
+            }
 
             public int Extract(int maximumQuantity, float elapsedSeconds)
             {
-                if (_inventory.Stacks.Count == 0 || maximumQuantity <= 0) return 0;
-                ItemStack stack = _inventory.Stacks[0];
+                if (maximumQuantity <= 0) return 0;
+                ItemStack stack = OutputStack;
+                if (stack == null) return 0;
                 int quantity = Mathf.Min(maximumQuantity, stack.Quantity);
                 return _inventory.Remove(stack.StackId, quantity).Succeeded ? quantity : 0;
             }

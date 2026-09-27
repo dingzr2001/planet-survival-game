@@ -361,7 +361,7 @@ namespace PlanetSurvival.Bootstrap
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
                 hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>(),
                 hud.GetComponent<PlanterBoxView>(), hud.GetComponent<ElectrolyzerView>(),
-                transferSystem, powerPoleSystem);
+                transferSystem, powerPoleSystem, hud.GetComponent<CombustionGeneratorView>());
 
             hud.AddComponent<CraftingDrawerView>().Bind(
                 controller,
@@ -388,6 +388,7 @@ namespace PlanetSurvival.Bootstrap
             hudObject.AddComponent<MiningDrillView>();
             hudObject.AddComponent<PlanterBoxView>();
             hudObject.AddComponent<ElectrolyzerView>();
+            hudObject.AddComponent<CombustionGeneratorView>();
             hudObject.AddComponent<ItemTransferPostView>();
             hudObject.AddComponent<PowerPoleView>();
             hudObject.AddComponent<GameOverView>();

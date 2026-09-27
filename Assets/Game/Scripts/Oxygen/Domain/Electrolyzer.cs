@@ -36,7 +36,9 @@ namespace PlanetSurvival.Oxygen.Domain
         }
 
         public ElectrolyzerDefinition Definition { get; }
-        public ItemDefinition OutputItem => Definition.OxygenItem;
+        public ItemDefinition OutputItem => StoredOxygenItems > 0 ? Definition.OxygenItem :
+            Definition.HydrogenItem != null && StoredHydrogenLiters + Epsilon >= Definition.HydrogenLitersPerItem
+                ? Definition.HydrogenItem : null;
         public int StoredWaterMilliliters { get; private set; }
         public float StoredElectricity { get; private set; }
 
@@ -292,7 +294,7 @@ namespace PlanetSurvival.Oxygen.Domain
         /// <summary>Rate-limited automation output of bottled oxygen.</summary>
         public int Extract(int maximumQuantity, float elapsedSeconds)
         {
-            if (maximumQuantity <= 0 || elapsedSeconds <= 0f || StoredOxygenItems <= 0)
+            if (maximumQuantity <= 0 || elapsedSeconds <= 0f || OutputItem == null)
             {
                 return 0;
             }
@@ -301,13 +303,16 @@ namespace PlanetSurvival.Oxygen.Domain
                 Mathf.Max(1f, Definition.OutputPerSecond),
                 _outputAllowance + Definition.OutputPerSecond * elapsedSeconds);
             int rateLimited = Mathf.FloorToInt(_outputAllowance + Epsilon);
-            int extracted = Math.Min(StoredOxygenItems, Math.Min(maximumQuantity, rateLimited));
+            int available = StoredOxygenItems > 0 ? StoredOxygenItems :
+                Mathf.FloorToInt((StoredHydrogenLiters + Epsilon) / Definition.HydrogenLitersPerItem);
+            int extracted = Math.Min(available, Math.Min(maximumQuantity, rateLimited));
             if (extracted <= 0)
             {
                 return 0;
             }
 
-            StoredOxygenItems -= extracted;
+            if (StoredOxygenItems > 0) StoredOxygenItems -= extracted;
+            else StoredHydrogenLiters -= extracted * Definition.HydrogenLitersPerItem;
             _outputAllowance -= extracted;
             Changed?.Invoke();
             return extracted;
@@ -322,12 +327,12 @@ namespace PlanetSurvival.Oxygen.Domain
             }
 
             int transferable = Math.Min(requestedItems, StoredOxygenItems);
-            while (transferable > 0 && !inventory.CanAdd(OutputItem, transferable).Succeeded)
+            while (transferable > 0 && !inventory.CanAdd(Definition.OxygenItem, transferable).Succeeded)
             {
                 transferable--;
             }
 
-            if (transferable <= 0 || !inventory.Add(OutputItem, transferable).Succeeded)
+            if (transferable <= 0 || !inventory.Add(Definition.OxygenItem, transferable).Succeeded)
             {
                 return 0;
             }
@@ -335,6 +340,18 @@ namespace PlanetSurvival.Oxygen.Domain
             StoredOxygenItems -= transferable;
             Changed?.Invoke();
             return transferable;
+        }
+
+        public int CollectHydrogenItems(int requestedItems, InventoryModel inventory)
+        {
+            if (requestedItems <= 0 || inventory == null || Definition.HydrogenItem == null) return 0;
+            int available = Mathf.FloorToInt((StoredHydrogenLiters + Epsilon) / Definition.HydrogenLitersPerItem);
+            int quantity = Math.Min(requestedItems, available);
+            while (quantity > 0 && !inventory.CanAdd(Definition.HydrogenItem, quantity).Succeeded) quantity--;
+            if (quantity <= 0 || !inventory.Add(Definition.HydrogenItem, quantity).Succeeded) return 0;
+            StoredHydrogenLiters -= quantity * Definition.HydrogenLitersPerItem;
+            Changed?.Invoke();
+            return quantity;
         }
 
         /// <summary>

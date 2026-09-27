@@ -7,6 +7,7 @@ using PlanetSurvival.Crafting.Definitions;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.Storage.Runtime;
 using PlanetSurvival.Transport.Domain;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.UI.Transport;
@@ -121,6 +122,46 @@ namespace PlanetSurvival.Tests
             }
             finally
             {
+                Object.DestroyImmediate(ore);
+            }
+        }
+
+        [Test]
+        public void StorageSourceSelection_UsesTheChosenItemFromMultipleAvailableItems()
+        {
+            ItemDefinition ore = ScriptableObject.CreateInstance<ItemDefinition>();
+            ore.Configure("ore", "Ore", 1, 20, false, true);
+            var payment = new InventoryModel(30, 20);
+            payment.Add(_alloy, 2);
+            var service = new BuildingService(payment, new BuildGrid());
+            Assert.That(service.TryPlaceTransferPost(_postDefinition, Vector2Int.zero,
+                out BuildSite site).Succeeded, Is.True);
+            var postObject = new GameObject("Transfer Post");
+            var storageObject = new GameObject("Storage");
+            var systemObject = new GameObject("Transfer System");
+            try
+            {
+                postObject.AddComponent<BoxCollider>();
+                ItemTransferPostStation station = postObject.AddComponent<ItemTransferPostStation>();
+                station.Bind(site, postObject.transform);
+                var stock = new InventoryModel(30, 20);
+                stock.Add(_alloy, 1);
+                stock.Add(ore, 1);
+                storageObject.AddComponent<BoxCollider>();
+                StorageContainer storage = storageObject.AddComponent<StorageContainer>();
+                storage.Bind("Storage", stock, null);
+                station.Post.ConfigureInput($"storage:{storage.GetInstanceID()}");
+                ItemTransferSystem system = systemObject.AddComponent<ItemTransferSystem>();
+
+                Assert.That(system.GetAvailableOutputItems(station), Is.EquivalentTo(new[] { _alloy, ore }));
+                system.SetInputItem(station, ore);
+                Assert.That(system.GetRouteItem(station), Is.SameAs(ore));
+            }
+            finally
+            {
+                Object.DestroyImmediate(systemObject);
+                Object.DestroyImmediate(storageObject);
+                Object.DestroyImmediate(postObject);
                 Object.DestroyImmediate(ore);
             }
         }

@@ -32,6 +32,7 @@ MonoBehaviour:
   _miningDrill: {fileID: 11400000, guid: 155a17c7ca2874cf581fbe18706b757f, type: 2}
   _planterBox: {fileID: 0}
   _electrolyzer: {fileID: 0}
+  _combustionGenerator: {fileID: 0}
   _isItemTransferPost: 0
   _isSolarPanel: 0
   _solarElectricityPerSecond: 1

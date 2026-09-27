@@ -33,6 +33,9 @@ namespace PlanetSurvival.Core.Flow
         [SerializeField] private ItemDefinition _carbonDioxideFilterCartridgeDefinition;
         [SerializeField, Tooltip("Debug-only prototype component used to exercise transfer-post construction before its production chain exists.")]
         private ItemDefinition _entanglementRelayCoreDefinition;
+        [SerializeField] private ItemDefinition _generatorOxygenDefinition;
+        [SerializeField] private ItemDefinition _methaneDefinition;
+        [SerializeField] private ItemDefinition _hydrogenDefinition;
         [Header("Debug")]
         [SerializeField, Tooltip(
             "Editor and Development Builds only. Starts every configured supply at 999 in the player's backpack.")]
@@ -83,6 +86,13 @@ namespace PlanetSurvival.Core.Flow
             _entanglementRelayCoreDefinition = entanglementRelayCoreDefinition;
             _carbonDioxideFilterCartridgeDefinition = carbonDioxideFilterCartridgeDefinition;
             _potatoSeedDefinition = potatoSeedDefinition;
+        }
+
+        public void ConfigureGeneratorSupplies(ItemDefinition oxygen, ItemDefinition methane, ItemDefinition hydrogen)
+        {
+            _generatorOxygenDefinition = oxygen;
+            _methaneDefinition = methane;
+            _hydrogenDefinition = hydrogen;
         }
 
         public void Initialize()
@@ -177,6 +187,13 @@ namespace PlanetSurvival.Core.Flow
             if (IsTestMode && _entanglementRelayCoreDefinition != null)
                 startingSupplies.Add(new InventoryItemAmount(
                     _entanglementRelayCoreDefinition, GameSessionState.TestItemQuantity));
+
+            if (_generatorOxygenDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_generatorOxygenDefinition, Quantity(8)));
+            if (_methaneDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_methaneDefinition, Quantity(6)));
+            if (IsTestMode && _hydrogenDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_hydrogenDefinition, GameSessionState.TestItemQuantity));
 
             InventoryOperationResult result = IsTestMode
                 ? Session.ResetPlayerInventory(startingSupplies)

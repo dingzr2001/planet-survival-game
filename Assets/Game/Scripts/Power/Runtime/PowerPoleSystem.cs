@@ -14,6 +14,7 @@ namespace PlanetSurvival.Power.Runtime
     public sealed class PowerPoleSystem : MonoBehaviour
     {
         private const string SolarPrefix = "solar:";
+        private const string GeneratorPrefix = "generator:";
         private const string ConsumerPrefix = "consumer:";
         private const string PolePrefix = "pole:";
         private readonly List<PowerPoleStation> _stations = new();
@@ -32,7 +33,7 @@ namespace PlanetSurvival.Power.Runtime
         public void AddInput(PowerPoleStation station, string endpointId)
         {
             if (station?.Pole == null || !CanUseEndpoint(station, endpointId, true)) return;
-            if (IsSolarEndpoint(endpointId)) RemoveEndpointFromOtherPoles(endpointId, station, true);
+            if (IsProducerEndpoint(endpointId)) RemoveEndpointFromOtherPoles(endpointId, station, true);
             station.Pole.AddInput(endpointId);
             if (TryGetPole(endpointId, out PowerPoleStation source)) source.Pole.AddOutput(PoleId(station));
         }
@@ -67,6 +68,21 @@ namespace PlanetSurvival.Power.Runtime
             if (elapsedSeconds <= 0f || Time.timeScale <= 0f) return;
             List<PowerPoleStation> active = _stations.Where(IsActive).ToList();
             var available = active.ToDictionary(station => station, station => SolarInput(station, elapsedSeconds));
+            foreach (PowerPoleStation station in active)
+            {
+                float needed = station.Pole.OutputEndpointIds.Sum(output =>
+                    OutputDemand(output, available, elapsedSeconds, new HashSet<PowerPoleStation>()));
+                needed = Mathf.Max(0f, needed - available[station]);
+                foreach (string inputId in station.Pole.InputEndpointIds)
+                {
+                    if (needed <= 0f) break;
+                    if (!TryGetGenerator(inputId, out BuildSite generatorSite)) continue;
+                    float supplied = Mathf.Min(needed,
+                        generatorSite.CombustionGenerator.CurrentPowerWatts * elapsedSeconds);
+                    available[station] += supplied;
+                    needed -= supplied;
+                }
+            }
             var parents = active.ToDictionary(station => station, station => station.Pole.InputEndpointIds.Count(id => TryGetPole(id, out _)));
             var pending = new Queue<PowerPoleStation>(active.Where(station => parents[station] == 0));
             var settled = new HashSet<PowerPoleStation>();
@@ -126,7 +142,10 @@ namespace PlanetSurvival.Power.Runtime
             foreach (BuildSite site in _buildings.Sites)
             {
                 if (site.State != BuildState.Completed || !AreAdjacent(station.Site, site)) continue;
-                if (input && site.Definition.IsSolarPanel) options.Add(new PowerEndpointOption(SolarId(site), EndpointNumber(site, true), site.Definition.MenuIcon));
+                if (input && site.Definition.IsSolarPanel)
+                    options.Add(new PowerEndpointOption(SolarId(site), ProducerLabel(site), site.Definition.MenuIcon));
+                if (input && site.CombustionGenerator != null)
+                    options.Add(new PowerEndpointOption(GeneratorId(site), ProducerLabel(site), site.Definition.MenuIcon));
                 if (!input && TryGetPowerInput(site, out _)) options.Add(new PowerEndpointOption(ConsumerId(site), EndpointNumber(site, false), site.Definition.MenuIcon));
             }
             return options;
@@ -137,18 +156,21 @@ namespace PlanetSurvival.Power.Runtime
             if (endpointId == PoleId(station)) return false;
             if (TryGetPole(endpointId, out _)) return true;
             return input
-                ? TryGetSolar(endpointId, out BuildSite source) && AreAdjacent(station.Site, source)
+                ? (TryGetSolar(endpointId, out BuildSite source) && AreAdjacent(station.Site, source)) ||
+                  (TryGetGenerator(endpointId, out BuildSite generator) && AreAdjacent(station.Site, generator))
                 : TryGetConsumer(endpointId, out _, out BuildSite consumer) && AreAdjacent(station.Site, consumer);
         }
         private bool TryGetEndpoint(string id, out string label, out Sprite icon)
         {
             label = "Unavailable endpoint"; icon = null;
-            if (TryGetSolar(id, out BuildSite solar)) { label = EndpointNumber(solar, true); icon = solar.Definition.MenuIcon; return true; }
+            if (TryGetSolar(id, out BuildSite solar)) { label = ProducerLabel(solar); icon = solar.Definition.MenuIcon; return true; }
+            if (TryGetGenerator(id, out BuildSite generator)) { label = ProducerLabel(generator); icon = generator.Definition.MenuIcon; return true; }
             if (TryGetConsumer(id, out _, out BuildSite consumer)) { label = EndpointNumber(consumer, false); icon = consumer.Definition.MenuIcon; return true; }
             if (TryGetPole(id, out PowerPoleStation pole)) { label = $"#{pole.Pole.PoleNumber:00}"; icon = pole.Site.Definition.MenuIcon; return true; }
             return false;
         }
         private float SolarInput(PowerPoleStation station, float elapsed) => station.Pole.InputEndpointIds.Sum(id => TryGetSolar(id, out BuildSite site) ? site.Definition.SolarElectricityPerSecond * elapsed : 0f);
+        private string ProducerLabel(BuildSite site) => $"{site.Definition.DisplayName} {EndpointNumber(site, true)}";
         private static bool AreAdjacent(BuildSite pole, BuildSite other)
         {
             if (!pole.QuarterCell.HasValue) return false;
@@ -157,6 +179,8 @@ namespace PlanetSurvival.Power.Runtime
             return false;
         }
         private bool TryGetSolar(string id, out BuildSite site) => TryGetSite(id, SolarPrefix, candidate => candidate.Definition.IsSolarPanel, out site);
+        private bool TryGetGenerator(string id, out BuildSite site) =>
+            TryGetSite(id, GeneratorPrefix, candidate => candidate.CombustionGenerator != null, out site);
         private bool TryGetConsumer(string id, out IPowerInput input) => TryGetConsumer(id, out input, out _);
         private bool TryGetConsumer(string id, out IPowerInput input, out BuildSite site)
         {
@@ -179,7 +203,7 @@ namespace PlanetSurvival.Power.Runtime
             int number = 0;
             foreach (BuildSite candidate in _buildings.Sites)
             {
-                bool matches = producer ? candidate.Definition.IsSolarPanel : TryGetPowerInput(candidate, out _);
+                bool matches = producer ? candidate.Definition.IsSolarPanel || candidate.CombustionGenerator != null : TryGetPowerInput(candidate, out _);
                 if (!matches) continue;
                 number++;
                 if (candidate == site) return $"#{number:00}";
@@ -207,9 +231,11 @@ namespace PlanetSurvival.Power.Runtime
         private void Disconnect(PowerPoleStation station)
         { foreach (string input in station.Pole.InputEndpointIds.ToArray()) RemoveInput(station, input); foreach (string output in station.Pole.OutputEndpointIds.ToArray()) RemoveOutput(station, output); }
         private static bool IsActive(PowerPoleStation station) => station != null && station.isActiveAndEnabled && station.Site.State == BuildState.Completed && station.Pole != null;
-        private static bool IsSolarEndpoint(string id) => id != null && id.StartsWith(SolarPrefix, StringComparison.Ordinal);
+        private static bool IsProducerEndpoint(string id) => id != null &&
+            (id.StartsWith(SolarPrefix, StringComparison.Ordinal) || id.StartsWith(GeneratorPrefix, StringComparison.Ordinal));
         private static bool IsConsumerEndpoint(string id) => id != null && id.StartsWith(ConsumerPrefix, StringComparison.Ordinal);
         private static string SolarId(BuildSite site) => SolarPrefix + site.SiteId;
+        private static string GeneratorId(BuildSite site) => GeneratorPrefix + site.SiteId;
         private static string ConsumerId(BuildSite site) => ConsumerPrefix + site.SiteId;
         private static string PoleId(PowerPoleStation station) => PolePrefix + station.Site.SiteId;
     }

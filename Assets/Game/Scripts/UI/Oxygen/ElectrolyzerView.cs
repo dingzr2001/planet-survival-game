@@ -127,6 +127,15 @@ namespace PlanetSurvival.UI.Oxygen
             return vented;
         }
 
+        public int CollectHydrogen(int requestedItems)
+        {
+            int collected = _electrolyzer.CollectHydrogenItems(requestedItems, _inventory.Inventory);
+            _feedback = collected > 0 ? $"Took {collected} hydrogen bottle(s)." :
+                "Not enough hydrogen for a bottle, or the backpack is full.";
+            if (collected > 0) _inventory.RefreshQuickBarAssignments();
+            return collected;
+        }
+
         public void Close()
         {
             IsOpen = false;
@@ -207,6 +216,7 @@ namespace PlanetSurvival.UI.Oxygen
                 CollectOxygen(_electrolyzer.StoredOxygenItems);
             }
             GUI.enabled = _electrolyzer.StoredHydrogenLiters > 0f;
+            if (GUILayout.Button("BOTTLE H₂", GUILayout.Height(32))) CollectHydrogen(1);
             if (GUILayout.Button("VENT H₂", GUILayout.Height(32))) VentHydrogen();
             GUI.enabled = true;
             GUILayout.EndHorizontal();

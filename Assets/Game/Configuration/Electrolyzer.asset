@@ -22,6 +22,8 @@ MonoBehaviour:
   _oxygenCapacityLiters: 600
   _hydrogenLitersPerOxygenLiter: 2
   _hydrogenCapacityLiters: 1200
+  _hydrogenItem: {fileID: 11400000, guid: 6c60df498d0354e4783dd3deeb3750da, type: 2}
+  _hydrogenLitersPerItem: 100
   _oxygenItem: {fileID: 11400000, guid: a23a29a4333d748539a50b6a52b5778a, type: 2}
   _oxygenLitersPerItem: 100
   _oxygenItemCapacity: 10

@@ -261,6 +261,7 @@ namespace PlanetSurvival.Editor
             UiArtSetup.ConfigureResourceTextures();
             CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
                 soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter, potatoSeed);
+            CombustionGeneratorSetup.ConfigureBootstrapScene();
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
                 oven, potatoCrop, LandingPodHabitatScenePath);
@@ -1401,6 +1402,7 @@ namespace PlanetSurvival.Editor
 
             catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, iceDrill, gravelExtractor,
                 planterBox, electrolyzer, transferPost, solarPanel, powerPole);
+            CombustionGeneratorSetup.EnsureContent(catalog);
             EditorUtility.SetDirty(catalog);
             return catalog;
         }
@@ -1429,7 +1431,8 @@ namespace PlanetSurvival.Editor
                 ElectrolyzerElectricityCapacity, ElectrolyzerElectricityPerOxygenLiter,
                 ElectrolyzerOxygenPerSecond, ElectrolyzerOxygenCapacity,
                 ElectrolyzerHydrogenPerOxygenLiter, ElectrolyzerHydrogenCapacity,
-                ElectrolyzerOxygenPerItem, ElectrolyzerOxygenItemCapacity, ElectrolyzerOutputPerSecond);
+                ElectrolyzerOxygenPerItem, ElectrolyzerOxygenItemCapacity, ElectrolyzerOutputPerSecond,
+                CombustionGeneratorSetup.GetOrCreateHydrogen(), 100f);
             EditorUtility.SetDirty(definition);
 
             BuildableDefinition buildable = GetOrCreateBuildable(

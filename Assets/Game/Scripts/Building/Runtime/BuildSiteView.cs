@@ -12,6 +12,7 @@ using PlanetSurvival.World.Generation;
 using PlanetSurvival.World.Presentation;
 using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.Power.Runtime;
+using PlanetSurvival.UI.Power;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -80,7 +81,8 @@ namespace PlanetSurvival.Building.Runtime
             MiningDrillBinding mining = default,
             PlanterBoxBinding planter = default,
             ElectrolyzerBinding electrolyzer = default,
-            OxygenReservoir oxygenReservoir = null, GameClock clock = null)
+            OxygenReservoir oxygenReservoir = null, GameClock clock = null,
+            ItemTransferSystem transferSystem = null, CombustionGeneratorView generatorView = null)
         {
             _site = site;
             _service = service;
@@ -142,6 +144,13 @@ namespace PlanetSurvival.Building.Runtime
                 ElectrolyzerStation electrolyzerStation = gameObject.AddComponent<ElectrolyzerStation>();
                 electrolyzerStation.Bind(electrolyzer);
                 electrolyzerStation.enabled = false;
+            }
+
+            if (site.CombustionGenerator != null)
+            {
+                CombustionGeneratorStation generator = gameObject.AddComponent<CombustionGeneratorStation>();
+                generator.Bind(site, transferSystem, generatorView);
+                generator.enabled = false;
             }
 
             Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
@@ -259,6 +268,10 @@ namespace PlanetSurvival.Building.Runtime
             if (TryGetComponent(out ElectrolyzerStation electrolyzer))
             {
                 electrolyzer.enabled = true;
+            }
+            if (TryGetComponent(out CombustionGeneratorStation generator))
+            {
+                generator.enabled = true;
             }
         }
     }
