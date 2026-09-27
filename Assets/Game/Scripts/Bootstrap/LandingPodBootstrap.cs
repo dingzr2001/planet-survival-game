@@ -12,6 +12,7 @@ using PlanetSurvival.Player.Animation;
 using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Player.Stats;
 using PlanetSurvival.Suit.Runtime;
+using PlanetSurvival.UI;
 using PlanetSurvival.UI.Cooking;
 using PlanetSurvival.UI.HUD;
 using PlanetSurvival.UI.Inventory;
@@ -267,6 +268,9 @@ namespace PlanetSurvival.Bootstrap
         {
             var hudObject = new GameObject("Survival HUD");
             hudObject.transform.SetParent(parent);
+            // Added first so every panel added below finds it when it opens.
+            ModalPanelRegistry modalPanels = hudObject.AddComponent<ModalPanelRegistry>();
+            BindPauseGuard(modalPanels);
             hudObject.AddComponent<SurvivalHudView>().Bind(player.GetComponent<PlayerSurvival>(), clock);
             hudObject.AddComponent<InteractionPromptView>().Bind(player.GetComponent<PlayerInteractor>());
             hudObject.AddComponent<InventoryView>().Bind(
@@ -293,6 +297,19 @@ namespace PlanetSurvival.Bootstrap
             }
 
             return hudObject;
+        }
+
+        /// <summary>
+        /// Lets the pause menu ignore the Escape press that a full-screen panel just consumed, so closing a
+        /// panel does not also pause the game.
+        /// </summary>
+        private static void BindPauseGuard(ModalPanelRegistry modalPanels)
+        {
+            GameFlowController flowController = FindFirstObjectByType<GameFlowController>();
+            if (flowController != null)
+            {
+                flowController.BindModalPanels(modalPanels);
+            }
         }
 
         private static void BindPlayerDeath(GameObject player)

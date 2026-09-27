@@ -121,28 +121,28 @@ namespace PlanetSurvival.Building.Runtime
             {
                 // The station only becomes usable once the structure stands, so it starts disabled.
                 CookingStation station = gameObject.AddComponent<CookingStation>();
-                station.Bind(cooking);
+                station.Bind(cooking, buildable.MenuIcon);
                 station.enabled = false;
             }
 
             if (mining.IsComplete)
             {
                 MiningDrillStation drill = gameObject.AddComponent<MiningDrillStation>();
-                drill.Bind(mining);
+                drill.Bind(mining, buildable.MenuIcon);
                 drill.enabled = false;
             }
 
             if (planter.IsComplete)
             {
                 PlanterBoxStation planterStation = gameObject.AddComponent<PlanterBoxStation>();
-                planterStation.Bind(planter, _body);
+                planterStation.Bind(planter, _body, buildable.MenuIcon);
                 planterStation.enabled = false;
             }
 
             if (electrolyzer.IsComplete)
             {
                 ElectrolyzerStation electrolyzerStation = gameObject.AddComponent<ElectrolyzerStation>();
-                electrolyzerStation.Bind(electrolyzer);
+                electrolyzerStation.Bind(electrolyzer, buildable.MenuIcon);
                 electrolyzerStation.enabled = false;
             }
 

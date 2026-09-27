@@ -10,26 +10,22 @@ namespace PlanetSurvival.UI.Storage
 {
     using InventoryModel = PlanetSurvival.Inventory.Domain.Inventory;
 
+    /// <summary>Two inventories side by side: pick a stack on either side, then move it across.</summary>
     [DisallowMultipleComponent]
-    public sealed class StorageView : MonoBehaviour
+    public sealed class StorageView : InteractionPanelView
     {
         private const float PanelWidth = 980f;
-        private const float PanelHeight = 620f;
+        private const float PanelHeight = 660f;
         private const float SlotSize = 62f;
         private const float SlotSpacing = 5f;
+        private const int SlotColumns = 6;
 
         private InventorySkin _skin;
         private InventoryModel _storage;
         private PlayerInventory _playerInventory;
-        private PlanarPlayerMotor _playerMotor;
-        private PlayerInteractor _playerInteractor;
-        private InventoryView _inventoryView;
         private string _storageName = string.Empty;
         private string _selectedStackId;
         private bool _selectedFromPlayer;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private bool _restoreInventoryView;
         private string _feedback = "Select a stack to transfer items.";
         private Vector2 _playerScroll;
         private Vector2 _storageScroll;
@@ -37,7 +33,7 @@ namespace PlanetSurvival.UI.Storage
         private GUIStyle _quantityStyle;
         private GUIStyle _placeholderStyle;
 
-        public bool IsOpen { get; private set; }
+        protected override InteractionPanelTheme Theme => InteractionPanelTheme.Logistics;
 
         public void Bind(InventorySkin skin)
         {
@@ -59,8 +55,7 @@ namespace PlanetSurvival.UI.Storage
             _playerInventory = playerInventory;
             _selectedStackId = null;
             _feedback = "Select a stack to transfer items.";
-            CaptureAndLockControls(playerMotor, playerInteractor);
-            IsOpen = true;
+            BeginSession(playerMotor, playerInteractor);
         }
 
         public InventoryOperationResult Store(string stackId, int quantity)
@@ -97,26 +92,11 @@ namespace PlanetSurvival.UI.Storage
             return result;
         }
 
-        public void Close()
+        protected override void OnClosed()
         {
-            IsOpen = false;
-            ReleaseControls();
             _storage = null;
             _playerInventory = null;
             _selectedStackId = null;
-        }
-
-        private void OnDisable()
-        {
-            if (IsOpen)
-            {
-                Close();
-            }
-        }
-
-        private void OnDestroy()
-        {
-            ReleaseControls();
         }
 
         private void OnGUI()
@@ -127,31 +107,13 @@ namespace PlanetSurvival.UI.Storage
             }
 
             EnsureStyles();
-            Color previousColor = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, .68f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = previousColor;
+            Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
+            bool close = InteractionPanel.DrawHeader(panel, null, $"{_storageName}  ·  ITEM STORAGE",
+                StateText(), Styles);
 
-            float width = Mathf.Min(PanelWidth, Screen.width - 24f);
-            float height = Mathf.Min(PanelHeight, Screen.height - 24f);
-            var panel = new Rect((Screen.width - width) * .5f, (Screen.height - height) * .5f, width, height);
-            PanelBackground.Draw(panel, new Color(.035f, .05f, .065f, .98f));
-
-            GUILayout.BeginArea(new Rect(panel.x + 18f, panel.y + 14f, panel.width - 36f, panel.height - 28f));
-            GUILayout.BeginHorizontal();
-            GUILayout.Label($"{_storageName}  ·  ITEM STORAGE");
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("CLOSE", GUILayout.Width(76f), GUILayout.Height(26f)))
-            {
-                Close();
-                GUILayout.EndHorizontal();
-                GUILayout.EndArea();
-                return;
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(10f);
-
-            float gridHeight = Mathf.Max(180f, panel.height - 150f);
+            Rect content = InteractionPanel.ContentArea(panel);
+            GUILayout.BeginArea(content);
+            float gridHeight = Mathf.Max(180f, content.height - 74f);
             GUILayout.BeginHorizontal();
             DrawInventoryColumn("BACKPACK", _playerInventory.Inventory, true, ref _playerScroll, gridHeight);
             GUILayout.Space(10f);
@@ -160,21 +122,35 @@ namespace PlanetSurvival.UI.Storage
             GUILayout.Space(8f);
             DrawTransferActions();
             GUILayout.EndArea();
+
+            InteractionPanel.DrawFooter(panel, _feedback,
+                "A stack only moves when the other side has both a free slot and spare capacity.", Styles);
+            if (close)
+            {
+                Close();
+            }
+        }
+
+        private string StateText()
+        {
+            InventoryModel backpack = _playerInventory.Inventory;
+            return $"BACKPACK {backpack.UsedSlots}/{backpack.TotalSlots} slots  ·  " +
+                   $"{_storageName} {_storage.UsedSlots}/{_storage.TotalSlots} slots";
         }
 
         private void DrawInventoryColumn(string title, InventoryModel inventory, bool fromPlayer,
             ref Vector2 scroll, float height)
         {
             GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(450f), GUILayout.Height(height));
-            GUILayout.Label($"{title}    {inventory.UsedSlots}/{inventory.TotalSlots} slots  ·  " +
-                            $"{inventory.UsedCapacity}/{inventory.TotalCapacity} capacity");
+            GUILayout.Label(title, Styles.Section);
+            GUILayout.Label($"{inventory.UsedSlots}/{inventory.TotalSlots} slots  ·  " +
+                            $"{inventory.UsedCapacity}/{inventory.TotalCapacity} capacity", Styles.Detail);
             scroll = GUILayout.BeginScrollView(scroll);
-            const int columns = 6;
             IReadOnlyList<ItemStack> stacks = inventory.Stacks;
-            for (int rowStart = 0; rowStart < inventory.TotalSlots; rowStart += columns)
+            for (int rowStart = 0; rowStart < inventory.TotalSlots; rowStart += SlotColumns)
             {
                 GUILayout.BeginHorizontal();
-                for (int column = 0; column < columns; column++)
+                for (int column = 0; column < SlotColumns; column++)
                 {
                     int index = rowStart + column;
                     if (index >= inventory.TotalSlots)
@@ -206,8 +182,8 @@ namespace PlanetSurvival.UI.Storage
             InventoryModel source = _selectedFromPlayer ? _playerInventory.Inventory : _storage;
             ItemStack selected = source.FindStack(_selectedStackId);
             GUILayout.BeginHorizontal(GUI.skin.box, GUILayout.Height(58f));
-            GUILayout.Label(selected == null ? _feedback :
-                $"{selected.Definition.DisplayName} ×{selected.Quantity}  ·  {_feedback}");
+            GUILayout.Label(selected == null ? "No stack selected."
+                : $"{selected.Definition.DisplayName} ×{selected.Quantity}", Styles.Value);
             GUILayout.FlexibleSpace();
             GUI.enabled = selected != null;
             string verb = _selectedFromPlayer ? "STORE" : "TAKE";
@@ -244,11 +220,7 @@ namespace PlanetSurvival.UI.Storage
                 Rect content = new Rect(area.x + 6f, area.y + 6f, area.width - 12f, area.height - 12f);
                 if (stack.Definition.Icon != null)
                 {
-                    Sprite icon = stack.Definition.Icon;
-                    Rect source = icon.textureRect;
-                    Rect coordinates = new Rect(source.x / icon.texture.width, source.y / icon.texture.height,
-                        source.width / icon.texture.width, source.height / icon.texture.height);
-                    GUI.DrawTextureWithTexCoords(content, icon.texture, coordinates, true);
+                    SpriteIcon.Draw(content, stack.Definition.Icon);
                 }
                 else
                 {
@@ -270,32 +242,6 @@ namespace PlanetSurvival.UI.Storage
             }
 
             return clicked;
-        }
-
-        private void CaptureAndLockControls(PlanarPlayerMotor playerMotor, PlayerInteractor playerInteractor)
-        {
-            _playerMotor = playerMotor;
-            _playerInteractor = playerInteractor;
-            _inventoryView = GetComponent<InventoryView>();
-            _restoreMotor = _playerMotor != null && _playerMotor.enabled;
-            _restoreInteractor = _playerInteractor != null && _playerInteractor.enabled;
-            _restoreInventoryView = _inventoryView != null && _inventoryView.enabled;
-            if (_playerMotor != null) _playerMotor.enabled = false;
-            if (_playerInteractor != null) _playerInteractor.enabled = false;
-            if (_inventoryView != null) _inventoryView.enabled = false;
-        }
-
-        private void ReleaseControls()
-        {
-            if (_playerMotor != null) _playerMotor.enabled = _restoreMotor;
-            if (_playerInteractor != null) _playerInteractor.enabled = _restoreInteractor;
-            if (_inventoryView != null) _inventoryView.enabled = _restoreInventoryView;
-            _playerMotor = null;
-            _playerInteractor = null;
-            _inventoryView = null;
-            _restoreMotor = false;
-            _restoreInteractor = false;
-            _restoreInventoryView = false;
         }
 
         private void EnsureStyles()

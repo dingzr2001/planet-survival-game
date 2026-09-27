@@ -15,29 +15,27 @@ namespace PlanetSurvival.UI.Farming
     /// competition between drinking and growing is visible at the moment of the decision.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HydroponicsView : MonoBehaviour
+    public sealed class HydroponicsView : InteractionPanelView
     {
-        private const float PanelWidth = 620f;
-        private const float PanelHeight = 440f;
+        private const float PanelWidth = 660f;
+        private const float PanelHeight = 540f;
         private const float RowHeight = 54f;
+
+        private static readonly Color RipeFill = new(.45f, .85f, .5f);
+        private static readonly Color GrowingFill = new(.5f, .74f, .38f);
+        private static readonly Color ReserveFill = new(.23f, .55f, .78f);
 
         private HydroponicsRack _rack;
         private CropDefinition _crop;
         private LiquidContainer _waterSupply;
         private GameClock _clock;
         private PlayerInventory _playerInventory;
-        private PlanarPlayerMotor _playerMotor;
-        private PlayerInteractor _playerInteractor;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private string _status = string.Empty;
+        private string _feedback = string.Empty;
+        private Vector2 _trayScroll;
         private PendingAction _pending;
         private HydroponicsSlot _pendingSlot;
-        private GUIStyle _headerStyle;
-        private GUIStyle _primaryLabelStyle;
-        private GUIStyle _secondaryLabelStyle;
 
-        public bool IsOpen { get; private set; }
+        protected override InteractionPanelTheme Theme => InteractionPanelTheme.Growth;
 
         /// <summary>
         /// A press changes how many controls the panel draws, which IMGUI cannot tolerate in the middle
@@ -57,7 +55,9 @@ namespace PlanetSurvival.UI.Farming
         {
             if (rack == null || crop == null || waterSupply == null || clock == null || playerInventory == null)
             {
-                Debug.LogError($"{nameof(HydroponicsView)} needs the rack, its crop, the reserve, the clock and the backpack.", this);
+                Debug.LogError(
+                    $"{nameof(HydroponicsView)} needs the rack, its crop, the reserve, the clock and the backpack.",
+                    this);
                 return;
             }
 
@@ -69,21 +69,9 @@ namespace PlanetSurvival.UI.Farming
             _playerInventory = playerInventory;
             _pending = PendingAction.None;
             _pendingSlot = null;
-            _status = DefaultStatus();
-            CaptureAndLockPlayerControls(playerMotor, playerInteractor);
-            IsOpen = true;
-        }
-
-        public void Close()
-        {
-            IsOpen = false;
-            ReleasePlayerControls();
-            _rack = null;
-            _crop = null;
-            _waterSupply = null;
-            _clock = null;
-            _playerInventory = null;
-            _pendingSlot = null;
+            _trayScroll = Vector2.zero;
+            _feedback = "Pick a tray: PLANT sows it, HARVEST empties it into the backpack.";
+            BeginSession(playerMotor, playerInteractor);
         }
 
         /// <summary>Sows one tray. Exposed so tests and other input paths do not go through IMGUI.</summary>
@@ -98,11 +86,11 @@ namespace PlanetSurvival.UI.Farming
             if (result.Succeeded)
             {
                 _playerInventory.RefreshQuickBarAssignments();
-                _status = $"Tray {slot.Index + 1} planted · ripe in {_crop.GrowthGameHours:0} game hours.";
+                _feedback = $"Tray {slot.Index + 1} planted · ripe in {_crop.GrowthGameHours:0} game hours.";
             }
             else
             {
-                _status = result.Message;
+                _feedback = result.Message;
             }
 
             return result;
@@ -122,17 +110,25 @@ namespace PlanetSurvival.UI.Farming
             if (result.Succeeded)
             {
                 _playerInventory.RefreshQuickBarAssignments();
-                _status = $"Harvested {quantity} × {cropName} from tray {slot.Index + 1}.";
+                _feedback = $"Harvested {quantity} × {cropName} from tray {slot.Index + 1}.";
             }
             else
             {
-                _status = result.Message;
+                _feedback = result.Message;
             }
 
             return result;
         }
 
-        private void OnDestroy() => ReleasePlayerControls();
+        protected override void OnClosed()
+        {
+            _rack = null;
+            _crop = null;
+            _waterSupply = null;
+            _clock = null;
+            _playerInventory = null;
+            _pendingSlot = null;
+        }
 
         private void OnGUI()
         {
@@ -141,53 +137,36 @@ namespace PlanetSurvival.UI.Farming
                 return;
             }
 
-            EnsureStyles();
-
-            Color previousColor = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, .62f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = previousColor;
-
-            float width = Mathf.Min(PanelWidth, Screen.width - 24f);
-            float height = Mathf.Min(PanelHeight, Screen.height - 24f);
-            var panel = new Rect((Screen.width - width) * .5f, (Screen.height - height) * .5f, width, height);
-            PanelBackground.Draw(panel, new Color(.03f, .07f, .05f, .98f));
-
-            GUILayout.BeginArea(new Rect(panel.x + 20f, panel.y + 16f, panel.width - 40f, panel.height - 32f));
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("HYDROPONICS RACK", _headerStyle);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("CLOSE", GUILayout.Width(72f), GUILayout.Height(26f)))
+            Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
+            if (InteractionPanel.DrawHeader(panel, null, "HYDROPONICS RACK", StateText(), Styles))
             {
                 _pending = PendingAction.Close;
             }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(8f);
 
+            GUILayout.BeginArea(InteractionPanel.ContentArea(panel));
             GUILayout.Label(
                 $"{_crop.DisplayName.ToUpperInvariant()} · {_crop.SeedQuantity} seed + " +
-                $"{_crop.WaterMilliliters / 1000f:0.0} L → {_crop.HarvestQuantity} in {_crop.GrowthGameHours:0} game hours",
-                _primaryLabelStyle);
-            GUILayout.Label($"Seeds in backpack: {CarriedSeeds()}", _secondaryLabelStyle);
+                $"{_crop.WaterMilliliters / 1000f:0.0} L → {_crop.HarvestQuantity} in " +
+                $"{_crop.GrowthGameHours:0} game hours", Styles.Value);
+            GUILayout.Label($"Seeds in backpack: {CarriedSeeds()}", Styles.Detail);
             GUILayout.Space(10f);
 
+            GUILayout.Label("TRAYS", Styles.Section);
+            _trayScroll = GUILayout.BeginScrollView(_trayScroll);
             for (int i = 0; i < _rack.Slots.Count; i++)
             {
                 DrawSlotRow(_rack.Slots[i]);
             }
+            GUILayout.EndScrollView();
 
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("POD RESERVE", _primaryLabelStyle);
-            DrawProgress(
-                _waterSupply.CapacityMilliliters <= 0
-                    ? 0f
-                    : (float)_waterSupply.CurrentMilliliters / _waterSupply.CapacityMilliliters,
-                new Color(.23f, .55f, .78f));
-            GUILayout.Label($"{_waterSupply.CurrentMilliliters / 1000f:0.0} L available", _secondaryLabelStyle);
             GUILayout.Space(6f);
-            GUILayout.Label(_status, _secondaryLabelStyle);
+            GUILayout.Label("POD RESERVE", Styles.Section);
+            InteractionPanel.LayoutMeter("WATER", _waterSupply.CurrentMilliliters / 1000f,
+                _waterSupply.CapacityMilliliters / 1000f, "L", ReserveFill, Styles);
             GUILayout.EndArea();
 
+            InteractionPanel.DrawFooter(panel, _feedback,
+                "Every planting drains the same reserve the explorer drinks from.", Styles);
             ApplyPendingAction();
         }
 
@@ -196,21 +175,20 @@ namespace PlanetSurvival.UI.Farming
             double now = _clock.ElapsedDays;
             GUILayout.BeginHorizontal(GUILayout.Height(RowHeight));
             GUILayout.BeginVertical();
-            GUILayout.Label($"TRAY {slot.Index + 1}", _primaryLabelStyle);
+            GUILayout.Label($"TRAY {slot.Index + 1}", Styles.Value);
             if (!slot.IsPlanted)
             {
-                GUILayout.Label("Empty", _secondaryLabelStyle);
+                GUILayout.Label("Empty", Styles.Detail);
             }
             else if (slot.IsRipe(now))
             {
-                GUILayout.Label($"{slot.Crop.DisplayName} · ripe", _secondaryLabelStyle);
-                DrawProgress(1f, new Color(.45f, .85f, .5f));
+                GUILayout.Label($"{slot.Crop.DisplayName} · ripe", Styles.Detail);
+                InteractionPanel.LayoutProgress(1f, RipeFill);
             }
             else
             {
-                GUILayout.Label($"{slot.Crop.DisplayName} · {slot.RemainingGameHours(now):0.0} h left",
-                    _secondaryLabelStyle);
-                DrawProgress(slot.Progress(now), new Color(.5f, .74f, .38f));
+                GUILayout.Label($"{slot.Crop.DisplayName} · {slot.RemainingGameHours(now):0.0} h left", Styles.Detail);
+                InteractionPanel.LayoutProgress(slot.Progress(now), GrowingFill);
             }
             GUILayout.EndVertical();
 
@@ -267,7 +245,7 @@ namespace PlanetSurvival.UI.Farming
                 : _playerInventory.Inventory.GetQuantity(_crop.SeedItem.ItemId);
         }
 
-        private string DefaultStatus()
+        private string StateText()
         {
             int ripe = _rack.RipeCount(_clock.ElapsedDays);
             if (ripe > 0)
@@ -278,71 +256,6 @@ namespace PlanetSurvival.UI.Farming
             return _rack.FirstEmptySlot() != null
                 ? "Select a tray to plant."
                 : "Every tray is growing.";
-        }
-
-        private static void DrawProgress(float normalized, Color fillColor)
-        {
-            Rect meter = GUILayoutUtility.GetRect(10f, 14f, GUILayout.ExpandWidth(true));
-            GUI.DrawTexture(meter, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f,
-                new Color(.08f, .11f, .13f), Vector4.zero, new Vector4(4f, 4f, 4f, 4f));
-            float clamped = Mathf.Clamp01(normalized);
-            if (clamped > 0f)
-            {
-                var fill = new Rect(meter.x + 2f, meter.y + 2f, (meter.width - 4f) * clamped, meter.height - 4f);
-                GUI.DrawTexture(fill, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f,
-                    fillColor, Vector4.zero, new Vector4(3f, 3f, 3f, 3f));
-            }
-        }
-
-        private void CaptureAndLockPlayerControls(PlanarPlayerMotor playerMotor, PlayerInteractor playerInteractor)
-        {
-            ReleasePlayerControls();
-            _playerMotor = playerMotor;
-            _playerInteractor = playerInteractor;
-            _restoreMotor = _playerMotor != null && _playerMotor.enabled;
-            _restoreInteractor = _playerInteractor != null && _playerInteractor.enabled;
-            if (_playerMotor != null)
-            {
-                _playerMotor.enabled = false;
-            }
-
-            if (_playerInteractor != null)
-            {
-                _playerInteractor.enabled = false;
-            }
-        }
-
-        private void ReleasePlayerControls()
-        {
-            if (_playerMotor != null)
-            {
-                _playerMotor.enabled = _restoreMotor;
-            }
-
-            if (_playerInteractor != null)
-            {
-                _playerInteractor.enabled = _restoreInteractor;
-            }
-
-            _playerMotor = null;
-            _playerInteractor = null;
-            _restoreMotor = false;
-            _restoreInteractor = false;
-        }
-
-        private void EnsureStyles()
-        {
-            if (_headerStyle != null)
-            {
-                return;
-            }
-
-            _headerStyle = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold };
-            _headerStyle.normal.textColor = new Color(.78f, 1f, .84f);
-            _primaryLabelStyle = new GUIStyle(GUI.skin.label) { fontSize = 13, fontStyle = FontStyle.Bold };
-            _primaryLabelStyle.normal.textColor = Color.white;
-            _secondaryLabelStyle = new GUIStyle(GUI.skin.label) { fontSize = 12 };
-            _secondaryLabelStyle.normal.textColor = new Color(.74f, .84f, .78f);
         }
     }
 }

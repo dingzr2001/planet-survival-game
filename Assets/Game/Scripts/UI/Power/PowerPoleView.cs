@@ -1,93 +1,64 @@
 using System.Collections.Generic;
-using PlanetSurvival.Player.Interaction;
-using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Power.Domain;
 using PlanetSurvival.Power.Runtime;
-using PlanetSurvival.UI.Inventory;
-using PlanetSurvival.UI;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.Power
 {
     /// <summary>Right-click configuration panel for directional power-pole inputs and ordered outputs.</summary>
     [DisallowMultipleComponent]
-    public sealed class PowerPoleView : MonoBehaviour
+    public sealed class PowerPoleView : InteractionPanelView
     {
         private const float PanelWidth = 980f;
-        private const float PanelHeight = 590f;
+        private const float PanelHeight = 640f;
+        private const float ModuleHeight = 400f;
         private const float EndpointTileSize = 56f;
         private const float EndpointTileGap = 6f;
         private const int EndpointTileColumns = 4;
+
         private PowerPoleStation _station;
         private PowerPoleSystem _system;
-        private PlanarPlayerMotor _motor;
-        private PlayerInteractor _interactor;
-        private InventoryView _inventory;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private bool _restoreInventory;
         private bool _inputPickerOpen;
         private bool _outputPickerOpen;
         private Vector2 _inputScroll;
         private Vector2 _outputScroll;
         private Vector2 _inputPickerScroll;
         private Vector2 _outputPickerScroll;
-        private GUIStyle _title;
-        private GUIStyle _section;
-        private GUIStyle _detail;
         private GUIStyle _endpointNumber;
 
-        public bool IsOpen { get; private set; }
+        protected override InteractionPanelTheme Theme => InteractionPanelTheme.Logistics;
 
         public void Open(PowerPoleStation station, PowerPoleSystem system, GameObject player)
         {
-            if (station?.Pole == null || system == null || player == null) return;
+            if (station?.Pole == null || system == null || player == null)
+            {
+                Debug.LogError($"{nameof(PowerPoleView)} needs a pole, the power system and the player.", this);
+                return;
+            }
+
             Close();
             _station = station;
             _system = system;
-            _motor = player.GetComponent<PlanarPlayerMotor>();
-            _interactor = player.GetComponent<PlayerInteractor>();
-            _inventory = GetComponent<InventoryView>();
-            _restoreMotor = _motor != null && _motor.enabled;
-            _restoreInteractor = _interactor != null && _interactor.enabled;
-            _restoreInventory = _inventory != null && _inventory.enabled;
-            if (_motor != null) _motor.enabled = false;
-            if (_interactor != null) _interactor.enabled = false;
-            if (_inventory != null) _inventory.enabled = false;
-            IsOpen = true;
+            _inputPickerOpen = false;
+            _outputPickerOpen = false;
+            BeginSession(player);
         }
 
-        public void Close()
+        protected override void OnClosed()
         {
-            IsOpen = false;
-            if (_motor != null) _motor.enabled = _restoreMotor;
-            if (_interactor != null) _interactor.enabled = _restoreInteractor;
-            if (_inventory != null) _inventory.enabled = _restoreInventory;
             _station = null;
             _system = null;
-            _motor = null;
-            _interactor = null;
-            _inventory = null;
         }
-
-        private void Update()
-        {
-            if (IsOpen && Input.GetKeyDown(KeyCode.Escape)) Close();
-        }
-
-        private void OnDisable() { if (IsOpen) Close(); }
-        private void OnDestroy() { Close(); }
 
         private void OnGUI()
         {
             if (!IsOpen || _station?.Pole == null || _system == null) return;
             EnsureStyles();
-            Rect panel = new((Screen.width - PanelWidth) * .5f, (Screen.height - PanelHeight) * .5f,
-                PanelWidth, PanelHeight);
-            GUI.Box(panel, GUIContent.none);
-            GUILayout.BeginArea(new Rect(panel.x + 24f, panel.y + 20f, panel.width - 48f, panel.height - 40f));
-            DrawHeader();
-            GUILayout.Space(12f);
+            Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
+            bool close = InteractionPanel.DrawHeader(panel, _station.Site?.Definition.MenuIcon,
+                $"POWER POLE {_station.Pole.PoleNumber:00}", StateText(), Styles);
+
+            GUILayout.BeginArea(InteractionPanel.ContentArea(panel));
             GUILayout.BeginHorizontal();
             DrawInputs();
             GUILayout.Space(14f);
@@ -95,30 +66,34 @@ namespace PlanetSurvival.UI.Power
             GUILayout.Space(14f);
             DrawOutputs();
             GUILayout.EndHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("CLOSE  (ESC)", GUILayout.Height(34f))) Close();
             GUILayout.EndArea();
+
+            PowerPole pole = _station.Pole;
+            InteractionPanel.DrawFooter(panel,
+                $"INPUT {pole.LastInputPower:0.##} W  →  DELIVERED {pole.LastDeliveredPower:0.##} W  ·  " +
+                $"full-power outputs {pole.LastPoweredOutputs}/{pole.OutputEndpointIds.Count}",
+                "Outputs run top to bottom; each must receive its full requested power.", Styles);
+            if (close)
+            {
+                Close();
+            }
         }
 
-        private void DrawHeader()
+        private string StateText()
         {
             PowerPole pole = _station.Pole;
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("POWER POLE", _title);
-            GUILayout.FlexibleSpace();
-            GUILayout.Label($"INPUT  {pole.LastInputPower:0.##}    →    DELIVERED  {pole.LastDeliveredPower:0.##}", _detail);
-            GUILayout.EndHorizontal();
-            string state = pole.LastInputPower <= .0001f ? "NO INPUT" :
-                pole.OutputEndpointIds.Count > 0 && pole.LastPoweredOutputs == pole.OutputEndpointIds.Count
-                    ? "ALL OUTPUTS POWERED" : "OUTPUT LIMITED";
-            GUILayout.Label(state + "  ·  Outputs run top to bottom; each must receive its full requested power.", _detail);
+            if (pole.LastInputPower <= .0001f) return "No input: add a generator or another pole on the left.";
+            if (pole.OutputEndpointIds.Count == 0) return "Input available: add a consumer on the right.";
+            return pole.LastPoweredOutputs == pole.OutputEndpointIds.Count
+                ? "All outputs powered."
+                : $"Output limited: {pole.LastPoweredOutputs} of {pole.OutputEndpointIds.Count} outputs run.";
         }
 
         private void DrawInputs()
         {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(430f));
-            GUILayout.Label("INPUTS", _section);
-            GUILayout.Label("Power poles may be remote; generators must be adjacent.", _detail);
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.Label("INPUTS", Styles.Section);
+            GUILayout.Label("Power poles may be remote; generators must be adjacent.", Styles.Detail);
             DrawEndpointRows(_station.Pole.InputEndpointIds, true, _inputPickerOpen ? 120f : 260f);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(_inputPickerOpen ? "HIDE SOURCES" : "+ ADD INPUT", GUILayout.Height(34f)))
@@ -132,9 +107,9 @@ namespace PlanetSurvival.UI.Power
 
         private void DrawOutputs()
         {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(430f));
-            GUILayout.Label("OUTPUTS · PRIORITY ORDER", _section);
-            GUILayout.Label("Poles may be remote; power consumers must be adjacent.", _detail);
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.Label("OUTPUTS · PRIORITY ORDER", Styles.Section);
+            GUILayout.Label("Poles may be remote; power consumers must be adjacent.", Styles.Detail);
             DrawEndpointRows(_station.Pole.OutputEndpointIds, false, _outputPickerOpen ? 120f : 260f);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(_outputPickerOpen ? "HIDE TARGETS" : "+ ADD OUTPUT", GUILayout.Height(34f)))
@@ -150,7 +125,7 @@ namespace PlanetSurvival.UI.Power
         {
             if (endpoints.Count == 0)
             {
-                GUILayout.Label("No endpoint configured.", _detail);
+                GUILayout.Label("No endpoint configured.", Styles.Detail);
                 return;
             }
             Vector2 scroll = input ? _inputScroll : _outputScroll;
@@ -161,7 +136,7 @@ namespace PlanetSurvival.UI.Power
                 GUILayout.BeginHorizontal(GUI.skin.box);
                 Rect iconRect = GUILayoutUtility.GetRect(24f, 24f, GUILayout.Width(24f));
                 SpriteIcon.Draw(iconRect, _system.GetEndpointIcon(endpoint));
-                GUILayout.Label(input ? _system.GetEndpointLabel(endpoint) : $"{i + 1}. {_system.GetEndpointLabel(endpoint)}", _detail,
+                GUILayout.Label(input ? _system.GetEndpointLabel(endpoint) : $"{i + 1}. {_system.GetEndpointLabel(endpoint)}", Styles.Detail,
                     GUILayout.Width(155f));
                 if (!input && GUILayout.Button("▲", GUILayout.Width(32f))) _system.MoveOutputEarlier(_station, endpoint);
                 if (!input && GUILayout.Button("▼", GUILayout.Width(32f))) _system.MoveOutputLater(_station, endpoint);
@@ -180,7 +155,7 @@ namespace PlanetSurvival.UI.Power
             GUILayout.Space(6f);
             if (options.Count == 0)
             {
-                GUILayout.Label("No available endpoint.", _detail);
+                GUILayout.Label("No available endpoint.", Styles.Detail);
                 return;
             }
 
@@ -217,38 +192,32 @@ namespace PlanetSurvival.UI.Power
         {
             PowerPole pole = _station.Pole;
             bool active = pole.LastDeliveredPower > .0001f;
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(430f));
-            GUILayout.Label("TRANSMISSION", _section);
-            GUILayout.Label(active ? "ROUTE ONLINE" : "ROUTE STANDBY", _detail);
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.Label("TRANSMISSION", Styles.Section);
+            GUILayout.Label(active ? "ROUTE ONLINE" : "ROUTE STANDBY", Styles.Detail);
             Rect route = GUILayoutUtility.GetRect(260f, 180f, GUILayout.ExpandWidth(true));
             Color old = GUI.color;
             GUI.color = active ? new Color(1f, .55f, .1f) : new Color(.24f, .3f, .34f);
             GUI.DrawTexture(new Rect(route.x + 18f, route.center.y - 2f, route.width - 36f, 4f), Texture2D.whiteTexture);
             GUI.color = old;
             for (int i = 0; i < 3; i++)
-                GUI.Label(new Rect(route.x + 54f + i * 65f, route.center.y - 18f, 28f, 32f), "▶", _title);
+                GUI.Label(new Rect(route.x + 54f + i * 65f, route.center.y - 18f, 28f, 32f), "▶", Styles.Title);
             if (active)
             {
                 float progress = Mathf.Repeat(Time.realtimeSinceStartup * .7f, 1f);
                 float x = Mathf.Lerp(route.x + 18f, route.xMax - 42f, progress);
-                GUI.Label(new Rect(x, route.center.y - 23f, 32f, 42f), "ϟ", _title);
+                GUI.Label(new Rect(x, route.center.y - 23f, 32f, 42f), "ϟ", Styles.Title);
             }
-            GUILayout.Label($"Input {pole.LastInputPower:0.##}  ·  Delivered {pole.LastDeliveredPower:0.##}", _detail);
-            GUILayout.Label($"Full-power outputs: {pole.LastPoweredOutputs}/{pole.OutputEndpointIds.Count}", _detail);
+            GUILayout.Label($"Input {pole.LastInputPower:0.##}  ·  Delivered {pole.LastDeliveredPower:0.##}", Styles.Detail);
+            GUILayout.Label($"Full-power outputs: {pole.LastPoweredOutputs}/{pole.OutputEndpointIds.Count}", Styles.Detail);
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Electrical routes are directional.", _detail);
+            GUILayout.Label("Electrical routes are directional.", Styles.Detail);
             GUILayout.EndVertical();
         }
 
         private void EnsureStyles()
         {
-            if (_title != null) return;
-            _title = new GUIStyle(GUI.skin.label) { fontSize = 22, fontStyle = FontStyle.Bold };
-            _title.normal.textColor = new Color(1f, .72f, .25f);
-            _section = new GUIStyle(GUI.skin.label) { fontSize = 13, fontStyle = FontStyle.Bold };
-            _section.normal.textColor = new Color(.5f, .84f, 1f);
-            _detail = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true };
-            _detail.normal.textColor = new Color(.84f, .89f, .94f);
+            if (_endpointNumber != null) return;
             _endpointNumber = new GUIStyle(GUI.skin.label)
             {
                 fontSize = 11,

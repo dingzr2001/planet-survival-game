@@ -2,19 +2,16 @@ using System.Collections.Generic;
 using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Items.Definitions;
-using PlanetSurvival.Player.Interaction;
-using PlanetSurvival.Player.Movement;
 using PlanetSurvival.Power.Definitions;
 using PlanetSurvival.Power.Domain;
 using PlanetSurvival.Transport.Runtime;
-using PlanetSurvival.UI.Inventory;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.Power
 {
     /// <summary>Four item slots around a combustion display; each slot opens a source or destination picker.</summary>
     [DisallowMultipleComponent]
-    public sealed class CombustionGeneratorView : MonoBehaviour
+    public sealed class CombustionGeneratorView : InteractionPanelView
     {
         private enum Slot { None, Fuel, Oxygen, PrimaryOutput, SecondaryOutput }
 
@@ -24,35 +21,25 @@ namespace PlanetSurvival.UI.Power
         private const float PopupHeight = 276f;
         private const string FlameEffectResourcePath = "Power/CombustionFlameEffect";
         private const string GlowTextureResourcePath = "Power/CombustionGlowParticle";
-        private static readonly Color Gold = new(1f, .72f, .27f);
-        private static readonly Color Muted = new(.79f, .78f, .72f);
+        private static readonly Color Gold = InteractionPanelTheme.Thermal.Accent;
+        private static readonly Color Muted = InteractionPanelTheme.Thermal.Muted;
 
         private BuildSite _site;
         private ItemTransferSystem _transferSystem;
         private PlayerInventory _inventory;
-        private PlanarPlayerMotor _motor;
-        private PlayerInteractor _interactor;
-        private InventoryView _inventoryView;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private bool _restoreInventoryView;
         private Slot _openSlot;
         private string _expandedSourceId = string.Empty;
         private Vector2 _pickerScroll;
         private string _feedback = string.Empty;
         private bool _wasBurning;
         private List<ItemDefinition> _outputItems;
-        private GUIStyle _title;
-        private GUIStyle _label;
-        private GUIStyle _small;
-        private GUIStyle _chemical;
         private Texture2D _hydrogenTexture;
         private Texture2D _waterTexture;
         private Texture2D _glowTexture;
         private GameObject _flameEffectPrefab;
         private CombustionFlamePreview _flamePreview;
 
-        public bool IsOpen { get; private set; }
+        protected override InteractionPanelTheme Theme => InteractionPanelTheme.Thermal;
 
         private void Awake()
         {
@@ -81,14 +68,11 @@ namespace PlanetSurvival.UI.Power
             _feedback = "Select an item slot to load supplies or choose a nearby transfer post.";
             if (_flamePreview == null && _flameEffectPrefab != null)
                 _flamePreview = CombustionFlamePreview.Create(_flameEffectPrefab, transform);
-            CaptureAndLockControls(player);
-            IsOpen = true;
+            BeginSession(player);
         }
 
-        public void Close()
+        protected override void OnClosed()
         {
-            IsOpen = false;
-            ReleaseControls();
             _site = null;
             _transferSystem = null;
             _inventory = null;
@@ -98,17 +82,14 @@ namespace PlanetSurvival.UI.Power
             _flamePreview?.SetBurning(false);
         }
 
-        private void OnDisable() => Close();
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            Close();
+            base.OnDestroy();
             _flamePreview?.Dispose();
         }
 
-        private void Update()
+        protected override void OnOpenUpdate()
         {
-            if (!IsOpen) return;
-            if (Input.GetKeyDown(KeyCode.Escape)) { Close(); return; }
             bool burning = _site?.CombustionGenerator?.IsBurning ?? false;
             _wasBurning = burning;
             _flamePreview?.SetBurning(burning);
@@ -122,31 +103,20 @@ namespace PlanetSurvival.UI.Power
         private void OnGUI()
         {
             if (!IsOpen || _site?.CombustionGenerator == null || _inventory == null) return;
-            EnsureStyles();
-            Color old = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, .7f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = old;
-
-            float width = Mathf.Min(PanelWidth, Screen.width - 24f);
-            float height = Mathf.Min(PanelHeight, Screen.height - 24f);
-            Rect panel = new((Screen.width - width) * .5f, (Screen.height - height) * .5f, width, height);
-            PanelBackground.Draw(panel, new Color(.065f, .052f, .037f, .98f));
+            Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
+            float width = panel.width;
             CombustionGenerator generator = _site.CombustionGenerator;
-            if (GUI.Button(new Rect(panel.xMax - 88f, panel.y + 17f, 68f, 28f), "CLOSE")) { Close(); return; }
-            SpriteIcon.Draw(new Rect(panel.x + 19f, panel.y + 15f, 32f, 32f), _site.Definition.MenuIcon);
-            GUI.Label(new Rect(panel.x + 60f, panel.y + 16f, width - 160f, 28f),
-                "COMBUSTION GENERATOR", _title);
-            GUI.Label(new Rect(panel.x + 22f, panel.y + 51f, width - 44f, 38f), StateDescription(generator), _small);
+            bool close = InteractionPanel.DrawHeader(panel, _site.Definition.MenuIcon,
+                "COMBUSTION GENERATOR", StateDescription(generator), Styles);
 
-            float contentTop = panel.y + 98f;
-            float contentBottom = panel.yMax - 72f;
+            float contentTop = InteractionPanel.ContentTop(panel);
+            float contentBottom = InteractionPanel.ContentBottom(panel);
             float contentHeight = contentBottom - contentTop;
             float leftWidth = width * .275f;
             float middleWidth = width * .41f;
             float rightX = panel.x + leftWidth + middleWidth;
-            DrawDivider(panel.x + leftWidth, contentTop, contentBottom);
-            DrawDivider(rightX, contentTop, contentBottom);
+            InteractionPanel.Divider(panel.x + leftWidth, contentTop, contentBottom, Theme);
+            InteractionPanel.Divider(rightX, contentTop, contentBottom, Theme);
 
             List<ItemDefinition> outputs = _outputItems;
             ItemDefinition firstOutput = outputs.Count > 0 ? outputs[0] : null;
@@ -177,13 +147,12 @@ namespace PlanetSurvival.UI.Power
                 generator.Definition.TryGetRecipe(generator.FuelItem, out recipe);
             float power = generator.CurrentPowerWatts;
             GUI.Label(new Rect(rightX + 13f, contentTop + 13f, width - (rightX - panel.x) - 26f, 33f),
-                $"⚡ POWER {power:0.##} W", _title);
+                $"⚡ POWER {power:0.##} W", Styles.Title);
             if (hasRecipe)
                 GUI.Label(new Rect(rightX + 16f, contentTop + 48f, width - (rightX - panel.x) - 28f, 42f),
-                    $"{recipe.ConversionEfficiency:P0} efficiency", _small);
-            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 58f, width - 48f, 24f), _feedback, _small);
-            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 33f, width - 48f, 20f),
-                "Unused power is wasted; connect a power pole to use it.", _small);
+                    $"{recipe.ConversionEfficiency:P0} efficiency", Styles.Detail);
+            InteractionPanel.DrawFooter(panel, _feedback,
+                "Unused power is wasted; connect a power pole to use it.", Styles);
 
             if (_openSlot != Slot.None)
             {
@@ -196,6 +165,11 @@ namespace PlanetSurvival.UI.Power
                 };
                 DrawPicker(panel, anchor, _openSlot == Slot.PrimaryOutput ? firstOutput :
                     _openSlot == Slot.SecondaryOutput ? secondOutput : null);
+            }
+
+            if (close)
+            {
+                Close();
             }
         }
 
@@ -212,21 +186,21 @@ namespace PlanetSurvival.UI.Power
             GUI.backgroundColor = old;
             DrawItemIcon(new Rect(rect.x + 9f, rect.y + 9f, rect.width - 18f, rect.height - 18f), item, fallback);
             GUI.Label(new Rect(rect.x - 22f, rect.yMax + 5f, rect.width + 44f, 22f),
-                item?.DisplayName ?? fallback, _label);
+                item?.DisplayName ?? fallback, Styles.Caption);
             GUI.Label(new Rect(rect.x - 22f, rect.yMax + 26f, rect.width + 44f, 20f),
-                $"{quantity} / {capacity}  ▾", _small);
+                $"{quantity} / {capacity}  ▾", Styles.Detail);
         }
 
         private void DrawFire(Rect rect, CombustionGenerator generator)
         {
             bool burning = _wasBurning;
             generator.Definition.TryGetRecipe(generator.FuelItem, out CombustionFuelRecipe recipe);
-            FillRect(rect, new Color(.025f, .022f, .02f, 1f));
-            DrawFrame(rect, new Color(.42f, .28f, .14f, 1f));
-            FillRect(new Rect(rect.x + 1f, rect.y + 32f, rect.width - 2f, 1f),
+            InteractionPanel.Fill(rect, new Color(.025f, .022f, .02f, 1f));
+            InteractionPanel.Frame(rect, new Color(.42f, .28f, .14f, 1f));
+            InteractionPanel.Fill(new Rect(rect.x + 1f, rect.y + 32f, rect.width - 2f, 1f),
                 new Color(.33f, .24f, .14f, 1f));
             GUI.Label(new Rect(rect.x + 12f, rect.y + 5f, rect.width - 24f, 22f),
-                "REACTION CHAMBER", _small);
+                "REACTION CHAMBER", Styles.Detail);
 
             float size = Mathf.Min(168f, rect.height - 62f);
             Rect flameRect = new(rect.center.x - size * .5f, rect.y + 27f, size, size);
@@ -243,43 +217,27 @@ namespace PlanetSurvival.UI.Power
                 GUI.DrawTexture(flameRect, _flamePreview.Texture, ScaleMode.ScaleToFit, true);
 
             float grateY = rect.yMax - 48f;
-            FillRect(new Rect(rect.x + 35f, grateY, rect.width - 70f, 3f),
+            InteractionPanel.Fill(new Rect(rect.x + 35f, grateY, rect.width - 70f, 3f),
                 burning ? new Color(.75f, .34f, .1f, 1f) : new Color(.28f, .21f, .16f, 1f));
             for (int i = 0; i < 7; i++)
             {
                 float x = rect.x + 44f + i * (rect.width - 88f) / 6f;
-                FillRect(new Rect(x, grateY - 3f, 2f, 9f), new Color(.37f, .27f, .18f, 1f));
+                InteractionPanel.Fill(new Rect(x, grateY - 3f, 2f, 9f), new Color(.37f, .27f, .18f, 1f));
             }
 
             Rect indicator = new(rect.x + 13f, rect.yMax - 32f, 7f, 7f);
-            FillRect(indicator, burning ? Gold : Muted);
+            InteractionPanel.Fill(indicator, burning ? Gold : Muted);
             GUI.Label(new Rect(rect.x + 27f, rect.yMax - 37f, rect.width - 39f, 20f),
                 burning ? $"BURNING  ·  {generator.BurnProgressSeconds:0.#} / {recipe.BurnSeconds:0.#} s"
-                    : "STANDBY", _small);
+                    : "STANDBY", Styles.Detail);
             Rect progressTrack = new(rect.x + 12f, rect.yMax - 12f, rect.width - 24f, 3f);
-            FillRect(progressTrack, new Color(.23f, .18f, .13f, 1f));
+            InteractionPanel.Fill(progressTrack, new Color(.23f, .18f, .13f, 1f));
             if (burning && recipe.BurnSeconds > 0f)
             {
                 float progress = Mathf.Clamp01(generator.BurnProgressSeconds / recipe.BurnSeconds);
-                FillRect(new Rect(progressTrack.x, progressTrack.y, progressTrack.width * progress,
+                InteractionPanel.Fill(new Rect(progressTrack.x, progressTrack.y, progressTrack.width * progress,
                     progressTrack.height), Gold);
             }
-        }
-
-        private static void DrawFrame(Rect rect, Color color)
-        {
-            FillRect(new Rect(rect.x, rect.y, rect.width, 1f), color);
-            FillRect(new Rect(rect.x, rect.yMax - 1f, rect.width, 1f), color);
-            FillRect(new Rect(rect.x, rect.y, 1f, rect.height), color);
-            FillRect(new Rect(rect.xMax - 1f, rect.y, 1f, rect.height), color);
-        }
-
-        private static void FillRect(Rect rect, Color color)
-        {
-            Color old = GUI.color;
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = old;
         }
 
         private void DrawPicker(Rect panel, Rect anchor, ItemDefinition outputItem)
@@ -291,7 +249,7 @@ namespace PlanetSurvival.UI.Power
             PanelBackground.Draw(popup, new Color(.11f, .095f, .075f, .99f));
             GUILayout.BeginArea(new Rect(popup.x + 10f, popup.y + 9f, popup.width - 20f, popup.height - 18f));
             GUILayout.BeginHorizontal();
-            GUILayout.Label(isInput ? "SELECT INPUT" : $"SEND {outputItem?.DisplayName.ToUpperInvariant()}", _label);
+            GUILayout.Label(isInput ? "SELECT INPUT" : $"SEND {outputItem?.DisplayName.ToUpperInvariant()}", Styles.Caption);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("×", GUILayout.Width(24f))) _openSlot = Slot.None;
             GUILayout.EndHorizontal();
@@ -348,12 +306,12 @@ namespace PlanetSurvival.UI.Power
             }
             DrawSourceIcon(new Rect(row.x + 5f, row.y + 5f, 25f, 25f), icon, backpack ? "B" : "P");
             GUI.Label(new Rect(row.x + 37f, row.y + 4f, multiple ? row.width - 42f : 104f, 27f),
-                label + suffix, _small);
+                label + suffix, Styles.Detail);
             if (choices.Count == 1)
             {
                 DrawItemIcon(new Rect(row.x + 143f, row.y + 5f, 24f, 24f), choices[0], "?");
                 GUI.Label(new Rect(row.x + 171f, row.y + 4f, row.width - 174f, 27f),
-                    choices[0].DisplayName, _small);
+                    choices[0].DisplayName, Styles.Detail);
             }
             if (multiple && _expandedSourceId == id)
             {
@@ -364,7 +322,7 @@ namespace PlanetSurvival.UI.Power
                     DrawItemIcon(new Rect(child.x + 31f, child.y + 3f, 23f, 23f), item, "?");
                     GUI.Label(new Rect(child.x + 62f, child.y + 4f, child.width - 66f, 24f),
                         backpack ? $"{item.DisplayName} ×{_inventory.Inventory.GetQuantity(item.ItemId)}" :
-                            item.DisplayName, _small);
+                            item.DisplayName, Styles.Detail);
                 }
             }
         }
@@ -422,7 +380,7 @@ namespace PlanetSurvival.UI.Power
             }
             DrawSourceIcon(new Rect(backpackRow.x + 5f, backpackRow.y + 5f, 25f, 25f), null, "B");
             GUI.Label(new Rect(backpackRow.x + 37f, backpackRow.y + 4f, backpackRow.width - 42f, 27f),
-                $"BACKPACK  #01  · take {generator.Byproducts.GetQuantity(item.ItemId)}", _small);
+                $"BACKPACK  #01  · take {generator.Byproducts.GetQuantity(item.ItemId)}", Styles.Detail);
             if (GUILayout.Button(string.IsNullOrEmpty(chosen) ? "✓ NO AUTOMATIC OUTPUT" :
                     "NO AUTOMATIC OUTPUT", GUILayout.Height(31f)))
             {
@@ -448,7 +406,7 @@ namespace PlanetSurvival.UI.Power
                     station.Site.Definition.MenuIcon, "P");
                 GUI.Label(new Rect(row.x + 37f, row.y + 4f, row.width - 42f, 27f),
                     $"{(station.EndpointId == chosen ? "✓ " : string.Empty)}POST  #{station.Post.PostNumber:00}",
-                    _small);
+                    Styles.Detail);
             }
         }
 
@@ -482,13 +440,13 @@ namespace PlanetSurvival.UI.Power
                 GUI.DrawTexture(rect, _hydrogenTexture, ScaleMode.ScaleToFit, true);
             else if (item != null && item.ItemId.Contains("water") && _waterTexture != null)
                 GUI.DrawTexture(rect, _waterTexture, ScaleMode.ScaleToFit, true);
-            else GUI.Label(rect, ChemicalName(item, fallback), _chemical);
+            else GUI.Label(rect, ChemicalName(item, fallback), Styles.Glyph);
         }
 
         private void DrawSourceIcon(Rect rect, Sprite icon, string fallback)
         {
             if (icon != null) SpriteIcon.Draw(rect, icon);
-            else GUI.Label(rect, fallback, _chemical);
+            else GUI.Label(rect, fallback, Styles.Glyph);
         }
 
         private static string ChemicalName(ItemDefinition item, string fallback)
@@ -503,14 +461,6 @@ namespace PlanetSurvival.UI.Power
             return item.DisplayName.Length <= 8 ? item.DisplayName : fallback;
         }
 
-        private static void DrawDivider(float x, float top, float bottom)
-        {
-            Color old = GUI.color;
-            GUI.color = new Color(1f, .75f, .36f, .35f);
-            GUI.DrawTexture(new Rect(x, top, 1f, bottom - top), Texture2D.whiteTexture);
-            GUI.color = old;
-        }
-
         private static string StateDescription(CombustionGenerator generator)
         {
             if (generator.FuelItem == null) return "Stopped: choose fuel and oxygen on the left.";
@@ -523,46 +473,5 @@ namespace PlanetSurvival.UI.Power
             return $"Burning {generator.FuelItem.DisplayName} · {recipe.FuelItems} fuel + {recipe.OxygenItems} O₂ per cycle.";
         }
 
-        private void CaptureAndLockControls(GameObject player)
-        {
-            _motor = player.GetComponent<PlanarPlayerMotor>();
-            _interactor = player.GetComponent<PlayerInteractor>();
-            _inventoryView = GetComponent<InventoryView>();
-            _restoreMotor = _motor != null && _motor.enabled;
-            _restoreInteractor = _interactor != null && _interactor.enabled;
-            _restoreInventoryView = _inventoryView != null && _inventoryView.enabled;
-            if (_motor != null) _motor.enabled = false;
-            if (_interactor != null) _interactor.enabled = false;
-            if (_inventoryView != null) _inventoryView.enabled = false;
-        }
-
-        private void ReleaseControls()
-        {
-            if (_motor != null) _motor.enabled = _restoreMotor;
-            if (_interactor != null) _interactor.enabled = _restoreInteractor;
-            if (_inventoryView != null) _inventoryView.enabled = _restoreInventoryView;
-            _motor = null;
-            _interactor = null;
-            _inventoryView = null;
-            _restoreMotor = false;
-            _restoreInteractor = false;
-            _restoreInventoryView = false;
-        }
-
-        private void EnsureStyles()
-        {
-            if (_title != null) return;
-            _title = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold };
-            _title.normal.textColor = Gold;
-            _label = new GUIStyle(GUI.skin.label) { fontSize = 13, fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter };
-            _label.normal.textColor = Color.white;
-            _small = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true,
-                alignment = TextAnchor.MiddleLeft };
-            _small.normal.textColor = Muted;
-            _chemical = new GUIStyle(GUI.skin.label) { fontSize = 19, fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter };
-            _chemical.normal.textColor = Gold;
-        }
     }
 }

@@ -19,6 +19,7 @@ namespace PlanetSurvival.Cooking.Runtime
 
         private CookingProcess _process;
         private CookingView _view;
+        private Sprite _panelIcon;
 
         public CookingStationDefinition Definition => _definition;
         public CookingProcess Process => _process;
@@ -48,11 +49,13 @@ namespace PlanetSurvival.Cooking.Runtime
             }
         }
 
-        public void Bind(CookingStationBinding binding)
+        /// <param name="panelIcon">Artwork the cooking panel titles itself with; optional.</param>
+        public void Bind(CookingStationBinding binding, Sprite panelIcon = null)
         {
             _definition = binding.Definition;
             _process = binding.Process;
             _view = binding.View;
+            _panelIcon = panelIcon;
             if (_definition != null && !_definition.IsValid(out string error))
             {
                 Debug.LogError($"Cooking station '{name}' has an invalid definition: {error}", this);
@@ -77,7 +80,8 @@ namespace PlanetSurvival.Cooking.Runtime
                 _process,
                 context.Inventory,
                 context.Actor.GetComponent<PlanarPlayerMotor>(),
-                context.Actor.GetComponent<PlayerInteractor>());
+                context.Actor.GetComponent<PlayerInteractor>(),
+                _panelIcon);
         }
 
         private void Update()

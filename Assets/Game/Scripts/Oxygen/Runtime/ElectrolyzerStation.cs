@@ -14,6 +14,7 @@ namespace PlanetSurvival.Oxygen.Runtime
     {
         private Electrolyzer _electrolyzer;
         private UI.Oxygen.ElectrolyzerView _view;
+        private Sprite _panelIcon;
 
         /// <summary>Pipe and power builders connect to this machine through its input/output interfaces.</summary>
         public Electrolyzer Electrolyzer => _electrolyzer;
@@ -22,10 +23,12 @@ namespace PlanetSurvival.Oxygen.Runtime
             ? "use electrolyzer"
             : $"use electrolyzer ({_electrolyzer.StoredOxygenLiters:0} L O₂ · {StateLabel(_electrolyzer.State)})";
 
-        public void Bind(ElectrolyzerBinding binding)
+        /// <param name="panelIcon">Artwork the operations panel titles itself with; optional.</param>
+        public void Bind(ElectrolyzerBinding binding, Sprite panelIcon = null)
         {
             _electrolyzer = binding.Electrolyzer;
             _view = binding.View;
+            _panelIcon = panelIcon;
             if (!binding.IsComplete)
             {
                 Debug.LogError($"Electrolyzer '{name}' was bound with incomplete configuration.", this);
@@ -52,7 +55,8 @@ namespace PlanetSurvival.Oxygen.Runtime
                 context.Actor.GetComponent<PlayerWaterBottle>(),
                 context.Actor.GetComponent<PlayerSpaceSuit>(),
                 context.Actor.GetComponent<PlanarPlayerMotor>(),
-                context.Actor.GetComponent<PlayerInteractor>());
+                context.Actor.GetComponent<PlayerInteractor>(),
+                _panelIcon);
         }
 
         private void Update()

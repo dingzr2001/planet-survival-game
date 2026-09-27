@@ -43,15 +43,13 @@ namespace PlanetSurvival.UI.Crafting
         private PlayerInventory _playerInventory;
         private CraftingCatalog _craftingCatalog;
         private CraftingService _craftingService;
+        private readonly PanelControlLock _controls = new();
+        private ModalPanelRegistry _modalPanels;
         private PlanarPlayerMotor _playerMotor;
         private PlayerInteractor _playerInteractor;
-        private InventoryView _inventoryView;
         private DrawerTab _activeTab;
         private BuildableDefinition _pendingBuildable;
         private CraftingRecipe _pendingRecipe;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private bool _restoreInventoryView;
         private bool _controlsLocked;
         private float _openProgress;
         private Vector2 _craftingScroll;
@@ -469,13 +467,9 @@ namespace PlanetSurvival.UI.Crafting
                 return;
             }
 
-            _inventoryView = GetComponent<InventoryView>();
-            _restoreMotor = _playerMotor != null && _playerMotor.enabled;
-            _restoreInteractor = _playerInteractor != null && _playerInteractor.enabled;
-            _restoreInventoryView = _inventoryView != null && _inventoryView.enabled;
-            if (_playerMotor != null) _playerMotor.enabled = false;
-            if (_playerInteractor != null) _playerInteractor.enabled = false;
-            if (_inventoryView != null) _inventoryView.enabled = false;
+            _controls.Capture(_playerMotor, _playerInteractor, GetComponent<InventoryView>());
+            _modalPanels ??= GetComponent<ModalPanelRegistry>();
+            _modalPanels?.SetOpen(this, true);
             _controlsLocked = true;
         }
 
@@ -486,13 +480,8 @@ namespace PlanetSurvival.UI.Crafting
                 return;
             }
 
-            if (_playerMotor != null) _playerMotor.enabled = _restoreMotor;
-            if (_playerInteractor != null) _playerInteractor.enabled = _restoreInteractor;
-            if (_inventoryView != null) _inventoryView.enabled = _restoreInventoryView;
-            _inventoryView = null;
-            _restoreMotor = false;
-            _restoreInteractor = false;
-            _restoreInventoryView = false;
+            _controls.Release();
+            _modalPanels?.SetOpen(this, false);
             _controlsLocked = false;
         }
 

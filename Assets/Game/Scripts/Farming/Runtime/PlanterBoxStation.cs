@@ -16,6 +16,7 @@ namespace PlanetSurvival.Farming.Runtime
         private UI.Farming.PlanterBoxView _view;
         private GameClock _clock;
         private WorldSpriteView _worldSprite;
+        private Sprite _panelIcon;
 
         /// <summary>Pipe builders connect to this system through its input/output interfaces.</summary>
         public PlanterBox PlanterBox => _planterBox;
@@ -24,11 +25,13 @@ namespace PlanetSurvival.Farming.Runtime
             ? "use planter box"
             : $"use planter box · {StateLabel(_planterBox.State)}";
 
-        public void Bind(PlanterBoxBinding binding, Transform body = null)
+        /// <param name="panelIcon">Artwork the operations panel titles itself with; optional.</param>
+        public void Bind(PlanterBoxBinding binding, Transform body = null, Sprite panelIcon = null)
         {
             _planterBox = binding.PlanterBox;
             _view = binding.View;
             _clock = binding.Clock;
+            _panelIcon = panelIcon;
             _worldSprite = body != null ? body.GetComponentInChildren<WorldSpriteView>(true) : null;
             if (!binding.IsComplete)
             {
@@ -54,7 +57,8 @@ namespace PlanetSurvival.Farming.Runtime
                 context.Actor.GetComponent<PlayerWaterBottle>(),
                 context.Actor.GetComponent<PlayerSpaceSuit>(),
                 context.Actor.GetComponent<PlanarPlayerMotor>(),
-                context.Actor.GetComponent<PlayerInteractor>());
+                context.Actor.GetComponent<PlayerInteractor>(),
+                _panelIcon);
         }
 
         private void OnDestroy()

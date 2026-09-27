@@ -7,7 +7,6 @@ using PlanetSurvival.Crafting.Domain;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Movement;
-using PlanetSurvival.UI.Inventory;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.Cooking
@@ -20,15 +19,17 @@ namespace PlanetSurvival.UI.Cooking
     /// out, so the player learns what to gather next.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CookingView : MonoBehaviour
+    public sealed class CookingView : InteractionPanelView
     {
         private const float PanelWidth = 1020f;
-        private const float PanelHeight = 600f;
+        private const float PanelHeight = 640f;
         private const float MenuWidth = 640f;
         private const float RowHeight = 78f;
         private const float IconSize = 56f;
         private const float IngredientIconSize = 26f;
         private const float BatchColumnWidth = 172f;
+
+        private static readonly Color ProgressFill = new(.95f, .58f, .22f);
 
         private readonly List<CraftingRecipe> _available = new();
         private readonly List<CraftingRecipe> _unavailable = new();
@@ -41,24 +42,15 @@ namespace PlanetSurvival.UI.Cooking
         private CookingStationDefinition _definition;
         private CookingProcess _process;
         private PlayerInventory _playerInventory;
-        private PlanarPlayerMotor _playerMotor;
-        private PlayerInteractor _playerInteractor;
-        private InventoryView _inventoryView;
-        private bool _restoreMotor;
-        private bool _restoreInteractor;
-        private bool _restoreInventoryView;
+        private Sprite _panelIcon;
         private string _feedback = string.Empty;
         private Vector2 _menuScroll;
-        private GUIStyle _headerStyle;
-        private GUIStyle _sectionStyle;
-        private GUIStyle _dishStyle;
-        private GUIStyle _detailStyle;
         private GUIStyle _mutedStyle;
         private GUIStyle _ingredientStyle;
         private GUIStyle _ingredientShortStyle;
         private GUIStyle _batchStyle;
 
-        public bool IsOpen { get; private set; }
+        protected override InteractionPanelTheme Theme => InteractionPanelTheme.Thermal;
 
         /// <summary>
         /// A button press changes how many controls the panel draws, which IMGUI cannot tolerate in the
@@ -75,7 +67,7 @@ namespace PlanetSurvival.UI.Cooking
 
         public void Open(CookingStationDefinition definition, CookingProcess process,
             PlayerInventory playerInventory, PlanarPlayerMotor playerMotor = null,
-            PlayerInteractor playerInteractor = null)
+            PlayerInteractor playerInteractor = null, Sprite panelIcon = null)
         {
             if (definition == null || process == null || playerInventory == null)
             {
@@ -87,23 +79,22 @@ namespace PlanetSurvival.UI.Cooking
             _definition = definition;
             _process = process;
             _playerInventory = playerInventory;
+            _panelIcon = panelIcon;
             _feedback = DefaultFeedback();
             _menuScroll = Vector2.zero;
             _pending = PendingAction.None;
             _pendingRecipe = null;
             _pendingBatch = 1;
             _batchSizes.Clear();
-            CaptureAndLockControls(playerMotor, playerInteractor);
-            IsOpen = true;
+            BeginSession(playerMotor, playerInteractor);
         }
 
-        public void Close()
+        protected override void OnClosed()
         {
-            IsOpen = false;
-            ReleaseControls();
             _definition = null;
             _process = null;
             _playerInventory = null;
+            _panelIcon = null;
         }
 
         /// <summary>Starts one batch. Exposed so tests and other input paths do not go through IMGUI.</summary>
@@ -170,19 +161,6 @@ namespace PlanetSurvival.UI.Cooking
             return result;
         }
 
-        private void OnDisable()
-        {
-            if (IsOpen)
-            {
-                Close();
-            }
-        }
-
-        private void OnDestroy()
-        {
-            ReleaseControls();
-        }
-
         private void OnGUI()
         {
             if (!IsOpen || _definition == null || _process == null || _playerInventory == null)
@@ -191,39 +169,37 @@ namespace PlanetSurvival.UI.Cooking
             }
 
             EnsureStyles();
-            Color previousColor = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, .68f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = previousColor;
-
-            float width = Mathf.Min(PanelWidth, Screen.width - 24f);
-            float height = Mathf.Min(PanelHeight, Screen.height - 24f);
-            var panel = new Rect((Screen.width - width) * .5f, (Screen.height - height) * .5f, width, height);
-            PanelBackground.Draw(panel, new Color(.045f, .04f, .035f, .98f));
-
-            GUILayout.BeginArea(new Rect(panel.x + 18f, panel.y + 14f, panel.width - 36f, panel.height - 28f));
-            GUILayout.BeginHorizontal();
-            GUILayout.Label($"{_definition.DisplayName.ToUpperInvariant()}  ·  COOKING", _headerStyle);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("CLOSE", GUILayout.Width(76f), GUILayout.Height(26f)))
+            Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
+            if (InteractionPanel.DrawHeader(panel, _panelIcon,
+                    $"{_definition.DisplayName.ToUpperInvariant()}  ·  COOKING", StateText(), Styles))
             {
                 _pending = PendingAction.Close;
             }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(10f);
 
-            float contentHeight = Mathf.Max(180f, panel.height - 130f);
+            Rect content = InteractionPanel.ContentArea(panel);
+            GUILayout.BeginArea(content);
             GUILayout.BeginHorizontal();
-            DrawMenu(Mathf.Min(MenuWidth, panel.width - 340f), contentHeight);
+            DrawMenu(Mathf.Min(MenuWidth, content.width - 320f), content.height);
             GUILayout.Space(12f);
-            DrawStationPanel(contentHeight);
+            DrawStationPanel(content.height);
             GUILayout.EndHorizontal();
-            GUILayout.Space(6f);
-            // Hovering an ingredient icon names it here, since the rows themselves show art only.
-            GUILayout.Label(string.IsNullOrEmpty(GUI.tooltip) ? _feedback : GUI.tooltip, _detailStyle);
             GUILayout.EndArea();
+
+            // Hovering an ingredient icon names it in the footer, since the rows themselves show art only.
+            InteractionPanel.DrawFooter(panel, string.IsNullOrEmpty(GUI.tooltip) ? _feedback : GUI.tooltip,
+                "Batch size is limited by what the backpack can still supply.", Styles);
             ApplyPendingAction();
         }
+
+        private string StateText() => _process.State switch
+        {
+            CookingState.Cooking => _process.ActiveRecipe == null
+                ? "Cooking."
+                : $"Cooking {_process.ActiveRecipe.DisplayName} ×{_process.BatchCount} · " +
+                  $"{_process.RemainingSeconds:0.0}s remaining.",
+            CookingState.Ready => "A finished dish is waiting in the station.",
+            _ => "Idle: pick a dish the backpack can supply."
+        };
 
         private void ApplyPendingAction()
         {
@@ -257,7 +233,7 @@ namespace PlanetSurvival.UI.Cooking
             GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(width), GUILayout.Height(height));
             _menuScroll = GUILayout.BeginScrollView(_menuScroll);
 
-            GUILayout.Label($"READY TO COOK ({_available.Count})", _sectionStyle);
+            GUILayout.Label($"READY TO COOK ({_available.Count})", Styles.Section);
             if (_available.Count == 0)
             {
                 GUILayout.Label("Your backpack holds no ingredients this station can use.", _mutedStyle);
@@ -271,7 +247,7 @@ namespace PlanetSurvival.UI.Cooking
             if (_unavailable.Count > 0)
             {
                 GUILayout.Space(8f);
-                GUILayout.Label("MISSING INGREDIENTS", _sectionStyle);
+                GUILayout.Label("MISSING INGREDIENTS", Styles.Section);
                 for (int i = 0; i < _unavailable.Count; i++)
                 {
                     DrawRecipeRow(_unavailable[i], false);
@@ -321,7 +297,7 @@ namespace PlanetSurvival.UI.Cooking
 
             GUILayout.Space(8f);
             GUILayout.BeginVertical();
-            GUILayout.Label(OutputSummary(recipe, batch), available ? _dishStyle : _mutedStyle);
+            GUILayout.Label(OutputSummary(recipe, batch), available ? Styles.Value : _mutedStyle);
             DrawIngredients(recipe, batch);
             GUILayout.EndVertical();
 
@@ -361,7 +337,7 @@ namespace PlanetSurvival.UI.Cooking
             }
 
             GUILayout.FlexibleSpace();
-            GUILayout.Label($"{recipe.DurationSeconds * batch:0}s", _detailStyle,
+            GUILayout.Label($"{recipe.DurationSeconds * batch:0}s", Styles.Detail,
                 GUILayout.Height(IngredientIconSize));
             GUILayout.EndHorizontal();
         }
@@ -429,7 +405,7 @@ namespace PlanetSurvival.UI.Cooking
         private void DrawStationPanel(float height)
         {
             GUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(height));
-            GUILayout.Label("STATION", _sectionStyle);
+            GUILayout.Label("STATION", Styles.Section);
             GUILayout.Space(6f);
 
             CraftingRecipe recipe = _process.ActiveRecipe;
@@ -443,12 +419,12 @@ namespace PlanetSurvival.UI.Cooking
             Rect icon = GUILayoutUtility.GetRect(96f, 96f, GUILayout.Height(96f), GUILayout.ExpandWidth(true));
             SpriteIcon.Draw(icon, PrimaryOutputIcon(recipe));
             GUILayout.Space(8f);
-            GUILayout.Label(OutputSummary(recipe, _process.BatchCount), _dishStyle);
+            GUILayout.Label(OutputSummary(recipe, _process.BatchCount), Styles.Value);
 
             if (_process.State == CookingState.Cooking)
             {
-                DrawProgressMeter(_process.Progress);
-                GUILayout.Label($"{_process.RemainingSeconds:0.0}s remaining", _detailStyle);
+                InteractionPanel.LayoutProgress(_process.Progress, ProgressFill, 18f);
+                GUILayout.Label($"{_process.RemainingSeconds:0.0}s remaining", Styles.Detail);
                 GUILayout.Space(8f);
                 if (GUILayout.Button("CANCEL", GUILayout.Height(32f)))
                 {
@@ -457,8 +433,8 @@ namespace PlanetSurvival.UI.Cooking
             }
             else
             {
-                DrawProgressMeter(1f);
-                GUILayout.Label("Ready to serve.", _detailStyle);
+                InteractionPanel.LayoutProgress(1f, ProgressFill, 18f);
+                GUILayout.Label("Ready to serve.", Styles.Detail);
                 GUILayout.Space(8f);
                 if (GUILayout.Button("COLLECT", GUILayout.Height(36f)))
                 {
@@ -468,22 +444,6 @@ namespace PlanetSurvival.UI.Cooking
 
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
-        }
-
-        private static void DrawProgressMeter(float normalized)
-        {
-            Rect meter = GUILayoutUtility.GetRect(10f, 18f, GUILayout.ExpandWidth(true));
-            GUI.DrawTexture(meter, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f,
-                new Color(.1f, .09f, .08f), Vector4.zero, new Vector4(4f, 4f, 4f, 4f));
-            float filled = Mathf.Clamp01(normalized);
-            if (filled <= 0f)
-            {
-                return;
-            }
-
-            var fill = new Rect(meter.x + 2f, meter.y + 2f, (meter.width - 4f) * filled, meter.height - 4f);
-            GUI.DrawTexture(fill, Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0f,
-                new Color(.95f, .58f, .22f), Vector4.zero, new Vector4(3f, 3f, 3f, 3f));
         }
 
         private static Sprite PrimaryOutputIcon(CraftingRecipe recipe)
@@ -526,47 +486,13 @@ namespace PlanetSurvival.UI.Cooking
             };
         }
 
-        private void CaptureAndLockControls(PlanarPlayerMotor playerMotor, PlayerInteractor playerInteractor)
-        {
-            _playerMotor = playerMotor;
-            _playerInteractor = playerInteractor;
-            _inventoryView = GetComponent<InventoryView>();
-            _restoreMotor = _playerMotor != null && _playerMotor.enabled;
-            _restoreInteractor = _playerInteractor != null && _playerInteractor.enabled;
-            _restoreInventoryView = _inventoryView != null && _inventoryView.enabled;
-            if (_playerMotor != null) _playerMotor.enabled = false;
-            if (_playerInteractor != null) _playerInteractor.enabled = false;
-            if (_inventoryView != null) _inventoryView.enabled = false;
-        }
-
-        private void ReleaseControls()
-        {
-            if (_playerMotor != null) _playerMotor.enabled = _restoreMotor;
-            if (_playerInteractor != null) _playerInteractor.enabled = _restoreInteractor;
-            if (_inventoryView != null) _inventoryView.enabled = _restoreInventoryView;
-            _playerMotor = null;
-            _playerInteractor = null;
-            _inventoryView = null;
-            _restoreMotor = false;
-            _restoreInteractor = false;
-            _restoreInventoryView = false;
-        }
-
         private void EnsureStyles()
         {
-            if (_headerStyle != null)
+            if (_mutedStyle != null)
             {
                 return;
             }
 
-            _headerStyle = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold };
-            _headerStyle.normal.textColor = new Color(1f, .87f, .72f);
-            _sectionStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, fontStyle = FontStyle.Bold };
-            _sectionStyle.normal.textColor = new Color(.94f, .74f, .45f);
-            _dishStyle = new GUIStyle(GUI.skin.label) { fontSize = 14, fontStyle = FontStyle.Bold };
-            _dishStyle.normal.textColor = Color.white;
-            _detailStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true };
-            _detailStyle.normal.textColor = new Color(.78f, .78f, .74f);
             _mutedStyle = new GUIStyle(GUI.skin.label) { fontSize = 13, wordWrap = true };
             _mutedStyle.normal.textColor = new Color(.6f, .6f, .58f);
             _ingredientStyle = new GUIStyle(GUI.skin.label)

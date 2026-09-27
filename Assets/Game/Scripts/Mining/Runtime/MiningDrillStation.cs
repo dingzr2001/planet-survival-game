@@ -12,6 +12,7 @@ namespace PlanetSurvival.Mining.Runtime
     {
         private MiningDrill _drill;
         private PlanetSurvival.UI.Mining.MiningDrillView _view;
+        private Sprite _panelIcon;
 
         public MiningDrill Drill => _drill;
 
@@ -35,10 +36,12 @@ namespace PlanetSurvival.Mining.Runtime
             }
         }
 
-        public void Bind(MiningDrillBinding binding)
+        /// <param name="panelIcon">Artwork the operations panel titles itself with; optional.</param>
+        public void Bind(MiningDrillBinding binding, Sprite panelIcon = null)
         {
             _drill = binding.Drill;
             _view = binding.View;
+            _panelIcon = panelIcon;
         }
 
         public bool CanInteract(in InteractionContext context)
@@ -58,7 +61,8 @@ namespace PlanetSurvival.Mining.Runtime
                 _drill,
                 context.Inventory,
                 context.Actor.GetComponent<PlanarPlayerMotor>(),
-                context.Actor.GetComponent<PlayerInteractor>());
+                context.Actor.GetComponent<PlayerInteractor>(),
+                _panelIcon);
         }
 
         private void Update()

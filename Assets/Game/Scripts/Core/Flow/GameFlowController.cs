@@ -3,6 +3,7 @@ using PlanetSurvival.Core.SceneManagement;
 using PlanetSurvival.Core.Time;
 using PlanetSurvival.Inventory.Domain;
 using PlanetSurvival.Items.Definitions;
+using PlanetSurvival.UI;
 using UnityEngine;
 
 namespace PlanetSurvival.Core.Flow
@@ -42,6 +43,7 @@ namespace PlanetSurvival.Core.Flow
         private bool _giveTestStartingItems = true;
         private GameFlow _flow;
         private GameSessionState _session;
+        private ModalPanelRegistry _modalPanels;
 
         public event System.Action<GameFlowState> StateChanged
         {
@@ -227,9 +229,24 @@ namespace PlanetSurvival.Core.Flow
             }
         }
 
+        /// <summary>
+        /// Registers the HUD that reports whether a full-screen panel is open. Escape closes such a panel, and
+        /// pausing on the same press would put the pause menu up behind it, so the pause toggle stands down
+        /// while one is open. Scenes without panels never call this and pause on every press.
+        /// </summary>
+        public void BindModalPanels(ModalPanelRegistry modalPanels)
+        {
+            _modalPanels = modalPanels;
+        }
+
         private void Update()
         {
             if (!Input.GetKeyDown(KeyCode.Escape))
+            {
+                return;
+            }
+
+            if (_modalPanels != null && _modalPanels.BlocksGlobalEscape)
             {
                 return;
             }
