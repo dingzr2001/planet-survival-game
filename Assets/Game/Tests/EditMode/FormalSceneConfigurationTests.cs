@@ -878,6 +878,30 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
+        public void IceDrill_ProducesIceOnlyFromWaterIceAndAppearsInTheBuildCatalog()
+        {
+            ItemDefinition iceChunk = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
+                "Assets/Game/Configuration/IceChunk.asset");
+            MiningDrillDefinition drill = AssetDatabase.LoadAssetAtPath<MiningDrillDefinition>(
+                "Assets/Game/Configuration/IceDrill.asset");
+            BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/IceDrillBuildable.asset");
+            BuildingCatalog catalog = AssetDatabase.LoadAssetAtPath<BuildingCatalog>(
+                "Assets/Game/Configuration/DefaultBuildingCatalog.asset");
+
+            Assert.That(drill, Is.Not.Null);
+            Assert.That(buildable, Is.Not.Null);
+            Assert.That(buildable.WorldSprite, Is.Not.Null);
+            Assert.That(drill.RequiredTerrainId, Is.EqualTo("ice"));
+            Assert.That(drill.RequiredTerrainDisplayName, Is.EqualTo("water ice"));
+            Assert.That(drill.OutputItem, Is.SameAs(iceChunk));
+            Assert.That(drill.ElectricityPerOre, Is.GreaterThan(0f));
+            Assert.That(drill.PetroleumPerOre, Is.GreaterThan(0f));
+            Assert.That(buildable.MiningDrill, Is.SameAs(drill));
+            Assert.That(catalog.Buildables, Does.Contain(buildable));
+        }
+
+        [Test]
         public void PlanterBox_IsOneCellAndUsesSoilPlasticAndAnyMetalPlate()
         {
             BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(

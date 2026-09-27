@@ -55,6 +55,7 @@ namespace PlanetSurvival.Editor
         private const string GravelPath = ConfigurationDirectory + "/Gravel.asset";
         private const string PetroleumPath = ConfigurationDirectory + "/PetroleumCanister.asset";
         private const string MiningDrillPath = ConfigurationDirectory + "/IronMiningDrill.asset";
+        private const string IceDrillPath = ConfigurationDirectory + "/IceDrill.asset";
         private const string GravelExtractorPath = ConfigurationDirectory + "/GravelExtractor.asset";
         private const string OxygenCandlePath = ConfigurationDirectory + "/OxygenCandle.asset";
         private const string OxygenCandleRecipePath = ConfigurationDirectory + "/OxygenCandleRecipe.asset";
@@ -155,6 +156,16 @@ namespace PlanetSurvival.Editor
         private const float PetroleumPerCanister = 5f;
         private const float IronMiningDrillPetroleumPerOre = 1f;
         private const float IronMiningDrillPetroleumCapacity = 20f;
+        // Ice is the entry point to the surface water-processing chain. The definition remains a normal
+        // terrain-bound drill, so dry ice and methane-hydrate drills can be added as data-only siblings.
+        private const float IceDrillBuildSeconds = 15f;
+        private const float IceDrillProductionPerSecond = .35f;
+        private const int IceDrillCapacity = 20;
+        private const float IceDrillOutputPerSecond = 2f;
+        private const float IceDrillElectricityPerChunk = 4f;
+        private const float IceDrillElectricityCapacity = 24f;
+        private const float IceDrillPetroleumPerChunk = .8f;
+        private const float IceDrillPetroleumCapacity = 20f;
         private const float GravelExtractorBuildSeconds = 12f;
         private const float GravelExtractorProductionPerSecond = .1f;
         private const int GravelExtractorCapacity = 30;
@@ -384,6 +395,32 @@ namespace PlanetSurvival.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("The iron-terrain mining drill, petroleum fuel, and starting supply are ready.");
+        }
+
+        /// <summary>
+        /// Authors the first water-processing input. The shared mining-drill contract binds its output to
+        /// the <c>ice</c> terrain ID, which keeps later non-water ice variants isolated in their own assets.
+        /// </summary>
+        [MenuItem("Planet Survival/Setup Ice Drill")]
+        public static void CreateOrUpdateIceDrill()
+        {
+            AssetDatabase.Refresh();
+            ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
+            ItemDefinition iceChunk = GetOrCreateIceChunk();
+            ItemDefinition petroleum = GetOrCreatePetroleumCanister();
+            CookingStationDefinition oven = AssetDatabase.LoadAssetAtPath<CookingStationDefinition>(OvenStationPath);
+            ItemDefinition oxygenCandle = AssetDatabase.LoadAssetAtPath<ItemDefinition>(OxygenCandlePath);
+            if (oven == null || oxygenCandle == null)
+            {
+                Debug.LogError("Ice drill setup requires the existing formal project configuration.");
+                return;
+            }
+
+            GetOrCreateIceDrill(aluminumAlloy, iceChunk, petroleum);
+            GetOrCreateBuildingCatalog(oven, oxygenCandle);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("The ice-only drilling source for water processing is ready.");
         }
 
         [MenuItem("Planet Survival/Setup Gravel Gathering")]
@@ -1286,6 +1323,8 @@ namespace PlanetSurvival.Editor
             placedOxygenCandle.ConfigureOxygenCandle(true);
             EditorUtility.SetDirty(placedOxygenCandle);
             BuildableDefinition ironMiningDrill = GetOrCreateIronMiningDrill(aluminumAlloy: GetOrCreateAluminumAlloy());
+            BuildableDefinition iceDrill = GetOrCreateIceDrill(
+                aluminumAlloy, GetOrCreateIceChunk(), GetOrCreatePetroleumCanister());
             BuildableDefinition gravelExtractor = GetOrCreateGravelExtractor(GetOrCreateAluminumAlloy());
             PlanterBoxDefinition planterDefinition = AssetDatabase.LoadAssetAtPath<PlanterBoxDefinition>(PlanterBoxDefinitionPath);
             if (planterDefinition == null)
@@ -1360,7 +1399,7 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.CreateAsset(catalog, BuildingCatalogPath);
             }
 
-            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, gravelExtractor,
+            catalog.Configure(wall, barricade, fieldOven, placedOxygenCandle, ironMiningDrill, iceDrill, gravelExtractor,
                 planterBox, electrolyzer, transferPost, solarPanel, powerPole);
             EditorUtility.SetDirty(catalog);
             return catalog;
@@ -1454,6 +1493,38 @@ namespace PlanetSurvival.Editor
                 "Extracts iron ore only when placed on iron terrain. Accepts electricity or petroleum and pauses when its ore bin is full.",
                 new CraftingItemAmount(aluminumAlloy, 8));
             buildable.ConfigurePresentation(sprite, .98f, new Color(.82f, .58f, .18f));
+            buildable.ConfigureIcon(sprite);
+            buildable.ConfigureMiningDrill(definition);
+            EditorUtility.SetDirty(buildable);
+            return buildable;
+        }
+
+        private static BuildableDefinition GetOrCreateIceDrill(ItemDefinition aluminumAlloy, ItemDefinition iceChunk,
+            ItemDefinition petroleum)
+        {
+            MiningDrillDefinition definition = AssetDatabase.LoadAssetAtPath<MiningDrillDefinition>(IceDrillPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<MiningDrillDefinition>();
+                definition.name = "Ice Drill";
+                AssetDatabase.CreateAsset(definition, IceDrillPath);
+            }
+
+            definition.Configure(
+                "ice", "water ice", iceChunk,
+                IceDrillProductionPerSecond, IceDrillCapacity, IceDrillOutputPerSecond,
+                IceDrillElectricityPerChunk, IceDrillElectricityCapacity,
+                petroleum, PetroleumPerCanister, IceDrillPetroleumPerChunk, IceDrillPetroleumCapacity);
+            EditorUtility.SetDirty(definition);
+
+            Sprite sprite = WorldArtSetup.ImportBuildingSprite("IceDrill");
+            BuildableDefinition buildable = GetOrCreateBuildable(
+                "IceDrillBuildable", "ice_drill", "Ice Drill", Vector2Int.one,
+                IceDrillBuildSeconds, .98f, new Color(.65f, .78f, .88f),
+                "Extracts water-ice chunks only from water-ice terrain. Accepts electricity or petroleum " +
+                "and pauses when its ice bin is full.",
+                new CraftingItemAmount(aluminumAlloy, 7));
+            buildable.ConfigurePresentation(sprite, .98f, new Color(.65f, .78f, .88f));
             buildable.ConfigureIcon(sprite);
             buildable.ConfigureMiningDrill(definition);
             EditorUtility.SetDirty(buildable);
