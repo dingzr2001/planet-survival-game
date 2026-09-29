@@ -17,6 +17,7 @@ namespace PlanetSurvival.UI.Power
 
         private const float PanelWidth = 960f;
         private const float PanelHeight = 590f;
+        private const float HeadlineInset = 52f;
         private const float PopupWidth = 286f;
         private const float PopupHeight = 276f;
         private const string FlameEffectResourcePath = "Power/CombustionFlameEffect";
@@ -104,30 +105,27 @@ namespace PlanetSurvival.UI.Power
         {
             if (!IsOpen || _site?.CombustionGenerator == null || _inventory == null) return;
             Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
-            float width = panel.width;
             CombustionGenerator generator = _site.CombustionGenerator;
             bool close = InteractionPanel.DrawHeader(panel, _site.Definition.MenuIcon,
                 "COMBUSTION GENERATOR", StateDescription(generator), Styles);
 
-            float contentTop = InteractionPanel.ContentTop(panel);
-            float contentBottom = InteractionPanel.ContentBottom(panel);
-            float contentHeight = contentBottom - contentTop;
-            float leftWidth = width * .275f;
-            float middleWidth = width * .41f;
-            float rightX = panel.x + leftWidth + middleWidth;
-            InteractionPanel.Divider(panel.x + leftWidth, contentTop, contentBottom, Theme);
-            InteractionPanel.Divider(rightX, contentTop, contentBottom, Theme);
+            InteractionPanel.MachineColumns columns = InteractionPanel.DrawColumns(panel, Theme);
+            float contentTop = columns.Inputs.y;
+            float contentHeight = columns.Inputs.height;
 
             List<ItemDefinition> outputs = _outputItems;
             ItemDefinition firstOutput = outputs.Count > 0 ? outputs[0] : null;
             ItemDefinition secondOutput = outputs.Count > 1 ? outputs[1] : null;
-            float slotSize = Mathf.Clamp(Mathf.Min(width * .12f, contentHeight * .26f), 50f, 110f);
-            float leftX = panel.x + (leftWidth - slotSize) * .5f;
-            float rightSlotX = rightX + (width - leftWidth - middleWidth - slotSize) * .5f;
-            Rect fuelRect = new(leftX, contentTop + 35f, slotSize, slotSize);
-            Rect oxygenRect = new(leftX, contentBottom - slotSize - 46f, slotSize, slotSize);
-            Rect primaryRect = new(rightSlotX, contentTop + contentHeight * .2f, slotSize, slotSize);
-            Rect secondaryRect = new(rightSlotX, contentBottom - slotSize - 46f, slotSize, slotSize);
+            int outputSlots = secondOutput != null ? 2 : 1;
+            float inputSlotSize = InteractionPanel.SlotSizeForStack(panel, columns.Inputs, 2, false);
+            float outputSlotSize = InteractionPanel.SlotSizeForStack(
+                panel, columns.Outputs, outputSlots, false, HeadlineInset);
+            Rect fuelRect = InteractionPanel.StackedSlot(columns.Inputs, 0, 2, inputSlotSize, false);
+            Rect oxygenRect = InteractionPanel.StackedSlot(columns.Inputs, 1, 2, inputSlotSize, false);
+            Rect primaryRect = InteractionPanel.StackedSlot(
+                columns.Outputs, 0, outputSlots, outputSlotSize, false, HeadlineInset);
+            Rect secondaryRect = InteractionPanel.StackedSlot(
+                columns.Outputs, 1, outputSlots, outputSlotSize, false, HeadlineInset);
 
             DrawItemSlot(fuelRect, generator.FuelItem ?? FindFuel(generator.FuelInputItemId) ??
                 FirstFuel(generator), "FUEL", generator.FuelQuantity, generator.Definition.FuelCapacity, Slot.Fuel);
@@ -140,16 +138,16 @@ namespace PlanetSurvival.UI.Power
                 DrawItemSlot(secondaryRect, secondOutput, "OUTPUT", generator.Byproducts.GetQuantity(
                     secondOutput.ItemId), generator.Definition.ByproductCapacity, Slot.SecondaryOutput);
 
-            DrawFire(new Rect(panel.x + leftWidth + 22f, contentTop + 52f, middleWidth - 44f,
-                Mathf.Min(232f, contentHeight * .55f)), generator);
+            // The chamber fills its column, so the middle of the panel is never an empty gap.
+            DrawFire(new Rect(columns.Process.x + 22f, contentTop + 52f, columns.Process.width - 44f,
+                Mathf.Max(160f, contentHeight - 74f)), generator);
             CombustionFuelRecipe recipe = default;
             bool hasRecipe = generator.FuelItem != null &&
                 generator.Definition.TryGetRecipe(generator.FuelItem, out recipe);
-            float power = generator.CurrentPowerWatts;
-            GUI.Label(new Rect(rightX + 13f, contentTop + 13f, width - (rightX - panel.x) - 26f, 33f),
-                $"⚡ POWER {power:0.##} W", Styles.Title);
+            InteractionPanel.Headline(columns.Outputs,
+                $"⚡ POWER {generator.CurrentPowerWatts:0.##} W", Styles);
             if (hasRecipe)
-                GUI.Label(new Rect(rightX + 16f, contentTop + 48f, width - (rightX - panel.x) - 28f, 42f),
+                GUI.Label(new Rect(columns.Outputs.x + 16f, contentTop + 48f, columns.Outputs.width - 28f, 42f),
                     $"{recipe.ConversionEfficiency:P0} efficiency", Styles.Detail);
             InteractionPanel.DrawFooter(panel, _feedback,
                 "Unused power is wasted; connect a power pole to use it.", Styles);
@@ -175,32 +173,22 @@ namespace PlanetSurvival.UI.Power
 
         private void DrawItemSlot(Rect rect, ItemDefinition item, string fallback, int quantity, int capacity, Slot slot)
         {
-            Color old = GUI.backgroundColor;
-            GUI.backgroundColor = _openSlot == slot ? Gold : new Color(.34f, .29f, .23f);
-            if (GUI.Button(rect, GUIContent.none))
+            if (InteractionPanel.SlotButton(rect, _openSlot == slot, Theme))
             {
                 _openSlot = _openSlot == slot ? Slot.None : slot;
                 _expandedSourceId = string.Empty;
                 _pickerScroll = Vector2.zero;
             }
-            GUI.backgroundColor = old;
+
             DrawItemIcon(new Rect(rect.x + 9f, rect.y + 9f, rect.width - 18f, rect.height - 18f), item, fallback);
-            GUI.Label(new Rect(rect.x - 22f, rect.yMax + 5f, rect.width + 44f, 22f),
-                item?.DisplayName ?? fallback, Styles.Caption);
-            GUI.Label(new Rect(rect.x - 22f, rect.yMax + 26f, rect.width + 44f, 20f),
-                $"{quantity} / {capacity}  ▾", Styles.Detail);
+            InteractionPanel.SlotCaption(rect, item?.DisplayName ?? fallback, $"{quantity} / {capacity}  ▾", Styles);
         }
 
         private void DrawFire(Rect rect, CombustionGenerator generator)
         {
             bool burning = _wasBurning;
             generator.Definition.TryGetRecipe(generator.FuelItem, out CombustionFuelRecipe recipe);
-            InteractionPanel.Fill(rect, new Color(.025f, .022f, .02f, 1f));
-            InteractionPanel.Frame(rect, new Color(.42f, .28f, .14f, 1f));
-            InteractionPanel.Fill(new Rect(rect.x + 1f, rect.y + 32f, rect.width - 2f, 1f),
-                new Color(.33f, .24f, .14f, 1f));
-            GUI.Label(new Rect(rect.x + 12f, rect.y + 5f, rect.width - 24f, 22f),
-                "REACTION CHAMBER", Styles.Detail);
+            InteractionPanel.Chamber(rect, "REACTION CHAMBER", Styles, Theme);
 
             float size = Mathf.Min(168f, rect.height - 62f);
             Rect flameRect = new(rect.center.x - size * .5f, rect.y + 27f, size, size);
@@ -225,19 +213,11 @@ namespace PlanetSurvival.UI.Power
                 InteractionPanel.Fill(new Rect(x, grateY - 3f, 2f, 9f), new Color(.37f, .27f, .18f, 1f));
             }
 
-            Rect indicator = new(rect.x + 13f, rect.yMax - 32f, 7f, 7f);
-            InteractionPanel.Fill(indicator, burning ? Gold : Muted);
-            GUI.Label(new Rect(rect.x + 27f, rect.yMax - 37f, rect.width - 39f, 20f),
+            InteractionPanel.ChamberStatus(rect, burning,
                 burning ? $"BURNING  ·  {generator.BurnProgressSeconds:0.#} / {recipe.BurnSeconds:0.#} s"
-                    : "STANDBY", Styles.Detail);
-            Rect progressTrack = new(rect.x + 12f, rect.yMax - 12f, rect.width - 24f, 3f);
-            InteractionPanel.Fill(progressTrack, new Color(.23f, .18f, .13f, 1f));
-            if (burning && recipe.BurnSeconds > 0f)
-            {
-                float progress = Mathf.Clamp01(generator.BurnProgressSeconds / recipe.BurnSeconds);
-                InteractionPanel.Fill(new Rect(progressTrack.x, progressTrack.y, progressTrack.width * progress,
-                    progressTrack.height), Gold);
-            }
+                    : "STANDBY",
+                burning && recipe.BurnSeconds > 0f ? generator.BurnProgressSeconds / recipe.BurnSeconds : 0f,
+                Styles, Theme);
         }
 
         private void DrawPicker(Rect panel, Rect anchor, ItemDefinition outputItem)
@@ -246,7 +226,7 @@ namespace PlanetSurvival.UI.Power
             float x = isInput ? anchor.xMax + 12f : anchor.x - PopupWidth - 12f;
             float y = Mathf.Clamp(anchor.y - 12f, panel.y + 76f, panel.yMax - PopupHeight - 12f);
             Rect popup = new(x, y, PopupWidth, PopupHeight);
-            PanelBackground.Draw(popup, new Color(.11f, .095f, .075f, .99f));
+            PanelBackground.Draw(popup, Theme.Popup);
             GUILayout.BeginArea(new Rect(popup.x + 10f, popup.y + 9f, popup.width - 20f, popup.height - 18f));
             GUILayout.BeginHorizontal();
             GUILayout.Label(isInput ? "SELECT INPUT" : $"SEND {outputItem?.DisplayName.ToUpperInvariant()}", Styles.Caption);

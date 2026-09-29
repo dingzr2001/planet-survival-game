@@ -36,6 +36,13 @@ namespace PlanetSurvival.UI
             };
             Detail.normal.textColor = theme.Muted;
 
+            Note = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleCenter
+            };
+            Note.normal.textColor = theme.Muted;
+
             Glyph = new GUIStyle(GUI.skin.label)
             {
                 fontSize = 19,
@@ -59,6 +66,9 @@ namespace PlanetSurvival.UI
 
         /// <summary>Wrapping explanatory text, hints and action results.</summary>
         public GUIStyle Detail { get; }
+
+        /// <summary>The fill level under a slot, centred on the artwork above it.</summary>
+        public GUIStyle Note { get; }
 
         /// <summary>Stand-in mark where artwork is missing, such as a chemical formula.</summary>
         public GUIStyle Glyph { get; }

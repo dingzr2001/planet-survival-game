@@ -1056,6 +1056,33 @@ namespace PlanetSurvival.Tests
             Assert.That(importer.maxTextureSize, Is.EqualTo(256));
         }
 
+        /// <summary>
+        /// The landing propellant has no production chain, so the only thing that can put it in a run is
+        /// the starting cargo list. This pins the item the bootstrap scene hands to that list.
+        /// </summary>
+        [Test]
+        public void Monomethylhydrazine_IsStockedAsStartingCargoWithAnIcon()
+        {
+            const string itemPath = "Assets/Game/Configuration/Monomethylhydrazine.asset";
+            const string iconPath = "Assets/Game/Art/UI/Icons/Items/Monomethylhydrazine.png";
+            ItemDefinition propellant = AssetDatabase.LoadAssetAtPath<ItemDefinition>(itemPath);
+            var importer = AssetImporter.GetAtPath(iconPath) as TextureImporter;
+
+            Assert.That(propellant, Is.Not.Null);
+            Assert.That(propellant.IsValid(out string error), Is.True, error);
+            Assert.That(propellant.ItemId, Is.EqualTo("monomethylhydrazine"));
+            Assert.That(propellant.Icon, Is.Not.Null, $"'{iconPath}' must be bound to the item.");
+            Assert.That(importer, Is.Not.Null);
+            Assert.That(importer.textureType, Is.EqualTo(TextureImporterType.Sprite));
+            Assert.That(importer.alphaIsTransparency, Is.True);
+            Assert.That(importer.mipmapEnabled, Is.False);
+            Assert.That(importer.maxTextureSize, Is.EqualTo(256));
+
+            int load = GameSessionState.InitialMonomethylhydrazineCount * propellant.CapacityPerItem;
+            Assert.That(load, Is.LessThan(GameSessionState.CargoStorageCapacity),
+                "The starting propellant alone must not fill the cargo hold.");
+        }
+
         [Test]
         public void HydrogenGasIcon_IsImportedForTransparentUiRendering()
         {

@@ -32,6 +32,8 @@ namespace PlanetSurvival.Core.Flow
         [SerializeField] private ItemDefinition _plasticSheetDefinition;
         [SerializeField] private ItemDefinition _carbonDioxideCanisterDefinition;
         [SerializeField] private ItemDefinition _carbonDioxideFilterCartridgeDefinition;
+        [SerializeField, Tooltip("Residual hypergolic propellant placed in cargo storage at the start of an expedition.")]
+        private ItemDefinition _monomethylhydrazineDefinition;
         [SerializeField, Tooltip("Debug-only prototype component used to exercise transfer-post construction before its production chain exists.")]
         private ItemDefinition _entanglementRelayCoreDefinition;
         [SerializeField] private ItemDefinition _generatorOxygenDefinition;
@@ -73,7 +75,8 @@ namespace PlanetSurvival.Core.Flow
             ItemDefinition plasticSheetDefinition = null, ItemDefinition carbonDioxideCanisterDefinition = null,
             ItemDefinition entanglementRelayCoreDefinition = null,
             ItemDefinition carbonDioxideFilterCartridgeDefinition = null,
-            ItemDefinition potatoSeedDefinition = null)
+            ItemDefinition potatoSeedDefinition = null,
+            ItemDefinition monomethylhydrazineDefinition = null)
         {
             _energyBarDefinition = energyBarDefinition;
             _potatoDefinition = potatoDefinition;
@@ -88,6 +91,7 @@ namespace PlanetSurvival.Core.Flow
             _entanglementRelayCoreDefinition = entanglementRelayCoreDefinition;
             _carbonDioxideFilterCartridgeDefinition = carbonDioxideFilterCartridgeDefinition;
             _potatoSeedDefinition = potatoSeedDefinition;
+            _monomethylhydrazineDefinition = monomethylhydrazineDefinition;
         }
 
         public void ConfigureGeneratorSupplies(ItemDefinition oxygen, ItemDefinition methane, ItemDefinition hydrogen)
@@ -186,6 +190,9 @@ namespace PlanetSurvival.Core.Flow
             if (_carbonDioxideFilterCartridgeDefinition != null)
                 startingSupplies.Add(new InventoryItemAmount(_carbonDioxideFilterCartridgeDefinition,
                     Quantity(GameSessionState.InitialCarbonDioxideFilterCartridgeCount)));
+            if (_monomethylhydrazineDefinition != null)
+                startingSupplies.Add(new InventoryItemAmount(_monomethylhydrazineDefinition,
+                    Quantity(GameSessionState.InitialMonomethylhydrazineCount)));
             if (IsTestMode && _entanglementRelayCoreDefinition != null)
                 startingSupplies.Add(new InventoryItemAmount(
                     _entanglementRelayCoreDefinition, GameSessionState.TestItemQuantity));

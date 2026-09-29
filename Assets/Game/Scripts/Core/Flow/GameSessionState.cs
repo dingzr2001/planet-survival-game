@@ -55,6 +55,12 @@ namespace PlanetSurvival.Core.Flow
         public const int InitialCarbonDioxideCanisterCount = 4;
         public const int InitialCarbonDioxideFilterCartridgeCount = 2;
 
+        /// <summary>
+        /// Hypergolic propellant left in the descent stage's tanks. It is the only supply nothing on the
+        /// planet can replace, so the pod lands with a small, fixed reserve.
+        /// </summary>
+        public const int InitialMonomethylhydrazineCount = 4;
+
         /// <summary>Growing trays the habitat rack offers. Two feed one explorer; the third is headroom.</summary>
         public const int HydroponicsSlotCount = 3;
 

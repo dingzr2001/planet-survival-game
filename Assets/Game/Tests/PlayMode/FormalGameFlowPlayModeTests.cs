@@ -142,7 +142,7 @@ namespace PlanetSurvival.Tests
             {
                 "energy_bar", "potato", "potato_seed", "aluminum_alloy", "chlorate_salt", "pickaxe",
                 "petroleum_canister", "shovel", "soil", "plastic_sheet", "carbon_dioxide_canister",
-                "entanglement_relay_core"
+                "entanglement_relay_core", "monomethylhydrazine"
             };
             foreach (string itemId in testItemIds)
             {

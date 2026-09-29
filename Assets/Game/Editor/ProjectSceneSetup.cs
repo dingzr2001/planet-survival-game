@@ -70,6 +70,7 @@ namespace PlanetSurvival.Editor
         private const string CarbonDioxideCanisterPath = ConfigurationDirectory + "/CarbonDioxideCanister.asset";
         private const string CarbonDioxideFilterCartridgePath =
             ConfigurationDirectory + "/CarbonDioxideFilterCartridge.asset";
+        private const string MonomethylhydrazinePath = ConfigurationDirectory + "/Monomethylhydrazine.asset";
         private const string PlanterBoxDefinitionPath = ConfigurationDirectory + "/PlanterBox.asset";
         private const string ElectrolyzerDefinitionPath = ConfigurationDirectory + "/Electrolyzer.asset";
         private const string OxygenItemPath = ConfigurationDirectory + "/Oxygen.asset";
@@ -236,6 +237,7 @@ namespace PlanetSurvival.Editor
             ItemDefinition carbonDioxide = GetOrCreateItem("CarbonDioxideCanister", "carbon_dioxide_canister", "CO₂ Canister", 2, 10);
             ItemDefinition carbonDioxideFilter = GetOrCreateItem(
                 "CarbonDioxideFilterCartridge", "carbon_dioxide_filter_cartridge", "CO₂ Filter Cartridge", 1, 10);
+            ItemDefinition monomethylhydrazine = GetOrCreateMonomethylhydrazine();
             plasticSheet.ConfigureDescription("Rigid transparent plastic board for lightweight surface construction.");
             carbonDioxideFilter.ConfigureDescription("Replaceable cartridge for future carbon-dioxide filtration equipment.");
             EditorUtility.SetDirty(plasticSheet);
@@ -260,7 +262,8 @@ namespace PlanetSurvival.Editor
             UiArtSetup.AssignItemIcons();
             UiArtSetup.ConfigureResourceTextures();
             CreateBootstrapScene(energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
-                soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter, potatoSeed);
+                soil, plasticSheet, carbonDioxide, entanglementRelayCore, carbonDioxideFilter, potatoSeed,
+                monomethylhydrazine);
             CombustionGeneratorSetup.ConfigureBootstrapScene();
             CreateMainMenuScene();
             CreateLandingPodScene(LandingPodDeck.Habitat, environmentSettings, inventorySkin, worldVisuals,
@@ -874,6 +877,21 @@ namespace PlanetSurvival.Editor
 
             item.Configure("gravel", "Gravel", 1, 30, false, true);
             item.ConfigureDescription("Loose mineral aggregate dug from ordinary regolith by hand or machine.");
+            EditorUtility.SetDirty(item);
+            return item;
+        }
+
+        /// <summary>
+        /// The descent stage's leftover hypergolic propellant. Nothing on the planet produces it, so it
+        /// only ever arrives as landing cargo.
+        /// </summary>
+        private static ItemDefinition GetOrCreateMonomethylhydrazine()
+        {
+            ItemDefinition item = GetOrCreateItem(
+                "Monomethylhydrazine", "monomethylhydrazine", "Monomethylhydrazine", 5, 10);
+            item.ConfigureDescription(
+                "Residual MMH drained from the descent stage. A toxic hypergolic fuel with no use yet; " +
+                "nothing on the surface can make more of it.");
             EditorUtility.SetDirty(item);
             return item;
         }
@@ -1679,14 +1697,14 @@ namespace PlanetSurvival.Editor
             ItemDefinition petroleum, ItemDefinition shovel, ItemDefinition soil,
             ItemDefinition plasticSheet, ItemDefinition carbonDioxideCanister,
             ItemDefinition entanglementRelayCore, ItemDefinition carbonDioxideFilterCartridge,
-            ItemDefinition potatoSeed)
+            ItemDefinition potatoSeed, ItemDefinition monomethylhydrazine)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var root = new GameObject("Application");
             root.AddComponent<GameFlowController>().ConfigureStartingSupplies(
                 energyBar, potato, aluminumAlloy, chlorateSalt, pickaxe, petroleum, shovel,
                 soil, plasticSheet, carbonDioxideCanister, entanglementRelayCore,
-                carbonDioxideFilterCartridge, potatoSeed);
+                carbonDioxideFilterCartridge, potatoSeed, monomethylhydrazine);
             root.AddComponent<BootstrapSceneEntry>();
             EditorSceneManager.SaveScene(scene, BootstrapScenePath);
         }
@@ -1711,7 +1729,8 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideCanisterPath),
                 GetOrCreateEntanglementRelayCore(),
                 AssetDatabase.LoadAssetAtPath<ItemDefinition>(CarbonDioxideFilterCartridgePath),
-                AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoSeedPath));
+                AssetDatabase.LoadAssetAtPath<ItemDefinition>(PotatoSeedPath),
+                GetOrCreateMonomethylhydrazine());
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }

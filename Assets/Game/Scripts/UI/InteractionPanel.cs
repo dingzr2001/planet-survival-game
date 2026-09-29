@@ -18,7 +18,8 @@ namespace PlanetSurvival.UI
         public const float HeaderHeight = 98f;
 
         /// <summary>Height reserved at the bottom for the feedback and hint lines.</summary>
-        public const float FooterHeight = 72f;
+        /// <remarks>The hint wraps to two lines on a narrow panel, so the band has to fit both.</remarks>
+        public const float FooterHeight = 82f;
 
         /// <summary>Horizontal padding between the plate edge and body content.</summary>
         public const float ContentPadding = 22f;
@@ -80,9 +81,9 @@ namespace PlanetSurvival.UI
         public static void DrawFooter(Rect panel, string feedback, string hint, InteractionPanelStyles styles)
         {
             float width = panel.width - 48f;
-            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 58f, width, 24f), feedback ?? string.Empty,
+            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 76f, width, 22f), feedback ?? string.Empty,
                 styles.Detail);
-            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 33f, width, 20f),
+            GUI.Label(new Rect(panel.x + 24f, panel.yMax - 50f, width, 38f),
                 string.IsNullOrEmpty(hint) ? EscapeHint : $"{hint}  ·  {EscapeHint}", styles.Detail);
         }
 
@@ -98,6 +99,212 @@ namespace PlanetSurvival.UI
             ContentTop(panel),
             panel.width - ContentPadding * 2f,
             ContentBottom(panel) - ContentTop(panel));
+
+
+        /// <summary>
+        /// The three bands a machine panel reads in: what goes in on the left, what the machine is doing in
+        /// the middle, what comes out on the right. Separated by the same hairlines everywhere.
+        /// </summary>
+        public readonly struct MachineColumns
+        {
+            public MachineColumns(Rect inputs, Rect process, Rect outputs)
+            {
+                Inputs = inputs;
+                Process = process;
+                Outputs = outputs;
+            }
+
+            public Rect Inputs { get; }
+            public Rect Process { get; }
+            public Rect Outputs { get; }
+        }
+
+        /// <summary>Splits the body into input, process and output columns and draws the dividers.</summary>
+        public static MachineColumns DrawColumns(Rect panel, in InteractionPanelTheme theme)
+        {
+            float top = ContentTop(panel);
+            float bottom = ContentBottom(panel);
+            float height = bottom - top;
+            float inputWidth = panel.width * .275f;
+            float processWidth = panel.width * .41f;
+            float outputX = panel.x + inputWidth + processWidth;
+            Divider(panel.x + inputWidth, top, bottom, theme);
+            Divider(outputX, top, bottom, theme);
+            return new MachineColumns(
+                new Rect(panel.x, top, inputWidth, height),
+                new Rect(panel.x + inputWidth, top, processWidth, height),
+                new Rect(outputX, top, panel.xMax - outputX, height));
+        }
+
+        /// <summary>A slot centred in its column, with room below for its caption.</summary>
+        public static Rect SlotAt(Rect column, float y, float size) =>
+            new(column.x + (column.width - size) * .5f, y, size, size);
+
+        /// <summary>
+        /// Everything one slot occupies vertically: the artwork, its caption and level line, and the row of
+        /// action buttons under it when it has any.
+        /// </summary>
+        public static float SlotBlockHeight(float slotSize, bool hasActions) =>
+            slotSize + SlotCaptionHeight + (hasActions ? SlotActionHeight + 12f : 0f);
+
+        /// <summary>
+        /// The largest slot that still lets <paramref name="count"/> of them fit the column. The panel
+        /// shrinks to fit a small game window, so slot geometry has to follow rather than be hand-placed.
+        /// </summary>
+        public static float SlotSizeForStack(Rect panel, Rect column, int count, bool hasActions,
+            float topInset = 0f)
+        {
+            float overhead = SlotCaptionHeight + (hasActions ? SlotActionHeight + 12f : 0f);
+            int slots = Mathf.Max(1, count);
+            float perSlot = (column.height - topInset - MinimumSlotGap * (slots + 1)) / slots - overhead;
+            return Mathf.Clamp(Mathf.Min(panel.width * .12f, perSlot), MinimumSlotSize, MaximumSlotSize);
+        }
+
+        /// <summary>
+        /// Places one of <paramref name="count"/> slots stacked down a column, spread evenly under any
+        /// <paramref name="topInset"/> the column reserves for a headline.
+        /// </summary>
+        public static Rect StackedSlot(Rect column, int index, int count, float slotSize, bool hasActions,
+            float topInset = 0f)
+        {
+            float block = SlotBlockHeight(slotSize, hasActions);
+            int slots = Mathf.Max(1, count);
+            // One equal gap above, below and between every block, so the column stays balanced at any size.
+            float gap = Mathf.Max(MinimumSlotGap,
+                (column.height - topInset - slots * block) / (slots + 1));
+            return SlotAt(column, column.y + topInset + gap + index * (block + gap), slotSize);
+        }
+
+        private const float MinimumSlotSize = 44f;
+        private const float MaximumSlotSize = 110f;
+        private const float MinimumSlotGap = 8f;
+
+        /// <summary>
+        /// The framed button a slot is built on. <paramref name="highlighted"/> marks the slot whose picker
+        /// or menu is open.
+        /// </summary>
+        public static bool SlotButton(Rect rect, bool highlighted, in InteractionPanelTheme theme)
+        {
+            Color previous = GUI.backgroundColor;
+            GUI.backgroundColor = highlighted ? theme.Accent : theme.Frame;
+            bool pressed = GUI.Button(rect, GUIContent.none);
+            GUI.backgroundColor = previous;
+            return pressed;
+        }
+
+        /// <summary>
+        /// Artwork inside a slot: the item's sprite where it has one, otherwise a loose texture, otherwise a
+        /// short glyph such as a chemical formula.
+        /// </summary>
+        public static void SlotIcon(Rect rect, Sprite icon, Texture2D texture, string glyph,
+            InteractionPanelStyles styles)
+        {
+            var inner = new Rect(rect.x + 9f, rect.y + 9f, rect.width - 18f, rect.height - 18f);
+            if (icon != null)
+            {
+                SpriteIcon.Draw(inner, icon);
+            }
+            else if (texture != null)
+            {
+                GUI.DrawTexture(inner, texture, ScaleMode.ScaleToFit, true);
+            }
+            else
+            {
+                GUI.Label(inner, glyph, styles.Glyph);
+            }
+        }
+
+        /// <summary>The name and fill level under a slot, centred on it.</summary>
+        public static void SlotCaption(Rect slot, string name, string level, InteractionPanelStyles styles)
+        {
+            var band = new Rect(slot.x - 28f, slot.yMax + 5f, slot.width + 56f, 22f);
+            GUI.Label(band, name, styles.Caption);
+            GUI.Label(new Rect(band.x, band.yMax, band.width, 19f), level, styles.Note);
+        }
+
+        /// <summary>Height a slot needs including its caption and level line.</summary>
+        public const float SlotCaptionHeight = 46f;
+
+        /// <summary>A slim level bar under a slot caption, for a tank rather than a stack of items.</summary>
+        public static void SlotMeter(Rect slot, float value, float capacity, float minimum, Color fill,
+            in InteractionPanelTheme theme)
+        {
+            var track = new Rect(slot.x - 12f, slot.yMax + SlotCaptionHeight + 2f, slot.width + 24f, 6f);
+            Fill(track, theme.Track);
+            float normalized = capacity > 0f ? Mathf.Clamp01(value / capacity) : 0f;
+            if (normalized > 0f)
+            {
+                Fill(new Rect(track.x, track.y, track.width * normalized, track.height), fill);
+            }
+
+            if (minimum > 0f && capacity > 0f)
+            {
+                Fill(new Rect(track.x + track.width * Mathf.Clamp01(minimum / capacity) - 1f, track.y - 2f,
+                    2f, track.height + 4f), theme.Accent);
+            }
+        }
+
+        /// <summary>
+        /// The inset display in the middle column that shows what the machine is doing. Returns the area
+        /// inside it, below the title bar and above the status strip.
+        /// </summary>
+        public static Rect Chamber(Rect rect, string title, InteractionPanelStyles styles,
+            in InteractionPanelTheme theme)
+        {
+            Fill(rect, theme.Recess);
+            Frame(rect, theme.Frame);
+            Fill(new Rect(rect.x + 1f, rect.y + 32f, rect.width - 2f, 1f), theme.Frame);
+            GUI.Label(new Rect(rect.x + 12f, rect.y + 5f, rect.width - 24f, 22f), title, styles.Detail);
+            return new Rect(rect.x + 8f, rect.y + 37f, rect.width - 16f, rect.height - 90f);
+        }
+
+        /// <summary>
+        /// The strip along the bottom of a chamber: a lamp that is lit while the machine runs, what it is
+        /// doing in words, and how far through the current cycle it is.
+        /// </summary>
+        public static void ChamberStatus(Rect chamber, bool active, string status, float progress,
+            InteractionPanelStyles styles, in InteractionPanelTheme theme)
+        {
+            Fill(new Rect(chamber.x + 13f, chamber.yMax - 32f, 7f, 7f), active ? theme.Accent : theme.Muted);
+            GUI.Label(new Rect(chamber.x + 27f, chamber.yMax - 37f, chamber.width - 39f, 20f), status,
+                styles.Detail);
+            var track = new Rect(chamber.x + 12f, chamber.yMax - 12f, chamber.width - 24f, 3f);
+            Fill(track, theme.Track);
+            float normalized = Mathf.Clamp01(progress);
+            if (normalized > 0f)
+            {
+                Fill(new Rect(track.x, track.y, track.width * normalized, track.height), theme.Accent);
+            }
+        }
+
+        /// <summary>The one number a machine exists to produce, at the top of the output column.</summary>
+        public static void Headline(Rect column, string text, InteractionPanelStyles styles)
+        {
+            GUI.Label(new Rect(column.x + 13f, column.y + 13f, column.width - 26f, 33f), text, styles.Title);
+        }
+
+        /// <summary>Height one row of slot actions occupies.</summary>
+        public const float SlotActionHeight = 26f;
+
+        /// <summary>
+        /// A compact action button under a slot, spanning its caption band. A slot that offers more than one
+        /// action passes <paramref name="columns"/> and the button's <paramref name="column"/>.
+        /// </summary>
+        public static bool SlotAction(Rect slot, float offsetY, string label, bool enabled,
+            int column = 0, int columns = 1)
+        {
+            const float Gap = 5f;
+            bool previousEnabled = GUI.enabled;
+            GUI.enabled = previousEnabled && enabled;
+            float bandX = slot.x - 28f;
+            float bandWidth = slot.width + 56f;
+            float width = (bandWidth - Gap * (columns - 1)) / Mathf.Max(1, columns);
+            bool pressed = GUI.Button(
+                new Rect(bandX + column * (width + Gap), slot.yMax + offsetY, width, SlotActionHeight),
+                label);
+            GUI.enabled = previousEnabled;
+            return pressed;
+        }
 
         /// <summary>A hairline that separates two body columns.</summary>
         public static void Divider(float x, float top, float bottom, in InteractionPanelTheme theme)

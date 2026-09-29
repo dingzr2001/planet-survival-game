@@ -11,7 +11,7 @@ namespace PlanetSurvival.UI.Power
     {
         private const float PanelWidth = 980f;
         private const float PanelHeight = 640f;
-        private const float ModuleHeight = 400f;
+        private const float MinimumModuleHeight = 260f;
         private const float EndpointTileSize = 56f;
         private const float EndpointTileGap = 6f;
         private const int EndpointTileColumns = 4;
@@ -25,6 +25,7 @@ namespace PlanetSurvival.UI.Power
         private Vector2 _inputPickerScroll;
         private Vector2 _outputPickerScroll;
         private GUIStyle _endpointNumber;
+        private float _moduleHeight = MinimumModuleHeight;
 
         protected override InteractionPanelTheme Theme => InteractionPanelTheme.Logistics;
 
@@ -58,7 +59,10 @@ namespace PlanetSurvival.UI.Power
             bool close = InteractionPanel.DrawHeader(panel, _station.Site?.Definition.MenuIcon,
                 $"POWER POLE {_station.Pole.PoleNumber:00}", StateText(), Styles);
 
-            GUILayout.BeginArea(InteractionPanel.ContentArea(panel));
+            Rect content = InteractionPanel.ContentArea(panel);
+            // The modules follow the panel rather than a fixed height, or a short window clips them.
+            _moduleHeight = Mathf.Max(MinimumModuleHeight, content.height - 8f);
+            GUILayout.BeginArea(content);
             GUILayout.BeginHorizontal();
             DrawInputs();
             GUILayout.Space(14f);
@@ -91,7 +95,7 @@ namespace PlanetSurvival.UI.Power
 
         private void DrawInputs()
         {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(_moduleHeight));
             GUILayout.Label("INPUTS", Styles.Section);
             GUILayout.Label("Power poles may be remote; generators must be adjacent.", Styles.Detail);
             DrawEndpointRows(_station.Pole.InputEndpointIds, true, _inputPickerOpen ? 120f : 260f);
@@ -107,7 +111,7 @@ namespace PlanetSurvival.UI.Power
 
         private void DrawOutputs()
         {
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(_moduleHeight));
             GUILayout.Label("OUTPUTS · PRIORITY ORDER", Styles.Section);
             GUILayout.Label("Poles may be remote; power consumers must be adjacent.", Styles.Detail);
             DrawEndpointRows(_station.Pole.OutputEndpointIds, false, _outputPickerOpen ? 120f : 260f);
@@ -192,7 +196,7 @@ namespace PlanetSurvival.UI.Power
         {
             PowerPole pole = _station.Pole;
             bool active = pole.LastDeliveredPower > .0001f;
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(ModuleHeight));
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300f), GUILayout.Height(_moduleHeight));
             GUILayout.Label("TRANSMISSION", Styles.Section);
             GUILayout.Label(active ? "ROUTE ONLINE" : "ROUTE STANDBY", Styles.Detail);
             Rect route = GUILayoutUtility.GetRect(260f, 180f, GUILayout.ExpandWidth(true));

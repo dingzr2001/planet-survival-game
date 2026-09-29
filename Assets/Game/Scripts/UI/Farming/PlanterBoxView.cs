@@ -10,13 +10,25 @@ using UnityEngine;
 
 namespace PlanetSurvival.UI.Farming
 {
-    /// <summary>Operations panel for manual planter inputs, crop choice and oxygen collection.</summary>
+    /// <summary>
+    /// Operations panel for one planter: water and CO₂ go in on the left, the crop grows in the middle,
+    /// oxygen comes out on the right. Laid out like the other machine panels so an input, a process and an
+    /// output always sit in the same place.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class PlanterBoxView : InteractionPanelView
     {
         private const int WaterTransferMilliliters = 500;
-        private const float PanelWidth = 620f;
-        private const float PanelHeight = 640f;
+        private const float PanelWidth = 900f;
+        private const float PanelHeight = 620f;
+
+        /// <summary>Room the output column keeps clear for its headline.</summary>
+        private const float HeadlineInset = 52f;
+
+        /// <summary>Floor on the growth chamber, whatever the crop list costs below it.</summary>
+        private const float MinimumChamberHeight = 150f;
+        private const string WaterTextureResource = "Water/WaterBottle";
+        private const string OxygenTextureResource = "Oxygen/Oxygen";
 
         private static readonly Color WaterFill = new(.2f, .55f, .9f);
         private static readonly Color CarbonDioxideFill = new(.65f, .65f, .65f);
@@ -28,9 +40,31 @@ namespace PlanetSurvival.UI.Farming
         private PlayerSpaceSuit _spaceSuit;
         private GameClock _clock;
         private Sprite _panelIcon;
+        private Texture2D _waterTexture;
+        private Texture2D _oxygenTexture;
         private string _feedback = string.Empty;
+        private CropDefinition _pendingCrop;
+        private PendingAction _pending;
 
         protected override InteractionPanelTheme Theme => InteractionPanelTheme.Growth;
+
+        /// <summary>
+        /// Planting or harvesting changes how many controls the panel draws, which IMGUI cannot tolerate in
+        /// the middle of a pass, so presses are recorded here and applied once the pass is complete.
+        /// </summary>
+        private enum PendingAction
+        {
+            None,
+            Plant,
+            Harvest,
+            ClearDead
+        }
+
+        private void Awake()
+        {
+            _waterTexture = Resources.Load<Texture2D>(WaterTextureResource);
+            _oxygenTexture = Resources.Load<Texture2D>(OxygenTextureResource);
+        }
 
         public void Open(PlanterBox planter, PlayerInventory inventory, GameClock clock,
             PlayerWaterBottle waterBottle, PlayerSpaceSuit spaceSuit, PlanarPlayerMotor motor = null,
@@ -49,7 +83,9 @@ namespace PlanetSurvival.UI.Farming
             _waterBottle = waterBottle;
             _spaceSuit = spaceSuit;
             _panelIcon = panelIcon;
-            _feedback = "Water and CO₂ must both reach their minimum marks before growth starts.";
+            _pending = PendingAction.None;
+            _pendingCrop = null;
+            _feedback = "Water and CO₂ must both pass their minimum marks before the crop grows.";
             BeginSession(motor, interactor);
         }
 
@@ -115,6 +151,7 @@ namespace PlanetSurvival.UI.Farming
             _spaceSuit = null;
             _clock = null;
             _panelIcon = null;
+            _pendingCrop = null;
         }
 
         private void OnGUI()
@@ -127,115 +164,220 @@ namespace PlanetSurvival.UI.Farming
             Rect panel = InteractionPanel.Begin(PanelWidth, PanelHeight, Theme);
             bool close = InteractionPanel.DrawHeader(panel, _panelIcon, "PLANTER BOX", StateText(), Styles);
 
-            GUILayout.BeginArea(InteractionPanel.ContentArea(panel));
-            GUILayout.Label("CROP", Styles.Section);
-            DrawCropControls();
-            GUILayout.Space(12f);
+            InteractionPanel.MachineColumns columns = InteractionPanel.DrawColumns(panel, Theme);
+            float inputSlot = InteractionPanel.SlotSizeForStack(panel, columns.Inputs, 2, true);
+            float outputSlot = InteractionPanel.SlotSizeForStack(panel, columns.Outputs, 1, true, HeadlineInset);
+            float actionRow = InteractionPanel.SlotCaptionHeight + 12f;
 
-            GUILayout.Label("ENVIRONMENT", Styles.Section);
-            PlanterBoxDefinition definition = _planter.Definition;
-            InteractionPanel.LayoutMeter("WATER", _planter.StoredWaterMilliliters,
-                definition.WaterCapacityMilliliters, "mL", WaterFill, Styles, null,
-                definition.MinimumWaterMilliliters);
-            InteractionPanel.LayoutMeter("CARBON DIOXIDE", _planter.StoredCarbonDioxideLiters,
-                definition.CarbonDioxideCapacityLiters, "L", CarbonDioxideFill, Styles, null,
-                definition.MinimumCarbonDioxideLiters);
-            InteractionPanel.LayoutMeter("OXYGEN OUTPUT", _planter.StoredOxygenLiters,
-                definition.OxygenCapacityLiters, "L", OxygenFill, Styles);
-            GUILayout.Space(12f);
-
-            int canisters = _inventory.Inventory.GetQuantity(definition.CarbonDioxideCanister.ItemId);
-            GUILayout.BeginHorizontal();
-            GUI.enabled = _waterBottle?.Container != null && _waterBottle.Container.CurrentMilliliters > 0
-                          && _planter.RemainingWaterCapacity > 0;
-            if (GUILayout.Button("ADD 0.5 L WATER", GUILayout.Height(34f))) AddWater(WaterTransferMilliliters);
-            GUI.enabled = canisters > 0 &&
-                          _planter.RemainingCarbonDioxideCapacity >= definition.CarbonDioxideLitersPerCanister;
-            if (GUILayout.Button($"LOAD CO₂ ({canisters})", GUILayout.Height(34f))) LoadCarbonDioxide(1);
-            GUI.enabled = _planter.StoredOxygenLiters > 0f;
-            if (GUILayout.Button("FILL SUIT O₂", GUILayout.Height(34f))) FillSuitOxygen();
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
-            GUILayout.EndArea();
+            DrawWaterSlot(InteractionPanel.StackedSlot(columns.Inputs, 0, 2, inputSlot, true), actionRow);
+            DrawCarbonDioxideSlot(
+                InteractionPanel.StackedSlot(columns.Inputs, 1, 2, inputSlot, true), actionRow);
+            DrawGrowthChamber(columns.Process);
+            DrawOxygenSlot(
+                InteractionPanel.StackedSlot(columns.Outputs, 0, 1, outputSlot, true, HeadlineInset), actionRow);
+            InteractionPanel.Headline(columns.Outputs, HeadlineText(), Styles);
 
             InteractionPanel.DrawFooter(panel, _feedback,
-                "Water and CO₂ inputs and the oxygen output also accept pipe-network connections.", Styles);
+                "Both inputs and the oxygen output also accept pipe connections.", Styles);
             if (close)
             {
                 Close();
             }
+
+            ApplyPendingAction();
         }
 
-        private void DrawCropControls()
+        private void DrawWaterSlot(Rect slot, float actionRow)
         {
+            PlanterBoxDefinition definition = _planter.Definition;
+            bool canPour = _waterBottle?.Container != null && _waterBottle.Container.CurrentMilliliters > 0
+                           && _planter.RemainingWaterCapacity > 0;
+            if (InteractionPanel.SlotButton(slot, false, Theme) && canPour)
+            {
+                AddWater(WaterTransferMilliliters);
+            }
+
+            InteractionPanel.SlotIcon(slot, null, _waterTexture, "H₂O", Styles);
+            InteractionPanel.SlotCaption(slot, "Water",
+                $"{_planter.StoredWaterMilliliters} / {definition.WaterCapacityMilliliters} mL", Styles);
+            InteractionPanel.SlotMeter(slot, _planter.StoredWaterMilliliters,
+                definition.WaterCapacityMilliliters, definition.MinimumWaterMilliliters, WaterFill, Theme);
+            if (InteractionPanel.SlotAction(slot, actionRow, "ADD 0.5 L", canPour))
+            {
+                AddWater(WaterTransferMilliliters);
+            }
+        }
+
+        private void DrawCarbonDioxideSlot(Rect slot, float actionRow)
+        {
+            PlanterBoxDefinition definition = _planter.Definition;
+            int canisters = _inventory.Inventory.GetQuantity(definition.CarbonDioxideCanister.ItemId);
+            bool canLoad = canisters > 0 &&
+                           _planter.RemainingCarbonDioxideCapacity >= definition.CarbonDioxideLitersPerCanister;
+            if (InteractionPanel.SlotButton(slot, false, Theme) && canLoad)
+            {
+                LoadCarbonDioxide(1);
+            }
+
+            InteractionPanel.SlotIcon(slot, definition.CarbonDioxideCanister.Icon, null, "CO₂", Styles);
+            InteractionPanel.SlotCaption(slot, "Carbon Dioxide",
+                $"{_planter.StoredCarbonDioxideLiters:0.#} / {definition.CarbonDioxideCapacityLiters:0.#} L",
+                Styles);
+            InteractionPanel.SlotMeter(slot, _planter.StoredCarbonDioxideLiters,
+                definition.CarbonDioxideCapacityLiters, definition.MinimumCarbonDioxideLiters,
+                CarbonDioxideFill, Theme);
+            if (InteractionPanel.SlotAction(slot, actionRow, $"LOAD CANISTER ({canisters})", canLoad))
+            {
+                LoadCarbonDioxide(1);
+            }
+        }
+
+        private void DrawOxygenSlot(Rect slot, float actionRow)
+        {
+            PlanterBoxDefinition definition = _planter.Definition;
+            bool canFill = _planter.StoredOxygenLiters > 0f;
+            if (InteractionPanel.SlotButton(slot, false, Theme) && canFill)
+            {
+                FillSuitOxygen();
+            }
+
+            InteractionPanel.SlotIcon(slot, null, _oxygenTexture, "O₂", Styles);
+            InteractionPanel.SlotCaption(slot, "Oxygen",
+                $"{_planter.StoredOxygenLiters:0.#} / {definition.OxygenCapacityLiters:0.#} L", Styles);
+            InteractionPanel.SlotMeter(slot, _planter.StoredOxygenLiters, definition.OxygenCapacityLiters,
+                0f, OxygenFill, Theme);
+            if (InteractionPanel.SlotAction(slot, actionRow, "FILL SUIT", canFill))
+            {
+                FillSuitOxygen();
+            }
+        }
+
+        /// <summary>
+        /// The middle column: the crop itself at its current growth stage, then the one control that
+        /// applies to it. An empty planter offers its crops here rather than in a list somewhere else.
+        /// </summary>
+        private void DrawGrowthChamber(Rect column)
+        {
+            float buttonBand = 40f + (_planter.IsPlanted ? 0f : 34f * Mathf.Max(0,
+                _planter.Definition.SupportedCrops.Count - 1));
+            // A long crop list must not squeeze the chamber out of existence.
+            var chamberRect = new Rect(column.x + 22f, column.y + 30f, column.width - 44f,
+                Mathf.Max(MinimumChamberHeight, column.height - 60f - buttonBand));
+            Rect inner = InteractionPanel.Chamber(chamberRect, "GROWTH CHAMBER", Styles, Theme);
+
+            Sprite crop = _planter.IsPlanted && !_planter.IsDead
+                ? _planter.Crop.GrowthStageSprite(_planter.GrowthProgress)
+                : _planter.Definition.EmptySprite;
+            float size = Mathf.Min(inner.height, inner.width * .7f);
+            SpriteIcon.Draw(new Rect(inner.center.x - size * .5f, inner.y, size, size), crop);
+
+            // Soil line, so an empty planter still reads as a planter rather than an empty box.
+            float soilY = inner.yMax - 6f;
+            InteractionPanel.Fill(new Rect(inner.x + 18f, soilY, inner.width - 36f, 3f), Theme.Frame);
+
+            bool growing = _planter.State == PlanterBoxState.Growing ||
+                           _planter.State == PlanterBoxState.OxygenStorageFull;
+            InteractionPanel.ChamberStatus(chamberRect, growing, ChamberStatusText(),
+                _planter.IsPlanted && !_planter.IsDead ? _planter.GrowthProgress : 0f, Styles, Theme);
+
+            DrawCropControls(new Rect(column.x + 22f, chamberRect.yMax + 12f, column.width - 44f, buttonBand));
+        }
+
+        private void DrawCropControls(Rect band)
+        {
+            if (_planter.IsDead)
+            {
+                if (GUI.Button(new Rect(band.x, band.y, band.width, 32f), "CLEAR DEAD CROP"))
+                {
+                    _pending = PendingAction.ClearDead;
+                }
+
+                return;
+            }
+
             if (!_planter.IsPlanted)
             {
                 for (int i = 0; i < _planter.Definition.SupportedCrops.Count; i++)
                 {
                     CropDefinition crop = _planter.Definition.SupportedCrops[i];
                     int seeds = _inventory.Inventory.GetQuantity(crop.SeedItem.ItemId);
-                    GUI.enabled = seeds >= crop.SeedQuantity;
-                    if (GUILayout.Button($"PLANT {crop.DisplayName.ToUpperInvariant()} ({seeds} seeds)",
-                            GUILayout.Height(32f)))
+                    bool previousEnabled = GUI.enabled;
+                    GUI.enabled = previousEnabled && seeds >= crop.SeedQuantity;
+                    if (GUI.Button(new Rect(band.x, band.y + i * 34f, band.width, 32f),
+                            $"PLANT {crop.DisplayName.ToUpperInvariant()}  ({seeds} seeds)"))
                     {
-                        Plant(crop);
+                        _pending = PendingAction.Plant;
+                        _pendingCrop = crop;
                     }
-                    GUI.enabled = true;
+                    GUI.enabled = previousEnabled;
                 }
+
                 return;
             }
 
-            if (_planter.IsDead)
+            bool wasEnabled = GUI.enabled;
+            GUI.enabled = wasEnabled && _planter.IsMature;
+            if (GUI.Button(new Rect(band.x, band.y, band.width, 32f),
+                    _planter.IsMature
+                        ? $"HARVEST  ({_planter.Crop.HarvestQuantity} × {_planter.Crop.HarvestItem.DisplayName})"
+                        : "NOT READY TO HARVEST"))
             {
-                if (GUILayout.Button("CLEAR DEAD CROP", GUILayout.Height(32f)))
-                {
-                    _planter.ClearDeadCrop();
-                    _feedback = "Dead crop cleared; no seed or produce was recovered.";
-                }
-                return;
+                _pending = PendingAction.Harvest;
             }
-
-            GUILayout.Label($"{_planter.Crop.DisplayName} · {_planter.GrowthProgress:P0} grown", Styles.Value);
-            InteractionPanel.LayoutProgress(_planter.GrowthProgress,
-                _planter.IsMature ? new Color(.45f, .85f, .5f) : new Color(.5f, .74f, .38f));
-            GUILayout.Label(HarvestEstimateText(), Styles.Detail);
-            GUILayout.Label($"Harvest yield: {_planter.Crop.HarvestQuantity} × {_planter.Crop.HarvestItem.DisplayName}",
-                Styles.Detail);
-            GUI.enabled = _planter.IsMature;
-            if (GUILayout.Button(_planter.IsMature ? "HARVEST" : "NOT READY TO HARVEST", GUILayout.Height(32f)))
-            {
-                Harvest();
-            }
-            GUI.enabled = true;
+            GUI.enabled = wasEnabled;
         }
 
-        private string HarvestEstimateText()
+        private void ApplyPendingAction()
         {
-            if (_planter.IsMature)
+            PendingAction action = _pending;
+            CropDefinition crop = _pendingCrop;
+            _pending = PendingAction.None;
+            _pendingCrop = null;
+            switch (action)
             {
-                return "Expected harvest: ready now.";
+                case PendingAction.Plant:
+                    Plant(crop);
+                    break;
+                case PendingAction.Harvest:
+                    Harvest();
+                    break;
+                case PendingAction.ClearDead:
+                    _planter.ClearDeadCrop();
+                    _feedback = "Dead crop cleared; no seed or produce was recovered.";
+                    break;
             }
+        }
 
+        private string HeadlineText()
+        {
+            if (!_planter.IsPlanted) return "🌱 EMPTY";
+            if (_planter.IsDead) return "🌱 DEAD";
+            return _planter.IsMature ? "🌱 READY" : $"🌱 GROWTH {_planter.GrowthProgress:P0}";
+        }
+
+        private string ChamberStatusText()
+        {
+            if (!_planter.IsPlanted) return "EMPTY";
+            if (_planter.IsDead) return "DEAD";
+            if (_planter.IsMature) return "MATURE";
+            return _planter.State == PlanterBoxState.Growing ||
+                   _planter.State == PlanterBoxState.OxygenStorageFull
+                ? $"GROWING  ·  {HarvestEstimate()}"
+                : "PAUSED";
+        }
+
+        private string HarvestEstimate()
+        {
             float remainingHours = _planter.RemainingGrowthGameHours;
-            bool environmentSupportsGrowth =
-                _planter.StoredWaterMilliliters >= _planter.Definition.MinimumWaterMilliliters &&
-                _planter.StoredCarbonDioxideLiters >= _planter.Definition.MinimumCarbonDioxideLiters;
-            if (!environmentSupportsGrowth)
-            {
-                return $"Expected harvest: unavailable while growth is paused ({remainingHours:0.0} game h remain).";
-            }
-
             if (_clock == null)
             {
-                return $"Expected harvest: in {remainingHours:0.0} game hours.";
+                return $"{remainingHours:0.0} game h left";
             }
 
             double completionDays = _clock.ElapsedDays + remainingHours / 24d;
             int day = Mathf.FloorToInt((float)completionDays) + 1;
             int totalMinutes = Mathf.FloorToInt((float)(completionDays * 24d * 60d));
-            int hour = (totalMinutes / 60) % 24;
-            int minute = totalMinutes % 60;
-            return $"Expected harvest: D{day} {hour:00}:{minute:00} · {remainingHours:0.0} game h remaining.";
+            return $"ready D{day} {(totalMinutes / 60) % 24:00}:{totalMinutes % 60:00}";
         }
 
         private string StateText() => _planter.State switch
@@ -245,10 +387,10 @@ namespace PlanetSurvival.UI.Farming
                 $"Growth paused: add water within {_planter.RemainingEnvironmentToleranceGameHours:0.0} game hours.",
             PlanterBoxState.NeedsCarbonDioxide =>
                 $"Growth paused: add CO₂ within {_planter.RemainingEnvironmentToleranceGameHours:0.0} game hours.",
-            PlanterBoxState.OxygenStorageFull => "Oxygen storage is full; the crop continues growing.",
+            PlanterBoxState.OxygenStorageFull => "Oxygen storage is full; the crop keeps growing.",
             PlanterBoxState.Mature => "Crop mature: ready to harvest.",
-            PlanterBoxState.Dead => "Crop died after its environment remained unsuitable.",
-            _ => $"Crop growing · producing {_planter.Definition.OxygenLitersPerSecond:0.##} L oxygen/s."
+            PlanterBoxState.Dead => "Crop died after its environment stayed unsuitable.",
+            _ => $"Growing · producing {_planter.Definition.OxygenLitersPerSecond:0.##} L oxygen/s."
         };
     }
 }

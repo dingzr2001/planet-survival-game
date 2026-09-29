@@ -12,7 +12,10 @@ namespace PlanetSurvival.UI.Transport
     {
         private const float PanelWidth = 940f;
         private const float PanelHeight = 600f;
-        private const float ModuleHeight = 330f;
+        private const float MinimumModuleHeight = 240f;
+
+        /// <summary>Space the group number and colour row takes above the modules.</summary>
+        private const float GroupControlsHeight = 46f;
 
         private static readonly Color[] Palette =
         {
@@ -31,6 +34,7 @@ namespace PlanetSurvival.UI.Transport
         private bool _inputDropdownOpen;
         private bool _outputDropdownOpen;
         private string _feedback = string.Empty;
+        private float _moduleHeight = MinimumModuleHeight;
 
         protected override InteractionPanelTheme Theme => InteractionPanelTheme.Logistics;
 
@@ -68,7 +72,10 @@ namespace PlanetSurvival.UI.Transport
             bool close = InteractionPanel.DrawHeader(panel, _station.Site?.Definition.MenuIcon,
                 $"TRANSFER POST {_station.Post.PostNumber:00}", StateText(), Styles);
 
-            GUILayout.BeginArea(InteractionPanel.ContentArea(panel));
+            Rect content = InteractionPanel.ContentArea(panel);
+            // The modules follow the panel rather than a fixed height, or a short window clips them.
+            _moduleHeight = Mathf.Max(MinimumModuleHeight, content.height - GroupControlsHeight);
+            GUILayout.BeginArea(content);
             DrawGroupControls();
             GUILayout.Space(12f);
 
@@ -143,7 +150,7 @@ namespace PlanetSurvival.UI.Transport
                 : _system.GetOutputOptions(_station);
             string selectedId = input ? _station.Post.InputEndpointId : _station.Post.OutputEndpointId;
 
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(270f), GUILayout.Height(ModuleHeight));
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(270f), GUILayout.Height(_moduleHeight));
             GUILayout.Label(title, Styles.Section);
             string selectedLabel = _system.GetEndpointLabel(selectedId);
             Color previousBackground = GUI.backgroundColor;
@@ -192,7 +199,7 @@ namespace PlanetSurvival.UI.Transport
             ItemDefinition item = _system.GetRouteItem(_station);
             bool flowing = _system.IsRouteFlowing(_station);
 
-            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(290f), GUILayout.Height(ModuleHeight));
+            GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(290f), GUILayout.Height(_moduleHeight));
             GUILayout.Label("CURRENT", Styles.Section);
             GUILayout.Label(flowing ? "ROUTE ONLINE" : "ROUTE STANDBY", Styles.Detail);
 

@@ -26,6 +26,25 @@ namespace PlanetSurvival.UI
         /// <summary>Explanations, hints and the latest action result.</summary>
         public Color Muted { get; }
 
+        /// <summary>Outline of an inset instrument area, such as a slot or a process chamber.</summary>
+        public Color Frame => Opaque(Color.Lerp(Plate, Accent, .35f));
+
+        /// <summary>Inside of an inset instrument area: darker than the plate, so it reads as recessed.</summary>
+        public Color Recess => Opaque(Color.Lerp(Color.black, Plate, .45f));
+
+        /// <summary>The empty part of a meter or progress track.</summary>
+        public Color Track => Opaque(Color.Lerp(Plate, Accent, .18f));
+
+        /// <summary>Plate of a popup that floats above the panel.</summary>
+        public Color Popup => new(
+            Mathf.Lerp(Plate.r, Accent.r, .06f) + .045f,
+            Mathf.Lerp(Plate.g, Accent.g, .06f) + .043f,
+            Mathf.Lerp(Plate.b, Accent.b, .06f) + .038f,
+            .99f);
+
+        /// <summary>The panel's colours over a transparent plate would tint the world; instruments are solid.</summary>
+        private static Color Opaque(Color color) => new(color.r, color.g, color.b, 1f);
+
         /// <summary>Combustion, mining and cooking: anything that burns fuel or heats material.</summary>
         public static InteractionPanelTheme Thermal { get; } = new(
             new Color(.065f, .052f, .037f, .98f),
