@@ -17,6 +17,7 @@ MonoBehaviour:
   _texture: {fileID: 0}
   _textureVariants: []
   _textureTileSize: 8
+  _patchRendering: 0
   _digCount: 1
   _digDuration: 6
   _digDistance: 2

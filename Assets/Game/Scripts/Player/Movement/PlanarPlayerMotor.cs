@@ -12,6 +12,7 @@ namespace PlanetSurvival.Player.Movement
 
         private CharacterController _controller;
         private Camera _camera;
+        private float _speedMultiplier = 1f;
         private PlayerAnimationController _animation;
         private WorldSpriteView _view;
 
@@ -20,6 +21,12 @@ namespace PlanetSurvival.Player.Movement
             _controller = GetComponent<CharacterController>();
             _animation = GetComponentInChildren<PlayerAnimationController>();
             _view = GetComponentInChildren<WorldSpriteView>();
+        }
+
+        /// <summary>Scales the authored move speed; values below 1 are clamped so it can only speed up.</summary>
+        public void SetSpeedMultiplier(float multiplier)
+        {
+            _speedMultiplier = Mathf.Max(1f, multiplier);
         }
 
         private void Update()
@@ -39,7 +46,7 @@ namespace PlanetSurvival.Player.Movement
             right.Normalize();
 
             Vector3 movement = forward * input.y + right * input.x;
-            _controller.Move(movement * (_moveSpeed * Time.deltaTime));
+            _controller.Move(movement * (_moveSpeed * _speedMultiplier * Time.deltaTime));
 
             if (_animation != null)
             {

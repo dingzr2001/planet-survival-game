@@ -65,10 +65,11 @@ namespace PlanetSurvival.Core.Flow
         public const int HydroponicsSlotCount = 3;
 
         /// <summary>
-        /// World units per construction cell. It matches the terrain tile so a structure lands on exactly
-        /// one square of ground artwork instead of floating inside it.
+        /// World metres per construction cell. A fine one-metre lattice, as in Factorio, lets structures
+        /// of different sizes sit flush against each other; it is deliberately independent of the terrain
+        /// tile, which only decides what ground a cell stands on. Mountain colliders use the same lattice.
         /// </summary>
-        public const float BuildGridCellSize = TerrainPatchSettings.DefaultTileSize;
+        public const float BuildGridCellSize = TerrainChunkObstacles.CellSize;
 
         private const double DefaultRealSecondsPerGameDay = 600d;
         private const int DefaultRescueDay = 30;

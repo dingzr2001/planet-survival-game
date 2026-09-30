@@ -28,6 +28,12 @@ namespace PlanetSurvival.World.Ground
 
         public int LoadedChunkCount => _loadedChunks.Count;
 
+        /// <summary>
+        /// Where the ground is drawn: sunk into craters. Null until configured with landforms. The pointer and
+        /// the camera resolve against it; the shaders get the same craters from this streamer.
+        /// </summary>
+        public TerrainSurface Surface { get; private set; }
+
         public void Configure(TerrainPatchSettings settings, TerrainTileMap map)
         {
             UnsubscribeFromMap();
@@ -37,10 +43,12 @@ namespace PlanetSurvival.World.Ground
             _map = map;
             if (_settings != null && _map != null)
             {
-                _renderResources = new TerrainChunkRenderResources(
-                    _settings.Layers, _settings.ChunkSize, _settings.BlendShader,
-                    _settings.ControlMapResolution, _settings.BlendDistance);
+                _renderResources = new TerrainChunkRenderResources(_settings);
             }
+
+            Surface = _map != null && _map.Landforms != null && _settings != null
+                ? new TerrainSurface(_map.Landforms.Craters, _settings.LandformAppearance.VerticalExaggeration)
+                : null;
 
             if (_map != null)
             {
@@ -79,8 +87,8 @@ namespace PlanetSurvival.World.Ground
             ChunkCoordinate chunk = ChunkOf(tile);
             _dirtyChunks.Add(chunk);
 
-            // Control maps sample a one-pixel gutter beyond the chunk. When a dug tile touches a chunk
-            // boundary, the neighbour owns samples inside that tile and must rebuild as well.
+            // Patch maps carry a one-tile gutter beyond the chunk. When a dug tile touches a chunk
+            // boundary, the neighbour holds a copy of that tile and must rebuild as well.
             int size = _settings.ChunkSizeInTiles;
             int localX = PositiveModulo(tile.X, size);
             int localZ = PositiveModulo(tile.Z, size);
@@ -113,6 +121,7 @@ namespace PlanetSurvival.World.Ground
 
             _center = center;
             _hasCenter = true;
+            TerrainSurfaceShaderGlobals.Upload(Surface, position.x, position.z);
             int loadRadius = _settings.LoadRadiusInChunks;
             UnloadBeyond(center, loadRadius + UnloadMargin);
 
@@ -161,6 +170,8 @@ namespace PlanetSurvival.World.Ground
             TerrainChunkView view = root.AddComponent<TerrainChunkView>();
             view.Configure(_renderResources);
             view.Rebuild(_map, OriginTileOf(chunk), _settings.ChunkSizeInTiles);
+            root.AddComponent<TerrainChunkObstacles>().Build(
+                _map, chunk.OriginX(_settings.ChunkSize), chunk.OriginZ(_settings.ChunkSize), _settings.ChunkSize);
             _loadedChunks.Add(chunk, view);
         }
 

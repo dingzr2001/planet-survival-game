@@ -10,6 +10,17 @@ namespace PlanetSurvival.World.Generation
         private const float MinimumRadius = 1200f;
         private const float RecenterStep = 16f;
 
+        /// <summary>
+        /// Metres below the gameplay plane the disc is drawn. Streamed terrain chunks draw the ground,
+        /// regolith included, and sink into craters; a disc left at the surface would hide them there. Only
+        /// beyond the streamed chunks is the disc itself seen, and its even texture gives no sign of the drop.
+        /// </summary>
+        public const float DiscDepth = 50f;
+
+        private static readonly int BaseGroundTexId = Shader.PropertyToID("_BaseGroundTex");
+        private static readonly int BaseGroundTexScaleId = Shader.PropertyToID("_BaseGroundTexScale");
+        private static readonly int BaseGroundEnabledId = Shader.PropertyToID("_BaseGroundEnabled");
+
         [SerializeField, HideInInspector] private Transform _ground;
         [SerializeField, HideInInspector] private Transform _target;
         private Material _material;
@@ -28,7 +39,7 @@ namespace PlanetSurvival.World.Generation
             ground.name = "Flat Ground";
             ground.transform.SetParent(transform, false);
             _ground = ground.transform;
-            _ground.localPosition = settings.StartingAreaCenter;
+            _ground.localPosition = settings.StartingAreaCenter + Vector3.down * DiscDepth;
 
             Vector2 startingAreaSize = settings.StartingAreaSize;
             float logicalDiameter = Mathf.Max(startingAreaSize.x, startingAreaSize.y);
@@ -49,7 +60,20 @@ namespace PlanetSurvival.World.Generation
             _material.color = visuals != null ? visuals.GroundTint : new Color(.55f, .24f, .1f);
             ground.AddComponent<MeshRenderer>().sharedMaterial = _material;
             UpdateTextureOffset();
+            PublishBaseGround(_material.mainTexture, _tileSize);
         }
+
+        /// <summary>
+        /// Lets the terrain chunks draw the same regolith as the disc (TerrainBlend.shader), in world space
+        /// at the same tiling, so the two meet without a seam.
+        /// </summary>
+        private static void PublishBaseGround(Texture texture, float tileSize)
+        {
+            Shader.SetGlobalTexture(BaseGroundTexId, texture);
+            Shader.SetGlobalFloat(BaseGroundTexScaleId, 1f / Mathf.Max(.1f, tileSize));
+            Shader.SetGlobalFloat(BaseGroundEnabledId, texture != null ? 1f : 0f);
+        }
+
 
         private void RestoreRuntimeReferences()
         {
@@ -115,7 +139,7 @@ namespace PlanetSurvival.World.Generation
 
             _ground.position = new Vector3(
                 Mathf.Round(_target.position.x / RecenterStep) * RecenterStep,
-                0f,
+                -DiscDepth,
                 Mathf.Round(_target.position.z / RecenterStep) * RecenterStep);
             UpdateTextureOffset();
         }
@@ -190,6 +214,7 @@ namespace PlanetSurvival.World.Generation
 
         private void OnDestroy()
         {
+            Shader.SetGlobalFloat(BaseGroundEnabledId, 0f);
             if (_material != null)
             {
                 DestroyRuntimeObject(_material);

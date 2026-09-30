@@ -35,7 +35,8 @@ namespace PlanetSurvival.Building.Runtime
 
             // The footprint decides how large a structure reads in the world: one cell of art per cell of
             // ground. Authored world height only sets how tall a sprite-less placeholder block stands.
-            float footprintWidth = buildable.Footprint.x * cellSize * buildable.FootprintScale;
+            Vector2 worldSize = buildable.WorldSize(cellSize);
+            float footprintWidth = worldSize.x;
             if (buildable.WorldSprite != null)
             {
                 view.ConfigureGroundedWidth(buildable.WorldSprite, footprintWidth);
@@ -54,8 +55,7 @@ namespace PlanetSurvival.Building.Runtime
             // A standing cutout touches the ground along its front edge and rises away from the camera
             // from there, so anchoring it at the centre of the footprint draws the whole structure half a
             // footprint behind the cells it occupies. Contact belongs on the near edge of those cells.
-            body.transform.localPosition = new Vector3(
-                0f, 0f, buildable.Footprint.y * cellSize * buildable.FootprintScale * -.5f);
+            body.transform.localPosition = new Vector3(0f, 0f, worldSize.y * -.5f);
             return body.transform;
         }
 
@@ -77,24 +77,23 @@ namespace PlanetSurvival.Building.Runtime
         /// <summary>The translucent patch that shows which cells a footprint covers.</summary>
         public static SpriteRenderer CreateFootprintPatch(Transform parent, Vector2Int footprint, float cellSize)
         {
-            return CreateFootprintPatch(parent, footprint, cellSize, 1f);
+            return CreateFootprintPatch(parent,
+                new Vector2(Mathf.Max(1, footprint.x) * cellSize, Mathf.Max(1, footprint.y) * cellSize));
         }
 
-        public static SpriteRenderer CreateFootprintPatch(Transform parent, Vector2Int footprint, float cellSize,
-            float footprintScale)
+        /// <summary>The translucent patch under a structure, sized in world metres.</summary>
+        public static SpriteRenderer CreateFootprintPatch(Transform parent, Vector2 worldSize)
         {
             var patch = new GameObject("Footprint");
             patch.transform.SetParent(parent, false);
             patch.transform.localPosition = Vector3.up * GroundOffset;
             patch.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            patch.transform.localScale = new Vector3(
-                Mathf.Max(1, footprint.x) * cellSize * Mathf.Max(.01f, footprintScale),
-                Mathf.Max(1, footprint.y) * cellSize * Mathf.Max(.01f, footprintScale),
-                1f);
+            patch.transform.localScale = new Vector3(Mathf.Max(.01f, worldSize.x), Mathf.Max(.01f, worldSize.y), 1f);
 
             SpriteRenderer renderer = patch.AddComponent<SpriteRenderer>();
             renderer.sprite = FootprintSprite();
             renderer.sortingOrder = -16000;
+            SurfaceSpriteMaterial.Apply(renderer);
             return renderer;
         }
 

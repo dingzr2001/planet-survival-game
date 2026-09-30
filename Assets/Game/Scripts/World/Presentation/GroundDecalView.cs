@@ -27,6 +27,7 @@ namespace PlanetSurvival.World.Presentation
 
             _renderer.sprite = sprite;
             _renderer.sortingOrder = SortingOrder;
+            SurfaceSpriteMaterial.Apply(_renderer);
             transform.localPosition = Vector3.up * GroundOffset;
             transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
             FitFootprint(footprint);

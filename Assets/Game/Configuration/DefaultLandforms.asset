@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a105aba5ecaf246f28b2bab162d352df, type: 3}
+  m_Name: DefaultLandforms
+  m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Generation.Landforms.LandformSettings
+  _seedOffset: 7919
+  _reliefFeatureSize: 480
+  _reliefOctaves: 4
+  _warpFeatureSize: 260
+  _warpDistance: 60
+  _ridgeFeatureSize: 260
+  _ridgeWeight: 2
+  _mountainCoverage: 0.1
+  _basinCoverage: 0.16
+  _iceLakeCoverage: 0.045
+  _passFeatureSize: 180
+  _passWidth: 0.09
+  _outlineSmoothing: 3
+  _sliverRemoval: 5
+  _craterCellSize: 170
+  _craterChance: 0.35
+  _craterRadiusRange: {x: 12, y: 40}
+  _craterRimWidth: 0.22
+  _blockingRimMinRadius: 100
+  _craterRimGapShare: 0.3
+  _craterIceChance: 0.4
+  _startFlatRadius: 26
+  _startBlendDistance: 22
+  _starterLakeDistance: 30
+  _starterLakeRadius: 10

@@ -53,15 +53,71 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Grid_KeepsTheCursorCellInsideAnEvenFootprint()
+        public void Grid_CentresAnEvenFootprintOnTheNearestGridLine()
         {
             var grid = new BuildGrid();
 
             BuildFootprint footprint = grid.CreateFootprint(new Vector3(4.6f, 0f, 4.2f), new Vector2Int(2, 2));
 
-            Assert.That(footprint.Contains(new Vector2Int(4, 4)), Is.True);
-            Assert.That(footprint.Origin, Is.EqualTo(new Vector2Int(4, 4)));
+            Assert.That(footprint.Origin, Is.EqualTo(new Vector2Int(4, 3)));
+            Assert.That(grid.Center(footprint), Is.EqualTo(new Vector3(5f, 0f, 4f)));
             Assert.That(footprint.CellCount, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void Grid_CentresAnOddFootprintOnTheCellUnderTheCursor()
+        {
+            var grid = new BuildGrid();
+
+            BuildFootprint footprint = grid.CreateFootprint(new Vector3(4.6f, 0f, 4.2f), new Vector2Int(3, 3));
+
+            Assert.That(footprint.Origin, Is.EqualTo(new Vector2Int(3, 3)));
+            Assert.That(grid.Center(footprint), Is.EqualTo(new Vector3(4.5f, 0f, 4.5f)));
+        }
+
+        [Test]
+        public void Grid_OffGridItemsBlockOnlyWhereTheyOverlap()
+        {
+            var grid = new BuildGrid();
+            object candle = new();
+            Assert.That(grid.TryOccupyArea(new Rect(.1f, .1f, .6f, .6f), candle), Is.True);
+
+            Assert.That(grid.IsAreaFree(new Rect(.75f, .1f, .6f, .6f)), Is.True,
+                "Two small items may share a cell as long as they do not touch.");
+            Assert.That(grid.IsAreaFree(new Rect(.5f, .5f, .6f, .6f)), Is.False);
+            Assert.That(grid.IsFree(new BuildFootprint(Vector2Int.zero, Vector2Int.one)), Is.False,
+                "A snapped structure fills its whole cell, so an item inside it blocks the cell.");
+            Assert.That(grid.IsFree(new BuildFootprint(Vector2Int.right, Vector2Int.one)), Is.True);
+
+            grid.Release(candle);
+
+            Assert.That(grid.IsFree(new BuildFootprint(Vector2Int.zero, Vector2Int.one)), Is.True);
+            Assert.That(grid.FreeAreaCount, Is.Zero);
+        }
+
+        [Test]
+        public void Grid_ClaimedCellsBlockOffGridItems()
+        {
+            var grid = new BuildGrid();
+            Assert.That(grid.TryOccupy(new BuildFootprint(Vector2Int.zero, new Vector2Int(2, 2)), new object()),
+                Is.True);
+
+            Assert.That(grid.IsAreaFree(new Rect(1.7f, 1.7f, .6f, .6f)), Is.False);
+            Assert.That(grid.IsAreaFree(new Rect(2.05f, 0f, .6f, .6f)), Is.True);
+        }
+
+        [Test]
+        public void Footprint_IsEdgeAdjacentOnlyWhenItSharesACellEdge()
+        {
+            var machine = new BuildFootprint(Vector2Int.zero, new Vector2Int(3, 3));
+
+            Assert.That(new BuildFootprint(new Vector2Int(3, 1), Vector2Int.one).IsEdgeAdjacentTo(machine), Is.True);
+            Assert.That(new BuildFootprint(new Vector2Int(1, -1), Vector2Int.one).IsEdgeAdjacentTo(machine), Is.True);
+            Assert.That(new BuildFootprint(new Vector2Int(3, 3), Vector2Int.one).IsEdgeAdjacentTo(machine), Is.False,
+                "Touching only at a corner is not adjacent.");
+            Assert.That(new BuildFootprint(new Vector2Int(4, 1), Vector2Int.one).IsEdgeAdjacentTo(machine), Is.False);
+            Assert.That(new BuildFootprint(new Vector2Int(1, 1), Vector2Int.one).IsEdgeAdjacentTo(machine), Is.False,
+                "Overlapping footprints are not neighbours.");
         }
 
         [Test]

@@ -20,8 +20,10 @@ namespace PlanetSurvival.World.Ground
         private Texture2D _texture;
         [SerializeField, Tooltip("Optional alternate artwork chosen deterministically per terrain tile.")]
         private Texture2D[] _textureVariants = Array.Empty<Texture2D>();
-        [SerializeField, Min(.1f), Tooltip("Legacy world-space repeat size retained for asset compatibility. Tile-aligned rendering uses the gameplay tile size instead.")]
+        [SerializeField, Min(.1f), Tooltip("World metres covered by one repeat of the texture when it is drawn as a continuous surface.")]
         private float _textureTileSize = 8f;
+        [SerializeField, Tooltip("Scattered cutouts for things lying on the ground; continuous for seamless surfaces such as sheet ice.")]
+        private TerrainPatchRendering _patchRendering = TerrainPatchRendering.Scattered;
         [SerializeField, Min(1), Tooltip("Digs needed to wear one tile back down to the base regolith.")]
         private int _digCount = 1;
         [SerializeField, Min(.1f)] private float _digDuration = 1.6f;
@@ -37,6 +39,7 @@ namespace PlanetSurvival.World.Ground
             ? 0
             : 1 + Mathf.Min(_textureVariants?.Length ?? 0, MaximumTextureVariantCount - 1);
         public float TextureTileSize => Mathf.Max(.1f, _textureTileSize);
+        public TerrainPatchRendering PatchRendering => _patchRendering;
         public int DigCount => Mathf.Max(1, _digCount);
         public float DigDuration => Mathf.Max(.1f, _digDuration);
         public float DigDistance => Mathf.Max(.1f, _digDistance);
@@ -79,6 +82,11 @@ namespace PlanetSurvival.World.Ground
             _digDuration = Mathf.Max(.1f, digDuration);
             _requiredToolItemId = requiredToolItemId ?? string.Empty;
             _yields = yields ?? Array.Empty<ResourceYield>();
+        }
+
+        public void ConfigurePatchRendering(TerrainPatchRendering patchRendering)
+        {
+            _patchRendering = patchRendering;
         }
 
         public void ConfigureTexture(Texture2D texture, float textureTileSize)

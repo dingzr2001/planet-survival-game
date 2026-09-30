@@ -25,7 +25,7 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void TerrainView_BuildsOneGroundPlaneAtZeroHeight()
+        public void TerrainView_BuildsOneGroundPlaneBelowTheSunkenChunks()
         {
             TerrainGenerationSettings settings = CreateSettings(new Vector2(8f, 6f));
             var root = Track(new GameObject("Terrain"));
@@ -35,8 +35,8 @@ namespace PlanetSurvival.Tests
             Assert.That(root.transform.childCount, Is.EqualTo(1));
             Transform ground = root.transform.GetChild(0);
             Assert.That(ground.name, Is.EqualTo("Flat Ground"));
-            Assert.That(ground.position, Is.EqualTo(new Vector3(4f, 0f, 3f)));
-            Assert.That(ground.position.y, Is.EqualTo(0f).Within(.0001f));
+            // Chunks draw the ground and sink into craters; the disc lies below them so it never hides one.
+            Assert.That(ground.position, Is.EqualTo(new Vector3(4f, -ContinuousTerrainView.DiscDepth, 3f)));
             Assert.That(ground.GetComponent<MeshCollider>(), Is.Not.Null);
             Mesh mesh = ground.GetComponent<MeshFilter>().sharedMesh;
             Assert.That(mesh.vertexCount, Is.GreaterThan(100));
@@ -61,7 +61,10 @@ namespace PlanetSurvival.Tests
                 ?.Invoke(terrainView, null);
 
             Transform ground = root.transform.GetChild(0);
-            Assert.That(Vector3.Distance(ground.position, target.transform.position), Is.LessThan(12f));
+            Vector2 groundCentre = new(ground.position.x, ground.position.z);
+            Vector2 targetPosition = new(target.transform.position.x, target.transform.position.z);
+            Assert.That(Vector2.Distance(groundCentre, targetPosition), Is.LessThan(12f));
+            Assert.That(ground.position.y, Is.EqualTo(-ContinuousTerrainView.DiscDepth).Within(.0001f));
         }
 
         [Test]
@@ -76,7 +79,8 @@ namespace PlanetSurvival.Tests
             Transform ground = root.transform.GetChild(0);
             Mesh mesh = ground.GetComponent<MeshFilter>().sharedMesh;
             Assert.That(mesh.bounds.size.x, Is.EqualTo(startingAreaSize.x).Within(.01f));
-            Assert.That(ground.position, Is.EqualTo(settings.StartingAreaCenter));
+            Assert.That(ground.position,
+                Is.EqualTo(settings.StartingAreaCenter + Vector3.down * ContinuousTerrainView.DiscDepth));
         }
 
         [Test]
@@ -411,17 +415,13 @@ namespace PlanetSurvival.Tests
 
             Vector3 horizontalForward = Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up);
             float downwardPitch = Vector3.Angle(horizontalForward, camera.transform.forward);
-            Vector3 directionToTarget = target.transform.position - camera.transform.position;
-            float groundViewingAngle = Vector3.Angle(
-                Vector3.ProjectOnPlane(directionToTarget, Vector3.up), directionToTarget);
-            float targetDistance = Vector3.Distance(camera.transform.position, target.transform.position);
             Vector3 targetViewportPosition = unityCamera.WorldToViewportPoint(target.transform.position);
-            Assert.That(groundViewingAngle, Is.InRange(79f, 81f),
-                "The camera position should stay mostly above the player.");
             Assert.That(downwardPitch, Is.InRange(74f, 76f),
                 "The steep pitch should keep square ground tiles nearly square on screen.");
-            Assert.That(targetDistance, Is.InRange(17f, 17.5f),
-                "The camera distance should preserve a useful amount of surrounding play area.");
+            // Distance does not change an orthographic picture; it only has to leave room in front of the
+            // near plane for the mountain meshes, which are built several times taller than they read.
+            Assert.That(targetViewportPosition.z, Is.GreaterThan(unityCamera.nearClipPlane + 40f),
+                "Tall mountain meshes near the player would be cut by the near clip plane.");
             Assert.That(targetViewportPosition.x, Is.EqualTo(.5f).Within(.01f));
             Assert.That(targetViewportPosition.y, Is.InRange(.4f, .44f),
                 "The player should sit just below center so more terrain remains visible ahead.");

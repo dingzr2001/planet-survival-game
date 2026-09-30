@@ -25,6 +25,12 @@ namespace PlanetSurvival.World.Presentation
         private SpriteFacingDirection _facing = SpriteFacingDirection.Down;
         private Sprite[] _runtimeSprites = System.Array.Empty<Sprite>();
 
+        // Every sprite renderer under this view, drawn with the standing material. Re-collected when the
+        // hierarchy changes, since equipment and colour layers are attached after the view is configured.
+        private SpriteRenderer[] _standingRenderers = System.Array.Empty<SpriteRenderer>();
+        private int _standingHierarchyCount = -1;
+        private MaterialPropertyBlock _standingBlock;
+
         public SpriteRenderer Renderer => _renderer;
         public SpriteFacingDirection Facing => _facing;
         public float DisplayHeight { get; private set; } = 1f;
@@ -226,6 +232,56 @@ namespace PlanetSurvival.World.Presentation
             FaceCamera();
             Animate();
             UpdateSortingOrder();
+            UpdateStandingDepth();
+        }
+
+        /// <summary>
+        /// Tells the standing material where this sprite meets the ground: the point on the ground behind
+        /// the sprite's bottom edge along the camera's view, and the foot the sprite stands on. The shader
+        /// depth-tests the whole sprite as an upright board there, so it stands in front of mountain walls
+        /// behind it and is hidden by those in front of it, and draws it at the ground's height at the foot,
+        /// so it stands on a crater floor.
+        /// </summary>
+        private void UpdateStandingDepth()
+        {
+            if (_camera == null || _renderer == null || _renderer.sprite == null)
+            {
+                return;
+            }
+
+            if (transform.hierarchyCount != _standingHierarchyCount)
+            {
+                _standingRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+                for (int i = 0; i < _standingRenderers.Length; i++)
+                {
+                    StandingSpriteMaterial.Apply(_standingRenderers[i]);
+                }
+
+                _standingHierarchyCount = transform.hierarchyCount;
+            }
+
+            // The sprite faces the camera, so its bottom edge is the lowest and nearest part of its bounds.
+            Bounds bounds = _renderer.bounds;
+            Vector3 forward = _camera.transform.forward;
+            float travelToGround = forward.y < -1e-3f ? Mathf.Max(0f, bounds.min.y) / -forward.y : 0f;
+            float groundZ = bounds.min.z + forward.z * travelToGround;
+            Vector3 foot = transform.position;
+
+            _standingBlock ??= new MaterialPropertyBlock();
+            for (int i = 0; i < _standingRenderers.Length; i++)
+            {
+                SpriteRenderer standing = _standingRenderers[i];
+                if (standing == null || standing.sharedMaterial != StandingSpriteMaterial.Shared)
+                {
+                    continue;
+                }
+
+                standing.GetPropertyBlock(_standingBlock);
+                _standingBlock.SetFloat(StandingSpriteMaterial.GroundZId, groundZ);
+                _standingBlock.SetFloat(StandingSpriteMaterial.EnabledId, 1f);
+                _standingBlock.SetVector(StandingSpriteMaterial.FootId, new Vector4(foot.x, foot.z, 0f, 0f));
+                standing.SetPropertyBlock(_standingBlock);
+            }
         }
 
         private void ResolveCamera()

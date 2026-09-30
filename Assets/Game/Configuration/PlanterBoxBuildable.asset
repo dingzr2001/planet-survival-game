@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.Building.Definitions.BuildableDefinition
   _buildableId: planter_box
   _displayName: Planter Box
-  _description: "A one-cell growing system. Water and CO\u2082 inputs drive an oxygen
+  _description: "A compact growing system. Water and CO\u2082 inputs drive an oxygen
     output buffer."
   _icon: {fileID: 21300000, guid: 745fb984b3534730a9e30e524a60a354, type: 3}
-  _footprint: {x: 1, y: 1}
+  _footprint: {x: 2, y: 2}
+  _placement: 0
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 10
   _cost:
   - _item: {fileID: 11400000, guid: 83413950307574e0aaa7680208f03450, type: 2}

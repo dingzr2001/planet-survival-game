@@ -27,6 +27,9 @@ namespace PlanetSurvival.Building.Runtime
     {
         private static readonly Color ScaffoldTint = new(.55f, .85f, 1f, .55f);
 
+        /// <summary>Metres the solid collider is pulled in from each footprint edge.</summary>
+        private const float CollisionInset = .1f;
+
         private BuildSite _site;
         private BuildingService _service;
         private Transform _body;
@@ -93,15 +96,17 @@ namespace PlanetSurvival.Building.Runtime
 
             _body = BuildingVisuals.CreateBody(transform, buildable, _cellSize);
 
+            Vector2 worldSize = buildable.WorldSize(_cellSize);
             _collider = gameObject.AddComponent<BoxCollider>();
+            // Inset like Factorio's collision boxes, so a one-cell corridor between two structures stays
+            // wide enough to walk through instead of being sealed by touching colliders.
             _collider.size = new Vector3(
-                buildable.Footprint.x * _cellSize * buildable.FootprintScale,
+                Mathf.Max(.05f, worldSize.x - CollisionInset * 2f),
                 BuildingVisuals.BodyHeight(_body, buildable.WorldHeight),
-                buildable.Footprint.y * _cellSize * buildable.FootprintScale);
+                Mathf.Max(.05f, worldSize.y - CollisionInset * 2f));
             _collider.center = Vector3.up * (_collider.size.y * .5f);
 
-            _patch = BuildingVisuals.CreateFootprintPatch(
-                transform, buildable.Footprint, _cellSize, buildable.FootprintScale);
+            _patch = BuildingVisuals.CreateFootprintPatch(transform, worldSize);
 
             if (site.ItemTransferPost != null)
             {
@@ -154,10 +159,7 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             Color shadowColor = visuals != null ? visuals.ShadowColor : new Color(0f, 0f, 0f, .4f);
-            BlobShadow.Create(transform,
-                new Vector2(buildable.Footprint.x * _cellSize * buildable.FootprintScale,
-                    buildable.Footprint.y * _cellSize * buildable.FootprintScale * .8f),
-                shadowColor);
+            BlobShadow.Create(transform, new Vector2(worldSize.x, worldSize.y * .8f), shadowColor);
 
             _site.Changed += Refresh;
             Refresh();

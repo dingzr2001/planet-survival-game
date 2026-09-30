@@ -14,6 +14,7 @@ using PlanetSurvival.Player.Stats;
 using PlanetSurvival.UI.Inventory;
 using PlanetSurvival.UI.Menu;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Generation.Landforms;
 using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Interiors;
 using UnityEditor;
@@ -85,8 +86,42 @@ namespace PlanetSurvival.Editor
         private const string ShovelDigPath = ConfigurationDirectory + "/ShovelDig.asset";
         private const string ShovelAnimationPath = ConfigurationDirectory + "/ShovelAnimation.asset";
         private const string TerrainPatchSettingsPath = ConfigurationDirectory + "/DefaultTerrainPatches.asset";
+        private const string LandformSettingsPath = ConfigurationDirectory + "/DefaultLandforms.asset";
+
+        // Footprints on the one-metre construction grid. Machines stay close to the 2.75 m they covered
+        // on the old terrain-sized grid, so their artwork keeps its scale; small utilities shrink to a cell.
+        internal static readonly Vector2Int MachineFootprint = new(3, 3);
+        private static readonly Vector2Int PlanterBoxFootprint = new(2, 2);
+        private static readonly Vector2Int FieldOvenFootprint = new(3, 3);
+        private static readonly Vector2Int MetalBarricadeFootprint = new(2, 1);
+        private static readonly Vector2 OxygenCandleSize = new(.6f, .6f);
+        private const string MountainTextureName = "MountainTop";
+        private const float MountainTextureSize = 14f;
+        private const string CliffTextureName = "MountainCliff";
+        // Single fallen rocks piled at cliff feet, painted in the mountain's own rock.
+        private static readonly string[] TalusStoneNames =
+            { "TalusRock1", "TalusRock2", "TalusRock3", "TalusRock4", "TalusRock5" };
+        private const float CliffTextureSize = 6f;
+        // Fine dust and debris settled on crater floors; seamless. Tiled small enough that its pebbles still
+        // show at the game's zoom.
+        private const string CraterFloorTextureName = "CraterFloor";
+        // Bare volcanic rock laid in place of the regolith over rock ground; seamless. Tiled wide enough that
+        // its plates read a couple of metres across, like the flagstones of a lava plain.
+        private const string RockGroundTextureName = "RockGround";
+        private const float RockGroundTextureSize = 12f;
+        // Molten rock for lava lakes (made seamless from the source art) and single glowing fissures cut
+        // from one sheet, each centred on its own square.
+        private const string LavaTextureName = "Lava";
+        private const float LavaTextureSize = 10f;
+        private static readonly string[] LavaFissureNames =
+            { "LavaFissure1", "LavaFissure2", "LavaFissure3", "LavaFissure4", "LavaFissure5", "LavaFissure6" };
+        private const float CraterFloorTextureSize = 5f;
         private const string TerrainBlendShaderPath = "Assets/Game/Shaders/TerrainBlend.shader";
-        private static readonly string[] IceTextureNames = { "IceVariant1", "IceVariant2", "IceVariant3" };
+        private const string MountainShaderPath = "Assets/Game/Shaders/Mountain.shader";
+        private const string TalusShaderPath = "Assets/Game/Shaders/Talus.shader";
+        // Sheet ice is one seamless texture drawn continuously; the old per-tile variants baked regolith
+        // into square illustrations, which is exactly the grid look the continuous renderer removes.
+        private const string IceTextureName = "Ice";
         private static readonly string[] IronTextureNames = { "IronVariant1", "IronVariant2", "IronVariant3" };
 
         // Diggable terrain. The three ordinary rock grades pay one stone per swing at the same rate;
@@ -96,13 +131,13 @@ namespace PlanetSurvival.Editor
         private const float TerrainTileSize = 2.75f;
         private const int TerrainChunkSizeInTiles = 8;
         private const int TerrainLoadRadiusInChunks = 1;
-        private const int TerrainControlMapResolution = 128;
+        private const int TerrainControlMapResolution = 64;
         private const float TerrainBlendDistance = 1.2f;
         // Legacy world-space repeat sizes kept in authored assets for backward compatibility. The current
         // tile-aligned renderer always fits one complete texture into one gameplay tile.
         private const float RockTextureTileSize = 8f;
         private const float IronTextureTileSize = 5f;
-        private const float IceTextureTileSize = 12f;
+        private const float IceTextureTileSize = 7f;
         private const float RockDigSeconds = 1.6f;
         private const int RockStonePerDig = 1;
         private const float IronDigSeconds = 3.2f;
@@ -306,7 +341,7 @@ namespace PlanetSurvival.Editor
 
             ItemDefinition aluminumAlloy = GetOrCreateAluminumAlloy();
             BuildableDefinition solarPanel = GetOrCreateBuildable(
-                "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
+                "SolarPanelBuildable", "solar_panel", "Solar Panel", MachineFootprint,
                 SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
                 "Generates 2 electricity units per second when configured as a power-pole input.",
                 new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
@@ -689,13 +724,13 @@ namespace PlanetSurvival.Editor
             TerrainSurfaceDefinition iron = GetOrCreateIronSurface(pickaxe);
             TerrainSurfaceDefinition ice = GetOrCreateIceSurface(pickaxe, iceChunk);
             TerrainSurfaceDefinition boulderField = GetOrCreateTerrainSurface("BoulderFieldTerrain",
-                "rock_boulder_field", "Boulder Field", "Stone3", 5, RockDigSeconds,
+                "rock_boulder_field", "Boulder Field", "RockBoulders", 5, RockDigSeconds,
                 pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
             TerrainSurfaceDefinition brokenRock = GetOrCreateTerrainSurface("BrokenRockTerrain",
-                "rock_broken", "Broken Rock", "Stone2", 3, RockDigSeconds,
+                "rock_broken", "Broken Rock", "RockBroken", 3, RockDigSeconds,
                 pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
             TerrainSurfaceDefinition looseScree = GetOrCreateTerrainSurface("LooseScreeTerrain",
-                "rock_loose_scree", "Loose Scree", "Stone1", 1, RockDigSeconds,
+                "rock_loose_scree", "Loose Scree", "RockScree", 1, RockDigSeconds,
                 pickaxe.ItemId, stone, RockStonePerDig, RockTextureTileSize);
             TerrainSurfaceDefinition regolith = GetOrCreateRegolithSurface(shovel, gravel);
 
@@ -716,7 +751,50 @@ namespace PlanetSurvival.Editor
                 new TerrainPatchLayer(brokenRock, BrokenRockPatchSize, BrokenRockShare, 7817),
                 new TerrainPatchLayer(looseScree, LooseScreePatchSize, LooseScreeShare, 3271));
             ConfigureTerrainRendering(settings);
+            // Lakes carry the ice surface itself, so ice drills and pickaxes need no lake-specific rules.
+            settings.ConfigureLandforms(GetOrCreateLandformSettings(), ice);
+            settings.LandformAppearance.ConfigureMountainTexture(
+                WorldArtSetup.ImportGroundTexture(MountainTextureName), MountainTextureSize);
+            settings.LandformAppearance.ConfigureCliffTexture(
+                WorldArtSetup.ImportGroundTexture(CliffTextureName), CliffTextureSize);
+            var talusStones = new Texture2D[TalusStoneNames.Length];
+            for (int i = 0; i < TalusStoneNames.Length; i++)
+            {
+                talusStones[i] = WorldArtSetup.ImportGroundTexture(TalusStoneNames[i]);
+            }
+
+            settings.LandformAppearance.ConfigureTalusStones(talusStones);
+            settings.LandformAppearance.ConfigureCraterFloorTexture(
+                WorldArtSetup.ImportGroundTexture(CraterFloorTextureName), CraterFloorTextureSize);
+            settings.LandformAppearance.ConfigureRockGround(
+                WorldArtSetup.ImportGroundTexture(RockGroundTextureName), RockGroundTextureSize);
+            var fissures = new Texture2D[LavaFissureNames.Length];
+            for (int i = 0; i < LavaFissureNames.Length; i++)
+            {
+                fissures[i] = WorldArtSetup.ImportGroundTexture(LavaFissureNames[i]);
+            }
+
+            settings.LandformAppearance.ConfigureLava(
+                WorldArtSetup.ImportGroundTexture(LavaTextureName), LavaTextureSize, fissures);
             EditorUtility.SetDirty(settings);
+            return settings;
+        }
+
+        /// <summary>
+        /// Creates the landform asset with its authored defaults on first run only. Later runs leave it
+        /// untouched so tuning done in the inspector or the terrain preview survives regeneration.
+        /// </summary>
+        private static LandformSettings GetOrCreateLandformSettings()
+        {
+            LandformSettings settings = AssetDatabase.LoadAssetAtPath<LandformSettings>(LandformSettingsPath);
+            if (settings != null)
+            {
+                return settings;
+            }
+
+            settings = ScriptableObject.CreateInstance<LandformSettings>();
+            settings.name = "Default Landforms";
+            AssetDatabase.CreateAsset(settings, LandformSettingsPath);
             return settings;
         }
 
@@ -750,6 +828,14 @@ namespace PlanetSurvival.Editor
             }
 
             settings.ConfigureRendering(shader, TerrainControlMapResolution, TerrainBlendDistance);
+            Shader mountainShader = AssetDatabase.LoadAssetAtPath<Shader>(MountainShaderPath);
+            Shader talusShader = AssetDatabase.LoadAssetAtPath<Shader>(TalusShaderPath);
+            if (mountainShader == null || talusShader == null)
+            {
+                Debug.LogError($"Landform shaders were not found at '{MountainShaderPath}' and '{TalusShaderPath}'.");
+            }
+
+            settings.ConfigureLandformShaders(mountainShader, talusShader);
         }
 
         private static TerrainSurfaceDefinition GetOrCreateIronSurface(ItemDefinition pickaxe)
@@ -775,22 +861,15 @@ namespace PlanetSurvival.Editor
             ItemDefinition pickaxe, ItemDefinition iceChunk)
         {
             TerrainSurfaceDefinition surface = GetOrCreateTerrainSurface(
-                "IceTerrain", "ice", "Ice Layer", IceTextureNames[0],
+                "IceTerrain", "ice", "Ice Layer", IceTextureName,
                 IceDigCount, IceDigSeconds, pickaxe.ItemId, iceChunk, IceChunksPerDig, IceTextureTileSize);
-            var textures = new Texture2D[IceTextureNames.Length];
-            for (int i = 0; i < IceTextureNames.Length; i++)
-            {
-                textures[i] = WorldArtSetup.ImportGroundTexture(IceTextureNames[i]);
-            }
-
-            surface.ConfigureTextureVariants(IceTextureTileSize, textures);
+            surface.ConfigurePatchRendering(TerrainPatchRendering.Continuous);
             EditorUtility.SetDirty(surface);
             return surface;
         }
 
         /// <param name="textureTileSize">
-        /// Legacy world-space repeat size retained in the surface asset for compatibility. The current
-        /// terrain renderer fits one complete square artwork into each gameplay tile.
+        /// World metres per repeat when the surface is drawn continuously; scattered cutouts ignore it.
         /// </param>
         private static TerrainSurfaceDefinition GetOrCreateTerrainSurface(string assetName, string terrainId,
             string displayName, string textureName, int digCount, float digDuration,
@@ -1325,11 +1404,11 @@ namespace PlanetSurvival.Editor
                 "A stacked regolith block. Cheap cover against the wind.",
                 new CraftingItemAmount(stone, 4));
             BuildableDefinition barricade = GetOrCreateBuildable("MetalBarricadeBuildable", "metal_barricade",
-                "Metal Barricade", new Vector2Int(2, 1), MetalBarricadeSeconds, 1.1f, new Color(.62f, .66f, .72f),
+                "Metal Barricade", MetalBarricadeFootprint, MetalBarricadeSeconds, 1.1f, new Color(.62f, .66f, .72f),
                 "A braced alloy hull panel, two cells wide.",
                 new CraftingItemAmount(aluminumAlloy, 3));
             BuildableDefinition fieldOven = GetOrCreateBuildable("FieldOvenBuildable", "field_oven", "Field Oven",
-                new Vector2Int(2, 2), FieldOvenSeconds, 1.6f, new Color(.72f, .44f, .26f),
+                FieldOvenFootprint, FieldOvenSeconds, 1.6f, new Color(.72f, .44f, .26f),
                 "An outdoor range. Cooks the same dishes as the galley oven.",
                 new CraftingItemAmount(aluminumAlloy, 4), new CraftingItemAmount(stone, 6));
             fieldOven.ConfigureCookingStation(oven);
@@ -1340,6 +1419,8 @@ namespace PlanetSurvival.Editor
                 "A single-use chemical oxygen candle. It ignites after placement and feeds the pod reserve.",
                 new CraftingItemAmount(oxygenCandle, 1));
             placedOxygenCandle.ConfigureOxygenCandle(true);
+            // A candle connects to nothing, so it is the first item allowed to stand anywhere.
+            placedOxygenCandle.ConfigurePlacement(BuildPlacement.OffGrid, OxygenCandleSize);
             EditorUtility.SetDirty(placedOxygenCandle);
             BuildableDefinition ironMiningDrill = GetOrCreateIronMiningDrill(aluminumAlloy: GetOrCreateAluminumAlloy());
             BuildableDefinition iceDrill = GetOrCreateIceDrill(
@@ -1358,9 +1439,9 @@ namespace PlanetSurvival.Editor
                 AssetDatabase.LoadAssetAtPath<CropDefinition>(PotatoCropPath));
             EditorUtility.SetDirty(planterDefinition);
             BuildableDefinition planterBox = GetOrCreateBuildable(
-                "PlanterBoxBuildable", "planter_box", "Planter Box", Vector2Int.one,
+                "PlanterBoxBuildable", "planter_box", "Planter Box", PlanterBoxFootprint,
                 PlanterBoxBuildSeconds, 1f, new Color(.36f, .55f, .28f),
-                "A one-cell growing system. Water and CO₂ inputs drive an oxygen output buffer.",
+                "A compact growing system. Water and CO₂ inputs drive an oxygen output buffer.",
                 new CraftingItemAmount(soil, 4), new CraftingItemAmount(plasticSheet, 2));
             Sprite planterSprite = WorldArtSetup.ImportBuildingSprite("PlanterBoxEmpty");
             planterBox.ConfigurePresentation(planterSprite, 1f, new Color(.36f, .55f, .28f));
@@ -1374,7 +1455,7 @@ namespace PlanetSurvival.Editor
             BuildableDefinition transferPost = GetOrCreateBuildable(
                 "ItemTransferPostBuildable", "item_transfer_post", "Transfer Post", Vector2Int.one,
                 ItemTransferPostBuildSeconds, .65f, new Color(.22f, .28f, .34f),
-                "A half-cell logistics endpoint. Right-click it to choose one adjacent or remote input and output.",
+                "A one-cell logistics endpoint. Right-click it to choose one adjacent or remote input and output.",
                 new CraftingItemAmount(aluminumAlloy, 2),
                 new CraftingItemAmount(plasticSheet, 1),
                 new CraftingItemAmount(entanglementCore, 1));
@@ -1387,7 +1468,7 @@ namespace PlanetSurvival.Editor
             EditorUtility.SetDirty(transferPost);
 
             BuildableDefinition solarPanel = GetOrCreateBuildable(
-                "SolarPanelBuildable", "solar_panel", "Solar Panel", Vector2Int.one,
+                "SolarPanelBuildable", "solar_panel", "Solar Panel", MachineFootprint,
                 SolarPanelBuildSeconds, .15f, new Color(.12f, .2f, .34f),
                 "Generates 2 electricity units per second when configured as a power-pole input.",
                 new CraftingItemAmount(aluminumAlloy, 3), new CraftingItemAmount(plasticSheet, 2));
@@ -1454,7 +1535,7 @@ namespace PlanetSurvival.Editor
             EditorUtility.SetDirty(definition);
 
             BuildableDefinition buildable = GetOrCreateBuildable(
-                "ElectrolyzerBuildable", "electrolyzer", "Electrolyzer", Vector2Int.one,
+                "ElectrolyzerBuildable", "electrolyzer", "Electrolyzer", MachineFootprint,
                 ElectrolyzerBuildSeconds, 1.4f, new Color(.62f, .68f, .74f),
                 "Splits melted ice into breathable oxygen and hydrogen using pole-routed electricity. " +
                 "Fills a suit directly, bottles the surplus, and stalls once its hydrogen vent tank is full.",
@@ -1510,7 +1591,7 @@ namespace PlanetSurvival.Editor
             Sprite sprite = WorldArtSetup.ImportBuildingSprite("IronMiningDrill");
             BuildableDefinition buildable = GetOrCreateBuildable(
                 "IronMiningDrillBuildable", "iron_mining_drill", "Iron Mining Drill",
-                Vector2Int.one, IronMiningDrillBuildSeconds, .98f, new Color(.82f, .58f, .18f),
+                MachineFootprint, IronMiningDrillBuildSeconds, .98f, new Color(.82f, .58f, .18f),
                 "Extracts iron ore only when placed on iron terrain. Accepts electricity or petroleum and pauses when its ore bin is full.",
                 new CraftingItemAmount(aluminumAlloy, 8));
             buildable.ConfigurePresentation(sprite, .98f, new Color(.82f, .58f, .18f));
@@ -1540,7 +1621,7 @@ namespace PlanetSurvival.Editor
 
             Sprite sprite = WorldArtSetup.ImportBuildingSprite("IceDrill");
             BuildableDefinition buildable = GetOrCreateBuildable(
-                "IceDrillBuildable", "ice_drill", "Ice Drill", Vector2Int.one,
+                "IceDrillBuildable", "ice_drill", "Ice Drill", MachineFootprint,
                 IceDrillBuildSeconds, .98f, new Color(.65f, .78f, .88f),
                 "Extracts water-ice chunks only from water-ice terrain. Accepts electricity or petroleum " +
                 "and pauses when its ice bin is full.",
@@ -1577,7 +1658,7 @@ namespace PlanetSurvival.Editor
             Sprite sprite = WorldArtSetup.ImportBuildingSprite("GravelExtractor");
             BuildableDefinition buildable = GetOrCreateBuildable(
                 "GravelExtractorBuildable", "gravel_extractor", "Gravel Extractor",
-                Vector2Int.one, GravelExtractorBuildSeconds, .98f, new Color(.72f, .56f, .22f),
+                MachineFootprint, GravelExtractorBuildSeconds, .98f, new Color(.72f, .56f, .22f),
                 "Extracts gravel from ordinary regolith. Accepts electricity or petroleum and pauses when its output bin is full.",
                 new CraftingItemAmount(aluminumAlloy, 6));
             buildable.ConfigurePresentation(sprite, .98f, new Color(.72f, .56f, .22f));

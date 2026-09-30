@@ -56,6 +56,8 @@ namespace PlanetSurvival.Bootstrap
         private bool _abundantSurfaceResourcesInDebugBuild = true;
         [SerializeField, Range(1f, 10f), Tooltip("Multiplies both terrain-patch coverage and resource-node density while debug abundance is enabled.")]
         private float _debugSurfaceResourceMultiplier = 6f;
+        [SerializeField, Range(1f, 10f), Tooltip("Editor and Development Builds only. Multiplies the player's surface walking speed; 1 keeps the authored speed.")]
+        private float _debugSurfaceMoveSpeedMultiplier = 4f;
 
         private const string RuntimeRootName = "Gameplay Runtime";
         private const float SurfaceCameraOrthographicSize = 9.5f;
@@ -64,6 +66,9 @@ namespace PlanetSurvival.Bootstrap
             Debug.isDebugBuild && _abundantSurfaceResourcesInDebugBuild
                 ? Mathf.Max(1f, _debugSurfaceResourceMultiplier)
                 : 1f;
+
+        private float SurfaceMoveSpeedMultiplier =>
+            Debug.isDebugBuild ? Mathf.Max(1f, _debugSurfaceMoveSpeedMultiplier) : 1f;
 
         public void Configure(TerrainGenerationSettings terrainSettings)
         {
@@ -143,11 +148,12 @@ namespace PlanetSurvival.Bootstrap
             ContinuousTerrainView terrainView = CreateTerrain(root.transform);
             GameObject player = CreatePlayer(root.transform, session);
             terrainView.SetTarget(player.transform);
-            CreateTerrainPatches(root.transform, player.transform, session);
+            TerrainSurface groundSurface = CreateTerrainPatches(root.transform, player.transform, session);
             LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
                 _worldVisuals);
-            CreateResourceStreaming(root.transform, player.transform, session.Buildings.Grid);
+            CreateResourceStreaming(root.transform, player.transform, session.Buildings.Grid, session.Terrain);
             Camera camera = CreateCamera(root.transform, player.transform);
+            camera.GetComponent<FollowCamera>().SetGroundSurface(groundSurface);
             Light sun = CreateLighting(root.transform);
             GameClock clock = CreateClock(root.transform, player);
             clock.Bind(session.ConfigureTime(
@@ -155,7 +161,7 @@ namespace PlanetSurvival.Bootstrap
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
             GameObject hud = CreateHud(root.transform, player, clock, _inventorySkin);
             hud.AddComponent<MinimapView>().Bind(player.transform, camera, session.Exploration);
-            CreateBuildingSystem(root.transform, player, camera, hud, session, clock);
+            CreateBuildingSystem(root.transform, player, camera, hud, session, clock, groundSurface);
             BindPlayerDeath(player);
         }
 
@@ -173,17 +179,19 @@ namespace PlanetSurvival.Bootstrap
         /// player something to dig. The tile map itself belongs to the expedition, so terrain the player
         /// already broke does not grow back while they are inside the pod.
         /// </summary>
-        private void CreateTerrainPatches(Transform parent, Transform target, GameSessionState session)
+        /// <returns>The drawn ground the camera and pointer resolve against, or null for flat ground.</returns>
+        private TerrainSurface CreateTerrainPatches(Transform parent, Transform target, GameSessionState session)
         {
             if (_terrainPatchSettings == null)
             {
                 Debug.LogWarning($"{nameof(GameBootstrap)} on '{name}' has no terrain patch settings; the surface will be bare regolith.", this);
-                return;
+                return null;
             }
 
+            Vector3 landingSite = _terrainSettings.StartingAreaCenter;
             session.Terrain.Configure(
                 _terrainSettings.Seed + _terrainPatchSettings.SeedOffset, _terrainPatchSettings,
-                SurfaceResourceDensityMultiplier);
+                SurfaceResourceDensityMultiplier, new Vector2(landingSite.x, landingSite.z));
 
             var terrainPatches = new GameObject("Terrain Patches");
             terrainPatches.transform.SetParent(parent);
@@ -193,9 +201,11 @@ namespace PlanetSurvival.Bootstrap
             TerrainDigSiteSpawner digSites = terrainPatches.AddComponent<TerrainDigSiteSpawner>();
             digSites.Configure(session.Terrain);
             digSites.SetTarget(target);
+            return streamer.Surface;
         }
 
-        private void CreateResourceStreaming(Transform parent, Transform target, BuildGrid buildGrid)
+        private void CreateResourceStreaming(Transform parent, Transform target, BuildGrid buildGrid,
+            TerrainTileMap terrain)
         {
             if (_resourceSpawnSettings == null)
             {
@@ -208,7 +218,7 @@ namespace PlanetSurvival.Bootstrap
             ResourceChunkStreamer streamer = streaming.AddComponent<ResourceChunkStreamer>();
             streamer.Configure(_resourceSpawnSettings, _worldVisuals,
                 _terrainSettings.Seed + _resourceSpawnSettings.SeedOffset, target.position, buildGrid,
-                SurfaceResourceDensityMultiplier);
+                SurfaceResourceDensityMultiplier, terrain);
             streamer.SetTarget(target);
         }
 
@@ -242,7 +252,7 @@ namespace PlanetSurvival.Bootstrap
             player.AddComponent<PlayerOxygenConsumption>().Bind(oxygen, spaceSuit);
             player.AddComponent<PlayerWaterBottle>().Bind(session.SpaceSuit.Water, survival);
             CreatePlayerVisual(player.transform);
-            player.AddComponent<PlanarPlayerMotor>();
+            player.AddComponent<PlanarPlayerMotor>().SetSpeedMultiplier(SurfaceMoveSpeedMultiplier);
             return player;
         }
 
@@ -337,7 +347,7 @@ namespace PlanetSurvival.Bootstrap
         /// controller owns the grid preview and the sites the session carries between scenes.
         /// </summary>
         private void CreateBuildingSystem(Transform parent, GameObject player, Camera camera, GameObject hud,
-            GameSessionState session, GameClock clock)
+            GameSessionState session, GameClock clock, IGroundSurface groundSurface)
         {
             if (_buildingCatalog == null)
             {
@@ -349,6 +359,7 @@ namespace PlanetSurvival.Bootstrap
             systemObject.transform.SetParent(parent);
             BuildGridOverlay gridOverlay = systemObject.AddComponent<BuildGridOverlay>();
             gridOverlay.Bind(session.Buildings.Grid, camera);
+            gridOverlay.SetGroundSurface(groundSurface);
             BuildingPlacementController controller = systemObject.AddComponent<BuildingPlacementController>();
             ItemTransferSystem transferSystem = systemObject.AddComponent<ItemTransferSystem>();
             PowerPoleSystem powerPoleSystem = systemObject.AddComponent<PowerPoleSystem>();
@@ -358,6 +369,8 @@ namespace PlanetSurvival.Bootstrap
             transferSystem.Bind(session.Buildings, gridOverlay, hud.GetComponent<ItemTransferPostView>());
             powerPoleSystem.Bind(session.Buildings, hud.GetComponent<PowerPoleView>());
             buildingInteraction.Bind(player, controller, camera);
+            buildingInteraction.SetGroundSurface(groundSurface);
+            controller.SetGroundSurface(groundSurface);
             hud.GetComponent<InteractionPromptView>().Bind(buildingInteraction);
             controller.Bind(session.Buildings, playerInventory, _buildingCatalog, _worldVisuals, session,
                 hud.GetComponent<CookingView>(), clock, hud.GetComponent<MiningDrillView>(),

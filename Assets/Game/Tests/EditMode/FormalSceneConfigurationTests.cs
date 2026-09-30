@@ -11,9 +11,11 @@ using PlanetSurvival.Mining.Definitions;
 using PlanetSurvival.Oxygen.Definitions;
 using PlanetSurvival.Player.Animation;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Generation.Landforms;
 using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Presentation;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace PlanetSurvival.Tests
@@ -194,18 +196,14 @@ namespace PlanetSurvival.Tests
         }
 
         /// <summary>
-        /// A structure reads as sitting on the ground only when it covers the square of ground artwork it
-        /// stands on, so a construction cell has to be exactly one terrain tile wide.
+        /// Construction snaps to a fine one-metre lattice, as in Factorio, and mountain colliders are built on
+        /// the same lattice so a refused build cell and a wall the player bumps into are the same square.
         /// </summary>
         [Test]
-        public void BuildCells_AreOneTerrainTileWide()
+        public void BuildCells_AreOneMetreAndShareTheMountainColliderLattice()
         {
-            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
-                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
-
-            Assert.That(patches, Is.Not.Null);
-            Assert.That(GameSessionState.BuildGridCellSize, Is.EqualTo(patches.TileSize).Within(.0001f),
-                "A build cell smaller than a terrain tile leaves every building floating inside its tile.");
+            Assert.That(GameSessionState.BuildGridCellSize, Is.EqualTo(1f).Within(.0001f));
+            Assert.That(TerrainChunkObstacles.CellSize, Is.EqualTo(GameSessionState.BuildGridCellSize));
         }
 
         /// <summary>
@@ -267,7 +265,8 @@ namespace PlanetSurvival.Tests
             Assert.That(patches, Is.Not.Null);
 
             var map = new TerrainTileMap();
-            map.Configure(terrain.Seed + patches.SeedOffset, patches);
+            Vector3 landingSite = terrain.StartingAreaCenter;
+            map.Configure(terrain.Seed + patches.SeedOffset, patches, 1f, new Vector2(landingSite.x, landingSite.z));
 
             const int side = 300;
             var isIron = new bool[side, side];
@@ -413,12 +412,10 @@ namespace PlanetSurvival.Tests
             TerrainSurfaceDefinition ice = iceLayer.Surface;
             Assert.That(ice.IsValid(out string error), Is.True, error);
             Assert.That(ice.Texture, Is.Not.Null);
-            Assert.That(ice.TextureVariantCount, Is.EqualTo(3));
-            for (int i = 0; i < ice.TextureVariantCount; i++)
-            {
-                Assert.That(AssetDatabase.GetAssetPath(ice.GetTextureVariant(i)),
-                    Is.EqualTo($"Assets/Game/Art/World/Ground/IceVariant{i + 1}.png"));
-            }
+            Assert.That(ice.TextureVariantCount, Is.EqualTo(1));
+            Assert.That(AssetDatabase.GetAssetPath(ice.Texture), Is.EqualTo("Assets/Game/Art/World/Ground/Ice.png"));
+            Assert.That(ice.PatchRendering, Is.EqualTo(TerrainPatchRendering.Continuous),
+                "Sheet ice is a seamless surface; scattering it per tile would draw a grid of squares.");
             Assert.That(ice.RequiredToolItemId, Is.EqualTo("pickaxe"));
             Assert.That(ice.Yields.Count, Is.EqualTo(1));
             Assert.That(ice.Yields[0].Item, Is.EqualTo(iceChunk));
@@ -447,7 +444,8 @@ namespace PlanetSurvival.Tests
         /// the shipped assets, the seed <c>GameBootstrap</c> derives, and the priority rule. The
         /// shares are a design decision (see ProjectSceneSetup): rock punctuates the regolith rather than
         /// replacing it, and each grade is half as common as the one below, so all three contribute about
-        /// the same stone per square metre.
+        /// the same stone per square metre. Shares are of open ground: mountains and ice lakes own their
+        /// ground outright, and patches are only ever detail on the plains and basins between them.
         /// </summary>
         [Test]
         public void RockTerrain_CoversTheDesignedShareOfTheSurface()
@@ -460,9 +458,11 @@ namespace PlanetSurvival.Tests
             Assert.That(patches, Is.Not.Null);
 
             var map = new TerrainTileMap();
-            map.Configure(terrain.Seed + patches.SeedOffset, patches);
+            Vector3 landingSite = terrain.StartingAreaCenter;
+            map.Configure(terrain.Seed + patches.SeedOffset, patches, 1f, new Vector2(landingSite.x, landingSite.z));
 
             const int side = 300;
+            int openTiles = 0;
             var counts = new int[patches.Layers.Count];
             var covered = new bool[side, side];
             var ironCovered = new bool[side, side];
@@ -472,6 +472,12 @@ namespace PlanetSurvival.Tests
                 for (int z = 0; z < side; z++)
                 {
                     var tile = new TerrainTileCoordinate(x - side / 2, z - side / 2);
+                    LandformKind landform = map.GetLandformKind(tile.CenterX(map.TileSize), tile.CenterZ(map.TileSize));
+                    if (landform == LandformKind.Plain || landform == LandformKind.Basin)
+                    {
+                        openTiles++;
+                    }
+
                     int layerIndex = map.GetLayerIndex(tile);
                     if (layerIndex != ClusteredTerrainLayout.BaseLayerIndex)
                     {
@@ -484,7 +490,7 @@ namespace PlanetSurvival.Tests
                 }
             }
 
-            int total = side * side;
+            int total = openTiles;
             var expectedShares = new Dictionary<string, float>
             {
                 { "iron", .01f },
@@ -571,7 +577,7 @@ namespace PlanetSurvival.Tests
         [Test]
         public void RockTerrainTextures_AreImportedAsTilingTransparentGround()
         {
-            foreach (string textureName in new[] { "Stone1", "Stone2", "Stone3", "Iron" })
+            foreach (string textureName in new[] { "RockScree", "RockBroken", "RockBoulders", "Iron" })
             {
                 string path = $"Assets/Game/Art/World/Ground/{textureName}.png";
                 var importer = AssetImporter.GetAtPath(path) as TextureImporter;
@@ -633,9 +639,82 @@ namespace PlanetSurvival.Tests
             Assert.That(patches.BlendShader, Is.Not.Null,
                 "A serialized shader reference keeps the runtime terrain shader from being stripped in builds.");
             Assert.That(patches.BlendShader.name, Is.EqualTo(TerrainChunkRenderResources.ShaderName));
+            Assert.That(patches.MountainShader, Is.Not.Null, "Mountain meshes need a build-safe shader reference.");
+            Assert.That(patches.TalusShader, Is.Not.Null, "Fallen rocks need a build-safe shader reference.");
+            Shader standing = Resources.Load<Shader>(StandingSpriteMaterial.ShaderResourcePath);
+            Assert.That(standing, Is.Not.Null);
+            Shader surfaceSprite = Resources.Load<Shader>(SurfaceSpriteMaterial.ShaderResourcePath);
+            Assert.That(surfaceSprite, Is.Not.Null, "Flat ground sprites follow craters with this shader.");
+            foreach (Shader shader in new[]
+                     { patches.BlendShader, patches.MountainShader, patches.TalusShader, standing, surfaceSprite })
+            {
+                ShaderMessage[] messages = ShaderUtil.GetShaderMessages(shader);
+                Assert.That(ShaderUtil.ShaderHasError(shader), Is.False,
+                    messages.Length > 0 ? $"{shader.name}: {messages[0].message}" : $"{shader.name} failed to compile.");
+            }
             Assert.That(patches.ControlMapResolution, Is.GreaterThanOrEqualTo(64));
             Assert.That(patches.BlendDistance, Is.GreaterThan(0f));
             Assert.That(patches.Layers.Count, Is.LessThanOrEqualTo(TerrainControlMapBuilder.MaximumLayerCount));
+        }
+
+        /// <summary>
+        /// The shipped world has landforms, and its lakes carry the ice surface itself so ice drills and
+        /// pickaxes work on them with no lake-specific rule.
+        /// </summary>
+        [Test]
+        public void Terrain_HasLandformsWhoseLakesAreWaterIce()
+        {
+            TerrainPatchSettings patches = AssetDatabase.LoadAssetAtPath<TerrainPatchSettings>(
+                "Assets/Game/Configuration/DefaultTerrainPatches.asset");
+
+            Assert.That(patches, Is.Not.Null);
+            Assert.That(patches.Landforms, Is.Not.Null);
+            Assert.That(patches.IceLakeSurface, Is.Not.Null);
+            Assert.That(patches.IceLakeSurface.TerrainId, Is.EqualTo("ice"));
+            Assert.That(patches.LandformAppearance.MountainTexture, Is.Not.Null);
+            Assert.That(patches.LandformAppearance.CliffTexture, Is.Not.Null);
+            Texture2D craterFloor = patches.LandformAppearance.CraterFloorTexture;
+            Assert.That(craterFloor, Is.Not.Null);
+            var craterFloorImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(craterFloor)) as TextureImporter;
+            Assert.That(craterFloorImporter.wrapMode, Is.EqualTo(TextureWrapMode.Repeat),
+                "The crater floor is tiled in world space and would seam at every repeat.");
+            Assert.That(craterFloorImporter.mipmapEnabled, Is.True);
+            Texture2D rockGround = patches.LandformAppearance.RockGroundTexture;
+            Assert.That(rockGround, Is.Not.Null, "Rock ground needs its bare-rock texture.");
+            var rockGroundImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(rockGround)) as TextureImporter;
+            Assert.That(rockGroundImporter.wrapMode, Is.EqualTo(TextureWrapMode.Repeat),
+                "Rock ground is tiled in world space and would seam at every repeat.");
+            Assert.That(rockGroundImporter.mipmapEnabled, Is.True);
+            Texture2D lava = patches.LandformAppearance.LavaTexture;
+            Assert.That(lava, Is.Not.Null, "Lava lakes need their molten-rock texture.");
+            var lavaImporter = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lava)) as TextureImporter;
+            Assert.That(lavaImporter.wrapMode, Is.EqualTo(TextureWrapMode.Repeat),
+                "Lava is tiled in world space and would seam at every repeat.");
+            Assert.That(patches.LandformAppearance.LavaFissures.Count, Is.EqualTo(6));
+            foreach (Texture2D fissure in patches.LandformAppearance.LavaFissures)
+            {
+                Assert.That(fissure, Is.Not.Null);
+                Assert.That(fissure.width, Is.EqualTo(fissure.height), "Fissures are scattered as squares.");
+            }
+            Assert.That(patches.LandformAppearance.TalusStones.Count, Is.EqualTo(5));
+            foreach (Texture2D stone in patches.LandformAppearance.TalusStones)
+            {
+                Assert.That(stone, Is.Not.Null);
+                Assert.That(stone.width, Is.EqualTo(stone.height), "Rocks are scattered as squares; a stretched cutout would distort.");
+            }
+        }
+
+        /// <summary>A candle connects to nothing, so it is the item that may stand anywhere.</summary>
+        [Test]
+        public void OxygenCandle_IsPlacedOffGrid()
+        {
+            BuildableDefinition candle = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
+                "Assets/Game/Configuration/OxygenCandleBuildable.asset");
+
+            Assert.That(candle, Is.Not.Null);
+            Assert.That(candle.IsOffGrid, Is.True);
+            Assert.That(candle.IsValid(out string error), Is.True, error);
+            Assert.That(candle.OffGridSize.x, Is.LessThan(1f));
         }
 
         /// <summary>
@@ -902,7 +981,7 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void PlanterBox_IsOneCellAndUsesSoilPlasticAndAnyMetalPlate()
+        public void PlanterBox_IsTwoByTwoAndUsesSoilPlasticAndAnyMetalPlate()
         {
             BuildableDefinition buildable = AssetDatabase.LoadAssetAtPath<BuildableDefinition>(
                 "Assets/Game/Configuration/PlanterBoxBuildable.asset");
@@ -911,7 +990,7 @@ namespace PlanetSurvival.Tests
 
             Assert.That(buildable, Is.Not.Null);
             Assert.That(buildable.IsValid(out string error), Is.True, error);
-            Assert.That(buildable.Footprint, Is.EqualTo(Vector2Int.one));
+            Assert.That(buildable.Footprint, Is.EqualTo(new Vector2Int(2, 2)));
             Assert.That(buildable.Cost.Count, Is.EqualTo(2));
             Assert.That(buildable.Cost[0].Item.ItemId, Is.EqualTo("soil"));
             Assert.That(buildable.Cost[1].Item.ItemId, Is.EqualTo("plastic_sheet"));
@@ -998,7 +1077,7 @@ namespace PlanetSurvival.Tests
 
             Assert.That(buildable, Is.Not.Null);
             Assert.That(buildable.IsValid(out string error), Is.True, error);
-            Assert.That(buildable.Footprint, Is.EqualTo(Vector2Int.one));
+            Assert.That(buildable.Footprint, Is.EqualTo(new Vector2Int(3, 3)));
             Assert.That(buildable.Electrolyzer, Is.SameAs(definition));
             Assert.That(catalog.Buildables, Does.Contain(buildable));
             Assert.That(buildable.Cost.Count, Is.EqualTo(2));

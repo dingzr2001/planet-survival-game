@@ -41,47 +41,21 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void QuarterGrid_AllowsFourPostsInOneBuildCell_AndBlocksAFullBuilding()
-        {
-            var grid = new BuildGrid();
-            for (int z = 0; z < 2; z++)
-            {
-                for (int x = 0; x < 2; x++)
-                {
-                    Assert.That(grid.TryOccupyQuarterCell(new Vector2Int(x, z), new object()), Is.True);
-                }
-            }
-
-            Assert.That(grid.OccupiedQuarterCellCount, Is.EqualTo(4));
-            Assert.That(grid.IsFree(new BuildFootprint(Vector2Int.zero, Vector2Int.one)), Is.False);
-        }
-
-        [Test]
-        public void FullBuilding_BlocksAllFourQuarterCells()
-        {
-            var grid = new BuildGrid();
-            Assert.That(grid.TryOccupy(new BuildFootprint(Vector2Int.zero, Vector2Int.one), new object()), Is.True);
-
-            Assert.That(grid.IsQuarterCellFree(new Vector2Int(0, 0)), Is.False);
-            Assert.That(grid.IsQuarterCellFree(new Vector2Int(1, 0)), Is.False);
-            Assert.That(grid.IsQuarterCellFree(new Vector2Int(0, 1)), Is.False);
-            Assert.That(grid.IsQuarterCellFree(new Vector2Int(1, 1)), Is.False);
-        }
-
-        [Test]
-        public void PlaceTransferPost_UsesQuarterCellAndOwnsTransferState()
+        public void PlaceTransferPost_ClaimsOneCellAndOwnsTransferState()
         {
             var inventory = new InventoryModel(30, 20);
             inventory.Add(_alloy, 4);
             var service = new BuildingService(inventory, new BuildGrid());
+            var cell = new Vector2Int(3, -2);
 
-            BuildResult result = service.TryPlaceTransferPost(
-                _postDefinition, new Vector2Int(3, -2), out BuildSite site);
+            BuildResult result = service.TryPlace(
+                _postDefinition, new BuildFootprint(cell, Vector2Int.one), out BuildSite site);
 
             Assert.That(result.Succeeded, Is.True, result.Message);
-            Assert.That(site.QuarterCell, Is.EqualTo(new Vector2Int(3, -2)));
+            Assert.That(site.Footprint.Origin, Is.EqualTo(cell));
+            Assert.That(site.IsOffGrid, Is.False);
             Assert.That(site.ItemTransferPost, Is.Not.Null);
-            Assert.That(service.Grid.GetQuarterCellOccupant(new Vector2Int(3, -2)), Is.SameAs(site));
+            Assert.That(service.Grid.GetOccupant(cell), Is.SameAs(site));
             Assert.That(inventory.GetQuantity(_alloy.ItemId), Is.EqualTo(2));
         }
 
@@ -92,12 +66,12 @@ namespace PlanetSurvival.Tests
             inventory.Add(_alloy, 6);
             var service = new BuildingService(inventory, new BuildGrid());
 
-            Assert.That(service.TryPlaceTransferPost(
-                _postDefinition, Vector2Int.zero, out BuildSite first).Succeeded, Is.True);
-            Assert.That(service.TryPlaceTransferPost(
-                _postDefinition, Vector2Int.right, out BuildSite second).Succeeded, Is.True);
-            Assert.That(service.TryPlaceTransferPost(
-                _postDefinition, Vector2Int.up, out BuildSite third).Succeeded, Is.True);
+            Assert.That(service.TryPlace(
+                _postDefinition, OneCell(Vector2Int.zero), out BuildSite first).Succeeded, Is.True);
+            Assert.That(service.TryPlace(
+                _postDefinition, OneCell(Vector2Int.right), out BuildSite second).Succeeded, Is.True);
+            Assert.That(service.TryPlace(
+                _postDefinition, OneCell(Vector2Int.up), out BuildSite third).Succeeded, Is.True);
 
             Assert.That(first.ItemTransferPost.PostNumber, Is.EqualTo(1));
             Assert.That(second.ItemTransferPost.PostNumber, Is.EqualTo(2));
@@ -134,7 +108,7 @@ namespace PlanetSurvival.Tests
             var payment = new InventoryModel(30, 20);
             payment.Add(_alloy, 2);
             var service = new BuildingService(payment, new BuildGrid());
-            Assert.That(service.TryPlaceTransferPost(_postDefinition, Vector2Int.zero,
+            Assert.That(service.TryPlace(_postDefinition, OneCell(Vector2Int.zero),
                 out BuildSite site).Succeeded, Is.True);
             var postObject = new GameObject("Transfer Post");
             var storageObject = new GameObject("Storage");
@@ -184,8 +158,8 @@ namespace PlanetSurvival.Tests
             var inventory = new InventoryModel(30, 20);
             inventory.Add(_alloy, 2);
             var service = new BuildingService(inventory, new BuildGrid());
-            Assert.That(service.TryPlaceTransferPost(
-                _postDefinition, Vector2Int.zero, out BuildSite site).Succeeded, Is.True);
+            Assert.That(service.TryPlace(
+                _postDefinition, OneCell(Vector2Int.zero), out BuildSite site).Succeeded, Is.True);
 
             var postObject = new GameObject("Transfer Post");
             var bodyObject = new GameObject("Body");
@@ -195,7 +169,7 @@ namespace PlanetSurvival.Tests
             var playerObject = new GameObject("Player");
             try
             {
-                postObject.transform.position = service.Grid.QuarterCellCenter(Vector2Int.zero);
+                postObject.transform.position = service.Grid.Center(site.Footprint);
                 bodyObject.transform.SetParent(postObject.transform, false);
                 postObject.AddComponent<BoxCollider>();
                 // The pointer only ever picks placed structures, which is what this component marks.
@@ -243,8 +217,8 @@ namespace PlanetSurvival.Tests
             var inventory = new InventoryModel(30, 20);
             inventory.Add(_alloy, 2);
             var service = new BuildingService(inventory, new BuildGrid());
-            Assert.That(service.TryPlaceTransferPost(
-                _postDefinition, Vector2Int.zero, out BuildSite site).Succeeded, Is.True);
+            Assert.That(service.TryPlace(
+                _postDefinition, OneCell(Vector2Int.zero), out BuildSite site).Succeeded, Is.True);
 
             var postObject = new GameObject("Transfer Post");
             var bodyObject = new GameObject("Body");
@@ -254,7 +228,7 @@ namespace PlanetSurvival.Tests
             var playerObject = new GameObject("Player");
             try
             {
-                postObject.transform.position = service.Grid.QuarterCellCenter(Vector2Int.zero);
+                postObject.transform.position = service.Grid.Center(site.Footprint);
                 bodyObject.transform.SetParent(postObject.transform, false);
                 postObject.AddComponent<BoxCollider>();
                 postObject.AddComponent<BuildSiteView>();
@@ -294,5 +268,7 @@ namespace PlanetSurvival.Tests
                 Object.DestroyImmediate(postObject);
             }
         }
+
+        private static BuildFootprint OneCell(Vector2Int cell) => new(cell, Vector2Int.one);
     }
 }

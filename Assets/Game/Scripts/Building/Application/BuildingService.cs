@@ -82,10 +82,10 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.InvalidBuildable, error);
             }
 
-            if (buildable.UsesQuarterCellPlacement)
+            if (buildable.IsOffGrid)
             {
                 return BuildResult.Fail(BuildFailure.InvalidBuildable,
-                    "This building must be placed on the half-cell grid.");
+                    $"'{buildable.DisplayName}' is placed freely, not on the grid.");
             }
 
             if (footprint.Size != buildable.Footprint)
@@ -98,6 +98,11 @@ namespace PlanetSurvival.Building.Application
             if (!_grid.IsFree(footprint))
             {
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
+            }
+
+            if (IsFootprintOnBlockedTerrain(footprint))
+            {
+                return BuildResult.Fail(BuildFailure.TerrainBlocked, "Nothing can be built on a mountain.");
             }
 
             string requiredTerrainId = buildable.MiningDrill?.RequiredTerrainId;
@@ -118,11 +123,12 @@ namespace PlanetSurvival.Building.Application
             return BuildResult.Success();
         }
 
-        public BuildResult CanPlaceTransferPost(BuildableDefinition buildable, Vector2Int quarterCell)
+        /// <summary>Checks a free-standing item centred at <paramref name="worldCenter"/> on the grid plane.</summary>
+        public BuildResult CanPlaceOffGrid(BuildableDefinition buildable, Vector3 worldCenter)
         {
-            if (buildable == null || !buildable.UsesQuarterCellPlacement)
+            if (buildable == null || !buildable.IsOffGrid)
             {
-                return BuildResult.Fail(BuildFailure.InvalidBuildable, "Only a half-cell building may use half-cell placement.");
+                return BuildResult.Fail(BuildFailure.InvalidBuildable, "Only an off-grid item may be placed freely.");
             }
 
             if (!buildable.IsValid(out string error))
@@ -130,9 +136,15 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.InvalidBuildable, error);
             }
 
-            if (!_grid.IsQuarterCellFree(quarterCell))
+            Rect area = OffGridArea(buildable, worldCenter);
+            if (!_grid.IsAreaFree(area))
             {
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
+            }
+
+            if (IsAreaOnBlockedTerrain(area))
+            {
+                return BuildResult.Fail(BuildFailure.TerrainBlocked, "Nothing can be built on a mountain.");
             }
 
             if (!CanAfford(buildable))
@@ -142,6 +154,44 @@ namespace PlanetSurvival.Building.Application
             }
 
             return BuildResult.Success();
+        }
+
+        /// <summary>The world rectangle (x/y = world X/Z) an off-grid item centred here would claim.</summary>
+        public static Rect OffGridArea(BuildableDefinition buildable, Vector3 worldCenter)
+        {
+            Vector2 size = buildable.OffGridSize;
+            return new Rect(worldCenter.x - size.x * .5f, worldCenter.z - size.y * .5f, size.x, size.y);
+        }
+
+        private bool IsFootprintOnBlockedTerrain(in BuildFootprint footprint)
+        {
+            if (_terrain == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < footprint.CellCount; i++)
+            {
+                Vector3 center = _grid.CellCenter(footprint.CellAt(i));
+                if (_terrain.IsBlockedAt(center.x, center.z))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Samples the area's centre and corners. Off-grid items are far smaller than a mountain, so any
+        /// blocked ground under one of them is found at those five points.
+        /// </summary>
+        private bool IsAreaOnBlockedTerrain(Rect area)
+        {
+            return _terrain != null && (
+                _terrain.IsBlockedAt(area.center.x, area.center.y) ||
+                _terrain.IsBlockedAt(area.xMin, area.yMin) || _terrain.IsBlockedAt(area.xMax, area.yMin) ||
+                _terrain.IsBlockedAt(area.xMin, area.yMax) || _terrain.IsBlockedAt(area.xMax, area.yMax));
         }
 
         private bool IsFootprintOnTerrain(in BuildFootprint footprint, string terrainId)
@@ -184,12 +234,23 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.MissingResources, paid.Message);
             }
 
-            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, footprint, paidMaterials);
+            int compactBuildingNumber = buildable.IsPowerPole ? _nextPowerPoleNumber : _nextTransferPostNumber;
+            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, footprint, paidMaterials,
+                compactBuildingNumber);
             if (!_grid.TryOccupy(footprint, placed))
             {
                 // Unreachable while CanPlace holds, but refunding keeps a future caller from losing materials.
                 _inventory.ApplyTransaction(null, paidMaterials);
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
+            }
+
+            if (buildable.IsItemTransferPost)
+            {
+                _nextTransferPostNumber++;
+            }
+            else if (buildable.IsPowerPole)
+            {
+                _nextPowerPoleNumber++;
             }
 
             site = placed;
@@ -198,11 +259,11 @@ namespace PlanetSurvival.Building.Application
             return BuildResult.Success();
         }
 
-        public BuildResult TryPlaceTransferPost(BuildableDefinition buildable, Vector2Int quarterCell,
-            out BuildSite site)
+        /// <summary>Pays for and claims a free-standing item centred at <paramref name="worldCenter"/>.</summary>
+        public BuildResult TryPlaceOffGrid(BuildableDefinition buildable, Vector3 worldCenter, out BuildSite site)
         {
             site = null;
-            BuildResult validation = CanPlaceTransferPost(buildable, quarterCell);
+            BuildResult validation = CanPlaceOffGrid(buildable, worldCenter);
             if (!validation.Succeeded)
             {
                 return validation;
@@ -215,25 +276,16 @@ namespace PlanetSurvival.Building.Application
                 return BuildResult.Fail(BuildFailure.MissingResources, paid.Message);
             }
 
-            int compactBuildingNumber = buildable.IsPowerPole ? _nextPowerPoleNumber : _nextTransferPostNumber;
-            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable, quarterCell, paidMaterials,
-                compactBuildingNumber);
-            if (!_grid.TryOccupyQuarterCell(quarterCell, placed))
+            var placed = new BuildSite(Guid.NewGuid().ToString("N"), buildable,
+                new Vector2(worldCenter.x, worldCenter.z), paidMaterials);
+            if (!_grid.TryOccupyArea(OffGridArea(buildable, worldCenter), placed))
             {
                 _inventory.ApplyTransaction(null, paidMaterials);
                 return BuildResult.Fail(BuildFailure.Blocked, "Something already stands here.");
             }
 
-            RegisterPlacedSite(placed);
-            if (buildable.IsItemTransferPost)
-            {
-                _nextTransferPostNumber++;
-            }
-            else if (buildable.IsPowerPole)
-            {
-                _nextPowerPoleNumber++;
-            }
             site = placed;
+            RegisterPlacedSite(placed);
             return BuildResult.Success();
         }
 

@@ -5,17 +5,20 @@ namespace PlanetSurvival.Building.Domain
 {
     /// <summary>
     /// The placement lattice of the world: it converts world positions to cells, snaps a footprint under
-    /// the cursor, and remembers which cells are already taken. Occupancy is keyed by the object that
-    /// claimed it, so releasing a site never has to walk the whole map.
+    /// the cursor, and remembers what is already taken. Snapped structures claim whole cells; free-standing
+    /// objects claim an exact world rectangle, so small items can sit anywhere without wasting a cell.
+    /// Occupancy is keyed by the object that claimed it, so releasing a site never has to walk the map.
     /// </summary>
     public sealed class BuildGrid
     {
         public const float DefaultCellSize = 1f;
 
         private readonly Dictionary<Vector2Int, object> _cells = new();
-        private readonly Dictionary<Vector2Int, object> _quarterCells = new();
         private readonly Dictionary<object, BuildFootprint> _occupants = new();
-        private readonly Dictionary<object, Vector2Int> _quarterOccupants = new();
+
+        // Free rectangles are indexed by every cell they touch, so a query only inspects its own cells.
+        private readonly Dictionary<Vector2Int, List<object>> _areaCells = new();
+        private readonly Dictionary<object, Rect> _areaOccupants = new();
         private readonly float _cellSize;
         private readonly Vector3 _origin;
 
@@ -33,7 +36,7 @@ namespace PlanetSurvival.Building.Domain
         public float CellSize => _cellSize;
         public Vector3 Origin => _origin;
         public int OccupiedCellCount => _cells.Count;
-        public int OccupiedQuarterCellCount => _quarterCells.Count;
+        public int FreeAreaCount => _areaOccupants.Count;
 
         public Vector2Int WorldToCell(Vector3 world)
         {
@@ -51,24 +54,6 @@ namespace PlanetSurvival.Building.Domain
                 _origin.z + (cell.y + .5f) * _cellSize);
         }
 
-        /// <summary>Converts a position to one of the four half-size cells inside a normal build cell.</summary>
-        public Vector2Int WorldToQuarterCell(Vector3 world)
-        {
-            float quarterSize = _cellSize * .5f;
-            return new Vector2Int(
-                Mathf.FloorToInt((world.x - _origin.x) / quarterSize),
-                Mathf.FloorToInt((world.z - _origin.z) / quarterSize));
-        }
-
-        public Vector3 QuarterCellCenter(Vector2Int quarterCell)
-        {
-            float quarterSize = _cellSize * .5f;
-            return new Vector3(
-                _origin.x + (quarterCell.x + .5f) * quarterSize,
-                _origin.y,
-                _origin.z + (quarterCell.y + .5f) * quarterSize);
-        }
-
         /// <summary>The world position a footprint's object sits at: the centre of the covered rectangle.</summary>
         public Vector3 Center(in BuildFootprint footprint)
         {
@@ -78,18 +63,29 @@ namespace PlanetSurvival.Building.Domain
                 _origin.z + (footprint.Origin.y + footprint.Size.y * .5f) * _cellSize);
         }
 
+        /// <summary>The footprint's extent on the XZ plane, as a rectangle whose y axis is world Z.</summary>
+        public Rect WorldRect(in BuildFootprint footprint)
+        {
+            return new Rect(
+                _origin.x + footprint.Origin.x * _cellSize,
+                _origin.z + footprint.Origin.y * _cellSize,
+                footprint.Size.x * _cellSize,
+                footprint.Size.y * _cellSize);
+        }
+
         /// <summary>
-        /// Snaps a footprint of the given size under a world position. The cursor cell stays inside the
-        /// footprint, biased towards its lower-left corner for even sizes, so dragging feels anchored to
-        /// the cell the player is pointing at.
+        /// Snaps a footprint of the given size under a world position, centred on the cursor the way
+        /// Factorio does: an odd edge centres on the cell under the cursor, an even edge on the nearest grid
+        /// line. Every size then tracks the cursor symmetrically instead of lagging towards one corner.
         /// </summary>
         public BuildFootprint CreateFootprint(Vector3 world, Vector2Int size)
         {
             Vector2Int safeSize = new(Mathf.Max(1, size.x), Mathf.Max(1, size.y));
-            Vector2Int cursor = WorldToCell(world);
+            float cursorX = (world.x - _origin.x) / _cellSize;
+            float cursorZ = (world.z - _origin.z) / _cellSize;
             var origin = new Vector2Int(
-                cursor.x - (safeSize.x - 1) / 2,
-                cursor.y - (safeSize.y - 1) / 2);
+                Mathf.FloorToInt(cursorX - safeSize.x * .5f + .5f),
+                Mathf.FloorToInt(cursorZ - safeSize.y * .5f + .5f));
             return new BuildFootprint(origin, safeSize);
         }
 
@@ -101,21 +97,8 @@ namespace PlanetSurvival.Building.Domain
         public BuildFootprint CreateCoveringFootprint(Vector3 worldCenter, Vector2 worldSize)
         {
             Vector2 safeSize = new(Mathf.Max(.01f, worldSize.x), Mathf.Max(.01f, worldSize.y));
-            float epsilon = _cellSize * .0001f;
-            var minimum = new Vector3(
-                worldCenter.x - safeSize.x * .5f + epsilon,
-                _origin.y,
-                worldCenter.z - safeSize.y * .5f + epsilon);
-            var maximum = new Vector3(
-                worldCenter.x + safeSize.x * .5f - epsilon,
-                _origin.y,
-                worldCenter.z + safeSize.y * .5f - epsilon);
-            Vector2Int minimumCell = WorldToCell(minimum);
-            Vector2Int maximumCell = WorldToCell(maximum);
-            var size = new Vector2Int(
-                Mathf.Max(1, maximumCell.x - minimumCell.x + 1),
-                Mathf.Max(1, maximumCell.y - minimumCell.y + 1));
-            return new BuildFootprint(minimumCell, size);
+            return CoveringFootprint(new Rect(
+                worldCenter.x - safeSize.x * .5f, worldCenter.z - safeSize.y * .5f, safeSize.x, safeSize.y));
         }
 
         public bool IsFree(in BuildFootprint footprint)
@@ -123,61 +106,39 @@ namespace PlanetSurvival.Building.Domain
             return IsFree(footprint, null);
         }
 
-        /// <summary>Free for <paramref name="ignoredOccupant"/>, which may re-claim the cells it already holds.</summary>
+        /// <summary>Free for <paramref name="ignoredOccupant"/>, which may re-claim what it already holds.</summary>
         public bool IsFree(in BuildFootprint footprint, object ignoredOccupant)
         {
             for (int i = 0; i < footprint.CellCount; i++)
             {
-                Vector2Int cell = footprint.CellAt(i);
-                if (_cells.TryGetValue(cell, out object occupant) &&
+                if (_cells.TryGetValue(footprint.CellAt(i), out object occupant) &&
                     !ReferenceEquals(occupant, ignoredOccupant))
                 {
                     return false;
                 }
+            }
 
-                Vector2Int firstQuarter = cell * 2;
-                for (int z = 0; z < 2; z++)
+            return !OverlapsFreeArea(footprint, WorldRect(footprint), ignoredOccupant);
+        }
+
+        /// <summary>
+        /// Whether a free-standing object may occupy <paramref name="worldArea"/> (x/y = world X/Z). Snapped
+        /// structures fill their whole cells, so any claimed cell the area touches blocks it; other free
+        /// objects block only where their rectangles actually overlap.
+        /// </summary>
+        public bool IsAreaFree(Rect worldArea, object ignoredOccupant = null)
+        {
+            BuildFootprint touched = CoveringFootprint(worldArea);
+            for (int i = 0; i < touched.CellCount; i++)
+            {
+                if (_cells.TryGetValue(touched.CellAt(i), out object occupant) &&
+                    !ReferenceEquals(occupant, ignoredOccupant))
                 {
-                    for (int x = 0; x < 2; x++)
-                    {
-                        if (_quarterCells.TryGetValue(firstQuarter + new Vector2Int(x, z), out occupant) &&
-                            !ReferenceEquals(occupant, ignoredOccupant))
-                        {
-                            return false;
-                        }
-                    }
+                    return false;
                 }
             }
 
-            return true;
-        }
-
-        public bool IsQuarterCellFree(Vector2Int quarterCell, object ignoredOccupant = null)
-        {
-            if (_quarterCells.TryGetValue(quarterCell, out object quarterOccupant) &&
-                !ReferenceEquals(quarterOccupant, ignoredOccupant))
-            {
-                return false;
-            }
-
-            var containingCell = new Vector2Int(
-                Mathf.FloorToInt(quarterCell.x / 2f),
-                Mathf.FloorToInt(quarterCell.y / 2f));
-            return !_cells.TryGetValue(containingCell, out object occupant) ||
-                   ReferenceEquals(occupant, ignoredOccupant);
-        }
-
-        public bool TryOccupyQuarterCell(Vector2Int quarterCell, object occupant)
-        {
-            if (occupant == null || !IsQuarterCellFree(quarterCell, occupant))
-            {
-                return false;
-            }
-
-            Release(occupant);
-            _quarterCells[quarterCell] = occupant;
-            _quarterOccupants[occupant] = quarterCell;
-            return true;
+            return !OverlapsFreeArea(touched, worldArea, ignoredOccupant);
         }
 
         public bool TryOccupy(in BuildFootprint footprint, object occupant)
@@ -197,6 +158,32 @@ namespace PlanetSurvival.Building.Domain
             return true;
         }
 
+        public bool TryOccupyArea(Rect worldArea, object occupant)
+        {
+            if (occupant == null || worldArea.width <= 0f || worldArea.height <= 0f ||
+                !IsAreaFree(worldArea, occupant))
+            {
+                return false;
+            }
+
+            Release(occupant);
+            BuildFootprint touched = CoveringFootprint(worldArea);
+            for (int i = 0; i < touched.CellCount; i++)
+            {
+                Vector2Int cell = touched.CellAt(i);
+                if (!_areaCells.TryGetValue(cell, out List<object> occupants))
+                {
+                    occupants = new List<object>(1);
+                    _areaCells.Add(cell, occupants);
+                }
+
+                occupants.Add(occupant);
+            }
+
+            _areaOccupants[occupant] = worldArea;
+            return true;
+        }
+
         public void Release(object occupant)
         {
             if (occupant == null)
@@ -204,14 +191,23 @@ namespace PlanetSurvival.Building.Domain
                 return;
             }
 
-            if (_quarterOccupants.TryGetValue(occupant, out Vector2Int quarterCell))
+            if (_areaOccupants.TryGetValue(occupant, out Rect area))
             {
-                if (_quarterCells.TryGetValue(quarterCell, out object current) && ReferenceEquals(current, occupant))
+                BuildFootprint touched = CoveringFootprint(area);
+                for (int i = 0; i < touched.CellCount; i++)
                 {
-                    _quarterCells.Remove(quarterCell);
+                    Vector2Int cell = touched.CellAt(i);
+                    if (_areaCells.TryGetValue(cell, out List<object> occupants))
+                    {
+                        occupants.Remove(occupant);
+                        if (occupants.Count == 0)
+                        {
+                            _areaCells.Remove(cell);
+                        }
+                    }
                 }
 
-                _quarterOccupants.Remove(occupant);
+                _areaOccupants.Remove(occupant);
             }
 
             if (!_occupants.TryGetValue(occupant, out BuildFootprint footprint))
@@ -236,22 +232,6 @@ namespace PlanetSurvival.Building.Domain
             return _cells.TryGetValue(cell, out object occupant) ? occupant : null;
         }
 
-        public object GetQuarterCellOccupant(Vector2Int quarterCell)
-        {
-            return _quarterCells.TryGetValue(quarterCell, out object occupant) ? occupant : null;
-        }
-
-        public bool TryGetQuarterCell(object occupant, out Vector2Int quarterCell)
-        {
-            if (occupant != null)
-            {
-                return _quarterOccupants.TryGetValue(occupant, out quarterCell);
-            }
-
-            quarterCell = default;
-            return false;
-        }
-
         public bool TryGetFootprint(object occupant, out BuildFootprint footprint)
         {
             if (occupant != null)
@@ -263,12 +243,63 @@ namespace PlanetSurvival.Building.Domain
             return false;
         }
 
+        public bool TryGetArea(object occupant, out Rect area)
+        {
+            if (occupant != null)
+            {
+                return _areaOccupants.TryGetValue(occupant, out area);
+            }
+
+            area = default;
+            return false;
+        }
+
         public void Clear()
         {
             _cells.Clear();
             _occupants.Clear();
-            _quarterCells.Clear();
-            _quarterOccupants.Clear();
+            _areaCells.Clear();
+            _areaOccupants.Clear();
+        }
+
+        private BuildFootprint CoveringFootprint(Rect worldArea)
+        {
+            // Pulled in by a hair so a rectangle ending exactly on a grid line does not claim the next cell.
+            float epsilon = _cellSize * .0001f;
+            Vector2Int minimum = WorldToCell(new Vector3(worldArea.xMin + epsilon, 0f, worldArea.yMin + epsilon));
+            Vector2Int maximum = WorldToCell(new Vector3(worldArea.xMax - epsilon, 0f, worldArea.yMax - epsilon));
+            var size = new Vector2Int(
+                Mathf.Max(1, maximum.x - minimum.x + 1),
+                Mathf.Max(1, maximum.y - minimum.y + 1));
+            return new BuildFootprint(minimum, size);
+        }
+
+        private bool OverlapsFreeArea(in BuildFootprint cells, Rect worldArea, object ignoredOccupant)
+        {
+            if (_areaOccupants.Count == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < cells.CellCount; i++)
+            {
+                if (!_areaCells.TryGetValue(cells.CellAt(i), out List<object> occupants))
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < occupants.Count; j++)
+                {
+                    object occupant = occupants[j];
+                    if (!ReferenceEquals(occupant, ignoredOccupant) &&
+                        _areaOccupants[occupant].Overlaps(worldArea))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

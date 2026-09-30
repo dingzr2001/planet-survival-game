@@ -26,6 +26,10 @@ namespace PlanetSurvival.Building.Definitions
         private Sprite _icon;
         [SerializeField, Tooltip("Footprint in grid cells. Every cell must be free before it can be placed.")]
         private Vector2Int _footprint = Vector2Int.one;
+        [SerializeField, Tooltip("Grid structures snap to cells; off-grid items stand exactly where the cursor is.")]
+        private BuildPlacement _placement = BuildPlacement.Grid;
+        [SerializeField, Tooltip("World width and depth, in metres, of an off-grid item. Ignored for grid structures.")]
+        private Vector2 _offGridSize = new(.6f, .6f);
         [SerializeField, Min(0f), Tooltip("Real seconds between placing the site and the finished building. Zero completes instantly.")]
         private float _buildSeconds = 10f;
         [SerializeField, Tooltip("Materials consumed the moment the site is placed. Cancelling refunds them.")]
@@ -54,7 +58,7 @@ namespace PlanetSurvival.Building.Definitions
         private ElectrolyzerDefinition _electrolyzer;
         [SerializeField, Tooltip("Optional: fuel and oxygen powered electricity generator.")]
         private CombustionGeneratorDefinition _combustionGenerator;
-        [SerializeField, Tooltip("The finished building is a half-cell item transfer post.")]
+        [SerializeField, Tooltip("The finished building is an item transfer post.")]
         private bool _isItemTransferPost;
         [SerializeField, Tooltip("The finished building generates electricity for adjacent mining drills.")]
         private bool _isSolarPanel;
@@ -73,6 +77,9 @@ namespace PlanetSurvival.Building.Definitions
         public string DisplayName => _displayName;
         public string Description => _description;
         public Vector2Int Footprint => new(Mathf.Max(1, _footprint.x), Mathf.Max(1, _footprint.y));
+        public BuildPlacement Placement => _placement;
+        public bool IsOffGrid => _placement == BuildPlacement.OffGrid;
+        public Vector2 OffGridSize => new(Mathf.Max(.05f, _offGridSize.x), Mathf.Max(.05f, _offGridSize.y));
         public float BuildSeconds => Mathf.Max(0f, _buildSeconds);
         public IReadOnlyList<CraftingItemAmount> Cost => _cost ?? Array.Empty<CraftingItemAmount>();
         public IReadOnlyList<TaggedBuildingMaterialAmount> TaggedCost =>
@@ -95,10 +102,19 @@ namespace PlanetSurvival.Building.Definitions
         public Sprite PowerPoleLimitedSprite => _powerPoleLimitedSprite;
         public Sprite PowerPolePoweredSprite => _powerPolePoweredSprite;
 
-        /// <summary>World width/depth occupied by this buildable, in construction-cell units.</summary>
-        /// <summary>Small utility buildings use one quarter-cell: half the normal building edge length.</summary>
-        public bool UsesQuarterCellPlacement => _isItemTransferPost || _isPowerPole;
-        public float FootprintScale => UsesQuarterCellPlacement ? .5f : 1f;
+        /// <summary>World width and depth, in metres, the structure stands on for the given grid.</summary>
+        public Vector2 WorldSize(float cellSize)
+        {
+            return IsOffGrid ? OffGridSize : new Vector2(Footprint.x * cellSize, Footprint.y * cellSize);
+        }
+
+        /// <summary>
+        /// Transfer posts, power poles and the machines they serve find each other by shared cell edges,
+        /// which an off-grid item does not have.
+        /// </summary>
+        private bool ConnectsToNeighbours =>
+            _isItemTransferPost || _isPowerPole || _isSolarPanel || _miningDrill != null ||
+            _planterBox != null || _electrolyzer != null || _combustionGenerator != null;
 
         /// <summary>The menu icon, falling back to the artwork of the material the structure is mostly made of.</summary>
         public Sprite MenuIcon
@@ -128,9 +144,15 @@ namespace PlanetSurvival.Building.Definitions
                 return false;
             }
 
-            if (UsesQuarterCellPlacement && _footprint != Vector2Int.one)
+            if (IsOffGrid && ConnectsToNeighbours)
             {
-                error = $"Half-cell building '{_buildableId}' must use a one-cell authored footprint; it is scaled to a half-cell at runtime.";
+                error = $"Buildable '{_buildableId}' connects to adjacent structures and must snap to the grid.";
+                return false;
+            }
+
+            if (IsOffGrid && (_offGridSize.x <= 0f || _offGridSize.y <= 0f))
+            {
+                error = $"Off-grid buildable '{_buildableId}' needs a positive size.";
                 return false;
             }
 
@@ -217,6 +239,12 @@ namespace PlanetSurvival.Building.Definitions
             _footprint = footprint;
             _buildSeconds = Mathf.Max(0f, buildSeconds);
             _cost = cost ?? Array.Empty<CraftingItemAmount>();
+        }
+
+        public void ConfigurePlacement(BuildPlacement placement, Vector2 offGridSize)
+        {
+            _placement = placement;
+            _offGridSize = new Vector2(Mathf.Max(.05f, offGridSize.x), Mathf.Max(.05f, offGridSize.y));
         }
 
         public void ConfigurePresentation(Sprite worldSprite, float worldHeight, Color bodyColor)

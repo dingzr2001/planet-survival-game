@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PlanetSurvival.World.Generation.Landforms;
 using UnityEngine;
 
 namespace PlanetSurvival.World.Ground
@@ -17,6 +18,10 @@ namespace PlanetSurvival.World.Ground
         private readonly List<TerrainTileCoordinate> _changeBuffer = new();
         private IReadOnlyList<TerrainPatchLayer> _layers = Array.Empty<TerrainPatchLayer>();
         private TerrainSurfaceDefinition _baseSurface;
+        private TerrainSurfaceDefinition _iceLakeSurface;
+        private LandformSettings _landformSettings;
+        private LandformSampler _landforms;
+        private Vector2 _landingSite;
 
         public float TileSize { get; private set; } = 1f;
         public int WorldSeed { get; private set; }
@@ -24,17 +29,32 @@ namespace PlanetSurvival.World.Ground
         public IReadOnlyList<TerrainPatchLayer> Layers => _layers;
         public int DugTileCount => _remainingDigs.Count;
 
+        /// <summary>The landform field beneath the patches, or null when the surface is flat open ground.</summary>
+        public LandformSampler Landforms => _landforms;
+
         /// <summary>Raised for each tile whose terrain or remaining digs changed.</summary>
         public event Action<TerrainTileCoordinate> TileChanged;
 
         public void Configure(int worldSeed, TerrainPatchSettings settings, float coverageMultiplier = 1f)
         {
+            Configure(worldSeed, settings, coverageMultiplier, Vector2.zero);
+        }
+
+        /// <param name="landingSite">
+        /// World XZ of the landing site. Landforms keep it flat and open and place the starter lake near it.
+        /// </param>
+        public void Configure(int worldSeed, TerrainPatchSettings settings, float coverageMultiplier,
+            Vector2 landingSite)
+        {
             float tileSize = settings != null ? settings.TileSize : 1f;
             float safeCoverageMultiplier = Mathf.Max(0f, coverageMultiplier);
-            // A tile address only means something against one seed and grid, so changing either would
-            // leave the recorded holes sitting on unrelated ground. Dropping them is the honest answer.
+            LandformSettings landformSettings = settings != null ? settings.Landforms : null;
+            // A tile address only means something against one seed, grid and landform layout, so changing
+            // any of them would leave the recorded holes sitting on unrelated ground. Dropping them is the
+            // honest answer.
             if (worldSeed != WorldSeed || !Mathf.Approximately(tileSize, TileSize)
-                || !Mathf.Approximately(safeCoverageMultiplier, CoverageMultiplier))
+                || !Mathf.Approximately(safeCoverageMultiplier, CoverageMultiplier)
+                || landformSettings != _landformSettings || landingSite != _landingSite)
             {
                 Clear();
             }
@@ -44,6 +64,31 @@ namespace PlanetSurvival.World.Ground
             CoverageMultiplier = safeCoverageMultiplier;
             _layers = settings != null ? settings.Layers : Array.Empty<TerrainPatchLayer>();
             _baseSurface = settings != null ? settings.BaseSurface : null;
+            _iceLakeSurface = settings != null ? settings.IceLakeSurface : null;
+            _landformSettings = landformSettings;
+            _landingSite = landingSite;
+            _landforms = landformSettings != null
+                ? new LandformSampler(worldSeed, landformSettings, landingSite)
+                : null;
+        }
+
+        public LandformKind GetLandformKind(float worldX, float worldZ)
+        {
+            return _landforms != null ? _landforms.KindAt(worldX, worldZ) : LandformKind.Plain;
+        }
+
+        /// <summary>The full landform sample; flat open ground at mid elevation when landforms are off.</summary>
+        public LandformSample SampleLandform(float worldX, float worldZ)
+        {
+            return _landforms != null
+                ? _landforms.Sample(worldX, worldZ)
+                : new LandformSample(.5f, 0f, LandformKind.Plain);
+        }
+
+        /// <summary>True where a landform forbids walking and building: a mountain or a lava lake.</summary>
+        public bool IsBlockedAt(float worldX, float worldZ)
+        {
+            return LandformSample.Blocks(GetLandformKind(worldX, worldZ));
         }
 
         public TerrainTileCoordinate TileAt(Vector3 worldPosition)
@@ -59,8 +104,9 @@ namespace PlanetSurvival.World.Ground
                 return ClusteredTerrainLayout.BaseLayerIndex;
             }
 
-            return ClusteredTerrainLayout.SelectLayer(
-                _layers, WorldSeed, tile.CenterX(TileSize), tile.CenterZ(TileSize), CoverageMultiplier);
+            float centerX = tile.CenterX(TileSize);
+            float centerZ = tile.CenterZ(TileSize);
+            return SelectPatchLayer(GetLandformKind(centerX, centerZ), centerX, centerZ);
         }
 
         /// <summary>
@@ -74,8 +120,66 @@ namespace PlanetSurvival.World.Ground
                 return null;
             }
 
-            int layerIndex = GetLayerIndex(tile);
+            float centerX = tile.CenterX(TileSize);
+            float centerZ = tile.CenterZ(TileSize);
+            LandformKind landform = GetLandformKind(centerX, centerZ);
+            switch (landform)
+            {
+                case LandformKind.Mountain:
+                case LandformKind.LavaLake:
+                    return null;
+                case LandformKind.IceLake:
+                    return _iceLakeSurface;
+            }
+
+            int layerIndex = SelectPatchLayer(landform, centerX, centerZ);
             return layerIndex == ClusteredTerrainLayout.BaseLayerIndex ? _baseSurface : _layers[layerIndex].Surface;
+        }
+
+        /// <summary>
+        /// Patches are detail on open ground only. A mountain or lake owns its ground outright, otherwise an
+        /// iron patch would punch a hole in a mountain or float on a frozen lake.
+        /// </summary>
+        private int SelectPatchLayer(LandformKind landform, float worldX, float worldZ)
+        {
+            if (!AllowsPatches(landform))
+            {
+                return ClusteredTerrainLayout.BaseLayerIndex;
+            }
+
+            int layer = ClusteredTerrainLayout.SelectLayer(_layers, WorldSeed, worldX, worldZ, CoverageMultiplier);
+            return IsSheetOnSlope(layer, worldX, worldZ) || IsIceOnRockGround(layer, worldX, worldZ)
+                ? ClusteredTerrainLayout.BaseLayerIndex
+                : layer;
+        }
+
+        /// <summary>Rock ground never holds ice, lakes or patches alike.</summary>
+        private bool IsIceOnRockGround(int layer, float worldX, float worldZ)
+        {
+            return layer != ClusteredTerrainLayout.BaseLayerIndex && _landforms != null &&
+                   _iceLakeSurface != null && _layers[layer].Surface == _iceLakeSurface &&
+                   _landforms.Volcanic.IsRockGround(worldX, worldZ);
+        }
+
+        /// <summary>
+        /// Sheet patches (continuous ice) are level frozen water; on a crater's tilted wall or rim they give
+        /// way to bare ground, like a lake does.
+        /// </summary>
+        private bool IsSheetOnSlope(int layer, float worldX, float worldZ)
+        {
+            if (layer == ClusteredTerrainLayout.BaseLayerIndex || _landforms == null)
+            {
+                return false;
+            }
+
+            TerrainSurfaceDefinition surface = _layers[layer].Surface;
+            return surface != null && surface.PatchRendering == TerrainPatchRendering.Continuous &&
+                   _landforms.Craters.IsOnSlope(worldX, worldZ);
+        }
+
+        private static bool AllowsPatches(LandformKind landform)
+        {
+            return landform == LandformKind.Plain || landform == LandformKind.Basin;
         }
 
         /// <summary>Digs still needed to clear the tile; zero on ground that cannot be dug any further.</summary>
@@ -116,6 +220,11 @@ namespace PlanetSurvival.World.Ground
                 return 0f;
             }
 
+            if (!AllowsPatches(GetLandformKind(worldX, worldZ)))
+            {
+                return 0f;
+            }
+
             if (featherDistance <= 0f)
             {
                 return 1f;
@@ -150,8 +259,7 @@ namespace PlanetSurvival.World.Ground
                 return ClusteredTerrainLayout.BaseLayerIndex;
             }
 
-            return ClusteredTerrainLayout.SelectLayer(
-                _layers, WorldSeed, worldX, worldZ, CoverageMultiplier);
+            return SelectPatchLayer(GetLandformKind(worldX, worldZ), worldX, worldZ);
         }
 
         /// <summary>

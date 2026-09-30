@@ -17,6 +17,7 @@ using PlanetSurvival.Transport.Runtime;
 using PlanetSurvival.Power.Runtime;
 using PlanetSurvival.UI.Power;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -32,6 +33,9 @@ namespace PlanetSurvival.Building.Runtime
     {
         private static readonly Color ValidTint = new(.45f, 1f, .55f, .55f);
         private static readonly Color InvalidTint = new(1f, .38f, .32f, .55f);
+
+        /// <summary>Used when the player has no character controller to read a radius from.</summary>
+        private const float FallbackPlayerRadius = .5f;
 
         [SerializeField, Min(1f), Tooltip("How far from the player a structure may be placed, in world units.")]
         private float _placementReach = 10f;
@@ -57,9 +61,11 @@ namespace PlanetSurvival.Building.Runtime
         private BuildableDefinition _selected;
         private GameObject _ghost;
         private Transform _ghostBody;
+        private IGroundSurface _groundSurface;
         private SpriteRenderer _ghostPatch;
         private BuildFootprint _footprint;
-        private Vector2Int _quarterCell;
+        private Vector3 _offGridCenter;
+        private CharacterController _playerController;
         private BuildResult _preview = BuildResult.Success();
         private int _lastRightClickCancelFrame = -1;
 
@@ -72,6 +78,12 @@ namespace PlanetSurvival.Building.Runtime
 
         /// <summary>Why the current spot is rejected. Succeeded while the preview is green.</summary>
         public BuildResult Preview => _preview;
+
+        /// <summary>The drawn ground the pointer is resolved against; null is flat ground.</summary>
+        public void SetGroundSurface(IGroundSurface surface)
+        {
+            _groundSurface = surface;
+        }
 
         public void Bind(BuildingService service, PlayerInventory playerInventory, BuildingCatalog catalog,
             WorldVisualSettings visuals = null, GameSessionState session = null, CookingView cookingView = null,
@@ -91,6 +103,7 @@ namespace PlanetSurvival.Building.Runtime
             _service = service;
             _playerInventory = playerInventory;
             _player = playerInventory.transform;
+            _playerController = _player.GetComponent<CharacterController>();
             _catalog = catalog;
             _visuals = visuals;
             _session = session;
@@ -126,8 +139,8 @@ namespace PlanetSurvival.Building.Runtime
             _ghost = new GameObject($"Build Preview - {buildable.DisplayName}");
             _ghost.transform.SetParent(transform, false);
             _ghostBody = BuildingVisuals.CreateBody(_ghost.transform, buildable, _service.Grid.CellSize);
-            _ghostPatch = BuildingVisuals.CreateFootprintPatch(_ghost.transform, buildable.Footprint,
-                _service.Grid.CellSize, buildable.FootprintScale);
+            _ghostPatch = BuildingVisuals.CreateFootprintPatch(_ghost.transform,
+                buildable.WorldSize(_service.Grid.CellSize));
             UpdatePreview();
             return true;
         }
@@ -164,8 +177,8 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             BuildableDefinition buildable = _selected;
-            BuildResult result = buildable.UsesQuarterCellPlacement
-                ? _service.TryPlaceTransferPost(buildable, _quarterCell, out BuildSite _)
+            BuildResult result = buildable.IsOffGrid
+                ? _service.TryPlaceOffGrid(buildable, _offGridCenter, out _)
                 : _service.TryPlace(buildable, _footprint, out _);
             if (!result.Succeeded)
             {
@@ -225,7 +238,10 @@ namespace PlanetSurvival.Building.Runtime
             _siteObjects.Clear();
         }
 
-        /// <summary>Snaps the ghost to the grid cell under the mouse and recolours it.</summary>
+        /// <summary>
+        /// Moves the ghost under the mouse and recolours it. Grid structures snap to cells; off-grid items
+        /// follow the cursor exactly.
+        /// </summary>
         private void UpdatePreview()
         {
             if (_selected == null || !TryGetCursorGroundPosition(out Vector3 ground))
@@ -235,26 +251,29 @@ namespace PlanetSurvival.Building.Runtime
 
             BuildGrid grid = _service.Grid;
             Vector3 center;
-            if (_selected.UsesQuarterCellPlacement)
+            Rect area;
+            if (_selected.IsOffGrid)
             {
-                _quarterCell = grid.WorldToQuarterCell(ground);
-                center = grid.QuarterCellCenter(_quarterCell);
-                _preview = _service.CanPlaceTransferPost(_selected, _quarterCell);
+                _offGridCenter = new Vector3(ground.x, grid.Origin.y, ground.z);
+                center = _offGridCenter;
+                area = BuildingService.OffGridArea(_selected, center);
+                _preview = _service.CanPlaceOffGrid(_selected, center);
             }
             else
             {
                 _footprint = grid.CreateFootprint(ground, _selected.Footprint);
                 center = grid.Center(_footprint);
+                area = grid.WorldRect(_footprint);
                 _preview = _service.CanPlace(_selected, _footprint);
             }
+
             if (_preview.Succeeded && !IsWithinReach(center))
             {
                 _preview = BuildResult.Fail(BuildFailure.OutOfReach, "That spot is out of reach.");
             }
 
             // Building on top of yourself would trap the player inside a solid structure.
-            if (_preview.Succeeded && !_selected.UsesQuarterCellPlacement && _player != null &&
-                _footprint.Contains(grid.WorldToCell(_player.position)))
+            if (_preview.Succeeded && OverlapsPlayer(area))
             {
                 _preview = BuildResult.Fail(BuildFailure.Blocked, "You are standing there.");
             }
@@ -268,6 +287,23 @@ namespace PlanetSurvival.Building.Runtime
             Color tint = _preview.Succeeded ? ValidTint : InvalidTint;
             BuildingVisuals.Tint(_ghostBody, tint);
             _ghostPatch.color = new Color(tint.r, tint.g, tint.b, .45f);
+        }
+
+        /// <summary>Whether the player's footprint circle overlaps a world rectangle (x/y = world X/Z).</summary>
+        private bool OverlapsPlayer(Rect area)
+        {
+            if (_player == null)
+            {
+                return false;
+            }
+
+            float radius = _playerController != null ? _playerController.radius : FallbackPlayerRadius;
+            Vector3 position = _player.position;
+            float nearestX = Mathf.Clamp(position.x, area.xMin, area.xMax);
+            float nearestZ = Mathf.Clamp(position.z, area.yMin, area.yMax);
+            float deltaX = position.x - nearestX;
+            float deltaZ = position.z - nearestZ;
+            return deltaX * deltaX + deltaZ * deltaZ < radius * radius;
         }
 
         private bool IsWithinReach(Vector3 position)
@@ -296,16 +332,9 @@ namespace PlanetSurvival.Building.Runtime
                 return false;
             }
 
-            var plane = new Plane(Vector3.up, new Vector3(0f, _service.Grid.Origin.y, 0f));
+            // Resolved against the drawn ground, so a site lands where the cursor shows it, down in a crater too.
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            if (!plane.Raycast(ray, out float distance))
-            {
-                position = default;
-                return false;
-            }
-
-            position = ray.GetPoint(distance);
-            return true;
+            return GroundSurfaceRaycast.TryIntersect(_groundSurface, ray, _service.Grid.Origin.y, out position);
         }
 
         private void CreateSiteObject(BuildSite site)
@@ -317,8 +346,8 @@ namespace PlanetSurvival.Building.Runtime
 
             var siteObject = new GameObject($"Building - {site.Definition.DisplayName}");
             siteObject.transform.SetParent(transform, false);
-            siteObject.transform.position = site.QuarterCell.HasValue
-                ? _service.Grid.QuarterCellCenter(site.QuarterCell.Value)
+            siteObject.transform.position = site.OffGridCenter.HasValue
+                ? new Vector3(site.OffGridCenter.Value.x, _service.Grid.Origin.y, site.OffGridCenter.Value.y)
                 : _service.Grid.Center(site.Footprint);
             siteObject.AddComponent<BuildSiteView>().Bind(
                 site, _service, _service.Grid.CellSize, _visuals, CreateCookingBinding(site),

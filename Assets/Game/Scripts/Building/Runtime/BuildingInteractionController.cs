@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PlanetSurvival.Inventory.Application;
 using PlanetSurvival.Player.Interaction;
 using PlanetSurvival.Player.Stats;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -22,12 +23,19 @@ namespace PlanetSurvival.Building.Runtime
         private PlayerInventory _inventory;
         private BuildingPlacementController _placement;
         private Camera _camera;
+        private IGroundSurface _groundSurface;
         private string _lastPrompt = string.Empty;
 
         /// <summary>What the hovered structure offers, or empty when the cursor is over none.</summary>
         public string CurrentPrompt { get; private set; } = string.Empty;
 
         public event Action<string> PromptChanged;
+
+        /// <summary>The drawn ground clicks are resolved against; null is flat ground.</summary>
+        public void SetGroundSurface(IGroundSurface surface)
+        {
+            _groundSurface = surface;
+        }
 
         public void Bind(GameObject player, BuildingPlacementController placement, Camera targetCamera)
         {
@@ -95,7 +103,7 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             if (_interactor == null || !BuildingPointer.TryPick(
-                    _camera, screenPosition, _interactor.transform, _interactor.InteractionRadius,
+                    _camera, screenPosition, _interactor.transform, _interactor.InteractionRadius, _groundSurface,
                     out BuildSiteView building))
             {
                 return null;

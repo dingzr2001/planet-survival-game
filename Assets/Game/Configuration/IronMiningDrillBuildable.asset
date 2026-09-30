@@ -17,7 +17,9 @@ MonoBehaviour:
   _description: Extracts iron ore only when placed on iron terrain. Accepts electricity
     or petroleum and pauses when its ore bin is full.
   _icon: {fileID: 21300000, guid: 92e912986b3fc43e5932c46ac6789ea6, type: 3}
-  _footprint: {x: 1, y: 1}
+  _footprint: {x: 3, y: 3}
+  _placement: 0
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 15
   _cost:
   - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}

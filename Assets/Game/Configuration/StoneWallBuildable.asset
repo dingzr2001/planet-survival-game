@@ -17,6 +17,8 @@ MonoBehaviour:
   _description: A stacked regolith block. Cheap cover against the wind.
   _icon: {fileID: 0}
   _footprint: {x: 1, y: 1}
+  _placement: 0
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 6
   _cost:
   - _item: {fileID: 11400000, guid: 20290619ae85e43558b63ab7f3d0bf3b, type: 2}

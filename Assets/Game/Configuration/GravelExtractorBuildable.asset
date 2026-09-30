@@ -17,7 +17,9 @@ MonoBehaviour:
   _description: Extracts gravel from ordinary regolith. Accepts electricity or petroleum
     and pauses when its output bin is full.
   _icon: {fileID: 21300000, guid: 7f3915b0164fd4521b5b134e927e4405, type: 3}
-  _footprint: {x: 1, y: 1}
+  _footprint: {x: 3, y: 3}
+  _placement: 0
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 12
   _cost:
   - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}

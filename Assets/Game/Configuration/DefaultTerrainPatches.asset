@@ -17,7 +17,9 @@ MonoBehaviour:
   _chunkSizeInTiles: 8
   _loadRadiusInChunks: 1
   _blendShader: {fileID: 4800000, guid: 01128324069d54dbf8d005da1398f268, type: 3}
-  _controlMapResolution: 128
+  _mountainShader: {fileID: 4800000, guid: f9e80a5b3924b4287ad033f4b1709d99, type: 3}
+  _talusShader: {fileID: 4800000, guid: b4202107e79544774a7c2fe33e41b938, type: 3}
+  _controlMapResolution: 64
   _blendDistance: 1.2
   _layers:
   - _surface: {fileID: 11400000, guid: a6b75f24ed4864c63ab00b26efa83145, type: 2}
@@ -51,3 +53,57 @@ MonoBehaviour:
     _legacyThreshold: 0
     _usesTargetCoverage: 1
   _baseSurface: {fileID: 11400000, guid: 9c1d07c3e6aa640a698b1c9c713191c9, type: 2}
+  _landforms: {fileID: 11400000, guid: 37068be72177246a5878020ca6034122, type: 2}
+  _iceLakeSurface: {fileID: 11400000, guid: 87d9194d1abbd4adb9ba84e3b96b3e9a, type: 2}
+  _landformAppearance:
+    _cliffHeight: 2
+    _cliffHeightVariation: 0.35
+    _plateauRise: 0.5
+    _massifRise: 2.5
+    _ridgeHeight: 4.5
+    _ridgeSpacing: 34
+    _edgeRoughness: 0.35
+    _verticalExaggeration: 3.8637
+    _reliefShading: 3.5
+    _mountainTexture: {fileID: 2800000, guid: 9a442aa1678074f8088a42d88bf55b15, type: 3}
+    _mountainTextureSize: 14
+    _mountainTint: {r: 1.15, g: 1.12, b: 1.1, a: 1}
+    _cliffTexture: {fileID: 2800000, guid: cf4a57cc88e2f441f8807eac0212a780, type: 3}
+    _cliffTextureSize: 6
+    _cliffColor: {r: 1, g: 0.97, b: 0.95, a: 1}
+    _talusStones:
+    - {fileID: 2800000, guid: 68986797cff0a4ae8b5d3dc8177ff36a, type: 3}
+    - {fileID: 2800000, guid: ea59c9942f54b45f48ec8c404ebeeb5f, type: 3}
+    - {fileID: 2800000, guid: cb0af2439103b46bcaf40b697627983e, type: 3}
+    - {fileID: 2800000, guid: 2101ec4aec8914ae294deaa2af7dced4, type: 3}
+    - {fileID: 2800000, guid: f7d05fa0d49e94d39812a80c0caf7316, type: 3}
+    _talusTint: {r: 1, g: 1, b: 1, a: 1}
+    _talusWidth: 2
+    _shadowStrength: 0.45
+    _craterReliefStrength: 0.6
+    _craterFloorTexture: {fileID: 2800000, guid: c0f942cd364d8425996b6a027235c20e, type: 3}
+    _craterFloorTextureSize: 5
+    _craterFloorTint: {r: 0.95, g: 0.9, b: 0.86, a: 0.9}
+    _craterEjectaTint: {r: 0.66, g: 0.56, b: 0.48, a: 0.32}
+    _ejectaReach: 2
+    _ejectaRockDensity: 0.35
+    _rockGroundTexture: {fileID: 2800000, guid: a2c818bf06d364aa4a5c6904904be672, type: 3}
+    _rockGroundTextureSize: 12
+    _rockGroundTint: {r: 1, g: 1, b: 1, a: 1}
+    _lavaTexture: {fileID: 2800000, guid: c6f5aaf437df24fa2a1bd08349ee547b, type: 3}
+    _lavaTextureSize: 10
+    _lavaFlowSpeed: 0.12
+    _lavaGlowColor: {r: 1, g: 0.42, b: 0.08, a: 0.55}
+    _lavaGlowReach: 4
+    _lavaCrustColor: {r: 0.14, g: 0.07, b: 0.05, a: 1}
+    _lavaFissures:
+    - {fileID: 2800000, guid: 0284660b9039d4137a60ec24f2380c04, type: 3}
+    - {fileID: 2800000, guid: b927e799d514144f0a4d613dddfa1e23, type: 3}
+    - {fileID: 2800000, guid: 0c4f7aa45e2ea4c899543760e718583a, type: 3}
+    - {fileID: 2800000, guid: a099310c95bff49fc93bea14eedce8ff, type: 3}
+    - {fileID: 2800000, guid: 7f6ae778d18f9402da44e10c9d4a9083, type: 3}
+    - {fileID: 2800000, guid: eb47d72cf64cd41e095e25a7ab2e3991, type: 3}
+    _fissureDensity: 0.55
+    _fissureSizeRange: {x: 3.5, y: 7}
+    _basinTint: {r: 0.16, g: 0.07, b: 0.05, a: 0.32}
+    _hillshadeStrength: 0.35

@@ -171,13 +171,8 @@ namespace PlanetSurvival.Power.Runtime
         }
         private float SolarInput(PowerPoleStation station, float elapsed) => station.Pole.InputEndpointIds.Sum(id => TryGetSolar(id, out BuildSite site) ? site.Definition.SolarElectricityPerSecond * elapsed : 0f);
         private string ProducerLabel(BuildSite site) => $"{site.Definition.DisplayName} {EndpointNumber(site, true)}";
-        private static bool AreAdjacent(BuildSite pole, BuildSite other)
-        {
-            if (!pole.QuarterCell.HasValue) return false;
-            Vector2Int cell = new(Mathf.FloorToInt(pole.QuarterCell.Value.x / 2f), Mathf.FloorToInt(pole.QuarterCell.Value.y / 2f));
-            for (int i = 0; i < other.Footprint.CellCount; i++) { Vector2Int delta = other.Footprint.CellAt(i) - cell; if (Mathf.Abs(delta.x) + Mathf.Abs(delta.y) == 1) return true; }
-            return false;
-        }
+        private static bool AreAdjacent(BuildSite pole, BuildSite other) =>
+            !pole.IsOffGrid && !other.IsOffGrid && pole.Footprint.IsEdgeAdjacentTo(other.Footprint);
         private bool TryGetSolar(string id, out BuildSite site) => TryGetSite(id, SolarPrefix, candidate => candidate.Definition.IsSolarPanel, out site);
         private bool TryGetGenerator(string id, out BuildSite site) =>
             TryGetSite(id, GeneratorPrefix, candidate => candidate.CombustionGenerator != null, out site);

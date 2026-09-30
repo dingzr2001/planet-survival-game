@@ -16,6 +16,9 @@ namespace PlanetSurvival.Building.Domain
         /// <summary>The structure requires a terrain type that does not cover its whole footprint.</summary>
         WrongTerrain,
 
+        /// <summary>Part of the footprint lies on ground nothing can be built on, such as a mountain.</summary>
+        TerrainBlocked,
+
         /// <summary>The chosen spot is out of the player's building reach.</summary>
         OutOfReach,
 

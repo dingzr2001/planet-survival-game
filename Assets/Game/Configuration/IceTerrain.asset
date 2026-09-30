@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainSurfaceDefinition
   _terrainId: ice
   _displayName: Ice Layer
-  _texture: {fileID: 2800000, guid: 1c57bfa534f84bd1a546178acf7e70dc, type: 3}
-  _textureVariants:
-  - {fileID: 2800000, guid: 685b2a98526d426b9180bed8bb9cddc3, type: 3}
-  - {fileID: 2800000, guid: 904d118de4974402a2b16d63ce4f7b16, type: 3}
-  _textureTileSize: 12
+  _texture: {fileID: 2800000, guid: f51e556ee50434820832435f49254560, type: 3}
+  _textureVariants: []
+  _textureTileSize: 7
+  _patchRendering: 1
   _digCount: 2
   _digDuration: 2.2
   _digDistance: 2

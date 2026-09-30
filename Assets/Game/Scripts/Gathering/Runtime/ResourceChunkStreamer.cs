@@ -4,6 +4,8 @@ using PlanetSurvival.Building.Domain;
 using PlanetSurvival.Gathering.Definitions;
 using PlanetSurvival.World.Chunks;
 using PlanetSurvival.World.Generation;
+using PlanetSurvival.World.Generation.Landforms;
+using PlanetSurvival.World.Ground;
 using UnityEngine;
 
 namespace PlanetSurvival.Gathering.Runtime
@@ -27,6 +29,7 @@ namespace PlanetSurvival.Gathering.Runtime
         private readonly List<ChunkCoordinate> _unloadBuffer = new();
         private Transform _target;
         private BuildGrid _buildGrid;
+        private TerrainTileMap _terrain;
         private int _worldSeed;
         private ChunkCoordinate _center;
         private bool _hasCenter;
@@ -38,14 +41,20 @@ namespace PlanetSurvival.Gathering.Runtime
         /// Where the player starts. Nodes planned within the configured clearance radius of it are skipped, so the
         /// player never wakes up inside a rock. The point is fixed for the run and does not follow the target.
         /// </param>
+        /// <param name="terrain">
+        /// Optional landform source. Nodes planned onto a mountain or a frozen lake are skipped, since rocks
+        /// cannot stand inside a cliff and debris on a lake would hide the ice the player came for.
+        /// </param>
         public void Configure(ResourceSpawnSettings settings, WorldVisualSettings visuals, int worldSeed,
-            Vector3 spawnClearanceCenter, BuildGrid buildGrid = null, float densityMultiplier = 1f)
+            Vector3 spawnClearanceCenter, BuildGrid buildGrid = null, float densityMultiplier = 1f,
+            TerrainTileMap terrain = null)
         {
             ReleaseBuildReservations();
             _settings = settings;
             _visuals = visuals;
             _worldSeed = worldSeed;
             _buildGrid = buildGrid;
+            _terrain = terrain;
             _densityMultiplier = Mathf.Max(0f, densityMultiplier);
             _spawnClearanceCenter = new Vector2(spawnClearanceCenter.x, spawnClearanceCenter.z);
             float clearance = settings != null ? settings.SpawnClearanceRadius : 0f;
@@ -119,6 +128,7 @@ namespace PlanetSurvival.Gathering.Runtime
                 ChunkResourcePlacement placement = placements[i];
                 ResourceNodeDefinition definition = entries[placement.EntryIndex].Definition;
                 if (definition == null || IsInsideSpawnClearance(placement, definition) ||
+                    !IsOnOpenGround(placement) ||
                     _gatheredNodes.Contains(new NodeKey(chunk, placement.PlacementId)))
                 {
                     continue;
@@ -137,6 +147,17 @@ namespace PlanetSurvival.Gathering.Runtime
             }
 
             _loadedChunks.Add(chunk, loaded);
+        }
+
+        private bool IsOnOpenGround(ChunkResourcePlacement placement)
+        {
+            if (_terrain == null)
+            {
+                return true;
+            }
+
+            LandformKind landform = _terrain.GetLandformKind(placement.WorldX, placement.WorldZ);
+            return !LandformSample.Blocks(landform) && landform != LandformKind.IceLake;
         }
 
         private bool IsInsideSpawnClearance(ChunkResourcePlacement placement, ResourceNodeDefinition definition)

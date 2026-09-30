@@ -76,7 +76,7 @@ namespace PlanetSurvival.Editor
                 buildable = ScriptableObject.CreateInstance<BuildableDefinition>();
                 AssetDatabase.CreateAsset(buildable, buildablePath);
             }
-            buildable.Configure("combustion_generator", "Combustion Generator", Vector2Int.one, 8f,
+            buildable.Configure("combustion_generator", "Combustion Generator", ProjectSceneSetup.MachineFootprint, 8f,
                 new CraftingItemAmount(alloy, 6), new CraftingItemAmount(plastic, 3));
             buildable.ConfigureDescription("Burns bottled fuel with oxygen. Unused power is wasted; connect a power pole to use it and a transfer post for exhaust.");
             Sprite sprite = WorldArtSetup.ImportBuildingSprite("CombustionGenerator");

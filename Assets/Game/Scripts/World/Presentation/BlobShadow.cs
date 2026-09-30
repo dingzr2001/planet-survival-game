@@ -19,6 +19,7 @@ namespace PlanetSurvival.World.Presentation
             renderer.sprite = GetSprite();
             renderer.color = color;
             renderer.sortingOrder = -32000;
+            SurfaceSpriteMaterial.Apply(renderer);
         }
 
         private static Sprite GetSprite()

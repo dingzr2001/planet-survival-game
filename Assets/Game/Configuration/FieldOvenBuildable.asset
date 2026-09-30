@@ -16,7 +16,9 @@ MonoBehaviour:
   _displayName: Field Oven
   _description: An outdoor range. Cooks the same dishes as the galley oven.
   _icon: {fileID: 0}
-  _footprint: {x: 2, y: 2}
+  _footprint: {x: 3, y: 3}
+  _placement: 0
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 20
   _cost:
   - _item: {fileID: 11400000, guid: 5f685078e5564cf2916356f444cb3e42, type: 2}

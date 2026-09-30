@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PlanetSurvival.Building.Domain;
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -16,6 +17,7 @@ namespace PlanetSurvival.Building.Runtime
         private const int CellPadding = 1;
         private const int SortingOrder = -24000;
         private const float GroundOffset = .025f;
+        private const float SunkenBoundsDepth = 60f;
 
         [SerializeField, Tooltip("Keyboard shortcut that shows or hides the construction grid.")]
         private KeyCode _toggleKey = KeyCode.G;
@@ -31,6 +33,7 @@ namespace PlanetSurvival.Building.Runtime
 
         private BuildGrid _grid;
         private Camera _camera;
+        private IGroundSurface _surface;
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private Mesh _mesh;
@@ -43,6 +46,19 @@ namespace PlanetSurvival.Building.Runtime
 
         public bool IsVisible => _isVisible;
         public KeyCode ToggleKey => _toggleKey;
+
+        /// <summary>
+        /// The drawn ground the grid lies on and the view is measured against; null is flat ground. The
+        /// lines themselves follow it in the shader.
+        /// </summary>
+        public void SetGroundSurface(IGroundSurface surface)
+        {
+            _surface = surface;
+            if (_isVisible)
+            {
+                Refresh(true);
+            }
+        }
 
         public void Bind(BuildGrid grid, Camera targetCamera)
         {
@@ -139,7 +155,13 @@ namespace PlanetSurvival.Building.Runtime
                 return;
             }
 
-            Shader shader = Shader.Find("Sprites/Default");
+            // Drawn at the height of the ground under each vertex, so the grid follows craters.
+            Shader shader = SurfaceSpriteMaterial.Shader;
+            if (shader == null)
+            {
+                shader = Shader.Find("Sprites/Default");
+            }
+
             if (shader == null)
             {
                 shader = Shader.Find("Unlit/Transparent");
@@ -198,7 +220,6 @@ namespace PlanetSurvival.Building.Runtime
         private bool TryGetVisibleBoundaries(out int minimumBoundaryX, out int maximumBoundaryX,
             out int minimumBoundaryZ, out int maximumBoundaryZ)
         {
-            var plane = new Plane(Vector3.up, new Vector3(0f, _grid.Origin.y, 0f));
             float minimumX = float.PositiveInfinity;
             float maximumX = float.NegativeInfinity;
             float minimumZ = float.PositiveInfinity;
@@ -209,13 +230,12 @@ namespace PlanetSurvival.Building.Runtime
                 for (int x = 0; x <= 1; x++)
                 {
                     Ray ray = _camera.ViewportPointToRay(new Vector3(x, y));
-                    if (!plane.Raycast(ray, out float distance))
+                    if (!GroundSurfaceRaycast.TryIntersect(_surface, ray, _grid.Origin.y, out Vector3 point))
                     {
                         minimumBoundaryX = maximumBoundaryX = minimumBoundaryZ = maximumBoundaryZ = 0;
                         return false;
                     }
 
-                    Vector3 point = ray.GetPoint(distance);
                     minimumX = Mathf.Min(minimumX, point.x);
                     maximumX = Mathf.Max(maximumX, point.x);
                     minimumZ = Mathf.Min(minimumZ, point.z);
@@ -262,18 +282,35 @@ namespace PlanetSurvival.Building.Runtime
             }
 
             _mesh.Clear();
+            _mesh.indexFormat = _vertices.Count > ushort.MaxValue
+                ? UnityEngine.Rendering.IndexFormat.UInt32
+                : UnityEngine.Rendering.IndexFormat.UInt16;
             _mesh.SetVertices(_vertices);
             _mesh.SetIndices(_indices, MeshTopology.Lines, 0);
             _mesh.RecalculateBounds();
+            // The shader draws lines down into craters, below the flat mesh; keep them from being culled.
+            Bounds bounds = _mesh.bounds;
+            bounds.Encapsulate(bounds.min + Vector3.down * SunkenBoundsDepth);
+            _mesh.bounds = bounds;
         }
 
+        /// <summary>
+        /// Adds a grid line as one segment per cell, so the shader can bend it into a crater at every cell
+        /// corner instead of stretching one straight segment across the dip.
+        /// </summary>
         private void AddLine(Vector3 worldStart, Vector3 worldEnd)
         {
+            int segments = Mathf.Max(1, Mathf.RoundToInt(Vector3.Distance(worldStart, worldEnd) / _grid.CellSize));
             int startIndex = _vertices.Count;
-            _vertices.Add(transform.InverseTransformPoint(worldStart));
-            _vertices.Add(transform.InverseTransformPoint(worldEnd));
-            _indices.Add(startIndex);
-            _indices.Add(startIndex + 1);
+            for (int i = 0; i <= segments; i++)
+            {
+                _vertices.Add(transform.InverseTransformPoint(Vector3.Lerp(worldStart, worldEnd, (float)i / segments)));
+                if (i > 0)
+                {
+                    _indices.Add(startIndex + i - 1);
+                    _indices.Add(startIndex + i);
+                }
+            }
         }
 
         private static void DestroyRuntimeObject(Object instance)

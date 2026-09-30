@@ -33,6 +33,24 @@ namespace PlanetSurvival.Building.Domain
                    Origin.y <= other.Max.y && other.Origin.y <= Max.y;
         }
 
+        /// <summary>
+        /// True when the two rectangles share at least one cell edge without overlapping. Corner contact
+        /// does not count: a pole touching a machine only diagonally is not wired to it.
+        /// </summary>
+        public bool IsEdgeAdjacentTo(in BuildFootprint other)
+        {
+            if (Overlaps(other))
+            {
+                return false;
+            }
+
+            bool columnsOverlap = Origin.x <= other.Max.x && other.Origin.x <= Max.x;
+            bool rowsOverlap = Origin.y <= other.Max.y && other.Origin.y <= Max.y;
+            bool touchesVertically = Max.y + 1 == other.Origin.y || other.Max.y + 1 == Origin.y;
+            bool touchesHorizontally = Max.x + 1 == other.Origin.x || other.Max.x + 1 == Origin.x;
+            return (columnsOverlap && touchesVertically) || (rowsOverlap && touchesHorizontally);
+        }
+
         /// <summary>Enumerates the covered cells in row order, so callers can index without allocating.</summary>
         public Vector2Int CellAt(int index)
         {

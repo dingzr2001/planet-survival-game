@@ -29,6 +29,11 @@ namespace PlanetSurvival.Transport.Runtime
         private const float LinkWidth = .055f;
         private const float LinkHeight = .045f;
 
+        // Storage crates are free-standing scene objects, not grid sites, so "adjacent" is a distance.
+        // Kept in metres (one and a half of the former 2.75 m cells) so the reach did not shrink when
+        // the construction grid became one metre.
+        private const float StorageReach = 4.1f;
+
         private readonly List<ItemTransferPostStation> _stations = new();
         private readonly Dictionary<ItemTransferPost, float> _outputAllowances = new();
         private readonly List<Vector3> _vertices = new();
@@ -418,7 +423,7 @@ namespace PlanetSurvival.Transport.Runtime
             {
                 StorageContainer storage = storages[i];
                 if (storage.Inventory == null || HorizontalDistance(station.transform.position, storage.transform.position)
-                    > _buildings.Grid.CellSize * 1.5f)
+                    > StorageReach)
                 {
                     continue;
                 }
@@ -430,26 +435,10 @@ namespace PlanetSurvival.Transport.Runtime
             return options;
         }
 
-        private bool IsAdjacent(BuildSite postSite, BuildSite buildingSite)
+        private static bool IsAdjacent(BuildSite postSite, BuildSite buildingSite)
         {
-            if (!postSite.QuarterCell.HasValue)
-            {
-                return false;
-            }
-
-            Vector2Int postCell = new(
-                Mathf.FloorToInt(postSite.QuarterCell.Value.x / 2f),
-                Mathf.FloorToInt(postSite.QuarterCell.Value.y / 2f));
-            for (int i = 0; i < buildingSite.Footprint.CellCount; i++)
-            {
-                Vector2Int offset = buildingSite.Footprint.CellAt(i) - postCell;
-                if (Mathf.Abs(offset.x) + Mathf.Abs(offset.y) == 1)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return !postSite.IsOffGrid && !buildingSite.IsOffGrid &&
+                   postSite.Footprint.IsEdgeAdjacentTo(buildingSite.Footprint);
         }
 
         private bool TryResolveSource(string endpointId, out ITransferSource source,

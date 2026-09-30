@@ -27,26 +27,29 @@ namespace PlanetSurvival.Building.Domain
     /// </summary>
     public sealed class BuildSite
     {
+        /// <param name="compactBuildingNumber">
+        /// The player-facing number of a transfer post or power pole; ignored by every other structure.
+        /// </param>
         internal BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint,
-            IReadOnlyList<InventoryItemAmount> paidMaterials)
-            : this(siteId, definition, footprint, null, paidMaterials)
+            IReadOnlyList<InventoryItemAmount> paidMaterials, int compactBuildingNumber = 0)
+            : this(siteId, definition, footprint, null, paidMaterials, compactBuildingNumber)
         {
         }
 
-        internal BuildSite(string siteId, BuildableDefinition definition, Vector2Int quarterCell,
-            IReadOnlyList<InventoryItemAmount> paidMaterials, int transferPostNumber)
-            : this(siteId, definition, default, quarterCell, paidMaterials, transferPostNumber)
+        internal BuildSite(string siteId, BuildableDefinition definition, Vector2 offGridCenter,
+            IReadOnlyList<InventoryItemAmount> paidMaterials)
+            : this(siteId, definition, default, offGridCenter, paidMaterials)
         {
         }
 
         private BuildSite(string siteId, BuildableDefinition definition, BuildFootprint footprint,
-            Vector2Int? quarterCell, IReadOnlyList<InventoryItemAmount> paidMaterials,
+            Vector2? offGridCenter, IReadOnlyList<InventoryItemAmount> paidMaterials,
             int transferPostNumber = 0)
         {
             SiteId = siteId;
             Definition = definition;
             Footprint = footprint;
-            QuarterCell = quarterCell;
+            OffGridCenter = offGridCenter;
             TotalSeconds = Mathf.Max(0f, definition.BuildSeconds);
             RemainingSeconds = TotalSeconds;
             State = TotalSeconds <= 0f ? BuildState.Completed : BuildState.UnderConstruction;
@@ -91,8 +94,13 @@ namespace PlanetSurvival.Building.Domain
 
         public string SiteId { get; }
         public BuildableDefinition Definition { get; }
+        /// <summary>The claimed cells of a grid structure; meaningless for an off-grid item.</summary>
         public BuildFootprint Footprint { get; }
-        public Vector2Int? QuarterCell { get; }
+
+        /// <summary>World XZ centre of an off-grid item, or null for a structure snapped to the grid.</summary>
+        public Vector2? OffGridCenter { get; }
+
+        public bool IsOffGrid => OffGridCenter.HasValue;
         public BuildState State { get; private set; }
         public float RemainingSeconds { get; private set; }
         public float TotalSeconds { get; }

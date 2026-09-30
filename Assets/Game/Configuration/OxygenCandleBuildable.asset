@@ -18,6 +18,8 @@ MonoBehaviour:
     feeds the pod reserve.
   _icon: {fileID: 21300000, guid: 21c010ffed104dd0979d454bdc862550, type: 3}
   _footprint: {x: 1, y: 1}
+  _placement: 1
+  _offGridSize: {x: 0.6, y: 0.6}
   _buildSeconds: 1
   _cost:
   - _item: {fileID: 11400000, guid: 48fadaca450024adca3db7fb9c4f9d9e, type: 2}

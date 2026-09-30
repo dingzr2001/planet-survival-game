@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using PlanetSurvival.World.Generation.Landforms;
 using PlanetSurvival.World.Ground;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Rebuild_DrawsOneQuadForTheWholeChunk()
+        public void Rebuild_DrawsOneGridForTheWholeChunk()
         {
             TerrainTileMap map = CreateCoveringMap(out _);
             TerrainChunkView view = CreateView();
@@ -35,8 +36,11 @@ namespace PlanetSurvival.Tests
             Mesh mesh = view.GetComponent<MeshFilter>().sharedMesh;
             Assert.That(view.LayerMeshCount, Is.EqualTo(1));
             Assert.That(view.GetComponentsInChildren<MeshFilter>().Length, Is.EqualTo(1));
-            Assert.That(mesh.vertexCount, Is.EqualTo(4));
-            Assert.That(mesh.triangles.Length, Is.EqualTo(6));
+            // A fine grid, so the ground can be drawn sunk into craters.
+            Assert.That(mesh.vertexCount, Is.GreaterThan(100));
+            Assert.That(mesh.bounds.min.y, Is.LessThan(-10f), "Sunken ground must not be culled.");
+            Vector3 extent = mesh.bounds.size;
+            Assert.That(extent.x, Is.EqualTo(TileSize * ChunkSizeInTiles).Within(.001f));
         }
 
         [Test]
@@ -70,169 +74,205 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Rebuild_PreservesLegacyTextureScaleOnTheSharedMaterial()
+        public void Resources_GiveEveryLayerVariantItsOwnArtworkSlice()
         {
-            TerrainTileMap map = CreateCoveringMap(out TerrainSurfaceDefinition surface);
-            TerrainChunkView view = CreateView();
+            TerrainSurfaceDefinition upper = CreateSurface("upper", 8f);
+            TerrainSurfaceDefinition lower = CreateSurface("lower", 8f);
+            upper.ConfigureTextureVariants(8f, CreateTexture("Upper A"), CreateTexture("Upper B"),
+                CreateTexture("Upper C"));
+            lower.ConfigureTextureVariants(8f, CreateTexture("Lower A"));
+            var layers = new[]
+            {
+                new TerrainPatchLayer(upper, 12f, .5f, 31),
+                new TerrainPatchLayer(lower, 20f, 1f, 91)
+            };
 
-            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
+            using var resources = new TerrainChunkRenderResources(layers, TileSize * ChunkSizeInTiles);
 
-            Material material = view.GetComponent<MeshRenderer>().sharedMaterial;
-            Assert.That(material.GetFloat("_Layer0Scale"),
-                Is.EqualTo(1f / surface.TextureTileSize).Within(.0001f));
+            Assert.That(resources.SliceRangeOf(0), Is.EqualTo(new Vector2Int(0, 3)));
+            Assert.That(resources.SliceRangeOf(1), Is.EqualTo(new Vector2Int(3, 1)));
+            Assert.That(resources.PatchSliceCount, Is.EqualTo(4));
         }
 
         [Test]
-        public void Rebuild_ConfiguresOneCompleteArtworkPerGameplayTile()
+        public void Resources_AppendFallenRocksAfterThePatchLayers()
+        {
+            TerrainSurfaceDefinition surface = CreateSurface("upper", 8f);
+            surface.ConfigureTextureVariants(8f, CreateTexture("A"), CreateTexture("B"));
+            var appearance = new LandformAppearance();
+            appearance.ConfigureTalusStones(CreateTexture("Rock 1"), null, CreateTexture("Rock 2"));
+
+            using var resources = new TerrainChunkRenderResources(
+                new[] { new TerrainPatchLayer(surface, 12f, .5f, 31) }, TileSize * ChunkSizeInTiles,
+                appearance: appearance);
+
+            Assert.That(resources.TalusFirstSlice, Is.EqualTo(2));
+            Assert.That(resources.TalusSliceCount, Is.EqualTo(2), "Missing rock textures are skipped.");
+            Assert.That(resources.PatchSliceCount, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void Rebuild_BindsTheChunkPlacementAndSeed()
         {
             TerrainTileMap map = CreateCoveringMap(out _);
-            TerrainChunkView view = CreateView();
-
-            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
-
-            var properties = new MaterialPropertyBlock();
-            view.GetComponent<MeshRenderer>().GetPropertyBlock(properties);
-            Assert.That(properties.GetFloat(Shader.PropertyToID("_TilesPerChunk")),
-                Is.EqualTo(ChunkSizeInTiles));
-        }
-
-        [Test]
-        public void Rebuild_BindsStableTextureVariantsForTheConfiguredSurface()
-        {
-            TerrainTileMap map = CreateCoveringMap(out TerrainSurfaceDefinition surface);
-            Texture2D primary = CreateTexture("Primary");
-            Texture2D second = CreateTexture("Second");
-            Texture2D third = CreateTexture("Third");
-            surface.ConfigureTextureVariants(8f, primary, second, third);
             TerrainChunkView view = CreateView();
             var origin = new TerrainTileCoordinate(-4, 8);
 
             view.Rebuild(map, origin, ChunkSizeInTiles);
 
-            Material material = view.GetComponent<MeshRenderer>().sharedMaterial;
-            Assert.That(material.GetFloat("_VariantLayerIndex"), Is.EqualTo(0f));
-            Assert.That(material.GetFloat("_VariantCount"), Is.EqualTo(3f));
-            Assert.That(material.GetTexture("_Layer0"), Is.EqualTo(primary));
-            Assert.That(material.GetTexture("_Variant1"), Is.EqualTo(second));
-            Assert.That(material.GetTexture("_Variant2"), Is.EqualTo(third));
-
             var properties = new MaterialPropertyBlock();
             view.GetComponent<MeshRenderer>().GetPropertyBlock(properties);
+            Assert.That(properties.GetFloat(Shader.PropertyToID("_TilesPerChunk")), Is.EqualTo(ChunkSizeInTiles));
             Vector4 tileOrigin = properties.GetVector(Shader.PropertyToID("_TileOrigin"));
             Assert.That(tileOrigin.x, Is.EqualTo(origin.X));
             Assert.That(tileOrigin.y, Is.EqualTo(origin.Z));
-            Assert.That(properties.GetFloat(Shader.PropertyToID("_VariantSeed")),
-                Is.EqualTo(map.WorldSeed));
+            Vector4 chunkOrigin = properties.GetVector(Shader.PropertyToID("_ChunkOrigin"));
+            Assert.That(chunkOrigin.x, Is.EqualTo(origin.X * TileSize).Within(.0001f));
+            Assert.That(chunkOrigin.y, Is.EqualTo(origin.Z * TileSize).Within(.0001f));
+            Assert.That(properties.GetFloat(Shader.PropertyToID("_VariantSeed")), Is.EqualTo(map.WorldSeed));
         }
 
         [Test]
-        public void Rebuild_BindsIndependentTextureVariantsForTwoSurfaces()
-        {
-            TerrainSurfaceDefinition upper = CreateSurface("upper", 8f);
-            TerrainSurfaceDefinition lower = CreateSurface("lower", 8f);
-            Texture2D upperPrimary = CreateTexture("Upper Primary");
-            Texture2D upperSecond = CreateTexture("Upper Second");
-            Texture2D upperThird = CreateTexture("Upper Third");
-            Texture2D lowerPrimary = CreateTexture("Lower Primary");
-            Texture2D lowerSecond = CreateTexture("Lower Second");
-            Texture2D lowerThird = CreateTexture("Lower Third");
-            upper.ConfigureTextureVariants(8f, upperPrimary, upperSecond, upperThird);
-            lower.ConfigureTextureVariants(8f, lowerPrimary, lowerSecond, lowerThird);
-            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
-            settings.Configure(0, TileSize, ChunkSizeInTiles, 1,
-                new TerrainPatchLayer(upper, 12f, .5f, 31),
-                new TerrainPatchLayer(lower, 20f, 1f, 91));
-            _created.Add(settings);
-            var map = new TerrainTileMap();
-            map.Configure(2024, settings);
-            TerrainChunkView view = CreateView();
-
-            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
-
-            Material material = view.GetComponent<MeshRenderer>().sharedMaterial;
-            Assert.That(material.GetFloat("_VariantLayerIndex"), Is.EqualTo(0f));
-            Assert.That(material.GetTexture("_Variant1"), Is.EqualTo(upperSecond));
-            Assert.That(material.GetTexture("_Variant2"), Is.EqualTo(upperThird));
-            Assert.That(material.GetFloat("_SecondVariantLayerIndex"), Is.EqualTo(1f));
-            Assert.That(material.GetFloat("_SecondVariantCount"), Is.EqualTo(3f));
-            Assert.That(material.GetTexture("_SecondVariant1"), Is.EqualTo(lowerSecond));
-            Assert.That(material.GetTexture("_SecondVariant2"), Is.EqualTo(lowerThird));
-        }
-
-        [Test]
-        public void Rebuild_CreatesBilinearlyFilteredControlMapsWithAGutter()
+        public void Rebuild_CreatesAPointFilteredPatchMapWithAOneTileGutter()
         {
             TerrainTileMap map = CreateCoveringMap(out _);
             TerrainChunkView view = CreateView();
 
             view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
 
-            Texture2D control = GetControlTexture(view, "_Control0");
-            int expectedSize = TerrainControlMapBuilder.TextureSizeFor(
-                TerrainChunkRenderResources.DefaultControlMapResolution);
-            Assert.That(control.width, Is.EqualTo(expectedSize));
-            Assert.That(control.height, Is.EqualTo(expectedSize));
-            Assert.That(control.filterMode, Is.EqualTo(FilterMode.Bilinear));
-            Assert.That(control.wrapMode, Is.EqualTo(TextureWrapMode.Clamp));
+            Texture2D patches = view.PatchTexture;
+            Assert.That(patches.width, Is.EqualTo(ChunkSizeInTiles + 2));
+            Assert.That(patches.filterMode, Is.EqualTo(FilterMode.Point),
+                "Blending two layer numbers would name a third layer.");
         }
 
         [Test]
-        public void ControlMaps_MatchAtNeighbouringChunkEdges()
+        public void Rebuild_WithLandforms_BindsAHalfPrecisionLandformMapAndDraws()
         {
-            TerrainTileMap map = CreatePatchyMap();
-            int textureSize = TerrainControlMapBuilder.TextureSizeFor(TestResolution);
-            var left0 = new Color32[textureSize * textureSize];
-            var left1 = new Color32[textureSize * textureSize];
-            var right0 = new Color32[textureSize * textureSize];
-            var right1 = new Color32[textureSize * textureSize];
-            TerrainControlMapBuilder.Fill(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles,
-                TestResolution, 1.2f, left0, left1);
-            TerrainControlMapBuilder.Fill(map,
-                new TerrainTileCoordinate(ChunkSizeInTiles, 0), ChunkSizeInTiles,
-                TestResolution, 1.2f, right0, right1);
+            TerrainTileMap map = CreateLandformMap();
+            TerrainChunkView view = CreateView();
 
-            int leftX = TerrainControlMapBuilder.GutterSize + TestResolution;
-            int rightX = TerrainControlMapBuilder.GutterSize;
-            for (int z = TerrainControlMapBuilder.GutterSize;
-                 z <= TerrainControlMapBuilder.GutterSize + TestResolution; z++)
-            {
-                Assert.That(left0[z * textureSize + leftX], Is.EqualTo(right0[z * textureSize + rightX]));
-                Assert.That(left1[z * textureSize + leftX], Is.EqualTo(right1[z * textureSize + rightX]));
-            }
+            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
+
+            Texture2D elevation = view.ElevationTexture;
+            Assert.That(elevation.format, Is.EqualTo(TextureFormat.RGBAHalf));
+            Assert.That(elevation.filterMode, Is.EqualTo(FilterMode.Bilinear));
+            Assert.That(view.LayerMeshCount, Is.EqualTo(1),
+                "Relief shading covers every chunk once landforms exist, even without patches.");
         }
 
         [Test]
-        public void ControlMap_ContainsContinuousWeightsAcrossAPatchRim()
+        public void LandformMaps_MatchAtNeighbouringChunkEdges()
         {
-            TerrainTileMap map = CreatePatchyMap();
-            Color32[] control = BuildFirstControlMap(map, new TerrainTileCoordinate(0, 0));
-            bool foundTransition = false;
-            for (int i = 0; i < control.Length; i++)
+            TerrainTileMap map = CreateLandformMap();
+            var appearance = new LandformAppearance();
+            float chunkSize = TileSize * ChunkSizeInTiles;
+            int gutter = 3;
+            int textureSize = TerrainControlMapBuilder.ElevationTextureSizeFor(TestResolution, gutter);
+            int count = textureSize * textureSize;
+            var left = new ushort[count * TerrainControlMapBuilder.LandformChannels];
+            var right = new ushort[count * TerrainControlMapBuilder.LandformChannels];
+            TerrainControlMapBuilder.FillLandformMaps(map, 0f, 0f, chunkSize, TestResolution, gutter, appearance,
+                new float[count], new float[count], new float[count], left,
+                new ushort[count * TerrainControlMapBuilder.VolcanicChannels], out _);
+            TerrainControlMapBuilder.FillLandformMaps(map, chunkSize, 0f, chunkSize, TestResolution, gutter, appearance,
+                new float[count], new float[count], new float[count], right,
+                new ushort[count * TerrainControlMapBuilder.VolcanicChannels], out _);
+
+            for (int z = 0; z < textureSize; z++)
             {
-                if (control[i].r > 0 && control[i].r < byte.MaxValue)
+                int leftTexel = (z * textureSize + gutter + TestResolution) * TerrainControlMapBuilder.LandformChannels;
+                int rightTexel = (z * textureSize + gutter) * TerrainControlMapBuilder.LandformChannels;
+                for (int channel = 0; channel < TerrainControlMapBuilder.LandformChannels; channel++)
                 {
-                    foundTransition = true;
-                    break;
+                    Assert.That(left[leftTexel + channel], Is.EqualTo(right[rightTexel + channel]),
+                        $"Channel {channel} differs on the shared edge at row {z}.");
                 }
             }
-
-            Assert.That(foundTransition, Is.True,
-                "The patch edge must be a continuous weight band rather than a binary tile outline.");
         }
 
         [Test]
-        public void ControlMap_OverlappingLayers_OnlyGiveWeightToTheHighestPriorityLayer()
+        public void Rebuild_OnFlatGround_BuildsNoMountainMesh()
+        {
+            TerrainTileMap map = CreateCoveringMap(out _);
+            TerrainChunkView view = CreateView();
+
+            view.Rebuild(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles);
+
+            Assert.That(view.MountainMesh, Is.Null);
+            Assert.That(view.FallenRockCount, Is.Zero);
+        }
+
+        [Test]
+        public void Rebuild_WhereAMountainStands_BuildsItsMeshTallerThanItsCliffs()
+        {
+            TerrainTileMap map = CreateLandformMap();
+            var appearance = new LandformAppearance();
+            TerrainTileCoordinate origin = FindMountainChunk(map);
+            TerrainChunkView view = CreateView();
+
+            view.Rebuild(map, origin, ChunkSizeInTiles);
+
+            Mesh mountain = view.MountainMesh;
+            Assert.That(mountain, Is.Not.Null);
+            Assert.That(mountain.vertexCount, Is.GreaterThan(0));
+            // Built exaggerated so walls read at sprite scale under the steep camera.
+            Assert.That(mountain.bounds.max.y,
+                Is.GreaterThan(appearance.CliffHeight * (1f - appearance.CliffHeightVariation) * 2f));
+            Assert.That(mountain.bounds.min.y, Is.LessThan(0f), "The foot is buried so it emerges from the ground.");
+        }
+
+        [Test]
+        public void PatchMaps_MatchAtNeighbouringChunkEdges()
+        {
+            TerrainTileMap map = CreatePatchyMap();
+            int textureSize = TerrainControlMapBuilder.PatchTextureSizeFor(ChunkSizeInTiles);
+            var left = new Color32[textureSize * textureSize];
+            var right = new Color32[textureSize * textureSize];
+            TerrainControlMapBuilder.FillPatchIds(map, new TerrainTileCoordinate(0, 0), ChunkSizeInTiles, 1.2f, left);
+            TerrainControlMapBuilder.FillPatchIds(map, new TerrainTileCoordinate(ChunkSizeInTiles, 0),
+                ChunkSizeInTiles, 1.2f, right);
+
+            for (int z = 0; z < textureSize; z++)
+            {
+                // The left chunk's gutter column is the right chunk's first tile, and vice versa.
+                Assert.That(left[z * textureSize + textureSize - 1], Is.EqualTo(right[z * textureSize + 1]));
+                Assert.That(left[z * textureSize + textureSize - 2], Is.EqualTo(right[z * textureSize]));
+            }
+        }
+
+        [Test]
+        public void PatchMap_ThinsArtworkTowardsAPatchRim()
+        {
+            TerrainTileMap map = CreatePatchyMap();
+            Color32[] patches = BuildPatchMap(map, new TerrainTileCoordinate(0, 0), 16);
+            bool foundRim = false;
+            for (int i = 0; i < patches.Length; i++)
+            {
+                foundRim |= patches[i].r > 0 && patches[i].g < byte.MaxValue;
+            }
+
+            Assert.That(foundRim, Is.True, "Tiles near a patch edge must carry less than full depth.");
+        }
+
+        [Test]
+        public void PatchMap_NamesExactlyTheLayerGameplayAssignsToEachTile()
         {
             TerrainTileMap map = CreateOverlappingMap();
-            Color32[] control = BuildFirstControlMap(map, new TerrainTileCoordinate(0, 0));
+            const int tiles = 12;
+            Color32[] patches = BuildPatchMap(map, new TerrainTileCoordinate(0, 0), tiles);
+            int size = TerrainControlMapBuilder.PatchTextureSizeFor(tiles);
             bool foundUpperLayer = false;
-            for (int i = 0; i < control.Length; i++)
+            for (int z = 0; z < size; z++)
             {
-                if (control[i].r > 0)
+                for (int x = 0; x < size; x++)
                 {
-                    foundUpperLayer = true;
-                    Assert.That(control[i].g, Is.Zero,
-                        "A lower terrain layer must not render below transparent pixels of the winning layer.");
+                    var tile = new TerrainTileCoordinate(x - TerrainControlMapBuilder.PatchGutter,
+                        z - TerrainControlMapBuilder.PatchGutter);
+                    int expected = map.GetLayerIndex(tile) + 1;
+                    Assert.That(patches[z * size + x].r, Is.EqualTo(expected),
+                        "Art over a tile must always be what digging it yields.");
+                    foundUpperLayer |= expected == 1;
                 }
             }
 
@@ -240,23 +280,25 @@ namespace PlanetSurvival.Tests
         }
 
         [Test]
-        public void Rebuild_AfterATileIsCleared_ZerosItsControlWeightOnly()
+        public void Rebuild_AfterATileIsCleared_MarksOnlyThatTileDug()
         {
             TerrainTileMap map = CreateCoveringMap(out _);
             TerrainChunkView view = CreateView();
             var origin = new TerrainTileCoordinate(0, 0);
             view.Rebuild(map, origin, ChunkSizeInTiles);
-            Texture2D before = GetControlTexture(view, "_Control0");
-            int clearedSample = PixelAtTileCenter(before.width, 1, 1);
-            int neighbourSample = PixelAtTileCenter(before.width, 2, 1);
-            Assert.That(before.GetPixels32()[clearedSample].r, Is.EqualTo(byte.MaxValue));
+            int size = view.PatchTexture.width;
+            int cleared = TexelOf(size, 1, 1);
+            int neighbour = TexelOf(size, 2, 1);
+            Assert.That(view.PatchTexture.GetPixels32()[cleared].r, Is.EqualTo(1));
 
             map.Dig(new TerrainTileCoordinate(1, 1));
             view.Rebuild(map, origin, ChunkSizeInTiles);
-            Color32[] after = GetControlTexture(view, "_Control0").GetPixels32();
+            Color32[] after = view.PatchTexture.GetPixels32();
 
-            Assert.That(after[clearedSample].r, Is.Zero);
-            Assert.That(after[neighbourSample].r, Is.EqualTo(byte.MaxValue));
+            Assert.That(after[cleared].r, Is.Zero);
+            Assert.That(after[cleared].b, Is.EqualTo(TerrainControlMapBuilder.ClearedFlag));
+            Assert.That(after[neighbour].r, Is.EqualTo(1));
+            Assert.That(after[neighbour].b, Is.Zero);
         }
 
         [Test]
@@ -277,29 +319,17 @@ namespace PlanetSurvival.Tests
             Assert.That(view.GetComponent<MeshRenderer>().enabled, Is.False);
         }
 
-        private Color32[] BuildFirstControlMap(TerrainTileMap map, TerrainTileCoordinate origin)
+        private static Color32[] BuildPatchMap(TerrainTileMap map, TerrainTileCoordinate origin, int tiles)
         {
-            int textureSize = TerrainControlMapBuilder.TextureSizeFor(TestResolution);
-            var control0 = new Color32[textureSize * textureSize];
-            var control1 = new Color32[textureSize * textureSize];
-            TerrainControlMapBuilder.Fill(map, origin, ChunkSizeInTiles, TestResolution, 1.2f,
-                control0, control1);
-            return control0;
+            int size = TerrainControlMapBuilder.PatchTextureSizeFor(tiles);
+            var pixels = new Color32[size * size];
+            TerrainControlMapBuilder.FillPatchIds(map, origin, tiles, 1.2f, pixels);
+            return pixels;
         }
 
-        private static int PixelAtTileCenter(int textureSize, int tileX, int tileZ)
+        private static int TexelOf(int textureSize, int tileX, int tileZ)
         {
-            int samplesPerTile = TerrainChunkRenderResources.DefaultControlMapResolution / ChunkSizeInTiles;
-            int x = TerrainControlMapBuilder.GutterSize + tileX * samplesPerTile + samplesPerTile / 2;
-            int z = TerrainControlMapBuilder.GutterSize + tileZ * samplesPerTile + samplesPerTile / 2;
-            return z * textureSize + x;
-        }
-
-        private static Texture2D GetControlTexture(TerrainChunkView view, string propertyName)
-        {
-            var properties = new MaterialPropertyBlock();
-            view.GetComponent<MeshRenderer>().GetPropertyBlock(properties);
-            return properties.GetTexture(propertyName) as Texture2D;
+            return (tileZ + TerrainControlMapBuilder.PatchGutter) * textureSize + tileX + TerrainControlMapBuilder.PatchGutter;
         }
 
         private TerrainChunkView CreateView()
@@ -326,6 +356,45 @@ namespace PlanetSurvival.Tests
             var map = new TerrainTileMap();
             map.Configure(99, settings);
             return map;
+        }
+
+        private TerrainTileMap CreateLandformMap()
+        {
+            var landforms = ScriptableObject.CreateInstance<LandformSettings>();
+            _created.Add(landforms);
+            var settings = ScriptableObject.CreateInstance<TerrainPatchSettings>();
+            settings.Configure(0, TileSize, ChunkSizeInTiles, 1);
+            settings.ConfigureLandforms(landforms, null);
+            _created.Add(settings);
+            var map = new TerrainTileMap();
+            map.Configure(2024, settings, 1f, Vector2.zero);
+            return map;
+        }
+
+        /// <summary>A chunk origin, on the chunk lattice, whose chunk holds mountain ground.</summary>
+        private static TerrainTileCoordinate FindMountainChunk(TerrainTileMap map)
+        {
+            float chunkSize = TileSize * ChunkSizeInTiles;
+            for (int radius = 30; radius < 1500; radius += 6)
+            {
+                for (int step = 0; step < 24; step++)
+                {
+                    float angle = step * Mathf.PI / 12f;
+                    float x = Mathf.Cos(angle) * radius;
+                    float z = Mathf.Sin(angle) * radius;
+                    if (!map.IsBlockedAt(x, z))
+                    {
+                        continue;
+                    }
+
+                    int chunkX = Mathf.FloorToInt(x / chunkSize);
+                    int chunkZ = Mathf.FloorToInt(z / chunkSize);
+                    return new TerrainTileCoordinate(chunkX * ChunkSizeInTiles, chunkZ * ChunkSizeInTiles);
+                }
+            }
+
+            Assert.Fail("No mountain was found near the origin.");
+            return default;
         }
 
         private TerrainTileMap CreatePatchyMap()

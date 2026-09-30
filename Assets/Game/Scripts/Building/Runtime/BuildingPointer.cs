@@ -1,3 +1,4 @@
+using PlanetSurvival.World.Presentation;
 using UnityEngine;
 
 namespace PlanetSurvival.Building.Runtime
@@ -13,8 +14,12 @@ namespace PlanetSurvival.Building.Runtime
         /// The building under <paramref name="screenPosition"/>, or false when the ray hits none, when the
         /// nearest hit is not a building, or when that building is out of the player's reach.
         /// </summary>
+        /// <param name="surface">
+        /// The drawn ground; buildings in a crater are drawn below their colliders, so the ray is moved to
+        /// meet the colliders where their buildings are drawn. Null is flat ground.
+        /// </param>
         public static bool TryPick(Camera camera, Vector2 screenPosition, Transform player, float reach,
-            out BuildSiteView building)
+            IGroundSurface surface, out BuildSiteView building)
         {
             building = null;
             if (camera == null)
@@ -22,7 +27,7 @@ namespace PlanetSurvival.Building.Runtime
                 return false;
             }
 
-            Ray ray = camera.ScreenPointToRay(screenPosition);
+            Ray ray = GroundSurfaceRaycast.ToGameplaySpace(surface, camera.ScreenPointToRay(screenPosition), 0f);
             RaycastHit[] hits = Physics.RaycastAll(ray, camera.farClipPlane, ~0, QueryTriggerInteraction.Collide);
             float nearest = float.MaxValue;
             Collider nearestCollider = null;

@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::PlanetSurvival.World.Ground.TerrainSurfaceDefinition
   _terrainId: rock_boulder_field
   _displayName: Boulder Field
-  _texture: {fileID: 2800000, guid: fdffcfad2e55242afa6dd1ea8c601ebb, type: 3}
+  _texture: {fileID: 2800000, guid: 8bab033a7991243459d84c3559d2e1d6, type: 3}
   _textureVariants: []
   _textureTileSize: 8
+  _patchRendering: 0
   _digCount: 5
   _digDuration: 1.6
   _digDistance: 2
