@@ -133,11 +133,10 @@ namespace PlanetSurvival.Editor
         private const int TerrainLoadRadiusInChunks = 1;
         private const int TerrainControlMapResolution = 64;
         private const float TerrainBlendDistance = 1.2f;
-        // Legacy world-space repeat sizes kept in authored assets for backward compatibility. The current
-        // tile-aligned renderer always fits one complete texture into one gameplay tile.
+        // Scattered rock and iron artwork fits each gameplay tile. Continuous ice repeats in world metres.
         private const float RockTextureTileSize = 8f;
         private const float IronTextureTileSize = 5f;
-        private const float IceTextureTileSize = 7f;
+        private const float IceTextureTileSize = 20f;
         private const float RockDigSeconds = 1.6f;
         private const int RockStonePerDig = 1;
         private const float IronDigSeconds = 3.2f;

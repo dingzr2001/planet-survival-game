@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PlanetSurvival.World.Chunks;
+using PlanetSurvival.World.Exploration;
 using UnityEngine;
 
 namespace PlanetSurvival.World.Ground
@@ -14,10 +15,12 @@ namespace PlanetSurvival.World.Ground
     {
         // Blocks are only released one ring beyond the load radius so walking a border does not thrash them.
         private const int UnloadMargin = 1;
+        public const int MinimapTerrainLayer = 30;
 
         [SerializeField] private TerrainPatchSettings _settings;
 
         private readonly Dictionary<ChunkCoordinate, TerrainChunkView> _loadedChunks = new();
+        private readonly Dictionary<ChunkCoordinate, TerrainChunkView> _minimapChunks = new();
         private readonly HashSet<ChunkCoordinate> _dirtyChunks = new();
         private readonly List<ChunkCoordinate> _chunkBuffer = new();
         private TerrainTileMap _map;
@@ -25,6 +28,13 @@ namespace PlanetSurvival.World.Ground
         private Transform _target;
         private ChunkCoordinate _center;
         private bool _hasCenter;
+        private bool _hasMinimapCoverage;
+        private int _minimapFirstX;
+        private int _minimapLastX;
+        private int _minimapFirstZ;
+        private int _minimapLastZ;
+        private int _minimapExploredCount;
+        private ChunkCoordinate _minimapPlayerCenter;
 
         public int LoadedChunkCount => _loadedChunks.Count;
 
@@ -38,6 +48,7 @@ namespace PlanetSurvival.World.Ground
         {
             UnsubscribeFromMap();
             UnloadAll();
+            UnloadMinimapChunks();
             ReleaseRenderResources();
             _settings = settings;
             _map = map;
@@ -74,7 +85,76 @@ namespace PlanetSurvival.World.Ground
         private void OnDestroy()
         {
             UnsubscribeFromMap();
+            UnloadMinimapChunks();
             ReleaseRenderResources();
+        }
+
+        /// <summary>
+        /// Draws previously seen terrain inside the map camera's ground footprint after gameplay chunks
+        /// have streamed away. The minimap camera alone sees these copies; they have no gameplay colliders.
+        /// </summary>
+        public void RefreshMinimapCoverage(Rect worldBounds, WorldExplorationMap exploration)
+        {
+            if (_settings == null || _map == null || _renderResources == null || exploration == null
+                || !_hasCenter)
+            {
+                return;
+            }
+
+            float size = _settings.ChunkSize;
+            int firstX = Mathf.FloorToInt(worldBounds.xMin / size);
+            int lastX = Mathf.FloorToInt(worldBounds.xMax / size);
+            int firstZ = Mathf.FloorToInt(worldBounds.yMin / size);
+            int lastZ = Mathf.FloorToInt(worldBounds.yMax / size);
+            if (_hasMinimapCoverage && firstX == _minimapFirstX && lastX == _minimapLastX
+                && firstZ == _minimapFirstZ && lastZ == _minimapLastZ
+                && _minimapExploredCount == exploration.ExploredCellCount
+                && _minimapPlayerCenter.Equals(_center))
+            {
+                return;
+            }
+
+            _minimapFirstX = firstX;
+            _minimapLastX = lastX;
+            _minimapFirstZ = firstZ;
+            _minimapLastZ = lastZ;
+            _minimapExploredCount = exploration.ExploredCellCount;
+            _minimapPlayerCenter = _center;
+            _hasMinimapCoverage = true;
+
+            _chunkBuffer.Clear();
+            foreach (ChunkCoordinate chunk in _minimapChunks.Keys)
+            {
+                if (chunk.X < firstX || chunk.X > lastX || chunk.Z < firstZ || chunk.Z > lastZ
+                    || _loadedChunks.ContainsKey(chunk)
+                    || !exploration.HasExploredCells(chunk.OriginX(size), chunk.OriginZ(size),
+                        chunk.OriginX(size) + size, chunk.OriginZ(size) + size))
+                {
+                    _chunkBuffer.Add(chunk);
+                }
+            }
+
+            for (int i = 0; i < _chunkBuffer.Count; i++)
+            {
+                UnloadMinimapChunk(_chunkBuffer[i]);
+            }
+
+            _chunkBuffer.Clear();
+            for (int x = firstX; x <= lastX; x++)
+            {
+                for (int z = firstZ; z <= lastZ; z++)
+                {
+                    var chunk = new ChunkCoordinate(x, z);
+                    if (_loadedChunks.ContainsKey(chunk) || _minimapChunks.ContainsKey(chunk)
+                        || !exploration.HasExploredCells(chunk.OriginX(size), chunk.OriginZ(size),
+                            chunk.OriginX(size) + size, chunk.OriginZ(size) + size))
+                    {
+                        continue;
+                    }
+
+                    LoadMinimapChunk(chunk);
+                }
+            }
         }
 
         private void OnTileChanged(TerrainTileCoordinate tile)
@@ -154,6 +234,12 @@ namespace PlanetSurvival.World.Ground
                 {
                     view.Rebuild(_map, OriginTileOf(_chunkBuffer[i]), _settings.ChunkSizeInTiles);
                 }
+
+                if (_minimapChunks.TryGetValue(_chunkBuffer[i], out TerrainChunkView mapView) && mapView != null)
+                {
+                    mapView.Rebuild(_map, OriginTileOf(_chunkBuffer[i]), _settings.ChunkSizeInTiles);
+                    SetLayerRecursively(mapView.transform, MinimapTerrainLayer);
+                }
             }
 
             _chunkBuffer.Clear();
@@ -220,6 +306,57 @@ namespace PlanetSurvival.World.Ground
 
             _chunkBuffer.Clear();
             _hasCenter = false;
+        }
+
+        private void LoadMinimapChunk(ChunkCoordinate chunk)
+        {
+            var root = new GameObject($"Minimap Terrain Chunk {chunk}");
+            root.transform.SetParent(transform);
+            root.transform.position = new Vector3(
+                chunk.OriginX(_settings.ChunkSize), TerrainChunkView.SurfaceHeight,
+                chunk.OriginZ(_settings.ChunkSize));
+            TerrainChunkView view = root.AddComponent<TerrainChunkView>();
+            view.Configure(_renderResources);
+            view.Rebuild(_map, OriginTileOf(chunk), _settings.ChunkSizeInTiles);
+            SetLayerRecursively(root.transform, MinimapTerrainLayer);
+            _minimapChunks.Add(chunk, view);
+        }
+
+        private void UnloadMinimapChunk(ChunkCoordinate chunk)
+        {
+            if (!_minimapChunks.TryGetValue(chunk, out TerrainChunkView view))
+            {
+                return;
+            }
+
+            _minimapChunks.Remove(chunk);
+            if (view != null)
+            {
+                view.gameObject.SetActive(false);
+                DestroyRuntimeObject(view.gameObject);
+            }
+        }
+
+        private void UnloadMinimapChunks()
+        {
+            _chunkBuffer.Clear();
+            _chunkBuffer.AddRange(_minimapChunks.Keys);
+            for (int i = 0; i < _chunkBuffer.Count; i++)
+            {
+                UnloadMinimapChunk(_chunkBuffer[i]);
+            }
+
+            _chunkBuffer.Clear();
+            _hasMinimapCoverage = false;
+        }
+
+        private static void SetLayerRecursively(Transform root, int layer)
+        {
+            root.gameObject.layer = layer;
+            for (int i = 0; i < root.childCount; i++)
+            {
+                SetLayerRecursively(root.GetChild(i), layer);
+            }
         }
 
         private void UnsubscribeFromMap()

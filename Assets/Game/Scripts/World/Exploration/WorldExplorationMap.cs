@@ -73,6 +73,33 @@ namespace PlanetSurvival.World.Exploration
                 Mathf.FloorToInt(worldZ / CellSize)));
         }
 
+        /// <summary>Whether an area touches any cell already revealed on this expedition.</summary>
+        public bool HasExploredCells(float minX, float minZ, float maxX, float maxZ)
+        {
+            if (!IsFinite(minX) || !IsFinite(minZ) || !IsFinite(maxX) || !IsFinite(maxZ)
+                || minX > maxX || minZ > maxZ)
+            {
+                return false;
+            }
+
+            int firstX = Mathf.FloorToInt(minX / CellSize);
+            int lastX = Mathf.FloorToInt(maxX / CellSize);
+            int firstZ = Mathf.FloorToInt(minZ / CellSize);
+            int lastZ = Mathf.FloorToInt(maxZ / CellSize);
+            for (int z = firstZ; z <= lastZ; z++)
+            {
+                for (int x = firstX; x <= lastX; x++)
+                {
+                    if (_exploredCells.Contains(new Vector2Int(x, z)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public void Clear()
         {
             _exploredCells.Clear();

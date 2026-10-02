@@ -280,11 +280,8 @@ Shader "Planet Survival/Terrain Blend"
                 float coverage = RaggedSheetCoverage(world, bestMembership);
                 float2 uv = world * _LayerTextureScale[bestLayer];
                 float slice = _LayerFirstSlice[bestLayer];
-                float4 art = lerp(
-                    _PatchArray.Sample(sampler_PatchArray, float3(uv, slice)),
-                    _PatchArray.Sample(sampler_PatchArray, float3(UntiledSecondUv(uv), slice)),
-                    UntiledBlend(uv));
-                Composite(premultiplied, alpha, art.rgb, coverage * max(art.a, 0.85));
+                float4 art = _PatchArray.Sample(sampler_PatchArray, float3(uv, slice));
+                Composite(premultiplied, alpha, art.rgb, coverage * art.a);
             }
 
             // Craters. The landform map's alpha holds the distance to the nearest crater's centre in its radii,
@@ -528,7 +525,8 @@ Shader "Planet Survival/Terrain Blend"
                 float lakeCoverage = RaggedSheetCoverage(world, lakeMembership) * (dugAway ? 0.0 : 1.0);
                 if (lakeCoverage > 0.0)
                 {
-                    Composite(premultiplied, alpha, SampleUntiled(_IceTex, world * _IceTexScale), lakeCoverage);
+                    float4 iceArt = tex2D(_IceTex, world * _IceTexScale);
+                    Composite(premultiplied, alpha, iceArt.rgb, lakeCoverage * iceArt.a);
                 }
 
                 // Lava lakes where the lava field passes 1, with the same ragged shore and the same

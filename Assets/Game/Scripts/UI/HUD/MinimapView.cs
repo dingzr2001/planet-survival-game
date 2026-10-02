@@ -1,4 +1,5 @@
 using PlanetSurvival.World.Exploration;
+using PlanetSurvival.World.Ground;
 using UnityEngine;
 
 namespace PlanetSurvival.UI.HUD
@@ -37,6 +38,7 @@ namespace PlanetSurvival.UI.HUD
         private Camera _sourceCamera;
         private Camera _mapCamera;
         private WorldExplorationMap _exploration;
+        private TerrainChunkStreamer _terrainStreamer;
         private RenderTexture _mapTexture;
         private Texture2D _fogTexture;
         private Color32[] _fogPixels = System.Array.Empty<Color32>();
@@ -101,11 +103,13 @@ namespace PlanetSurvival.UI.HUD
             }
         }
 
-        public void Bind(Transform target, Camera sourceCamera, WorldExplorationMap exploration)
+        public void Bind(Transform target, Camera sourceCamera, WorldExplorationMap exploration,
+            TerrainChunkStreamer terrainStreamer)
         {
             _target = target;
             _sourceCamera = sourceCamera;
             _exploration = exploration;
+            _terrainStreamer = terrainStreamer;
 
             if (_target == null || _sourceCamera == null || _exploration == null)
             {
@@ -117,9 +121,12 @@ namespace PlanetSurvival.UI.HUD
             }
 
             ExcludePlayerPresentation();
+            // Terrain copies kept for the map must never appear in the main surface view.
+            _sourceCamera.cullingMask &= ~(1 << TerrainChunkStreamer.MinimapTerrainLayer);
             CreateMapCamera();
             RevealAroundTarget();
             UpdateMapCameraTransform();
+            RefreshTerrainCoverage();
             enabled = true;
         }
 
@@ -132,6 +139,7 @@ namespace PlanetSurvival.UI.HUD
 
             UpdateMapCameraTransform();
             RevealAroundTarget();
+            RefreshTerrainCoverage();
 
             Vector3 fogDelta = CurrentMapCenter() - _lastFogPosition;
             fogDelta.y = 0f;
@@ -160,7 +168,20 @@ namespace PlanetSurvival.UI.HUD
 
             if (Event.current.type == EventType.Repaint && _mapTexture != null)
             {
+                if (_terrainStreamer != null && _terrainStreamer.Surface != null)
+                {
+                    Vector3 mapCenter = CurrentMapCenter();
+                    TerrainSurfaceShaderGlobals.Upload(_terrainStreamer.Surface, mapCenter.x, mapCenter.z);
+                }
+
                 _mapCamera.Render();
+
+                if (_terrainStreamer != null && _terrainStreamer.Surface != null)
+                {
+                    TerrainSurfaceShaderGlobals.Upload(_terrainStreamer.Surface,
+                        _target.position.x, _target.position.z);
+                }
+
                 UpdateFogMaskIfNeeded();
             }
 
@@ -221,7 +242,26 @@ namespace PlanetSurvival.UI.HUD
             _mapCamera.clearFlags = CameraClearFlags.SolidColor;
             _mapCamera.backgroundColor = MapBackgroundColor;
             _mapCamera.cullingMask &= ~(1 << PlayerPresentationLayer);
+            _mapCamera.cullingMask |= 1 << TerrainChunkStreamer.MinimapTerrainLayer;
             _mapCamera.orthographicSize = CompactOrthographicSize;
+        }
+
+        private void RefreshTerrainCoverage()
+        {
+            if (_terrainStreamer == null
+                || !TryGetGroundPoint(0f, 0f, out Vector3 bottomLeft)
+                || !TryGetGroundPoint(1f, 0f, out Vector3 bottomRight)
+                || !TryGetGroundPoint(0f, 1f, out Vector3 topLeft)
+                || !TryGetGroundPoint(1f, 1f, out Vector3 topRight))
+            {
+                return;
+            }
+
+            float minX = Mathf.Min(Mathf.Min(bottomLeft.x, bottomRight.x), Mathf.Min(topLeft.x, topRight.x));
+            float maxX = Mathf.Max(Mathf.Max(bottomLeft.x, bottomRight.x), Mathf.Max(topLeft.x, topRight.x));
+            float minZ = Mathf.Min(Mathf.Min(bottomLeft.z, bottomRight.z), Mathf.Min(topLeft.z, topRight.z));
+            float maxZ = Mathf.Max(Mathf.Max(bottomLeft.z, bottomRight.z), Mathf.Max(topLeft.z, topRight.z));
+            _terrainStreamer.RefreshMinimapCoverage(Rect.MinMaxRect(minX, minZ, maxX, maxZ), _exploration);
         }
 
         private void UpdateMapCameraTransform()

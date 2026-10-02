@@ -42,5 +42,17 @@ namespace PlanetSurvival.Tests
             Assert.That(exploration.ExploredCellCount, Is.Zero);
             Assert.That(exploration.IsExplored(0f, 0f), Is.False);
         }
+
+        [Test]
+        public void HasExploredCells_FindsPreviouslyVisitedAreaAfterMovingAway()
+        {
+            var exploration = new WorldExplorationMap(2f);
+            exploration.Reveal(Vector3.zero, 6f);
+            exploration.Reveal(new Vector3(100f, 0f, 0f), 6f);
+
+            Assert.That(exploration.HasExploredCells(-2f, -2f, 2f, 2f), Is.True);
+            Assert.That(exploration.HasExploredCells(98f, -2f, 102f, 2f), Is.True);
+            Assert.That(exploration.HasExploredCells(40f, -2f, 60f, 2f), Is.False);
+        }
     }
 }

@@ -16,6 +16,7 @@ using PlanetSurvival.Suit.Runtime;
 using PlanetSurvival.Storage.Runtime;
 using PlanetSurvival.UI.Storage;
 using PlanetSurvival.World.Interiors;
+using PlanetSurvival.World.Ground;
 using PlanetSurvival.World.Presentation;
 using PlanetSurvival.UI.Water;
 using PlanetSurvival.Water.Runtime;
@@ -228,6 +229,24 @@ namespace PlanetSurvival.Tests
             minimap.ToggleExpanded();
             Assert.That(minimap.ExpandedPanOffset, Is.EqualTo(Vector2.zero),
                 "Closing the map restores the compact player-centred view.");
+
+            TerrainChunkStreamer terrainStreamer = Object.FindFirstObjectByType<TerrainChunkStreamer>();
+            Assert.That(terrainStreamer, Is.Not.Null);
+            Transform surfacePlayer = Object.FindFirstObjectByType<PlayerSurvival>().transform;
+            var remoteStreamingTarget = new GameObject("Remote Terrain Streaming Test Target");
+            remoteStreamingTarget.transform.position = surfacePlayer.position + Vector3.right * 400f;
+            terrainStreamer.SetTarget(remoteStreamingTarget.transform);
+            yield return null;
+            Assert.That(Object.FindObjectsByType<TerrainChunkView>(FindObjectsSortMode.None).Any(
+                    view => view.gameObject.name.StartsWith("Minimap Terrain Chunk")
+                        && view.gameObject.layer == TerrainChunkStreamer.MinimapTerrainLayer
+                        && Vector3.Distance(view.transform.position, surfacePlayer.position) < 32f),
+                Is.True, "Explored terrain must remain drawn on the minimap after gameplay chunks unload.");
+            Assert.That(surfaceCamera.cullingMask & (1 << TerrainChunkStreamer.MinimapTerrainLayer), Is.Zero);
+            Assert.That(minimap.MapCamera.cullingMask & (1 << TerrainChunkStreamer.MinimapTerrainLayer), Is.Not.Zero);
+            terrainStreamer.SetTarget(surfacePlayer);
+            Object.Destroy(remoteStreamingTarget);
+            yield return null;
 
             ResourceNode surfaceResource = Object.FindFirstObjectByType<ResourceNode>();
             Assert.That(surfaceResource, Is.Not.Null, "The streamed surface should contain natural resources.");

@@ -148,7 +148,8 @@ namespace PlanetSurvival.Bootstrap
             ContinuousTerrainView terrainView = CreateTerrain(root.transform);
             GameObject player = CreatePlayer(root.transform, session);
             terrainView.SetTarget(player.transform);
-            TerrainSurface groundSurface = CreateTerrainPatches(root.transform, player.transform, session);
+            TerrainChunkStreamer terrainStreamer = CreateTerrainPatches(root.transform, player.transform, session);
+            TerrainSurface groundSurface = terrainStreamer != null ? terrainStreamer.Surface : null;
             LandingPodExterior.Create(root.transform, player.transform.position + new Vector3(4f, 0f, 0f),
                 _worldVisuals);
             CreateResourceStreaming(root.transform, player.transform, session.Buildings.Grid, session.Terrain);
@@ -160,7 +161,7 @@ namespace PlanetSurvival.Bootstrap
                 _environmentSettings.RealSecondsPerGameDay, _environmentSettings.RescueDay));
             root.AddComponent<DayNightEnvironment>().Bind(clock, sun, _environmentSettings);
             GameObject hud = CreateHud(root.transform, player, clock, _inventorySkin);
-            hud.AddComponent<MinimapView>().Bind(player.transform, camera, session.Exploration);
+            hud.AddComponent<MinimapView>().Bind(player.transform, camera, session.Exploration, terrainStreamer);
             CreateBuildingSystem(root.transform, player, camera, hud, session, clock, groundSurface);
             BindPlayerDeath(player);
         }
@@ -179,8 +180,8 @@ namespace PlanetSurvival.Bootstrap
         /// player something to dig. The tile map itself belongs to the expedition, so terrain the player
         /// already broke does not grow back while they are inside the pod.
         /// </summary>
-        /// <returns>The drawn ground the camera and pointer resolve against, or null for flat ground.</returns>
-        private TerrainSurface CreateTerrainPatches(Transform parent, Transform target, GameSessionState session)
+        /// <returns>The surface streamer, or null for flat ground.</returns>
+        private TerrainChunkStreamer CreateTerrainPatches(Transform parent, Transform target, GameSessionState session)
         {
             if (_terrainPatchSettings == null)
             {
@@ -201,7 +202,7 @@ namespace PlanetSurvival.Bootstrap
             TerrainDigSiteSpawner digSites = terrainPatches.AddComponent<TerrainDigSiteSpawner>();
             digSites.Configure(session.Terrain);
             digSites.SetTarget(target);
-            return streamer.Surface;
+            return streamer;
         }
 
         private void CreateResourceStreaming(Transform parent, Transform target, BuildGrid buildGrid,
